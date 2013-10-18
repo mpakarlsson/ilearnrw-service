@@ -6,12 +6,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.token.KeyBasedPersistenceTokenService;
 import org.springframework.security.core.token.Token;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +34,7 @@ public class AuthController {
 			.getLogger(AuthController.class);
 
 	@Autowired
+	@Qualifier("userService")
 	private UserDetailsService usersService;
 	
 	@Autowired
@@ -103,4 +109,25 @@ public class AuthController {
 		return null;
 	}
 
+	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
+	public @ResponseBody
+	UserDetails userDetailsById(@PathVariable String username) {
+		return usersService.loadUserByUsername(username);
+	}
+
+	@RequestMapping(value = "/user/info", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_STUDENT')")
+	public @ResponseBody
+	RestToken userInfo() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		return (RestToken)auth;
+	}
+	
+	@RequestMapping(value = "/user/id", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_STUDENT')")
+	public @ResponseBody
+	String userId() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		return ((UserDetails)auth.getPrincipal()).getUsername();
+	}
 }

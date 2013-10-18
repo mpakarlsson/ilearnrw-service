@@ -46,7 +46,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
 
 	private Authentication getAuthenticatedUser(UserDetails userDetails) {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(new SimpleGrantedAuthority("ROLE_API_USER"));
+		//authorities.add(new SimpleGrantedAuthority("ROLE_API_USER"));
 		authorities.addAll(userDetails.getAuthorities());
 
 		return new RestToken(userDetails.getUsername(),

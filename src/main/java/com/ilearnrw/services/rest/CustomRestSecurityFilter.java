@@ -70,6 +70,9 @@ public class CustomRestSecurityFilter extends GenericFilterBean {
 			return;
 		}
 		
+		// from this point on, we know the user provided basic auth, we don't need it anymore
+		SecurityContextHolder.getContext().setAuthentication(null);
+		
 		Map<String, String[]> parms = request.getParameterMap();
 		if (parms.containsKey("token")) {
 			String tokenKey = parms.get("token")[0]; // grab the first "token"
@@ -81,7 +84,7 @@ public class CustomRestSecurityFilter extends GenericFilterBean {
 			}
 
 	        RestToken token = RestToken.fromToken(receivedToken);
-	        
+
 			// set the authentication into the SecurityContext
 			SecurityContextHolder.getContext().setAuthentication(
 					authenticationManager.authenticate(token));

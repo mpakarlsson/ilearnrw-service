@@ -16,7 +16,9 @@
 		entry-point-ref="authenticationEntryPoint">
 		<intercept-url pattern="/user/auth" access="permitAll" />
 		<intercept-url pattern="/user/newtokens" access="permitAll" />
-		<intercept-url pattern="/**" access="hasRole('ROLE_API_USER')" />
+
+		<!-- this implies that any method has a valid token parameter -->
+		<intercept-url pattern="/**" access="isAuthenticated()" />
 
 		<custom-filter ref="basicAuthenticationFilter" position="BASIC_AUTH_FILTER" />
 		<custom-filter ref="customRestFilter" after="BASIC_AUTH_FILTER" />
@@ -67,13 +69,46 @@
 	<beans:bean id="passwordEncoder"
 		class="org.springframework.security.crypto.password.StandardPasswordEncoder">
 	</beans:bean>
+	<!-- <user-service id="usersService"> <user name="student" password="student" 
+		authorities="ROLE_STUDENT" /> <user name="student2" password="student2" authorities="ROLE_STUDENT" 
+		/> <user name="test_user" password="test_password" authorities="ROLE_STUDENT" 
+		/> </user-service> -->
 
-	<user-service id="usersService">
-		<user name="student" password="student" authorities="ROLE_STUDENT" />
-		<user name="student2" password="student2" authorities="ROLE_STUDENT" />
-		<user name="test_user" password="test_password" authorities="ROLE_STUDENT" />
-	</user-service>
+	<beans:import resource="db.xml" />
 
+	<beans:bean id="userService"
+		class="com.ilearnrw.services.rest.SpringSecurityDaoImpl">
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="enableGroups" value="false" />
+		<beans:property name="enableAuthorities" value="true" />
+		<beans:property name="authoritiesByUsernameQuery">
+			<beans:value>
+			SELECT R.NAME, U.USERNAME
+				FROM ROLES R
+				JOIN ROLE_MEMBERS RM on R.id = RM.roles_id
+				JOIN USERS U on U.id = RM.members_id
+				WHERE U.username=?
+			</beans:value>
+		</beans:property>
+		<beans:property name="groupAuthoritiesByUsernameQuery">
+			<beans:value>SELECT R.ID, R.NAME, P.NAME
+				FROM ROLES R
+				JOIN ROLE_MEMBERS RM on R.id = RM.roles_id
+				JOIN USERS U on U.id = RM.members_id
+				JOIN ROLE_PERMISSIONS RP ON RP.roles_id = R.id
+				JOIN PERMISSIONS P ON P.id = RP.permissions_id
+				WHERE U.username=?
+			</beans:value>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<beans:property name="driverClassName" value="${db.driver}" />
+		<beans:property name="url" value="${db.url}" />
+		<beans:property name="username" value="${db.username}" />
+		<beans:property name="password" value="${db.password}" />
+	</beans:bean>
 
 	<!-- The restAuthenticationProvider is the class responsible for verifying 
 		that the username and password are valid and returning an AuthenticationToken 
@@ -83,7 +118,7 @@
 	<beans:bean id="restAuthenticationProvider"
 		class="com.ilearnrw.services.rest.RestAuthenticationProvider">
 		<beans:constructor-arg name="userDetailsService"
-			ref="usersService" />
+			ref="userService" />
 	</beans:bean>
 
 	<beans:bean id="secureRandom"
