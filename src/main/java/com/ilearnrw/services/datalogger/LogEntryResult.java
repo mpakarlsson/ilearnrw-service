@@ -1,5 +1,8 @@
 package com.ilearnrw.services.datalogger;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,17 +17,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LogEntryResult {
 	
 	public LogEntryResult(Integer _page,
+						  Integer _totalAmountOfPages,
 						  List<LogEntry> _results,
 						  Object _debugInfo)
 	{
 		page = _page;
+		totalPages = _totalAmountOfPages;
 		results = _results;
 		debugInfo = _debugInfo;
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		serverTime = df.format(new Date());
 	}
 
 	
 	@JsonProperty("page")
 	private Integer page;
+	
+	@JsonProperty("total-pages")
+	private Integer totalPages;
 	
 	@JsonProperty("debug-info")
 	private Object debugInfo;
@@ -32,4 +42,7 @@ public class LogEntryResult {
 
 	@JsonProperty("results")
 	private List<LogEntry> results;
+	
+	@JsonProperty("server-time")
+	private String serverTime;
 }

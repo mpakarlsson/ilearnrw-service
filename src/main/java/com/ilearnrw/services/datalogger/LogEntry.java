@@ -2,6 +2,8 @@ package com.ilearnrw.services.datalogger;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +28,8 @@ public class LogEntry implements Serializable {
 		tag = _tag;
 		value = _value;
 		applicationId = _applicationId;
-		timestamp = _timestamp;
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		timestamp = df.format(_timestamp);
 		sessionId = _sessionId;
 	}
 	/**
@@ -77,7 +80,7 @@ public class LogEntry implements Serializable {
 	
 
 	@JsonProperty("timestamp")
-	private Timestamp timestamp;
+	private String timestamp;
 	
 	/**
 	 * A sessionId.

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 
  * TODO: Fix result values and HTTP status codes.
  * TODO: Remove/disable debug information.
+ * TODO: Add support for authorization (tokens).
  * 
  * Database
  * --------
@@ -216,8 +217,11 @@ public class DataloggerController {
 		if(page == null)
 			page = 1;
 		
-		final StringBuilder query = new StringBuilder();
+		final StringBuilder query = new StringBuilder(); //Contains the SELECT logs
+		final StringBuilder queryWhere = new StringBuilder(); //Contains the WHERE clause
+		final StringBuilder queryCount = new StringBuilder(); //Contains the SELECT COUNT(*) for pageination
 		query.append("SELECT * FROM logs WHERE ");
+		queryCount.append("SELECT COUNT(*) FROM logs WHERE ");
 
 		
 		/* Add optional parameters to the query.
@@ -274,20 +278,26 @@ public class DataloggerController {
 		
 		for(Filter f : w)
 		{
-			query.append(f.query);
+			queryWhere.append(f.query);
 			params.add(f.param);
 			if( f.addAND )
-				query.append(" AND ");
+				queryWhere.append(" AND ");
 		}
 
 		/* Add required parameters to the query.
 		 */
-		query.append("userId=? AND timestamp BETWEEN ? AND ? LIMIT ?, ?;");
+		queryWhere.append("userId=? AND timestamp BETWEEN ? AND ?");
 		params.add(userId);
 		params.add(timestart);
 		params.add(timeend);
+
+		query.append(queryWhere.toString());
+		queryCount.append(queryWhere.toString());
+		//Make a copy of params for the Count (we don't what the LIMIT in there)
+		final List<Object> paramsCount = new ArrayList<Object>(params);
+		query.append(" ORDER BY timestamp LIMIT ?, ?;");
 		params.add((page-1) * resultLimit);
-		params.add(page * resultLimit);
+		params.add(resultLimit);
 		
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
 
@@ -315,8 +325,29 @@ public class DataloggerController {
 				}
 			});
 		}};
+
+		class PageResult
+		{
+			public int totalAmountOfPages;
+		};
+		final PageResult pageResult = new PageResult();
+
+		String sqlCount = queryCount.toString();
+		debugInfo.put("sql-count", sqlCount);
+		debugInfo.put("sql-count-params", paramsCount);
+		jdbcTemplate.query(sqlCount, paramsCount.toArray(), new RowCallbackHandler() {
+			
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				int result = rs.getInt("COUNT(*)");
+				if( result == 0 )
+					pageResult.totalAmountOfPages = result;
+				else
+					pageResult.totalAmountOfPages = (result / resultLimit) + 1;
+			}
+		});
 		
-		return new LogEntryResult(page, results, debugInfo.toString());
+		return new LogEntryResult(page, pageResult.totalAmountOfPages, results, debugInfo.toString());
 	}
 
 
