@@ -31,38 +31,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
- * 
  * @author David Johansson
  * 
- * The guide that i've used to get spring-jdbc running:
- * 
- *     http://www.beingjavaguys.com/2013/07/spring-jdbc-template-with-spring-mvc.html
- *     
- *     
+ * TODO: Fix result values and HTTP status codes.
+ * TODO: Remove/disable debug information.
  * 
  * Database
  * --------
  * 
- * You need the mysql-connector-java driver: http://dev.mysql.com/downloads/connector/j/
- * 
  * Database name: datalogs
  * 
- * 
- * 
- * Create the Logs table:
- * 
- * 		CREATE TABLE logs (
- * 			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
- * 			userId VARCHAR(32),
- * 			tag VARCHAR(32),
- * 			value VARCHAR(512),
- * 			applicationId VARCHAR(32),
- * 			timestamp DATETIME,
- * 			sessionId VARCHAR(32)
- * 		);
- * 
-  		CREATE TABLE logs(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, userId VARCHAR(32), tag VARCHAR(32), value VARCHAR(512), applicationId VARCHAR(32), timestamp DATETIME, sessionId VARCHAR(32));
- * 		
+ * The required sql routines can be found in datalogs.sql
  * 
  * 				Logs
  * ----------------------------------
@@ -74,25 +53,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *     timestamp | DateTime
  *     sessionId | VarChar(32)
  *
- * Insert Procedure
- * 
- * DELIMITER //
- * CREATE PROCEDURE addLog
- * BEGIN
- * 		SET @userId := "";
- * 
  */
-
 @Controller
 public class DataloggerController {
-
-
-	private static Logger LOG = Logger
-			.getLogger(DataloggerController.class);
 
 	@Autowired
 	DataSource dataLoggerDataSource;
 
+	/**
+	 * Temporary test function which lists all avaliable users in the
+	 * datalogger database.
+	 * @return List of userId's.
+	 */
 	@RequestMapping(value = "/log/users", method = RequestMethod.GET)
 	public @ResponseBody
 	List<String> getUsers()
@@ -110,6 +82,10 @@ public class DataloggerController {
 		return result;
 	}
 
+	/**
+	 * Simple ping function to verify the service is running.
+	 * @return "pong" as a JSON string object.
+	 */
 	@RequestMapping(value = "/log/ping", method = RequestMethod.GET)
 	public @ResponseBody
 	String ping() {
@@ -117,6 +93,12 @@ public class DataloggerController {
 	}
 	
 	/**
+	 * Insert a log entry.
+	 * 
+	 * Note that the `content-type` header must be set to `application/json`.
+	 * 
+	 * @param log - A LogEntry object in JSON Format.
+	 * @return The string "Added" as a JSON string object.
 	 */
 	@RequestMapping(headers = {"Accept=application/json"},
 					value = "/log", 
@@ -148,11 +130,28 @@ public class DataloggerController {
 	}
 	
 	/**
-	 * /logs/<userId>?timestart=<>&timeend=<>&tags=<>;<>;<>&applicationId=<>;sessionId=<>
+	 * Provides a way to query the datalogger.
 	 * 
-	 * We also need some pagination here as we don't always wan't to return all the results.
+	 * Url format:
 	 * 
-	 * @return A list of log entries.
+	 * 		/logs/<userId>?timestart=<>&timeend=<>&tags=<>;<>;<>&applicationId=<>;sessionId=<>
+	 * 
+	 * All GET Parameters can be omitted.
+	 * timestart, timeend and page will be set to defaults if missing.
+	 * 
+	 * If timestart or timeend is present a range of 10 years will be applied.
+	 * If both are missing 10 years from now will be used.
+	 * 
+	 * Page will always be set to 1 if missing.
+	 * 
+	 * @param userId - Required, userId to query (part of the url).
+	 * @param timestart - Optional, Start value of timerange to include in results (YYYY-MM-DD format).
+	 * @param timeend - Optional, End value of timerange to include in results (YYYY-MM-DD format).
+	 * @param page - Optional, The page of results to return.
+	 * @param tags - Optional, CSV (; separated) list of Tags to filter.
+	 * @param applicationId - Optional, Application Id to filter.
+	 * @param sessionId - Optional, Session Id to filter.
+	 * @return A LogEntryResult object in JSON format.
 	 */
 	@RequestMapping(value = "/logs/{userId}", method = RequestMethod.GET)
 	public @ResponseBody
@@ -247,8 +246,8 @@ public class DataloggerController {
 		final List<Object> params = new ArrayList<Object>();
 		if( tags != null )
 		{
+			/*Parse the tags CSV string.*/
 			List<String> tagList = Arrays.asList(tags.split(";"));
-			//List<String> tagList = new ArrayList<String>(tags.split(";"));
 			if(tagList.size() == 1)
 				w.add(new Filter("tag=?", tagList.get(0)));
 			else if(tagList.size() > 1 )
@@ -292,6 +291,8 @@ public class DataloggerController {
 		
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
 
+		/* Execute the query and return the results.
+		 */
 		List<LogEntry> results = new ArrayList<LogEntry>() {
 			private static final long serialVersionUID = 4679762402945674448L;
 		{

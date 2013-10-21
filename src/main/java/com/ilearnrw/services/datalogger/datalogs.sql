@@ -14,12 +14,3 @@ BEGIN
 	INSERT INTO logs(userId,tag,value,applicationId,timestamp,sessionId)VALUES(inUserId,inTag,inValue,inApplicationId,NOW(),inSessionId);
 END //
 DELIMITER;
-
-
-
-DELIMITER //
-CREATE PROCEDURE selectLogs_(IN inUserId VARCHAR(32), IN inTimeStart DATETIME, IN inTimeEnd DATETIME, IN inLimitStart INTEGER, IN inLimitEnd INTEGER)
-BEGIN
-	SELECT * FROM logs WHERE userId=inUserId AND timestamp BETWEEN inTimeStart AND inTimeEnd LIMIT inLimitStart, inLimitEnd;
-END //
-DELIMITER;
