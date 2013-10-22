@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -22,14 +21,12 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilearnrw.services.rest.AuthController;
-import com.ilearnrw.services.rest.Tokens;
 import com.ilearnrw.services.rest.RefreshTokenData;
+import com.ilearnrw.services.rest.Tokens;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,7 +36,7 @@ public class AuthIntegrationTest {
 
 	@InjectMocks
 	AuthController controller;
-
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);

@@ -34,7 +34,7 @@ public class AuthController {
 			.getLogger(AuthController.class);
 
 	@Autowired
-	@Qualifier("userService")
+	@Qualifier("usersService")
 	private UserDetailsService usersService;
 	
 	@Autowired
