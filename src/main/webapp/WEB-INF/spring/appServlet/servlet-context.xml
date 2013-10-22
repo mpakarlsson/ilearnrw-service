@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/mvc"
 	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -12,6 +13,7 @@
 		infrastructure -->
 
 	<context:component-scan base-package="com.ilearnrw.services.rest" />
+	<context:component-scan base-package="com.ilearnrw.services.datalogger" />
 	
 
 	<!-- Enables the Spring MVC @Controller programming model -->
@@ -45,4 +47,15 @@
 	
 		<beans:bean class="org.springframework.mock.web.MockServletContext" />
 	
+		<beans:bean id="dataLoggerDataSource" name="Datalogger Datasource"
+			class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+			<beans:property name="driverClassName"
+				value="com.mysql.jdbc.Driver">
+			</beans:property>
+			<beans:property name="url"
+				value="jdbc:mysql://localhost:3306/datalogs">
+			</beans:property>
+			<beans:property name="username" value="datalogger"></beans:property>
+			<beans:property name="password" value="Shoog0ob"></beans:property>
+		</beans:bean>
 </beans:beans>
