@@ -25,8 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilearnrw.services.rest.AuthController;
-import com.ilearnrw.services.rest.RefreshTokenData;
-import com.ilearnrw.services.rest.Tokens;
+import com.ilearnrw.services.security.RefreshTokenData;
+import com.ilearnrw.services.security.Tokens;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -1,4 +1,4 @@
-package com.ilearnrw.services.rest;
+package com.ilearnrw.services.security;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -26,27 +26,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 
-public class CustomRestSecurityFilter extends GenericFilterBean {
+public class RestSecurityFilter extends GenericFilterBean {
 	private static Logger LOG = Logger
-			.getLogger(CustomRestSecurityFilter.class);
+			.getLogger(RestSecurityFilter.class);
 
 	private AuthenticationManager authenticationManager;
 	private AuthenticationEntryPoint authenticationEntryPoint;
 
 	private KeyBasedPersistenceTokenService tokenService;
 
-	public CustomRestSecurityFilter() {
+	public RestSecurityFilter() {
 		super();
 	}
 
 	// this is not used
-	public CustomRestSecurityFilter(AuthenticationManager authenticationManager) {
+	public RestSecurityFilter(AuthenticationManager authenticationManager) {
 		this(authenticationManager, new BasicAuthenticationEntryPoint(), null);
 		((BasicAuthenticationEntryPoint) authenticationEntryPoint)
 				.setRealmName("");
 	}
 
-	public CustomRestSecurityFilter(
+	public RestSecurityFilter(
 			AuthenticationManager authenticationManager,
 			AuthenticationEntryPoint authenticationEntryPoint,
 			KeyBasedPersistenceTokenService tokenService) {

@@ -1,4 +1,4 @@
-package com.ilearnrw.services.rest;
+package com.ilearnrw.services.security;
 
 public class RefreshTokenData {
 	private String userName;

@@ -1,4 +1,4 @@
-package com.ilearnrw.services.rest;
+package com.ilearnrw.services.security;
 
 import java.util.ArrayList;
 import java.util.List;

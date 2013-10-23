@@ -26,6 +26,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ilearnrw.services.security.RefreshTokenData;
+import com.ilearnrw.services.security.RestToken;
+import com.ilearnrw.services.security.TokenUtils;
+import com.ilearnrw.services.security.Tokens;
 
 @Controller
 public class AuthController {
@@ -34,13 +38,14 @@ public class AuthController {
 			.getLogger(AuthController.class);
 
 	@Autowired
-	@Qualifier("usersService")
-	private UserDetailsService usersService;
+	@Qualifier("userService")
+	private UserDetailsService userService;
 	
 	@Autowired
 	private KeyBasedPersistenceTokenService tokenService;
 	
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	@PreAuthorize("hasPermission('', 'PERM1')")
 	public @ResponseBody
 	String test() {
 		return "test back";
@@ -86,7 +91,7 @@ public class AuthController {
 
 		try {
 			
-			UserDetails userDetails = usersService.loadUserByUsername(username);
+			UserDetails userDetails = userService.loadUserByUsername(username);
 
 			if (userDetails.getPassword().compareTo(pass) != 0)
 			{
@@ -112,7 +117,7 @@ public class AuthController {
 	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
 	public @ResponseBody
 	UserDetails userDetailsById(@PathVariable String username) {
-		return usersService.loadUserByUsername(username);
+		return userService.loadUserByUsername(username);
 	}
 
 	@RequestMapping(value = "/user/info", method = RequestMethod.GET)
