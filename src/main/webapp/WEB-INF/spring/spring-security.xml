@@ -12,6 +12,8 @@
 	<!-- if you want only specific pattern to avoid security, define different 
 		http blocks here with security="none" -->
 
+	<http pattern="/apps/*" security="none">
+	</http>
 
 	<!-- Creates the springSecurityFilterChain with the customer filter customRestFilter 
 		injected. -->

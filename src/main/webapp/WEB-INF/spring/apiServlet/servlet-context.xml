@@ -11,7 +11,13 @@
 	<!-- DispatcherServlet Context: defines this servlet's request-processing 
 		infrastructure -->
 
-	<context:component-scan base-package="com.ilearnrw.usermanager" />
+	<context:component-scan base-package="com.ilearnrw.services.rest" />
+	<context:component-scan base-package="com.ilearnrw.services.datalogger" />
+
+	<security:global-method-security secured-annotations="enabled"
+		pre-post-annotations="enabled">
+		<security:expression-handler ref="expressionHandler" />
+	</security:global-method-security>
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven content-negotiation-manager="cnManager" />
@@ -36,8 +42,19 @@
 	<beans:bean id="cnManager"
 		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 		<beans:property name="ignoreAcceptHeader" value="true" />
+		<beans:property name="defaultContentType" value="application/json" />
 	</beans:bean>
 
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
+	<beans:bean id="dataLoggerDataSource" name="Datalogger Datasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver">
+		</beans:property>
+		<beans:property name="url"
+			value="jdbc:mysql://localhost:3306/datalogs">
+		</beans:property>
+		<beans:property name="username" value="datalogger"></beans:property>
+		<beans:property name="password" value="Shoog0ob"></beans:property>
+	</beans:bean>
 </beans:beans>
