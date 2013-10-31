@@ -114,10 +114,11 @@ public class AuthController {
 		return null;
 	}
 
-	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/details/{username}", method = RequestMethod.GET)
 	public @ResponseBody
 	UserDetails userDetailsById(@PathVariable String username) {
-		return userService.loadUserByUsername(username);
+		UserDetails details = userService.loadUserByUsername(username);
+		return details;
 	}
 
 	@RequestMapping(value = "/user/info", method = RequestMethod.GET)
@@ -133,6 +134,6 @@ public class AuthController {
 	public @ResponseBody
 	String userId() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return ((UserDetails)auth.getPrincipal()).getUsername();
+		return auth.getPrincipal().toString();
 	}
 }

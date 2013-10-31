@@ -10,5 +10,10 @@
 </h1>
 
 <P>  The time on the server is ${serverTime}. </P>
+<P>  Current user: ${username}. </P>
+<P>  Current principal: ${principal}. </P>
+
+<a href='<c:url value='logout'/>'>Logout</a>
+
 </body>
 </html>

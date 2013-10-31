@@ -44,7 +44,7 @@
 		<beans:property name="defaultContentType" value="application/json" />
 	</beans:bean>
 
-	<security:user-service id="usersService">
+	<security:user-service id="userService">
 		<security:user name="student" password="student"
 			authorities="ROLE_STUDENT" />
 		<security:user name="student2" password="student2"
