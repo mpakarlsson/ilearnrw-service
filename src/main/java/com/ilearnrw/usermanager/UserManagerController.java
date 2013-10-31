@@ -16,10 +16,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -29,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ilearnrw.services.security.RestToken;
 import com.ilearnrw.services.security.Tokens;
 
 @Controller
@@ -111,7 +107,7 @@ public class UserManagerController {
 
 			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 			for (Object s : list) {
-				authorities.add(new GrantedAuthorityImpl(s.toString()));
+				authorities.add(new SimpleGrantedAuthority(s.toString()));
 			}
 			Authentication userAuthentication = new UsernamePasswordAuthenticationToken(
 					username, token, authorities);

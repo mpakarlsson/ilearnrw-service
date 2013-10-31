@@ -3,6 +3,7 @@
 	<name>ilearnrw-services</name>
 	<comment></comment>
 	<projects>
+		<project>ilearnrw</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
