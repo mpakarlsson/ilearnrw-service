@@ -32,6 +32,9 @@
 		<intercept-url pattern="/log/*" access="permitAll" />
 		<intercept-url pattern="/logs/*" access="permitAll" />
 
+		<intercept-url pattern="/profile/*" access="permitAll" />
+		<intercept-url pattern="/profile/*/*" access="permitAll" />
+
 		<!-- this implies that any method has a valid token parameter -->
 		<intercept-url pattern="/**" access="isAuthenticated()" />
 

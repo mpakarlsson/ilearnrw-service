@@ -13,6 +13,7 @@
 
 	<context:component-scan base-package="com.ilearnrw.services.rest" />
 	<context:component-scan base-package="com.ilearnrw.services.datalogger" />
+	<context:component-scan base-package="com.ilearnrw.services.profileAccessUpdater" />
 
 	<security:global-method-security secured-annotations="enabled"
 		pre-post-annotations="enabled">
@@ -47,7 +48,18 @@
 
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
-	<beans:bean id="dataLoggerDataSource" name="Datalogger Datasource"
+	<beans:bean id="profileDataSource" name="ProfileDatasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver">
+		</beans:property>
+		<beans:property name="url"
+			value="jdbc:mysql://localhost:3306/profiles">
+		</beans:property>
+		<beans:property name="username" value="datalogger"></beans:property>
+		<beans:property name="password" value="Shoog0ob"></beans:property>
+	</beans:bean>
+	
+	<beans:bean id="dataLoggerDataSource" name="DataloggerDatasource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver">
 		</beans:property>
