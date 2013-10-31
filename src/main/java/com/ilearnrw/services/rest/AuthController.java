@@ -1,6 +1,8 @@
 package com.ilearnrw.services.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.token.KeyBasedPersistenceTokenService;
 import org.springframework.security.core.token.Token;
@@ -34,16 +37,15 @@ import com.ilearnrw.services.security.Tokens;
 @Controller
 public class AuthController {
 
-	private static Logger LOG = Logger
-			.getLogger(AuthController.class);
+	private static Logger LOG = Logger.getLogger(AuthController.class);
 
 	@Autowired
 	@Qualifier("userService")
 	private UserDetailsService userService;
-	
+
 	@Autowired
 	private KeyBasedPersistenceTokenService tokenService;
-	
+
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	@PreAuthorize("hasPermission('', 'PERM1')")
 	public @ResponseBody
@@ -62,11 +64,14 @@ public class AuthController {
 		if (TokenUtils.isExpired(receivedToken)) {
 			throw new BadCredentialsException("timeout");
 		}
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			RefreshTokenData upp = mapper.readValue(receivedToken.getExtendedInformation(), RefreshTokenData.class);
-			return authenticateUser(upp.getUserName(), upp.getPassword(), httpResponse);
+			RefreshTokenData upp = mapper.readValue(
+					receivedToken.getExtendedInformation(),
+					RefreshTokenData.class);
+			return authenticateUser(upp.getUserName(), upp.getPassword(),
+					httpResponse);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -77,7 +82,6 @@ public class AuthController {
 
 		throw new BadCredentialsException("invalid refresh token");
 	}
-
 
 	@RequestMapping(value = "/user/auth", method = RequestMethod.GET)
 	public @ResponseBody
@@ -90,15 +94,14 @@ public class AuthController {
 		ObjectMapper mapper = new ObjectMapper();
 
 		try {
-			
+
 			UserDetails userDetails = userService.loadUserByUsername(username);
 
-			if (userDetails.getPassword().compareTo(pass) != 0)
-			{
+			if (userDetails.getPassword().compareTo(pass) != 0) {
 				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
 				return null;
 			}
-			
+
 			String serialized = mapper.writeValueAsString(upp);
 
 			Token refreshToken = tokenService.allocateToken(serialized);
@@ -110,7 +113,7 @@ public class AuthController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -121,19 +124,33 @@ public class AuthController {
 		return details;
 	}
 
+	@RequestMapping(value = "/user/roles", method = RequestMethod.GET)
+	public @ResponseBody
+	List<String> userRoles() {
+		Authentication auth = SecurityContextHolder.getContext()
+				.getAuthentication();
+		List<String> roles = new ArrayList<String>();
+		for (GrantedAuthority authority : auth.getAuthorities()) {
+			roles.add(authority.getAuthority());
+		
+		}
+		return roles;
+	}
+
 	@RequestMapping(value = "/user/info", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_STUDENT')")
 	public @ResponseBody
 	RestToken userInfo() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return (RestToken)auth;
+		Authentication auth = SecurityContextHolder.getContext()
+				.getAuthentication();
+		return (RestToken) auth;
 	}
-	
+
 	@RequestMapping(value = "/user/id", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_STUDENT')")
 	public @ResponseBody
 	String userId() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = SecurityContextHolder.getContext()
+				.getAuthentication();
 		return auth.getPrincipal().toString();
 	}
 }
