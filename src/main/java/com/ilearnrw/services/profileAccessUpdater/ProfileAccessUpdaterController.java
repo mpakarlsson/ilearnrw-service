@@ -54,17 +54,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * severity_X_Y | SHORT
  *      index_X | SHORT
  *
- * Currently the language code is an issue. At this moment it is passed in to the
- * getProfile() function as an argument. The positive of this is that it allows an
- * user to have 2 profiles (1 in each table). The down side is that there is no way
- * for the application to know what language the user requires.
+ * In order to not have to supply the users language code a third table is required:
  * 
- * In order to fix this a third table is required:
- * 
- * 			ProfileLanguage
+ * 		ProfileLanguage
  * ------------------------------------
- * 			 id | PK, INT AUTO_INCREMENT NOT NULL
- * 		 userId | FK, VARCHAR(32), NOT NULL
+ * 		 userId | PK, VARCHAR(32), NOT NULL
  * languageCode | INT, NOT NULL
  * 
  */
@@ -106,6 +100,9 @@ public class ProfileAccessUpdaterController {
 			ret.append(sb);
 			ret.append("\n\n");
 		}
+		ret.append("CREATE TABLE ProfileLanguage (");
+		ret.append("userId VARCHAR(32) NOT NULL PRIMARY KEY,");
+		ret.append("languageCode TINYINT NOT NULL);");
 		return ret.toString();
 	}
 	public interface LC_Base
@@ -118,7 +115,7 @@ public class ProfileAccessUpdaterController {
 	static public class LC_Greek implements LC_Base
 	{
 		static final String TableName = "LC_Greek";
-		static final Integer LanguageCode = 30;
+		static final Integer LanguageCode = 0;
 		static final Integer ProblemDefinitionIndexSize_X = 9;
 		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
 		@Override
@@ -142,7 +139,7 @@ public class ProfileAccessUpdaterController {
 	static public class LC_English implements LC_Base
 	{
 		static final String TableName = "LC_English";
-		static final Integer LanguageCode = 44;
+		static final Integer LanguageCode = 1;
 		static final Integer ProblemDefinitionIndexSize_X = 9;
 		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
 
@@ -188,7 +185,35 @@ public class ProfileAccessUpdaterController {
 	}
 
 	/**
-	 * Returns a complete User Profile.
+	 * Returns a complete User Profile using the language code from the
+	 * database.
+	 * 
+	 * @param userId
+	 * @param languageCode
+	 * @return
+	 */
+	@RequestMapping(value = "/profile/user/{userId}", method = RequestMethod.GET)
+	public @ResponseBody
+	Profile getProfileUsingDbLanguage(@PathVariable String userId) {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
+		final class LanguageCodeResult
+		{
+			public int languageCode;
+		};
+		final LanguageCodeResult languageCodeResult = new LanguageCodeResult();
+		Object[] params = {userId};
+		jdbcTemplate.query("SELECT languageCode FROM ProfileLanguage WHERE userId=?",
+						   params,
+						   new RowCallbackHandler() {
+							@Override
+							public void processRow(ResultSet rs) throws SQLException {
+								languageCodeResult.languageCode = rs.getInt("languageCode");
+							}
+						});
+		return getProfile(userId, languageCodeResult.languageCode);
+	}
+	/**
+	 * Returns a complete User Profile using a language code supplied by the user.
 	 * 
 	 * @param userId
 	 * @param languageCode
