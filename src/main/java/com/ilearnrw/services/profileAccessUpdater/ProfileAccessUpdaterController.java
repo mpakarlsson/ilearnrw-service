@@ -1,5 +1,9 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
+import ilearnrw.user.LanguageCode;
+import ilearnrw.user.UserPreferences;
+import ilearnrw.user.UserSeveritiesToProblems;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,13 +25,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ilearnrw.user.*;
+
 /** 
  * 
- * @TOOD Swap local Profile to the one defined in the ilearnrw project.
  * @TODO Add more methods of accessing only the preferences, the severities etc.
  * @TODO Add POST versions to update the profile.
  * 		 - Needs verification of the severities, indices as well.
- * @TODO Add ProfileLanguage table.
  * @TODO Switch Datasource we all use the same database.
  * @TODO Add token validation.
  * 
@@ -108,14 +112,14 @@ public class ProfileAccessUpdaterController {
 	public interface LC_Base
 	{
 		public String getTableName();
-		public Integer getLanguageCode();
+		public Integer getLanguageCodeAsInt();
+		public LanguageCode getLanguageCode();
 		public Integer getProblemDefinitionIndexSize_X();
 		public Integer[] getProblemDefinitionIndexSizes_Y();
 	}
 	static public class LC_Greek implements LC_Base
 	{
 		static final String TableName = "LC_Greek";
-		static final Integer LanguageCode = 0;
 		static final Integer ProblemDefinitionIndexSize_X = 9;
 		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
 		@Override
@@ -123,8 +127,13 @@ public class ProfileAccessUpdaterController {
 			return TableName;
 		}
 		@Override
-		public Integer getLanguageCode() {
-			return LanguageCode;
+		public LanguageCode getLanguageCode() {
+			return LanguageCode.GR;
+		}
+		@Override
+		public Integer getLanguageCodeAsInt()
+		{
+			return (int) LanguageCode.getGreekCode();
 		}
 		@Override
 		public Integer getProblemDefinitionIndexSize_X() {
@@ -139,38 +148,21 @@ public class ProfileAccessUpdaterController {
 	static public class LC_English implements LC_Base
 	{
 		static final String TableName = "LC_English";
-		static final Integer LanguageCode = 1;
 		static final Integer ProblemDefinitionIndexSize_X = 9;
 		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
 
 		public String getTableName() { return TableName; }
 		@Override
-		public Integer getLanguageCode() { return LanguageCode; }
+		public LanguageCode getLanguageCode() { return LanguageCode.EN; }
+		@Override
+		public Integer getLanguageCodeAsInt() { return (int) LanguageCode.getEnglishCode();
+		}
 		@Override
 		public Integer getProblemDefinitionIndexSize_X() { return ProblemDefinitionIndexSize_X; }
 		@Override
 		public Integer[] getProblemDefinitionIndexSizes_Y() { return ProblemDefinitionIndexSizes_Y; }
 	};
 	
-	static public class Profile
-	{
-		public Profile(String _id, Integer _languageCode,
-				Map<String, Object> _preferences,
-				List<ArrayList<Integer>> _severities,
-				List<Integer> _indicies)
-		{
-			id=_id;
-			languageCode=_languageCode;
-			preferences=_preferences;
-			severities=_severities;
-			indicies=_indicies;
-		}
-		public String id;
-		public Integer languageCode;
-		public Map<String, Object> preferences;
-		public List<ArrayList<Integer>> severities;
-		public List<Integer> indicies;
-	};
 	/**
 	 * Used to generate the SQL tables based of the information
 	 * in the LC_Greek and LC_English classes.
@@ -194,7 +186,7 @@ public class ProfileAccessUpdaterController {
 	 */
 	@RequestMapping(value = "/profile/user/{userId}", method = RequestMethod.GET)
 	public @ResponseBody
-	Profile getProfileUsingDbLanguage(@PathVariable String userId) {
+	UserProfile getProfileUsingDbLanguage(@PathVariable String userId) {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		final class LanguageCodeResult
 		{
@@ -221,18 +213,20 @@ public class ProfileAccessUpdaterController {
 	 */
 	@RequestMapping(value = "/profile/{userId}/{languageCode}", method = RequestMethod.GET)
 	public @ResponseBody
-	Profile getProfile(@PathVariable String userId, @PathVariable Integer languageCode) {
-		final Map<String, Object> preferences = new HashMap<String, Object>();
-		final ArrayList<Integer> indices = new ArrayList<Integer>();
-		final List<ArrayList<Integer>> severities = new ArrayList< ArrayList<Integer> >();
-		final Integer languageCode_final = languageCode;
+	UserProfile getProfile(@PathVariable String userId, @PathVariable Integer languageCode) {
 
 		LC_Base lang_sel = null;
-		if(languageCode_final == LC_English.LanguageCode)
+		if(languageCode == LanguageCode.getEnglishCode())
 			lang_sel = new LC_English();
 		else
 			lang_sel = new LC_Greek();
 		final LC_Base language = lang_sel;
+
+
+		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
+		final UserSeveritiesToProblems severitiesToProblems = new UserSeveritiesToProblems();
+		severitiesToProblems.setUserSeverities(userSeverities);
+		final UserPreferences preferences = new UserPreferences();
 
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		Object[] params = {userId};
@@ -243,20 +237,20 @@ public class ProfileAccessUpdaterController {
 							public void processRow(ResultSet rs)
 									throws SQLException {
 								/*Read preferences*/
-								preferences.put("preferedFontSize", rs.getInt("prefFontSize"));
+								preferences.setFontSize(rs.getInt("prefFontSize"));
 								/*Read severities and indices.*/
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
-									ArrayList<Integer> yList = new ArrayList<Integer>();
+									userSeverities.setIndex(x, rs.getInt(String.format("index_%s", x)));
+									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
-										yList.add(rs.getInt(String.format("severity_%s_%s", x,y)));
+										userSeverities.setSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
 									}
-									severities.add(yList);
-									indices.add(rs.getInt(String.format("index_%s", x)));;
 								}
 							}});
-		return new Profile(userId, languageCode, preferences,
-						   severities, indices);
+		return new UserProfile(lang_sel.getLanguageCode(),
+				severitiesToProblems,
+				preferences);
 	}
 }
