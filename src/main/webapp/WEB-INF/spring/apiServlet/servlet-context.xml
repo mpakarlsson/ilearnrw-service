@@ -69,4 +69,7 @@
 		<beans:property name="username" value="datalogger"></beans:property>
 		<beans:property name="password" value="Shoog0ob"></beans:property>
 	</beans:bean>
+	<beans:bean id="profileProvider" name="ProfileProvider"
+				class="com.ilearnrw.services.profileAccessUpdater.DbProfileProvider">
+	</beans:bean>
 </beans:beans>
