@@ -2,15 +2,15 @@ package com.ilearnrw.services.profileAccessUpdater;
 
 import ilearnrw.user.LanguageCode;
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.UserProfile;
+import ilearnrw.user.UserSeverities;
 import ilearnrw.user.UserSeveritiesToProblems;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -18,14 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import ilearnrw.user.*;
 
 /** 
  * 
@@ -34,6 +30,13 @@ import ilearnrw.user.*;
  * 		 - Needs verification of the severities, indices as well.
  * @TODO Switch Datasource we all use the same database.
  * @TODO Add token validation.
+ * @TODO Update English once the dimensions of the severities/indices are known.
+ * @TODO Consider storing a hash of the state of the profile so that we can
+ * 		 detect conflicts between applications. The hash would be updated on each
+ * 		 new update to the database.
+ * @TODO Input verification in the Store function
+ * @TODO Refactor, moving set/get functions out of the controller. Possible implement
+ * 	     the IProfileProvider interface.
  * 
  * SQL
  * ---
@@ -177,6 +180,26 @@ public class ProfileAccessUpdaterController {
 	}
 
 	/**
+	 * Fetch a users preferences
+	 * @param userId
+	 * @return UserPreferences
+	 */
+	@RequestMapping(value = "/profile/preferences", method = RequestMethod.GET)
+	public @ResponseBody
+	UserPreferences getPreferences(@RequestParam(value = "userId", required = true) String userId) {
+		return getProfileUsingDbLanguage(userId).getPreferences();
+	}
+	/**
+	 * Fetch a users problem severities
+	 * @param userId
+	 * @return UserSeverities
+	 */
+	@RequestMapping(value = "/profile/problems", method = RequestMethod.GET)
+	public @ResponseBody
+	UserSeverities getProblems(@RequestParam(value = "userId", required = true) String userId) {
+		return getProfileUsingDbLanguage(userId).getSeveritiesToProblemsMatrix().getUserSeverities();
+	}
+	/**
 	 * Returns a complete User Profile using the language code from the
 	 * database.
 	 * 
@@ -184,9 +207,24 @@ public class ProfileAccessUpdaterController {
 	 * @param languageCode
 	 * @return
 	 */
-	@RequestMapping(value = "/profile/user/{userId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	public @ResponseBody
-	UserProfile getProfileUsingDbLanguage(@PathVariable String userId) {
+	UserProfile getProfileUsingDbLanguage(@RequestParam(value = "userId", required = true) String userId) {
+		return getProfile(userId, getLanguage(userId));
+	}
+	LC_Base getLanguage(LanguageCode languageCode)
+	{
+		if(languageCode == LanguageCode.EN)
+			return new LC_English();
+		return new LC_Greek();
+	}
+	LC_Base getLanguage(Integer languageCode)
+	{
+		if(languageCode == LanguageCode.getEnglishCode())
+			return new LC_English();
+		return new LC_Greek();
+	}
+	LC_Base getLanguage(String userId) {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		final class LanguageCodeResult
 		{
@@ -202,8 +240,9 @@ public class ProfileAccessUpdaterController {
 								languageCodeResult.languageCode = rs.getInt("languageCode");
 							}
 						});
-		return getProfile(userId, languageCodeResult.languageCode);
+		return getLanguage(languageCodeResult.languageCode);
 	}
+
 	/**
 	 * Returns a complete User Profile using a language code supplied by the user.
 	 * 
@@ -211,17 +250,8 @@ public class ProfileAccessUpdaterController {
 	 * @param languageCode
 	 * @return
 	 */
-	@RequestMapping(value = "/profile/{userId}/{languageCode}", method = RequestMethod.GET)
-	public @ResponseBody
-	UserProfile getProfile(@PathVariable String userId, @PathVariable Integer languageCode) {
-
-		LC_Base lang_sel = null;
-		if(languageCode == LanguageCode.getEnglishCode())
-			lang_sel = new LC_English();
-		else
-			lang_sel = new LC_Greek();
-		final LC_Base language = lang_sel;
-
+	UserProfile getProfile(String userId,LC_Base languageCode) {
+		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
 		final UserSeveritiesToProblems severitiesToProblems = new UserSeveritiesToProblems();
@@ -249,8 +279,102 @@ public class ProfileAccessUpdaterController {
 									}
 								}
 							}});
-		return new UserProfile(lang_sel.getLanguageCode(),
+		return new UserProfile(language.getLanguageCode(),
 				severitiesToProblems,
 				preferences);
+	}
+	
+	
+	/**
+	 * Temporary test function that can be used to increment a problem severity.
+	 * @param userId
+	 * @param x
+	 * @param y
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/profile/problem_increment", method = RequestMethod.GET)
+	public @ResponseBody
+	UserProfile IncrementUserProfileSeverity(@RequestParam(value = "userId", required = true) String userId,
+											 @RequestParam(value="x", required=true) int x,
+											 @RequestParam(value="y", required=true) int y
+											 ) throws Exception
+	{
+		UserProfile profile = getProfile(userId, getLanguage(userId));
+		profile.getSeveritiesToProblemsMatrix().getUserSeverities().setSeverity(x, y,
+				profile.getSeveritiesToProblemsMatrix().getUserSeverities().getSeverity(x, y) + 1);
+		storeProfile(userId, profile);
+		return getProfile(userId, getLanguage(userId));
+	}
+	
+	void storeProfile(String userId, UserProfile profile) throws Exception
+	{
+		final LC_Base language = getLanguage(profile.getLanguage());
+		final class ReplaceQuery {
+			public void add(String name, Object value){
+				params.add(name);
+				values.add(value);
+			}
+			public String getQuery(LC_Base language) throws Exception {
+				StringBuilder sql = new StringBuilder("REPLACE INTO " + language.getTableName());
+				sql.append(" (");
+				sql.append(getParamString());
+				sql.append(")VALUES(");
+				sql.append(getValueString());
+				sql.append(")");
+				return sql.toString();
+			}
+			private void validateLists() throws Exception
+			{
+				if( params.size() != values.size())
+					throw new Exception("The size of params must be the same as values,");
+			}
+			private String getParamString() throws Exception {
+				validateLists();
+				StringBuilder sql = new StringBuilder();
+				Iterator<String> itr = params.iterator();
+			    while (itr.hasNext()) {
+					sql.append(itr.next());
+					if( itr.hasNext())
+						sql.append(",");
+			    }
+			    return sql.toString();
+			}
+			private String getValueString() throws Exception {
+				validateLists();
+				StringBuilder sql = new StringBuilder();
+				Iterator<Object> itr = values.iterator();
+			    while (itr.hasNext()) {
+					itr.next();
+					if( itr.hasNext())
+						sql.append("?,");
+					else
+						sql.append("?");
+			    }
+			    return sql.toString();
+			}
+			public Object[] getParams() {
+				return values.toArray();
+			}
+			List<String> params = new ArrayList<String>();
+			List<Object> values = new ArrayList<Object>();
+		};
+		
+		ReplaceQuery replaceQuery = new ReplaceQuery();
+		replaceQuery.add("userId", userId);
+		replaceQuery.add("prefFontSize", profile.getPreferences().getFontSize());
+		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
+		{
+			replaceQuery.add(String.format("index_%s", x), profile.getSeveritiesToProblemsMatrix().getIndex(x));
+			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
+			{
+				replaceQuery.add(String.format("severity_%s_%s", x,y),
+								 profile.getSeveritiesToProblemsMatrix().getSeverity(x, y));
+			}
+		}
+
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
+		jdbcTemplate.update(replaceQuery.getQuery(language),
+							replaceQuery.getParams());
 	}
 }
