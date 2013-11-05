@@ -55,8 +55,8 @@
 		<beans:property name="url"
 			value="jdbc:mysql://localhost:3306/profiles">
 		</beans:property>
-		<beans:property name="username" value="datalogger"></beans:property>
-		<beans:property name="password" value="Shoog0ob"></beans:property>
+		<beans:property name="username" value="root"></beans:property>
+		<beans:property name="password" value=""></beans:property>
 	</beans:bean>
 	
 	<beans:bean id="dataLoggerDataSource" name="DataloggerDatasource"
@@ -66,10 +66,36 @@
 		<beans:property name="url"
 			value="jdbc:mysql://localhost:3306/datalogs">
 		</beans:property>
-		<beans:property name="username" value="datalogger"></beans:property>
-		<beans:property name="password" value="Shoog0ob"></beans:property>
+		<beans:property name="username" value="root"></beans:property>
+		<beans:property name="password" value=""></beans:property>
 	</beans:bean>
 	<beans:bean id="profileProvider" name="ProfileProvider"
 				class="com.ilearnrw.services.profileAccessUpdater.DbProfileProvider">
 	</beans:bean>
+	
+	
+    <!-- Allow Exceptions to be handled in annotated methods if desired.  Otherwise fallback to the
+         'restExceptionResolver' below: -->
+    <beans:bean id="annotationMethodHandlerExceptionResolver"
+          class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+        <beans:property name="order" value="0"/>
+    </beans:bean>
+    <beans:bean id="restExceptionResolver" class="com.ilearnrw.services.rest.RestExceptionHandler">
+        <beans:property name="order" value="100"/>
+        <beans:property name="errorResolver">
+            <beans:bean class="com.ilearnrw.services.rest.DefaultRestErrorResolver">
+                <beans:property name="defaultMoreInfoUrl" value="mailto:support@mycompany.com"/>
+                <beans:property name="exceptionMappingDefinitions">
+                    <beans:map>
+                        <!-- 404 -->
+                        <beans:entry key="com.ilearnrw.services.rest.UnknownResourceException" value="404, _exmsg"/>
+
+                        <!-- 500 (catch all): -->
+                        <beans:entry key="Throwable" value="500"/>
+                    </beans:map>
+                </beans:property>
+            </beans:bean>
+        </beans:property>
+    </beans:bean>
+	
 </beans:beans>

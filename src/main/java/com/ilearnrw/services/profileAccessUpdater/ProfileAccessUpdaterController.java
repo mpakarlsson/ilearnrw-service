@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,7 +73,7 @@ public class ProfileAccessUpdaterController {
 	@RequestMapping(value = "/profile/problems", method = RequestMethod.GET)
 	public @ResponseBody
 	UserSeverities getProblems(@RequestParam(value = "userId", required = true) String userId) throws ProfileProviderException{
-		return profileProvider.getProfile(userId).getSeveritiesToProblemsMatrix().getUserSeverities();
+		return profileProvider.getProfile(userId).getProblemsMatrix().getUserSeverities();
 	}
 	/**
 	 * Returns a complete User Profile using the language code from the
@@ -120,6 +121,15 @@ public class ProfileAccessUpdaterController {
 		return "ok";
 	}
 	
+	@RequestMapping(value = "/profile", method = RequestMethod.POST)
+	public @ResponseBody
+	String updateProfile(@RequestParam(value = "userId", required = true) String userId,
+			@RequestBody UserProfile newProfile)
+							throws ProfileProviderException
+	{
+		profileProvider.updateProfile(userId, newProfile);
+		return "ok";
+	}
 	
 	/**
 	 * Temporary test function that can be used to increment a problem severity.
@@ -137,8 +147,8 @@ public class ProfileAccessUpdaterController {
 											 ) throws ProfileProviderException
 	{
 		UserProfile profile = profileProvider.getProfile(userId);
-		profile.getSeveritiesToProblemsMatrix().getUserSeverities().setSeverity(x, y,
-				profile.getSeveritiesToProblemsMatrix().getUserSeverities().getSeverity(x, y) + 1);
+		profile.getProblemsMatrix().getUserSeverities().setSeverity(x, y,
+				profile.getProblemsMatrix().getUserSeverities().getSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
 		return profileProvider.getProfile(userId);
 	}

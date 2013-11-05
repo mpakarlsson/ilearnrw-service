@@ -322,12 +322,12 @@ public class DbProfileProvider implements IProfileProvider {
 		replaceQuery.add("prefFontSize", profile.getPreferences().getFontSize());
 		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 		{
-			replaceQuery.add(String.format("index_%s", x), profile.getSeveritiesToProblemsMatrix().getIndex(x));
+			replaceQuery.add(String.format("index_%s", x), profile.getProblemsMatrix().getIndex(x));
 			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 			{
 				try {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
-								 profile.getSeveritiesToProblemsMatrix().getSeverity(x, y));
+								 profile.getProblemsMatrix().getSeverity(x, y));
 				} catch (java.lang.NullPointerException ex) {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
 								 0); //Default to 0 when there is no severity.
