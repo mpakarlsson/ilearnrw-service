@@ -5,7 +5,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+import ilearnrw.user.UserProfile;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -14,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -23,7 +26,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ilearnrw.services.profileAccessUpdater.DbProfileProvider;
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.rest.AuthController;
 import com.ilearnrw.services.security.RefreshTokenData;
 import com.ilearnrw.services.security.Tokens;
@@ -114,5 +121,19 @@ public class AuthIntegrationTest {
 				+ new String(encodedAuthorisation));
 
 		return headers;
+	}
+	
+	@Autowired
+	IProfileProvider profileProvider;
+	
+	@Test
+	public void testUserProfileSerialization() throws ProfileProviderException, IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		UserProfile profile = profileProvider.getProfile("1");
+		String s = objectMapper.writeValueAsString(profile);
+		
+		UserProfile profileBack = objectMapper.readValue(s, UserProfile.class);
+		Assert.assertNotNull(profileBack);
+		//Assert.assertEquals(profile, profileBack);
 	}
 }

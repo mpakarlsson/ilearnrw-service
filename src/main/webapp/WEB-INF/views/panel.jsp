@@ -66,6 +66,8 @@
 							<td><a href='<c:url value='users/${o.id}/form'/>'>Edit</a></td>
 							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a>
 							</td>
+							<td><a href='<c:url value='users/${o.id}/profile'/>'>View Profile</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</table>

@@ -33,4 +33,19 @@
 
 	<beans:bean id="userDao" class="com.ilearnrw.usermanager.UserDaoImpl" />
 	<beans:bean id="userService" class="com.ilearnrw.usermanager.UserServiceImpl" />
+
+	<beans:bean id="profileDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver">
+		</beans:property>
+		<beans:property name="url"
+			value="jdbc:mysql://localhost:3306/profiles">
+		</beans:property>
+		<beans:property name="username" value="root"></beans:property>
+		<beans:property name="password" value=""></beans:property>
+	</beans:bean>
+	
+	<beans:bean id="profileProvider" name="ProfileProvider"
+		class="com.ilearnrw.services.profileAccessUpdater.DbProfileProvider">
+	</beans:bean>
 </beans:beans>

@@ -1,5 +1,8 @@
 package com.ilearnrw.usermanager;
 
+import ilearnrw.user.LanguageCode;
+import ilearnrw.user.UserProfile;
+
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +45,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.security.Tokens;
 import com.ilearnrw.usermanager.model.Permission;
 import com.ilearnrw.usermanager.model.Role;
@@ -61,7 +67,10 @@ public class UserManagerController {
 
 	@Autowired
 	private UserService userService;
-	
+
+	@Autowired
+	IProfileProvider profileProvider;
+
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
 	public @ResponseBody
 	ModelAndView panel() {
@@ -362,7 +371,7 @@ public class UserManagerController {
 	@Transactional(readOnly = true)
 	public String viewUpdateForm(@PathVariable int id, ModelMap model) {
 		User user = userService.getUser(id);
-		
+
 		model.put("user", user);
 		return "users/form.update";
 	}
@@ -397,6 +406,36 @@ public class UserManagerController {
 	@Transactional(readOnly = true)
 	public String viewInsertForm(@ModelAttribute("user") User user) {
 		return "users/form.insert";
+	}
+
+	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewProfile(@PathVariable String userId, ModelMap model)
+			throws ProfileProviderException {
+		UserProfile profile = null;
+		try {
+			profile = profileProvider.getProfile(userId);
+		} catch (ProfileProviderException e) {
+			LOG.error(e);
+		}
+
+		if (profile == null) {
+			profileProvider.createProfile(userId, LanguageCode.EN);
+			profile = profileProvider.getProfile(userId);
+		}
+
+		model.put("userId", userId);
+		model.put("profile", profile);
+		model.put("problems", profile.getProblemsMatrix().getUserSeverities().getIndices());
+		
+		return "users/profile";
+	}
+
+	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.POST)
+	@Transactional(readOnly = true)
+	public String updateProfile(@ModelAttribute("profile") UserProfile profile, @PathVariable String userId) throws ProfileProviderException {
+		profileProvider.updateProfile(userId, profile);
+		return "redirect:/apps/panel";
 	}
 
 	@RequestMapping(value = "users", method = RequestMethod.POST)
