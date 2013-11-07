@@ -1,13 +1,12 @@
 package com.ilearnrw.usermanager.model;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class User {
 	
         private Integer id;
         
-        @NotNull @Size(min = 4, max = 20)
+        @Size(min = 4, max = 20)
         public String username;
         
         @Size(min = 4, max = 20)

@@ -1,5 +1,8 @@
 package com.ilearnrw.usermanager;
 
+import ilearnrw.user.LanguageCode;
+import ilearnrw.user.UserProfile;
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.security.Tokens;
 import com.ilearnrw.usermanager.form.RoleForm;
 import com.ilearnrw.usermanager.form.UserForm;
@@ -54,6 +59,9 @@ public class UserManagerController {
 
 	@Autowired
 	private PermissionService permissionService;
+	
+	@Autowired
+	IProfileProvider profileProvider;
 
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
 	public String panel(ModelMap modelMap) {
@@ -120,6 +128,51 @@ public class UserManagerController {
 			return "login";
 		}
 		return "redirect:/apps/home";
+	}
+	
+	/* Users profile */
+	
+	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewProfile(@PathVariable String userId, ModelMap model)
+			throws ProfileProviderException {
+		UserProfile profile = null;
+		try {
+			profile = profileProvider.getProfile(userId);
+		} catch (ProfileProviderException e) {
+			LOG.error(e);
+		}
+
+		if (profile == null) {
+			profileProvider.createProfile(userId, LanguageCode.EN);
+			profile = profileProvider.getProfile(userId);
+		}
+
+		model.put("userId", userId);
+		model.put("profile", profile);
+		model.put("problems", profile.getProblemsMatrix().getUserSeverities().getIndices());
+		
+		return "users/profile";
+	}
+
+	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.POST)
+	@Transactional(readOnly = true)
+	public String updateProfile(@ModelAttribute("profile") UserProfile profile, @PathVariable String userId) throws ProfileProviderException {
+		profileProvider.updateProfile(userId, profile);
+		return "redirect:/apps/panel";
+	}
+
+	@RequestMapping(value = "users", method = RequestMethod.POST)
+	@Transactional
+	public String insert(@ModelAttribute("user") User user,
+			BindingResult result, ModelMap model) {
+		if (result.hasErrors())
+			return "users/form.update";
+
+		userService.insertData(user);
+
+		model.put("message", "inserted");
+		return "redirect:/apps/panel";
 	}
 	
 	/* Users */

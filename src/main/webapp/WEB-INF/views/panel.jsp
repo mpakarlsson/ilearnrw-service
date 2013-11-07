@@ -47,6 +47,7 @@
 						<td>Enabled</td>
 						<td></td>
 						<td></td>
+						<td></td>
 					</tr>
 					<c:forEach items="${users}" var="o">
 						<tr>
@@ -54,8 +55,8 @@
 							<td>${o.password}</td>
 							<td>${o.enabled}</td>
 							<td><a href='<c:url value='users/${o.id}/edit'/>'>Edit</a></td>
-							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a>
-							</td>
+							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a></td>
+							<td><a href='<c:url value='users/${o.id}/profile'/>'>View Profile</a></td>
 						</tr>
 					</c:forEach>
 				</table>

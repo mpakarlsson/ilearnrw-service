@@ -23,7 +23,7 @@
 	<span>
 		<label >Permission name</label>
 		<form:input path="name" />
-		<form:errors path="name" cssclass="error"/>
+		<form:errors path="name" class="error"/>
 	</span>
 	<span>
 		<input type="submit" value="Submit"/>

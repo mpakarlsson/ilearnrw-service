@@ -24,7 +24,7 @@
 	<span>
 		<label >Role name</label>
 		<form:input path="role.name" />
-		<form:errors path="role.name" cssclass="error"/>
+		<form:errors path="role.name" class="error"/>
 	</span>
 	<c:if test="${not empty roleform.allPermissions}">
 		<form:checkboxes items="${roleform.allPermissions}" path="selectedPermissions" itemLabel="name" itemValue="id"></form:checkboxes>
