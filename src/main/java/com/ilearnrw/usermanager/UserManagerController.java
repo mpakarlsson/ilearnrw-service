@@ -1,380 +1,296 @@
 package com.ilearnrw.usermanager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.security.core.token.KeyBasedPersistenceTokenService;
-import org.springframework.security.core.token.Token;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.ModelAndView;
 
+import com.ilearnrw.services.security.Tokens;
+import com.ilearnrw.usermanager.form.RoleForm;
+import com.ilearnrw.usermanager.form.UserForm;
 import com.ilearnrw.usermanager.model.Permission;
 import com.ilearnrw.usermanager.model.Role;
 import com.ilearnrw.usermanager.model.User;
+import com.ilearnrw.usermanager.services.PermissionService;
+import com.ilearnrw.usermanager.services.RoleService;
+import com.ilearnrw.usermanager.services.UserService;
 
 @Controller
-@SessionAttributes("token")
 public class UserManagerController {
 
 	private static Logger LOG = Logger.getLogger(UserManagerController.class);
-	
-	private List<User> userList;
-	private List<Role> roleList;
-	private List<Permission> permissionList;
-	
-	
-	@Autowired
-	private KeyBasedPersistenceTokenService tokenService;
-	
+
 	@Autowired
 	@Qualifier("dataSource")
 	private DataSource dSource;
-	
-	@RequestMapping(value = "/home")
-	public ModelAndView home() {
 
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private RoleService roleService;
+
+	@Autowired
+	private PermissionService permissionService;
+
+	@RequestMapping(value = "/panel", method = RequestMethod.GET)
+	public String panel(ModelMap modelMap) {
+		modelMap.addAttribute("users", userService.getUserList());
+		modelMap.addAttribute("roles", roleService.getRoleList());
+		modelMap.addAttribute("permissions", permissionService.getPermissionList());
+		return "panel";
+	}
+
+	@RequestMapping(value = "/home")
+	public String home(Principal principal, HttpServletRequest request, ModelMap model) {
 		LOG.info("Returning home view");
 		String serverTime = (new Date()).toString();
-		ModelAndView modelView = new ModelAndView("home");
-		modelView.addObject("serverTime", serverTime);
-		return modelView;
+		model.addAttribute("serverTime", serverTime);
+		model.addAttribute("username", request.getSession().getAttribute("user"));
+		model.addAttribute("principal", principal.getName());
+		return "home";
 	}
-	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public @ResponseBody
-	ModelAndView login(
-			@RequestParam(value = "username", required=false) String username,
-			@RequestParam(value = "pass", required=false) String pass, 
-			HttpServletResponse httpResponse) {
 
-			ModelAndView modelAndView = new ModelAndView("login");
-			return modelAndView;
+	@RequestMapping(value = "/logout")
+	public String logout(HttpServletRequest request) {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		request.getSession().invalidate();
+		return "login";
 	}
-	
-	@RequestMapping(value = "/check", method = RequestMethod.POST)
-	public @ResponseBody
-	ModelAndView check(
-			@RequestParam(value = "username", required=true) String username,
-			@RequestParam(value = "pass", required=true) String pass, 
-			HttpServletResponse httpResponse) {
 
-			ModelAndView modelAndView = new ModelAndView("redirect:panel");
-			if (username != null)
-			{
-				Token authToken = tokenService.allocateToken(username);
-				LOG.debug(authToken.getKey().toString());
-				modelAndView.addObject("token", authToken.getKey().toString());
+	@RequestMapping(value = "/login")
+	public String login() {
+		return "login";
+	}
+
+	@RequestMapping(value = "/loginfailed", method = RequestMethod.GET)
+	public String loginerror(ModelMap model) {
+		model.addAttribute("error", "true");
+		return "login";
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String login(@RequestParam("username") String username,
+			@RequestParam("pass") String pass, ModelMap model,
+			HttpServletRequest request) {
+
+		AuthenticatedRestClient restClient = new AuthenticatedRestClient();
+
+		try {
+			Tokens tokens = restClient.getTokens(username, pass);
+
+			List<String> roles = restClient.getRoles(tokens.getAuthToken());
+
+			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			for (String role : roles) {
+				authorities.add(new SimpleGrantedAuthority(role));
 			}
-			return modelAndView;
-	}
-	
-	@RequestMapping(value = "/panel", method = RequestMethod.GET)
-	public @ResponseBody
-	ModelAndView panel() {		    
-			return panelAction(null, null, null, null, null, null, null, null);
-	}
-	
-	@RequestMapping(value = "/panel", method = RequestMethod.POST)
-	public @ResponseBody
-	ModelAndView panelAction(
-			@RequestParam("action") String action,
-			@RequestParam(value = "user_id", required=false) Integer user_id,
-			@RequestParam(value = "username", required=false) String username,
-			@RequestParam(value = "password", required=false) String password,
-			@RequestParam(value = "role_id", required=false) Integer role_id,
-			@RequestParam(value = "role_name", required=false) String role_name,
-			@RequestParam(value = "permission_id", required=false) Integer permission_id,
-			@RequestParam(value = "permission_name", required=false) String permission_name
-			) {
+			Authentication userAuthentication = new UsernamePasswordAuthenticationToken(
+					username, tokens.getAuthToken(), authorities);
 
-			userList = null;
-			roleList = null;
-			permissionList = null;
+			SecurityContextHolder.getContext().setAuthentication(
+					userAuthentication);
 			
-			ModelAndView modelAndView = new ModelAndView("panel");
-			if (action == null) {
-				//nothing
-			} else if (action.equals("add-user")) {
-				addUser(username, password, modelAndView);
-			} else if (action.equals("edit-user")) {
-				editUser(user_id, modelAndView);
-			} else if (action.equals("delete-user")) {
-				deleteUser(user_id, modelAndView);
-			} else if (action.equals("commit-user-edit")) {
-				updateUser(user_id, username, password, modelAndView);
-			} else if (action.equals("add-role")) {
-				addRole(role_name, modelAndView);
-			} else if (action.equals("edit-role")) {
-				editRole(role_id, modelAndView);
-			} else if (action.equals("delete-role")) {
-				deleteRole(role_id, modelAndView);
-			} else if (action.equals("add-permission")) {
-				addPermission(permission_name, modelAndView);
-			} else if (action.equals("edit-permission")) {
-				editPermission(permission_id, modelAndView);
-			} else if (action.equals("delete-permission")) {
-				deletePermission(permission_id, modelAndView);
-			} else {
-				throw new RuntimeException("Incorrect action: " + action);
-			}
-			
-			if (userList == null)
-				userList = getUserList();
-			if (roleList == null)
-				roleList = getRoleList();
-			if (permissionList == null)
-				permissionList = getPermissionList();
-			modelAndView.addObject("users", userList);
-			modelAndView.addObject("roles", roleList);
-			modelAndView.addObject("permissions", permissionList);
-			return modelAndView;
-	}
-	
-	List<User> getUserList()
-	{
-		JdbcTemplate template = new JdbcTemplate(dSource);
-		return template.query("select id, username, password from users", new BeanPropertyRowMapper<User>(User.class));
-	}
+			request.getSession().setAttribute("user", username);
 
-	private List<Role> getRoleList() {
-		JdbcTemplate template = new JdbcTemplate(dSource);
-		return template.query("select id, name from roles", new BeanPropertyRowMapper<Role>(Role.class));
-	}
-	
-	private List<Permission> getPermissionList() {
-		JdbcTemplate template = new JdbcTemplate(dSource);
-		return template.query("select id, name from permissions", new BeanPropertyRowMapper<Permission>(Permission.class));
-	}
-
-	private void deletePermission(Integer permission_id,
-			ModelAndView modelAndView) {
-		String sql = "DELETE FROM permissions WHERE id=?;";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, permission_id);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows deleted.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
+		} catch (Exception e) {
+			model.addAttribute("error", e.getMessage());
+			return "login";
 		}
+		return "redirect:/apps/home";
 	}
+	
+	/* Users */
 
-	private void editPermission(Integer permission_id, ModelAndView modelAndView) {
-		// TODO Auto-generated method stub
+	@RequestMapping(value = "/users/{id}/edit", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewUserUpdateForm(@PathVariable int id, ModelMap model) {
+		UserForm userForm = new UserForm();
+		User user = userService.getUser(id);
+		List<Role> allRoles = roleService.getRoleList();
+		List<Role> selectedRoles = roleService.getRoleList(user);
+		userForm.setUser(user);
+		userForm.setAllRoles(allRoles);
+		userForm.setSelectedRoles(selectedRoles);
 		
+		model.put("userform", userForm);
+		return "users/form.update";
 	}
 
-	private void addPermission(String permission_name, ModelAndView modelAndView) {
-		String sql = "INSERT INTO permissions (name) VALUES (?)";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, permission_name);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows added.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
+	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
+	@Transactional
+	public String updateUser(@PathVariable int id,
+			@Valid @ModelAttribute("userform") UserForm userForm, BindingResult result, ModelMap model) {
+		User user = userForm.getUser();
+		user.setId(id);
+		userForm.setUser(user);
+
+		if (result.hasErrors())
+		{
+			List<Role> allRoles = roleService.getRoleList();
+			userForm.setAllRoles(allRoles);
+		    return "users/form.update";
 		}
+
+		userService.updateData(userForm.getUser());
+		roleService.setRoleList(userForm.getUser(), userForm.getSelectedRoles());
+		return "redirect:/apps/panel";
 	}
 
-	private void deleteRole(Integer role_id, ModelAndView modelAndView) {
-		String sql = "DELETE FROM roles WHERE id=?;";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, role_id);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows deleted.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
-		}
+	@RequestMapping(value = "users/{id}/delete", method = RequestMethod.GET)
+	@Transactional
+	public String deleteUser(@PathVariable int id) {
+		userService.deleteData(id);
+		return "redirect:/apps/panel";
 	}
 
-	private void editRole(Integer role_id, ModelAndView modelAndView) {
-		// TODO Auto-generated method stub
+	@RequestMapping(value = "users/new", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewUserInsertForm(@ModelAttribute("user") User user) {
+		return "users/form.insert";
+	}
+
+	@RequestMapping(value = "users/new", method = RequestMethod.POST)
+	@Transactional
+	public String insertUser(@Valid @ModelAttribute("user") User user,
+			BindingResult result, ModelMap model) {
 		
-	}
+		if (result.hasErrors())
+			return "users/form.insert";
+		userService.insertData(user);
 
-	private void addRole(String role_name, ModelAndView modelAndView) {
-		String sql = "INSERT INTO roles (name) VALUES (?)";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, role_name);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows added.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
-		}
+		model.put("message", "inserted");
+		return "redirect:/apps/panel";
 	}
 	
+	/* Roles */
 	
-	private void addUser(String username, String password, ModelAndView modelAndView)
-	{
-		String sql = "INSERT INTO users (username, password, enabled) VALUES (?, ?, 1)";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, username);
-			ps.setString(2, password);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows added.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
-		}
+	@RequestMapping(value = "/roles/{id}/edit", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewRoleUpdateForm(@PathVariable int id, ModelMap model) {
+		RoleForm roleForm = new RoleForm();
+		Role role = roleService.getRole(id);
+		List<Permission> allPermissions = permissionService.getPermissionList();
+		List<Permission> selectedPermissions = permissionService.getPermissionList(role);
+		roleForm.setRole(role);
+		roleForm.setAllPermissions(allPermissions);
+		roleForm.setSelectedPermissions(selectedPermissions);
+		model.put("roleform", roleForm);
+		return "roles/form.update";
 	}
 
-	private void editUser(Integer user_id, ModelAndView modelAndView) {
-		modelAndView.addObject("edituser", true);
-		modelAndView.addObject("user_id", user_id);
+	@RequestMapping(value = "roles/{id}/edit", method = RequestMethod.POST)
+	@Transactional
+	public String updateRole(@PathVariable int id,
+			@Valid @ModelAttribute("roleform") RoleForm roleForm, BindingResult result, ModelMap model) {
+		Role role = roleForm.getRole();
+		role.setId(id);
+		roleForm.setRole(role);
+
+		if (result.hasErrors())
+		{
+			List<Permission> allPermissions = permissionService.getPermissionList();
+			roleForm.setAllPermissions(allPermissions);
+		    return "roles/form.update";
+		}
+
+		roleService.updateData(roleForm.getRole());
+		permissionService.setPermissionList(roleForm.getRole(), roleForm.getSelectedPermissions());
+		return "redirect:/apps/panel";
+	}
+
+	@RequestMapping(value = "roles/{id}/delete", method = RequestMethod.GET)
+	@Transactional
+	public String deleteRole(@PathVariable int id) {
+		roleService.deleteData(id);
+		return "redirect:/apps/panel";
+	}
+
+	@RequestMapping(value = "roles/new", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewRoleInsertForm(@ModelAttribute("role") Role role) {
+		return "roles/form.insert";
+	}
+
+	@RequestMapping(value = "roles/new", method = RequestMethod.POST)
+	@Transactional
+	public String insertRole(@Valid @ModelAttribute("role") Role role,
+			BindingResult result, ModelMap model) {
 		
-		String sql = "SELECT username, password FROM users WHERE id=?";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, user_id);
-			ResultSet results = ps.executeQuery();
-			results.next();
-			String username = results.getString("username");
-			String password = results.getString("password");
-			modelAndView.addObject("username", username);
-			modelAndView.addObject("password", password);
-			roleList = getRoleListByUser(user_id);
-			ps.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
-		}
+		if (result.hasErrors())
+			return "roles/form.insert";
+		roleService.insertData(role);
+
+		model.put("message", "inserted");
+		return "redirect:/apps/panel";
 	}
 	
-	private List<Role> getRoleListByUser(final Integer user_id) {
-		JdbcTemplate template = new JdbcTemplate(dSource);
-		String sql = "select (rm.members_id=?) as hasRole, id, name from roles, role_members rm where rm.roles_id = roles.id";
-		return template.query(sql,
-				new PreparedStatementSetter() {
-			public void setValues(PreparedStatement preparedStatement) throws
-			SQLException {
-				preparedStatement.setInt(1, user_id);
-			}
-		},
-		new BeanPropertyRowMapper<Role>(Role.class));
+	/* Permissions */
+	
+	@RequestMapping(value = "/permissions/{id}/edit", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewPermissionUpdateForm(@PathVariable int id, ModelMap model) {
+		Permission permission = permissionService.getPermission(id);
+		model.put("permission", permission);
+		return "permissions/form.update";
 	}
 
-	private void updateUser(Integer user_id, String username, String password, ModelAndView modelAndView) {
-		String sql = "UPDATE users SET username=?, password=? WHERE id=?;";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, username);
-			ps.setString(2, password);
-			ps.setInt(3, user_id);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows edited.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
-		}
+	@RequestMapping(value = "permissions/{id}/edit", method = RequestMethod.POST)
+	@Transactional
+	public String updatePermission(@PathVariable int id,
+			@Valid @ModelAttribute("permission") Permission permission, BindingResult result, ModelMap model) {
+		
+		if (result.hasErrors())
+		    return "permissions/form.update";
+		permissionService.updateData(permission);
+		return "redirect:/apps/panel";
 	}
-	
-	private void deleteUser(Integer user_id, ModelAndView modelAndView) {
-		String sql = "DELETE FROM users WHERE id=?;";
-		Connection conn = null;
-		try {
-			conn = dSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, user_id);
-			int n = ps.executeUpdate();
-			ps.close();
-			modelAndView.addObject("info", n + " rows deleted.");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
- 
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
-		}
+
+	@RequestMapping(value = "permissions/{id}/delete", method = RequestMethod.GET)
+	@Transactional
+	public String deletePermission(@PathVariable int id) {
+		permissionService.deleteData(id);
+		return "redirect:/apps/panel";
 	}
-	
+
+	@RequestMapping(value = "permissions/new", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewPermissionInsertForm(@ModelAttribute("permission") Permission permission) {
+		return "permissions/form.insert";
+	}
+
+	@RequestMapping(value = "permissions/new", method = RequestMethod.POST)
+	@Transactional
+	public String insertPermission(@Valid @ModelAttribute("permission") Permission permission,
+			BindingResult result, ModelMap model) {
+		
+		if (result.hasErrors())
+			return "permissions/form.insert";
+		permissionService.insertData(permission);
+
+		model.put("message", "inserted");
+		return "redirect:/apps/panel";
+	}
 }

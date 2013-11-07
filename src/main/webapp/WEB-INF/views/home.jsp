@@ -11,8 +11,12 @@
 
 <P>  The time on the server is ${serverTime}. </P>
 
-<a href="login">Login</a>
-<a href="panel">Control panel</a>
+<a href='<c:url value='panel'/>'>Control panel</a>
+
+<P>  Current user: ${username}. </P>
+<P>  Current principal: ${principal}. </P>
+
+<a href='<c:url value='logout'/>'>Logout</a>
 
 </body>
 </html>

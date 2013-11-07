@@ -1,29 +1,22 @@
 package com.ilearnrw.usermanager.model;
 
-import java.util.Set;
+import javax.validation.constraints.Size;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="roles")
 public class Role {
         
-        @Id
-        @GeneratedValue
         private Integer id;
         
+        @Size(min = 4, max = 20)
         private String name;
         
-        private Boolean hasRole;
+        public Role() {}
+        
+        public Role(String id)
+        {
+        	this.id = Integer.valueOf(id);
+        }
 
-        public Integer getId() {
+		public Integer getId() {
                 return id;
         }
 
@@ -38,13 +31,9 @@ public class Role {
         public void setName(String name) {
                 this.name = name;
         }
-
-		public Boolean getHasRole() {
-			return hasRole;
-		}
-
-		public void setHasRole(Boolean hasRole) {
-			this.hasRole = hasRole;
-		}
-
+        
+        @Override
+        public boolean equals(Object obj) {
+        	return ((Role)obj).id == this.id;
+        }
 }

@@ -1,51 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title>Login page</title>
-<style>
-.error {
-	color: red;
-}
-</style>
+<title>Login</title>
 </head>
 <body>
-<h1>Login page</h1>
 
-<p>
-<c:if test="${error == true}">
-	<b class="error">Invalid login or password.</b>
-</c:if>
-</p>
-
-<form method="post" action="<c:url value='check'/>" >
-<table>
-<tbody>
-<tr>
-<td>Login:</td>
-<td><input type="text" name="username" id="username" size="30" maxlength="40"  /></td>
-</tr>
-<tr>
-<td>Password:</td>
-<td><input type="password" name="pass" id="pass" size="30" maxlength="32" /></td>
-</tr>
-<tr>
-<td></td>
-<td><input type="submit" value="Login" /></td>
-</tr>
-</tbody>
-</table>
-</form>
-
-<p>
-<a href="${pageContext.request.contextPath}/home">Home page</a><br/>
-</p>
+	<h2>Login Information</h2>
+	<c:if test="${not empty error}">
+		<div class="errorblock">
+			Your login attempt was not successful, try again.<br /> Caused :
+			${error}
+		</div>
+	</c:if>
+	<form method="POST" action="<c:url value='login' />">
+		<table>
+			<tr>
+				<td><label id="username">Username</label></td>
+				<td><input type="text" name="username" /></td>
+			</tr>
+			<tr>
+				<td><label id="pass">Password</label></td>
+				<td><input type="password" name="pass" /></td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="submit" value="Submit" /></td>
+			</tr>
+		</table>
+	</form>
 </body>
 </html>

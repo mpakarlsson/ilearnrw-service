@@ -1,32 +1,19 @@
 package com.ilearnrw.usermanager.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-@Entity
-@Table(name="users")
 public class User {
-        
-        @Id
-        @GeneratedValue
+	
         private Integer id;
         
+        @NotNull @Size(min = 4, max = 20)
         public String username;
         
+        @Size(min = 4, max = 20)
         public String password;
         
-        @OneToOne(cascade=CascadeType.ALL)
-        @JoinTable(name="user_roles",
-                joinColumns = {@JoinColumn(name="user_id", referencedColumnName="id")},
-                inverseJoinColumns = {@JoinColumn(name="role_id", referencedColumnName="id")}
-        )
-        private Role role;
+        public boolean enabled;
 
         public Integer getId() {
                 return id;
@@ -51,17 +38,12 @@ public class User {
         public void setPassword(String password) {
                 this.password = password;
         }
+ 
+        public boolean isEnabled() {
+			return enabled;
+		}
 
-        public Role getRole() {
-                return role;
-        }
-
-        public void setRole(Role role) {
-                this.role = role;
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-        	return id == ((User)obj).id;
-        }
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 }
