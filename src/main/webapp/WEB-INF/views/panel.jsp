@@ -15,21 +15,28 @@
 #users {
 	background-color: #ddf;
 	float: left;
-	width: 30%;
+	width: 25%;
 	min-height: 400px;
 }
 
 #roles {
 	background-color: #dfd;
 	float: left;
-	width: 40%;
+	width: 25%;
 	min-height: 400px;
 }
 
 #permissions {
 	background-color: #fdd;
+	float: left;
+	width: 25%;
+	min-height: 400px;
+}
+
+#teachers {
+	background-color: #fdf;
 	float: right;
-	width: 30%;
+	width: 25%;
 	min-height: 400px;
 }
 </style>
@@ -105,6 +112,23 @@
 			</c:if>
 
 			Add a new permission: <a href='<c:url value='permissions/new'/>'>Add</a>
+		</div>
+		
+		<div id="teachers">
+			<c:if test="${not empty teachers}">
+				<table border="1">
+					<tr>
+						<td>Username</td>
+						<td>Assign students</td>
+					</tr>
+					<c:forEach items="${teachers}" var="o">
+						<tr>
+							<td>${o.username}</td>
+							<td><a href='<c:url value='teachers/${o.id}/assign'/>'>Assign students</a></td>
+						</tr>
+					</c:forEach>
+				</table>
+			</c:if>
 		</div>
 	</div>
 	<a href="home">Home page</a>

@@ -34,12 +34,14 @@ import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.security.Tokens;
 import com.ilearnrw.usermanager.form.RoleForm;
+import com.ilearnrw.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.usermanager.form.UserForm;
 import com.ilearnrw.usermanager.model.Permission;
 import com.ilearnrw.usermanager.model.Role;
 import com.ilearnrw.usermanager.model.User;
 import com.ilearnrw.usermanager.services.PermissionService;
 import com.ilearnrw.usermanager.services.RoleService;
+import com.ilearnrw.usermanager.services.TeacherStudentService;
 import com.ilearnrw.usermanager.services.UserService;
 
 @Controller
@@ -61,10 +63,14 @@ public class UserManagerController {
 	private PermissionService permissionService;
 	
 	@Autowired
+	private TeacherStudentService teacherStudentService;
+	
+	@Autowired
 	IProfileProvider profileProvider;
 
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
 	public String panel(ModelMap modelMap) {
+		modelMap.addAttribute("teachers", teacherStudentService.getTeacherList());
 		modelMap.addAttribute("users", userService.getUserList());
 		modelMap.addAttribute("roles", roleService.getRoleList());
 		modelMap.addAttribute("permissions", permissionService.getPermissionList());
@@ -346,4 +352,28 @@ public class UserManagerController {
 		model.put("message", "inserted");
 		return "redirect:/apps/panel";
 	}
+	
+	/* Teachers */
+	
+	@RequestMapping(value = "teachers/{id}/assign", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewTeachersAssignForm(@PathVariable int id, ModelMap model) {
+		User teacher = userService.getUser(id);
+		TeacherStudentForm teacherStudentForm = new TeacherStudentForm();
+		teacherStudentForm.setTeacher(teacher);
+		teacherStudentForm.setAllStudents(teacherStudentService.getStudentList());
+		teacherStudentForm.setSelectedStudents(teacherStudentService.getStudentList(teacher));
+		model.put("teacherStudentForm", teacherStudentForm);
+		return "teachers/assign";
+	}
+
+	@RequestMapping(value = "teachers/{id}/assign", method = RequestMethod.POST)
+	@Transactional
+	public String viewTeachersAssignForm(@PathVariable int id,
+			@ModelAttribute("teacherStudentForm") TeacherStudentForm teacherStudentForm, BindingResult result, ModelMap model) {
+		User teacher = userService.getUser(id);
+		teacherStudentService.setStudentList(teacher, teacherStudentForm.getSelectedStudents());
+		return "redirect:/apps/panel";
+	}
+	
 }
