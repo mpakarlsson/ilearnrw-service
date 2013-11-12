@@ -4,22 +4,28 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.codec.Base64;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
 import com.ilearnrw.services.security.Tokens;
 
+@Component
 public class AuthenticatedRestClient {
 	private RestTemplate template;
 	private HttpHeaders headers;
-	private String rolesUri = "http://localhost:8080/test/user/roles?token={token}";
-	private String authUri = "http://localhost:8080/test/user/auth?username={username}&pass={pass}";
+	
+	@Value("${api.baseurl}")
+	private String baseUri;
+	
+	private String rolesUri = "user/roles?token={token}";
+	private String authUri = "user/auth?username={username}&pass={pass}";
 
 	public AuthenticatedRestClient() {
 		this.template = new RestTemplate();
@@ -43,11 +49,20 @@ public class AuthenticatedRestClient {
 	
 	public Tokens getTokens(String username, String pass)
 	{
-		return get(authUri, Tokens.class, username, pass);
+		return get(getAuthUri(), Tokens.class, username, pass);
+	}
+	
+	public String getRolesUri() {
+		return baseUri + rolesUri;
 	}
 
+	public String getAuthUri() {
+		return baseUri + authUri;
+	}
+
+
 	public List<String> getRoles(String token){
-		List list = this.get(rolesUri, List.class, token);
+		List list = this.get(getRolesUri(), List.class, token);
 		List<String> result = new ArrayList<String>();
 		for (Object s : list) {
 			result.add(s.toString());

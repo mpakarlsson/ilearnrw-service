@@ -6,14 +6,10 @@ import ilearnrw.user.UserProfile;
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
@@ -24,7 +20,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,15 +29,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
@@ -70,6 +62,9 @@ public class UserManagerController {
 
 	@Autowired
 	IProfileProvider profileProvider;
+
+	@Autowired
+	private AuthenticatedRestClient restClient;
 
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
 	public @ResponseBody
@@ -339,8 +334,6 @@ public class UserManagerController {
 	public String login(@RequestParam("username") String username,
 			@RequestParam("pass") String pass, ModelMap model,
 			HttpServletRequest request) {
-
-		AuthenticatedRestClient restClient = new AuthenticatedRestClient();
 
 		try {
 			Tokens tokens = restClient.getTokens(username, pass);
