@@ -55,6 +55,7 @@
 						<td></td>
 						<td></td>
 						<td></td>
+						<td></td>
 					</tr>
 					<c:forEach items="${users}" var="o">
 						<tr>
@@ -64,6 +65,7 @@
 							<td><a href='<c:url value='users/${o.id}/edit'/>'>Edit</a></td>
 							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a></td>
 							<td><a href='<c:url value='users/${o.id}/profile'/>'>View Profile</a></td>
+							<td><a href='<c:url value='users/${o.id}/logs'/>'>View Logs</a></td>
 						</tr>
 					</c:forEach>
 				</table>

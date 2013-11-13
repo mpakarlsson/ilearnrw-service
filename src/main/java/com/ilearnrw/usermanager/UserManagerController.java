@@ -3,10 +3,15 @@ package com.ilearnrw.usermanager;
 import ilearnrw.user.LanguageCode;
 import ilearnrw.user.UserProfile;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
@@ -15,11 +20,16 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -29,7 +39,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplate;
 
+import com.ilearnrw.services.datalogger.LogEntryResult;
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.security.Tokens;
@@ -134,6 +147,25 @@ public class UserManagerController {
 			return "login";
 		}
 		return "redirect:/apps/home";
+	}
+	
+	/* Users logs */
+	
+	@RequestMapping(value = "users/{userId}/logs", method = RequestMethod.GET)
+	public String viewLogs(@PathVariable String userId,
+			@RequestParam(value = "timestart", required = false) String timestart,
+			@RequestParam(value = "timeend", required = false) String timeend,
+			@RequestParam(value = "page", required = false) String page,
+			@RequestParam(value = "tags", required = false) String tags,
+			@RequestParam(value = "applicationId", required = false) String applicationId,
+			@RequestParam(value = "sessionId", required = false) String sessionId,
+			ModelMap model,
+			HttpServletRequest request) {
+		AuthenticatedRestClient restClient = new AuthenticatedRestClient();
+		String url = "http://localhost:8080/test/logs/{userId}?" + request.getQueryString();;
+		LogEntryResult result = restClient.get(url, LogEntryResult.class, userId);
+		model.addAttribute("logEntryResult", result);
+		return "users/logs";
 	}
 	
 	/* Users profile */

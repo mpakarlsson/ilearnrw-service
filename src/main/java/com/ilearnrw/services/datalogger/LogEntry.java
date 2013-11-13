@@ -81,6 +81,10 @@ public class LogEntry implements Serializable {
 
 	@JsonProperty("timestamp")
 	private String timestamp;
+	public String getTimestamp()
+	{
+		return timestamp;
+	}
 	
 	/**
 	 * A sessionId.
