@@ -6,6 +6,7 @@ import ilearnrw.user.UserProfile;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -151,21 +152,53 @@ public class UserManagerController {
 	
 	/* Users logs */
 	
-	@RequestMapping(value = "users/{userId}/logs", method = RequestMethod.GET)
+	@RequestMapping(value = "users/{userId}/logs/page/{page}", method = RequestMethod.GET)
 	public String viewLogs(@PathVariable String userId,
+			@PathVariable String page,
+			ModelMap model,
+			HttpServletRequest request) {
+		AuthenticatedRestClient restClient = new AuthenticatedRestClient();
+		String url = "http://localhost:8080/test/logs/{userId}?page={page}";
+		List<String> stringArgsList = new ArrayList<String>();
+		stringArgsList.add(userId);
+		stringArgsList.add(page);
+		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId", "sessionId"))
+			if (request.getSession().getAttribute(param) != null)
+			{
+				url = url.concat("&" + param + "={" + param + "}");
+				stringArgsList.add((String) request.getSession().getAttribute(param));
+			}
+		LOG.debug(url);
+		LogEntryResult result = restClient.get(url, LogEntryResult.class, stringArgsList.toArray());
+		model.addAttribute("logEntryResult", result);
+		return "users/logs";
+	}
+	
+	@RequestMapping(value = "users/{userId}/logs/page/{page}", method = RequestMethod.POST)
+	public String viewLogsFiltered(@PathVariable String userId,
+			@PathVariable String page,
 			@RequestParam(value = "timestart", required = false) String timestart,
 			@RequestParam(value = "timeend", required = false) String timeend,
-			@RequestParam(value = "page", required = false) String page,
 			@RequestParam(value = "tags", required = false) String tags,
 			@RequestParam(value = "applicationId", required = false) String applicationId,
 			@RequestParam(value = "sessionId", required = false) String sessionId,
 			ModelMap model,
 			HttpServletRequest request) {
-		AuthenticatedRestClient restClient = new AuthenticatedRestClient();
-		String url = "http://localhost:8080/test/logs/{userId}?" + request.getQueryString();;
-		LogEntryResult result = restClient.get(url, LogEntryResult.class, userId);
-		model.addAttribute("logEntryResult", result);
-		return "users/logs";
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("timestart", timestart);
+		map.put("timeend", timeend);
+		map.put("tags", tags);
+		map.put("applicationId", applicationId);
+		map.put("sessionId", sessionId);
+		for (Map.Entry<String, String> entry : map.entrySet())
+		{
+			if (entry.getValue() != null && !entry.getValue().isEmpty())
+				request.getSession().setAttribute(entry.getKey(), entry.getValue());
+			else
+				request.getSession().removeAttribute(entry.getKey());
+		}
+		
+		return viewLogs(userId, page, model, request);
 	}
 	
 	/* Users profile */

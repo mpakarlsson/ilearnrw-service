@@ -9,7 +9,42 @@
 <title></title>
 </head>
 <body>
-Page <c:out value="${logEntryResult.page}"/> out of <c:out value="${logEntryResult.totalPages}"/>
+	<c:if test="${logEntryResult.page > 1}">
+		<a href="<c:out value="${logEntryResult.page - 1}"/>">
+			Previous page
+		</a>
+	</c:if>
+	Page <c:out value="${logEntryResult.page}"/> out of <c:out value="${logEntryResult.totalPages}"/>
+	<c:if test="${logEntryResult.page < logEntryResult.totalPages}">
+		<a href="<c:out value="${logEntryResult.page + 1}"/>">
+			Next page
+		</a>
+	</c:if>
+	Current filters are {<br/>
+	<c:if test="${not empty sessionScope.tags}">
+		Tags: <c:out value="${sessionScope.tags}"/><br/>
+	</c:if>
+	<c:if test="${not empty sessionScope.applicationId}">
+		Application ID: <c:out value="${sessionScope.applicationId}"/><br/>
+	</c:if>
+	<c:if test="${not empty sessionScope.timestart}">
+		Time start: <c:out value="${sessionScope.timestart}"/><br/>
+	</c:if>
+	<c:if test="${not empty sessionScope.timeend}">
+		Time end: <c:out value="${sessionScope.timeend}"/><br/>
+	</c:if>
+	<c:if test="${not empty sessionScope.sessionId}">
+		Session ID: <c:out value="${sessionScope.sessionId}"/><br/>
+	</c:if>
+	}
+<form:form action="" method="POST">
+	<label>Tags:</label><input type="text" name="tags" value="<c:out value="${sessionScope.tags}"/>"/><br/>
+	<label>Application ID:</label><input type="text" name="applicationId" value="<c:out value="${sessionScope.applicationId}"/>"/><br/>
+	<label>Time start:</label><input type="text" name="timestart" value="<c:out value="${sessionScope.timestart}"/>"/><br/>
+	<label>Time end:</label><input type="text" name="timeend" value="<c:out value="${sessionScope.timeend}"/>"/><br/>
+	<label>Session ID:</label><input type="text" name="sessionId" value="<c:out value="${sessionScope.sessionId}"/>"/><br/>
+	<input type="submit" value="Apply filters">
+</form:form>
 <table border="1">
 	<tr>
 		<td>User ID</td>
