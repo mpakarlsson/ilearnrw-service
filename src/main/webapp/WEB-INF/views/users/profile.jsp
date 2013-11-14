@@ -13,29 +13,29 @@
 		action="${pageContext.servletContext.contextPath}/apps/users/${userId}/profile"
 		method="POST" modelAttribute="profile">
 		
-		<form:hidden path="problemsMatrix.userSeverities.length" />
+		<form:hidden path="userSeveritiesToProblems.userSeverities.length" />
 		
 		<label>Language</label>
 		<form:input path="language" />
 		<label>Font size</label>
 		<form:input path="preferences.fontSize" />
-		<form:hidden path="problemsMatrix.problems" />
-		<form:hidden path="problemsMatrix.userSeverities.indices" />
+		<form:hidden path="userSeveritiesToProblems.problems" />
+		<form:hidden path="userSeveritiesToProblems.userSeverities.indices" />
 		
 		<input type="submit" value="Submit" />
 		<br/>
 		<c:forEach var="row"
-			items="${profile.problemsMatrix.userSeverities.severities}"
+			items="${profile.userSeveritiesToProblems.userSeverities.severities}"
 			varStatus="statusRow">
 			<label>Index <c:out value="${statusRow.index}"/> = </label>
 			<form:input
-					path="problemsMatrix.userSeverities.indices[${statusRow.index}]" size="2"/>
+					path="userSeveritiesToProblems.userSeverities.indices[${statusRow.index}]" size="2"/>
 			<label>Severities:</label>
 			<form:hidden
-				path="problemsMatrix.userSeverities.severities[${statusRow.index}]" />
+				path="userSeveritiesToProblems.userSeverities.severities[${statusRow.index}]" />
 			<c:forEach var="col" items="${row}" varStatus="statusCol">
 				<form:input
-					path="problemsMatrix.userSeverities.severities[${statusRow.index}][${statusCol.index}]" size="2" style="width: 20px"/>
+					path="userSeveritiesToProblems.userSeverities.severities[${statusRow.index}][${statusCol.index}]" size="2" style="width: 20px"/>
 			</c:forEach>
 			<br/>
 		</c:forEach>

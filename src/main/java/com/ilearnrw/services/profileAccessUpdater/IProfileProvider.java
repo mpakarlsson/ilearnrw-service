@@ -1,9 +1,7 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
-import javax.sql.DataSource;
-
-import ilearnrw.user.LanguageCode;
-import ilearnrw.user.UserProfile;
+import ilearnrw.user.profile.UserProfile;
+import ilearnrw.utils.LanguageCode;
 
 /**
  * @author David

@@ -1,22 +1,11 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
-import ilearnrw.user.LanguageCode;
 import ilearnrw.user.UserPreferences;
-import ilearnrw.user.UserProfile;
-import ilearnrw.user.UserSeverities;
-import ilearnrw.user.UserSeveritiesToProblems;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.sql.DataSource;
+import ilearnrw.user.profile.UserProfile;
+import ilearnrw.user.profile.UserSeverities;
+import ilearnrw.utils.LanguageCode;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,7 +71,7 @@ public class ProfileAccessUpdaterController {
 	UserSeverities getProblems(
 			@RequestParam(value = "userId", required = true) String userId)
 			throws ProfileProviderException {
-		return profileProvider.getProfile(userId).getProblemsMatrix()
+		return profileProvider.getProfile(userId).getUserSeveritiesToProblems()
 				.getUserSeverities();
 	}
 
@@ -166,12 +155,12 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "y", required = true) int y)
 			throws ProfileProviderException {
 		UserProfile profile = profileProvider.getProfile(userId);
-		profile.getProblemsMatrix()
+		profile.getUserSeveritiesToProblems()
 				.getUserSeverities()
 				.setSeverity(
 						x,
 						y,
-						profile.getProblemsMatrix().getUserSeverities()
+						profile.getUserSeveritiesToProblems().getUserSeverities()
 								.getSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
 		return profileProvider.getProfile(userId);

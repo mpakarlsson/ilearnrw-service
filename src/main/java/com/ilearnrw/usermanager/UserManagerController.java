@@ -1,7 +1,7 @@
 package com.ilearnrw.usermanager;
 
-import ilearnrw.user.LanguageCode;
-import ilearnrw.user.UserProfile;
+import ilearnrw.user.profile.UserProfile;
+import ilearnrw.utils.LanguageCode;
 
 import java.security.Principal;
 import java.sql.Connection;
@@ -419,7 +419,7 @@ public class UserManagerController {
 
 		model.put("userId", userId);
 		model.put("profile", profile);
-		model.put("problems", profile.getProblemsMatrix().getUserSeverities().getIndices());
+		model.put("problems", profile.getUserSeveritiesToProblems().getUserSeverities().getIndices());
 		
 		return "users/profile";
 	}

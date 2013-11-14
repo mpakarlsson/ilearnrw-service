@@ -1,10 +1,10 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
-import ilearnrw.user.LanguageCode;
 import ilearnrw.user.UserPreferences;
-import ilearnrw.user.UserProfile;
-import ilearnrw.user.UserSeverities;
-import ilearnrw.user.UserSeveritiesToProblems;
+import ilearnrw.user.profile.UserProfile;
+import ilearnrw.user.profile.UserSeverities;
+import ilearnrw.user.profile.UserSeveritiesToProblems;
+import ilearnrw.utils.LanguageCode;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -252,7 +252,7 @@ public class DbProfileProvider implements IProfileProvider {
 								/*Read severities and indices.*/
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
-									userSeverities.setIndex(x, rs.getInt(String.format("index_%s", x)));
+									userSeverities.setWorkingIndex(x, rs.getInt(String.format("index_%s", x)));
 									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
@@ -322,12 +322,12 @@ public class DbProfileProvider implements IProfileProvider {
 		replaceQuery.add("prefFontSize", profile.getPreferences().getFontSize());
 		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 		{
-			replaceQuery.add(String.format("index_%s", x), profile.getProblemsMatrix().getIndex(x));
+			replaceQuery.add(String.format("index_%s", x), profile.getUserSeveritiesToProblems().getWorkingIndex(x));
 			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 			{
 				try {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
-								 profile.getProblemsMatrix().getSeverity(x, y));
+								 profile.getUserSeveritiesToProblems().getSeverity(x, y));
 				} catch (java.lang.NullPointerException ex) {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
 								 0); //Default to 0 when there is no severity.
