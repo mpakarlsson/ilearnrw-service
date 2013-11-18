@@ -31,13 +31,23 @@
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
+	
+	<beans:bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+       <beans:property name="basename" value="messages" />
+    </beans:bean>
 
 
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
-	<beans:bean id="userDao" class="com.ilearnrw.usermanager.UserDaoImpl" />
-	<beans:bean id="userService" class="com.ilearnrw.usermanager.UserServiceImpl" />
-
+	<beans:bean id="userDao" class="com.ilearnrw.usermanager.dao.UserDaoImpl" />
+	<beans:bean id="roleDao" class="com.ilearnrw.usermanager.dao.RoleDaoImpl" />
+	<beans:bean id="permissionDao" class="com.ilearnrw.usermanager.dao.PermissionDaoImpl" />
+	<beans:bean id="teacherStudentDao" class="com.ilearnrw.usermanager.dao.TeacherStudentImpl" />
+	<beans:bean id="userService" class="com.ilearnrw.usermanager.services.UserServiceImpl" />
+	<beans:bean id="roleService" class="com.ilearnrw.usermanager.services.RoleServiceImpl" />
+	<beans:bean id="permissionService" class="com.ilearnrw.usermanager.services.PermissionServiceImpl" />
+	<beans:bean id="teacherStudentService" class="com.ilearnrw.usermanager.services.TeacherStudentServiceImpl" />
+	
 	<beans:bean id="profileDataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver">

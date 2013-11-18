@@ -7,178 +7,112 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <title>Welcome page</title>
-<style>
-#wrapper {
-	width: 100%;
-}
-
-#users {
-	background-color: #ddf;
-	float: left;
-	width: 30%;
-	min-height: 400px;
-}
-
-#roles {
-	background-color: #dfd;
-	float: left;
-	width: 40%;
-	min-height: 400px;
-}
-
-#permissions {
-	background-color: #fdd;
-	float: right;
-	width: 30%;
-	min-height: 400px;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
-	<h1>Welcome page</h1>
-	<p>Info: ${info}</p>
+	<h1>Welcome</h1>
 	<div id="wrapper">
-		<div id="users">
-			<c:if test="${edituser}">
-	Edit an existing user:
-	<form action="panel" method="post">
-					<input type="hidden" name="action" value="commit-user-edit" /> <input
-						type="hidden" name="user_id" value="${user_id}" /> New user:<input
-						type="text" name="username" value="${username}" /><br /> New
-					password:<input type="text" name="password" value="${password}" /><br />
-					<input type="submit" value="Save changes" /><br />
-				</form>
-			</c:if>
+		<fieldset id="users">
+			<legend>
+				Users
+			</legend>
 			<c:if test="${not empty users}">
 				<table border="1">
 					<tr>
-						<td>Username</td>
-						<td>Password</td>
-						<td>Enabled</td>
-						<td></td>
-						<td></td>
+						<th>Username</th>
+						<th>Password</th>
+						<th>Enabled</th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
 					</tr>
 					<c:forEach items="${users}" var="o">
 						<tr>
 							<td>${o.username}</td>
 							<td>${o.password}</td>
 							<td>${o.enabled}</td>
-							<td><a href='<c:url value='users/${o.id}/form'/>'>Edit</a></td>
-							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a>
-							</td>
-							<td><a href='<c:url value='users/${o.id}/profile'/>'>View Profile</a>
-							</td>
+							<td><a href='<c:url value='users/${o.id}/edit'/>'>Edit</a></td>
+							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a></td>
+							<td><a href='<c:url value='users/${o.id}/profile'/>'>View Profile</a></td>
+							<td><a href='<c:url value='users/${o.id}/logs/page/1'/>'>View Logs</a></td>
 						</tr>
 					</c:forEach>
 				</table>
 			</c:if>
+			<a href='<c:url value='users/new'/>'>Add a new user</a>
+		</fieldset>
 
-			Add a new user: <a href='<c:url value='users/form'/>'>Add</a>
-		</div>
-
-		<div id="roles">
-			<c:if test="${editrole}">
-	Edit an existing role:
-	<form action="panel" method="post">
-					<input type="hidden" name="action" value="commit-role-edit" /> <input
-						type="hidden" name="role_id" value="${role_id}" /> New name:<input
-						type="text" name="role_name" value="${role_name}" /><br /> <input
-						type="submit" value="Save changes" /><br />
-				</form>
-			</c:if>
+		<fieldset id="roles">
+			<legend>
+				Roles
+			</legend>
 			<c:if test="${not empty roles}">
 				<table border="1">
 					<tr>
-						<c:if test="${edituser}">
-							<td>User has role</td>
-						</c:if>
-						<td>Role name</td>
+						<th>Role name</th>
+						<th></th>
+						<th></th>
 					</tr>
 					<c:forEach items="${roles}" var="o">
 						<tr>
-							<c:if test="${edituser}">
-								<c:choose>
-									<c:when test="${o.hasRole}">
-										<td><input type="checkbox" checked="checked" /></td>
-									</c:when>
-									<c:otherwise>
-										<td><input type="checkbox" /></td>
-									</c:otherwise>
-								</c:choose>
-							</c:if>
 							<td>${o.name}</td>
-							<td>
-								<form action="panel" method="post">
-									<input type="hidden" name="action" value="edit-role" /> <input
-										type="hidden" name="role_id" value="${o.id}" /> <input
-										type="submit" value="Edit" />
-								</form>
-							</td>
-							<td>
-								<form action="panel" method="post">
-									<input type="hidden" name="action" value="delete-role" /> <input
-										type="hidden" name="role_id" value="${o.id}" /> <input
-										type="submit" value="Delete" />
-								</form>
-							</td>
+							<td><a href='<c:url value='roles/${o.id}/edit'/>'>Edit</a></td>
+							<td><a href='<c:url value='roles/${o.id}/delete'/>'>Delete</a></td>
 						</tr>
 					</c:forEach>
 				</table>
 			</c:if>
+			<a href='<c:url value='roles/new'/>'>Add a new role</a>
+		</fieldset>
 
-			Add a new role:
-			<form action="panel" method="post">
-				<input type="hidden" name="action" value="add-role" /> Name:<input
-					type="text" name="role_name" /><br /> <input type="submit"
-					value="Submit" />
-			</form>
-		</div>
-
-		<div id="permissions">
-			<c:if test="${editpermission}">
-	Edit an existing permission:
-	<form action="panel" method="post">
-					<input type="hidden" name="action" value="commit-permission-edit" />
-					<input type="hidden" name="permission_id" value="${permission_id}" />
-					New name:<input type="text" name="permission_name"
-						value="${permission_name}" /><br /> <input type="submit"
-						value="Save changes" /><br />
-				</form>
-			</c:if>
+		<fieldset id="permissions">
+			<legend>
+				Permissions
+			</legend>
 			<c:if test="${not empty permissions}">
 				<table border="1">
 					<tr>
-						<td>Permission name</td>
+						<th>Permission name</th>
+						<th></th>
+						<th></th>
 					</tr>
 					<c:forEach items="${permissions}" var="o">
 						<tr>
 							<td>${o.name}</td>
-							<td>
-								<form action="panel" method="post">
-									<input type="hidden" name="action" value="edit-permission" />
-									<input type="hidden" name="permission_id" value="${o.id}" /> <input
-										type="submit" value="Edit" />
-								</form>
-							</td>
-							<td>
-								<form action="panel" method="post">
-									<input type="hidden" name="action" value="delete-permission" />
-									<input type="hidden" name="permission_id" value="${o.id}" /> <input
-										type="submit" value="Delete" />
-								</form>
-							</td>
+							<td><a href='<c:url value='permissions/${o.id}/edit'/>'>Edit</a></td>
+							<td><a href='<c:url value='permissions/${o.id}/delete'/>'>Delete</a></td>
 						</tr>
 					</c:forEach>
 				</table>
 			</c:if>
-
-			Add a new permission:
-			<form action="panel" method="post">
-				<input type="hidden" name="action" value="add-permission" />
-				Permission name:<input type="text" name="permission_name" /><br />
-				<input type="submit" value="Submit" />
-			</form>
-		</div>
+			<a href='<c:url value='permissions/new'/>'>Add a new permission</a>
+		</fieldset>
+		
+		<fieldset id="teachers">
+			<legend>
+				Teachers
+			</legend>
+			<c:choose>
+				<c:when test="${not empty teachers}">
+					<table border="1">
+						<tr>
+							<th>Teacher username</th>
+							<th>Assign students</th>
+						</tr>
+						<c:forEach items="${teachers}" var="o">
+							<tr>
+								<td>${o.username}</td>
+								<td><a href='<c:url value='teachers/${o.id}/assign'/>'>Assign students</a></td>
+							</tr>
+						</c:forEach>
+					</table>
+				</c:when>
+				<c:otherwise>
+					There are no users that have role 'ROLE_TEACHER'
+				</c:otherwise>
+			</c:choose>
+		</fieldset>
 	</div>
 	<a href="home">Home page</a>
 	<br />

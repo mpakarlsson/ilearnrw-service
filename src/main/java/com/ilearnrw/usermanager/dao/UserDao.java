@@ -1,17 +1,18 @@
-package com.ilearnrw.usermanager;
+package com.ilearnrw.usermanager.dao;
 
 import java.util.List;
 
 import com.ilearnrw.usermanager.model.User;
 
-public interface UserService {
-	public int insertData(User user);
+public interface UserDao {
 
 	public List<User> getUserList();
 
-	public void deleteData(int id);
-
 	public User getUser(int id);
 
+	public int insertData(User user);
+
 	public void updateData(User user);
+
+	public void deleteData(int id);
 }

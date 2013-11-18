@@ -5,35 +5,26 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Create user</title>
+<title>Create roles</title>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
-	<div class="form-container">
-		<form:form action="${pageContext.servletContext.contextPath}/apps/users/new" method="POST" modelAttribute="user">
+<div class="form-container">
+	<form:form action="${pageContext.servletContext.contextPath}/apps/roles/new" method="POST" modelAttribute="role">
 		<fieldset>
 			<legend>
-				User details
+				Role details
 			</legend>
 			<span>
-				<label >Username</label>
-				<form:input path="username" />
-				<form:errors path="username" class="error"/>
-			</span>
-			<span>
-				<label >Password</label>
-				<form:input path="password" />
-				<form:errors path="password" class="error"/>
-			</span>
-			<span>
-				<label >Enabled</label>
-				<form:checkbox path="enabled"/>
+				<label >Role name</label>
+				<form:input path="name" />
+				<form:errors path="name" class="error"/>
 			</span>
 		</fieldset>
 		<span class="buttonrow">
 			<input type="submit" value="Submit"/>
 		</span>
-		</form:form>
-	</div>
+	</form:form>
+</div>
 </body>
 </html>

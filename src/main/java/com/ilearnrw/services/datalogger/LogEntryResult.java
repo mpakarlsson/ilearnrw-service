@@ -16,6 +16,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class LogEntryResult {
 	
+	public LogEntryResult()
+	{
+	}
+	
 	public LogEntryResult(Integer _page,
 						  Integer _totalAmountOfPages,
 						  List<LogEntry> _results,
@@ -45,4 +49,24 @@ public class LogEntryResult {
 	
 	@JsonProperty("server-time")
 	private String serverTime;
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public Integer getTotalPages() {
+		return totalPages;
+	}
+
+	public Object getDebugInfo() {
+		return debugInfo;
+	}
+
+	public List<LogEntry> getResults() {
+		return results;
+	}
+
+	public String getServerTime() {
+		return serverTime;
+	}
 }

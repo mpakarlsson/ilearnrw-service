@@ -1,4 +1,4 @@
-package com.ilearnrw.usermanager;
+package com.ilearnrw.usermanager.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,10 +18,11 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	DataSource dataSource;
+	
+	@Autowired
+	private RoleDao roleDao;
 
 	public int insertData(User user) {
-
-		String sql = "insert into users (username, password, enabled) values (?,?,?)";
 		SimpleJdbcInsert insert = new SimpleJdbcInsert(dataSource)
 				.withTableName("users").usingGeneratedKeyColumns("id");
 
@@ -52,7 +53,6 @@ public class UserDaoImpl implements UserDao {
 		String sql = "delete from users where id=" + id;
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcTemplate.update(sql);
-
 	}
 
 	@Override
