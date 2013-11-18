@@ -6,32 +6,34 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
-<style>
-  .error {
-      color: #EF1313;
-      font-style: italic;
-  }
-  form > span {
-    float: left;
-    clear: left;
-    display:inline-block;
-  }
-</style>
+<title>Edit roles</title>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
+<div class="form-container">
 	<form:form action="${pageContext.servletContext.contextPath}/apps/roles/${roleform.role.id}/edit" method="POST" modelAttribute="roleform">
-	<span>
-		<label >Role name</label>
-		<form:input path="role.name" />
-		<form:errors path="role.name" class="error"/>
-	</span>
-	<c:if test="${not empty roleform.allPermissions}">
-		<form:checkboxes items="${roleform.allPermissions}" path="selectedPermissions" itemLabel="name" itemValue="id"></form:checkboxes>
-	</c:if>
-	<span>
-		<input type="submit" value="Submit"/>
-	</span>
+		<fieldset>
+			<legend>
+				Role details
+			</legend>
+			<span>
+				<label >Role name</label>
+				<form:input path="role.name" />
+				<form:errors path="role.name" class="error"/>
+			</span>
+		</fieldset>
+		<fieldset>
+			<legend>
+				Role permissions
+			</legend>
+			<c:if test="${not empty roleform.allPermissions}">
+				<form:checkboxes items="${roleform.allPermissions}" path="selectedPermissions" itemLabel="name" itemValue="id"></form:checkboxes>
+			</c:if>
+		</fieldset>
+		<span class="buttonrow">
+			<input type="submit" value="Submit"/>
+		</span>
 	</form:form>
+</div>
 </body>
 </html>

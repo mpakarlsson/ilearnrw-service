@@ -5,38 +5,35 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
-<style>
-  .error {
-      color: #EF1313;
-      font-style: italic;
-  }
-  form > span {
-    float: left;
-    clear: left;
-    display:inline-block;
-  }
-</style>
+<title>Create user</title>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
-	<form:form action="${pageContext.servletContext.contextPath}/apps/users/new" method="POST" modelAttribute="user">
-	<span>
-		<label >Username</label>
-		<form:input path="username" />
-		<form:errors path="username" class="error"/>
-	</span>
-	<span>
-		<label >Password</label>
-		<form:input path="password" />
-		<form:errors path="password" class="error"/>
-	</span>
-	<span>
-		<label >Enabled</label>
-		<form:checkbox path="enabled"/>
-	</span>
-	<span>
-		<input type="submit" value="Submit"/>
-	</span>
-	</form:form>
+	<div class="form-container">
+		<form:form action="${pageContext.servletContext.contextPath}/apps/users/new" method="POST" modelAttribute="user">
+		<fieldset>
+			<legend>
+				User details
+			</legend>
+			<span>
+				<label >Username</label>
+				<form:input path="username" />
+				<form:errors path="username" class="error"/>
+			</span>
+			<span>
+				<label >Password</label>
+				<form:input path="password" />
+				<form:errors path="password" class="error"/>
+			</span>
+			<span>
+				<label >Enabled</label>
+				<form:checkbox path="enabled"/>
+			</span>
+		</fieldset>
+		<span class="buttonrow">
+			<input type="submit" value="Submit"/>
+		</span>
+		</form:form>
+	</div>
 </body>
 </html>

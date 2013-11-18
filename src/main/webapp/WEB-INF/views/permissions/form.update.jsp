@@ -5,29 +5,26 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
-<style>
-  .error {
-      color: #EF1313;
-      font-style: italic;
-  }
-  form > span {
-    float: left;
-    clear: left;
-    display:inline-block;
-  }
-</style>
+<title>Edit permission</title>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
+<div class="form-container">
 	<form:form action="${pageContext.servletContext.contextPath}/apps/permissions/${permission.id}/edit" method="POST" modelAttribute="permission">
-	<span>
-		<label >Permission name</label>
-		<form:input path="name" />
-		<form:errors path="name" class="error"/>
-	</span>
-	<span>
-		<input type="submit" value="Submit"/>
-	</span>
+		<fieldset>
+			<legend>
+				Permission details
+			</legend>
+			<span>
+				<label >Permission name</label>
+				<form:input path="name" />
+				<form:errors path="name" class="error"/>
+			</span>
+		</fieldset>
+		<span class="buttonrow">
+			<input type="submit" value="Submit"/>
+		</span>
 	</form:form>
+</div>
 </body>
 </html>

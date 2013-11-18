@@ -7,55 +7,25 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <title>Welcome page</title>
-<style>
-#wrapper {
-	width: 100%;
-}
-
-#users {
-	background-color: #ddf;
-	float: left;
-	width: 25%;
-	min-height: 400px;
-}
-
-#roles {
-	background-color: #dfd;
-	float: left;
-	width: 25%;
-	min-height: 400px;
-}
-
-#permissions {
-	background-color: #fdd;
-	float: left;
-	width: 25%;
-	min-height: 400px;
-}
-
-#teachers {
-	background-color: #fdf;
-	float: right;
-	width: 25%;
-	min-height: 400px;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
-	<h1>Welcome page</h1>
-	<p>Info: ${info}</p>
+	<h1>Welcome</h1>
 	<div id="wrapper">
-		<div id="users">
+		<fieldset id="users">
+			<legend>
+				Users
+			</legend>
 			<c:if test="${not empty users}">
 				<table border="1">
 					<tr>
-						<td>Username</td>
-						<td>Password</td>
-						<td>Enabled</td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
+						<th>Username</th>
+						<th>Password</th>
+						<th>Enabled</th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
 					</tr>
 					<c:forEach items="${users}" var="o">
 						<tr>
@@ -70,17 +40,19 @@
 					</c:forEach>
 				</table>
 			</c:if>
+			<a href='<c:url value='users/new'/>'>Add a new user</a>
+		</fieldset>
 
-			Add a new user: <a href='<c:url value='users/new'/>'>Add</a>
-		</div>
-
-		<div id="roles">
+		<fieldset id="roles">
+			<legend>
+				Roles
+			</legend>
 			<c:if test="${not empty roles}">
 				<table border="1">
 					<tr>
-						<td>Role name</td>
-						<td></td>
-						<td></td>
+						<th>Role name</th>
+						<th></th>
+						<th></th>
 					</tr>
 					<c:forEach items="${roles}" var="o">
 						<tr>
@@ -91,17 +63,19 @@
 					</c:forEach>
 				</table>
 			</c:if>
+			<a href='<c:url value='roles/new'/>'>Add a new role</a>
+		</fieldset>
 
-			Add a new role: <a href='<c:url value='roles/new'/>'>Add</a>
-		</div>
-
-		<div id="permissions">
+		<fieldset id="permissions">
+			<legend>
+				Permissions
+			</legend>
 			<c:if test="${not empty permissions}">
 				<table border="1">
 					<tr>
-						<td>Permission name</td>
-						<td></td>
-						<td></td>
+						<th>Permission name</th>
+						<th></th>
+						<th></th>
 					</tr>
 					<c:forEach items="${permissions}" var="o">
 						<tr>
@@ -112,26 +86,33 @@
 					</c:forEach>
 				</table>
 			</c:if>
-
-			Add a new permission: <a href='<c:url value='permissions/new'/>'>Add</a>
-		</div>
+			<a href='<c:url value='permissions/new'/>'>Add a new permission</a>
+		</fieldset>
 		
-		<div id="teachers">
-			<c:if test="${not empty teachers}">
-				<table border="1">
-					<tr>
-						<td>Username</td>
-						<td>Assign students</td>
-					</tr>
-					<c:forEach items="${teachers}" var="o">
+		<fieldset id="teachers">
+			<legend>
+				Teachers
+			</legend>
+			<c:choose>
+				<c:when test="${not empty teachers}">
+					<table border="1">
 						<tr>
-							<td>${o.username}</td>
-							<td><a href='<c:url value='teachers/${o.id}/assign'/>'>Assign students</a></td>
+							<th>Teacher username</th>
+							<th>Assign students</th>
 						</tr>
-					</c:forEach>
-				</table>
-			</c:if>
-		</div>
+						<c:forEach items="${teachers}" var="o">
+							<tr>
+								<td>${o.username}</td>
+								<td><a href='<c:url value='teachers/${o.id}/assign'/>'>Assign students</a></td>
+							</tr>
+						</c:forEach>
+					</table>
+				</c:when>
+				<c:otherwise>
+					There are no users that have role 'ROLE_TEACHER'
+				</c:otherwise>
+			</c:choose>
+		</fieldset>
 	</div>
 	<a href="home">Home page</a>
 	<br />

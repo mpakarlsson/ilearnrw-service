@@ -2,7 +2,8 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Home</title>
+<title>Home</title>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
 <h1>

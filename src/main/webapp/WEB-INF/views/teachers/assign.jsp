@@ -6,28 +6,24 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
-<style>
-  .error {
-      color: #EF1313;
-      font-style: italic;
-  }
-  form > span {
-    float: left;
-    clear: left;
-    display:inline-block;
-  }
-</style>
+<title>Assign students to teacher</title>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
-	<form:form action="${pageContext.servletContext.contextPath}/apps/teachers/${teacherStudentForm.teacher.id}/assign" method="POST" modelAttribute="teacherStudentForm">
-	<p>Assigned students for <c:out value="${teacherStudentForm.teacher.username}"></c:out>:</p>
-	<c:if test="${not empty teacherStudentForm.allStudents}">
-		<form:checkboxes items="${teacherStudentForm.allStudents}" path="selectedStudents" itemLabel="username" itemValue="id"></form:checkboxes>
-	</c:if>
-	<span>
-		<input type="submit" value="Submit"/>
-	</span>
-	</form:form>
+	<div class="form-container">
+		<form:form action="${pageContext.servletContext.contextPath}/apps/teachers/${teacherStudentForm.teacher.id}/assign" method="POST" modelAttribute="teacherStudentForm">
+		<fieldset>
+			<legend>
+				Assigned students for <c:out value="${teacherStudentForm.teacher.username}"></c:out>
+			</legend>
+			<c:if test="${not empty teacherStudentForm.allStudents}">
+				<form:checkboxes items="${teacherStudentForm.allStudents}" path="selectedStudents" itemLabel="username" itemValue="id"></form:checkboxes>
+			</c:if>
+		</fieldset>
+		<span class="buttonrow">
+			<input type="submit" value="Submit"/>
+		</span>
+		</form:form>
+	</div>
 </body>
 </html>

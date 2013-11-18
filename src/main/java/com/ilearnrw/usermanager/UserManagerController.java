@@ -158,18 +158,13 @@ public class UserManagerController {
 			ModelMap model,
 			HttpServletRequest request) {
 		AuthenticatedRestClient restClient = new AuthenticatedRestClient();
-		String url = "http://localhost:8080/test/logs/{userId}?page={page}";
-		List<String> stringArgsList = new ArrayList<String>();
-		stringArgsList.add(userId);
-		stringArgsList.add(page);
+		Map<String, String> args = new HashMap<String, String>();
+		args.put("userId", userId);
+		args.put("page", page);
 		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId", "sessionId"))
 			if (request.getSession().getAttribute(param) != null)
-			{
-				url = url.concat("&" + param + "={" + param + "}");
-				stringArgsList.add((String) request.getSession().getAttribute(param));
-			}
-		LOG.debug(url);
-		LogEntryResult result = restClient.get(url, LogEntryResult.class, stringArgsList.toArray());
+				args.put(param, (String) request.getSession().getAttribute(param));
+		LogEntryResult result = restClient.getLogs(args);
 		model.addAttribute("logEntryResult", result);
 		return "users/logs";
 	}

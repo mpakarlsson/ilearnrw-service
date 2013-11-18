@@ -2,7 +2,9 @@ package com.ilearnrw.usermanager;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+import com.ilearnrw.services.datalogger.LogEntryResult;
 import com.ilearnrw.services.security.Tokens;
 
 public class AuthenticatedRestClient {
@@ -20,6 +23,7 @@ public class AuthenticatedRestClient {
 	private HttpHeaders headers;
 	private String rolesUri = "http://localhost:8080/test/user/roles?token={token}";
 	private String authUri = "http://localhost:8080/test/user/auth?username={username}&pass={pass}";
+	private String logsUri = "http://localhost:8080/test/logs/{userId}?page={page}";
 
 	public AuthenticatedRestClient() {
 		this.template = new RestTemplate();
@@ -54,5 +58,19 @@ public class AuthenticatedRestClient {
 		}
 		return result;
 
+	}
+	
+	public LogEntryResult getLogs(Map<String, String> args)
+	{
+		List<String> stringArgsList = new ArrayList<String>();
+		stringArgsList.add(args.get("userId"));
+		stringArgsList.add(args.get("page"));
+		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId", "sessionId"))
+			if (args.containsKey(param))
+			{
+				logsUri = logsUri.concat("&" + param + "={" + param + "}");
+				stringArgsList.add(args.get(param));
+			}
+		return get(logsUri, LogEntryResult.class, stringArgsList.toArray());
 	}
 }
