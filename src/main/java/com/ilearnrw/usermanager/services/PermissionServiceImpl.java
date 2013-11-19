@@ -3,11 +3,13 @@ package com.ilearnrw.usermanager.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.ilearnrw.usermanager.dao.PermissionDao;
 import com.ilearnrw.usermanager.model.Permission;
 import com.ilearnrw.usermanager.model.Role;
 
+@Component
 public class PermissionServiceImpl implements PermissionService {
 
 	@Autowired
