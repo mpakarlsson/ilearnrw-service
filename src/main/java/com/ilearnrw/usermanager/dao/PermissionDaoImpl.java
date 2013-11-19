@@ -8,6 +8,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +19,7 @@ import com.ilearnrw.usermanager.model.Role;
 public class PermissionDaoImpl implements PermissionDao {
 
 	@Autowired
+	@Qualifier("usersDataSource")
 	private DataSource dataSource;
 
 	@Override

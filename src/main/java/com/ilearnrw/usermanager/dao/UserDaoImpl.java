@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -17,6 +18,7 @@ import com.ilearnrw.usermanager.model.User;
 public class UserDaoImpl implements UserDao {
 
 	@Autowired
+	@Qualifier("usersDataSource")
 	DataSource dataSource;
 	
 	@Autowired

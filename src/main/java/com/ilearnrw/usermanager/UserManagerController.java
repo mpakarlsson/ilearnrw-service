@@ -54,7 +54,7 @@ public class UserManagerController {
 	private static Logger LOG = Logger.getLogger(UserManagerController.class);
 
 	@Autowired
-	@Qualifier("dataSource")
+	@Qualifier("usersDataSource")
 	private DataSource dSource;
 
 	@Autowired

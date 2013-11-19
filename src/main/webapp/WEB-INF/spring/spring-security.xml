@@ -120,7 +120,7 @@
 
 	<beans:bean id="userService"
 		class="com.ilearnrw.services.security.SpringSecurityDaoImpl">
-		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="dataSource" ref="usersDataSource" />
 		<beans:property name="enableGroups" value="true" />
 		<beans:property name="enableAuthorities" value="false" />
 		<beans:property name="authoritiesByUsernameQuery">
@@ -149,14 +149,6 @@
                 WHERE U.username=?
 			</beans:value>
 		</beans:property>
-	</beans:bean>
-
-	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<beans:property name="driverClassName" value="${db.driver}" />
-		<beans:property name="url" value="${db.url}" />
-		<beans:property name="username" value="${db.username}" />
-		<beans:property name="password" value="${db.password}" />
 	</beans:bean>
 
 	<!-- The restAuthenticationProvider is the class responsible for verifying 
