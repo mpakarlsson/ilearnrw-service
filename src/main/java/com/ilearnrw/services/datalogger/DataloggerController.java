@@ -253,7 +253,7 @@ public class DataloggerController {
 			/*Parse the tags CSV string.*/
 			List<String> tagList = Arrays.asList(tags.split(";"));
 			if(tagList.size() == 1)
-				w.add(new Filter("tag=?", tagList.get(0)));
+				w.add(new Filter("tag LIKE ?", "%" + tagList.get(0) + "%"));
 			else if(tagList.size() > 1 )
 			{
 				Boolean first = true;
@@ -262,11 +262,11 @@ public class DataloggerController {
 			    	String tag = tagItr.next();
 					if( first ) {
 						first = false;
-						w.add(new Filter("tag IN (?,", tag, false));
+						w.add(new Filter("tag LIKE ? ", "%" + tag + "%", false));
 					} else if( tagItr.hasNext())
-				    	w.add(new Filter("?,", tag, false));
+				    	w.add(new Filter("OR tag LIKE ? ", "%" + tag + "%", false));
 			    	else
-				    	w.add(new Filter("?)", tag));
+				    	w.add(new Filter("OR tag LIKE ?", "%" + tag + "%"));
 			    }
 			}
 			/*else ignore*/
@@ -350,8 +350,18 @@ public class DataloggerController {
 		return new LogEntryResult(page, pageResult.totalAmountOfPages, results, debugInfo.toString());
 	}
 
-
-
+	/**
+	 * Gets the last session id registered by an application.
+	 * @param applicationId - Required, the id of the application.
+	 * @return A JSON object with the format {"lastSession":"testSessionId"}.
+	 */
 	
+	@RequestMapping(value = "/logs/getsession/{applicationId}", method = RequestMethod.GET)
+	public @ResponseBody
+		String getLastSessionId(@PathVariable String applicationId) {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
+		String sql = "SELECT MAX(sessionId) FROM logs WHERE applicationId = ?";
+		return "{\"lastSession\":\"" + jdbcTemplate.queryForObject(sql, new Object[] { applicationId }, String.class) + "\"}";
+	}
 	
 }
