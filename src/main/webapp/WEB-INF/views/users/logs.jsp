@@ -72,7 +72,7 @@
 				<table border="1">
 					<tr>
 						<th>User ID</th>
-						<th>Tag</th>
+						<th>Tags</th>
 						<th>Value</th>
 						<th>Application ID</th>
 						<th>Time</th>
@@ -81,7 +81,7 @@
 					<c:forEach items="${logEntryResult.results}" var="log">
 						<tr>
 							<td>${log.userId}</td>
-							<td>${log.tag}</td>
+							<td>${log.tags}</td>
 							<td>${log.value}</td>
 							<td>${log.applicationId}</td>
 							<td>${log.timestamp}</td>
