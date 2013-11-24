@@ -4,9 +4,14 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author David Johansson
@@ -20,12 +25,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class LogEntry implements Serializable {
 
-	public LogEntry(String _userId, String _tag, String _value,
+	public LogEntry(String _userId, List<String> _tags, String _value,
 					String _applicationId, Timestamp _timestamp,
 					String _sessionId)
 	{
 		userId = _userId;
-		tag = _tag;
+		tags = new ArrayList<Tag>();
+		for (String s: _tags)
+			tags.add(new Tag(s));
 		value = _value;
 		applicationId = _applicationId;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -50,15 +57,38 @@ public class LogEntry implements Serializable {
         return userId;
     }
 
-	
 	/**
-	 * A tag for the LogEntry.
+	 * Tags for the LogEntry.
 	 */
-	@JsonProperty("tag")
-	private String tag;
-    public String getTag() {
-        return tag;
+	@JsonProperty("tags")
+	@Valid
+	private List<Tag> tags;
+    public List<Tag> getTags() {
+        return tags;
     }
+    
+    static class Tag implements Serializable
+    {
+		public Tag(String _tagString) {
+    		tagString = _tagString;
+		}
+		public Tag()
+		{}
+		private static final long serialVersionUID = 7500786552428028748L;
+		
+    	String tagString;
+    	@JsonValue
+    	@Pattern(regexp = "^[A-Za-z0-9]+$")
+		public String getTagString() {
+			return tagString;
+		}
+    	
+    	@Override
+    	public String toString() {
+    		return tagString;
+    	}
+    }
+    
 	/**
 	 * A value stored with the log.
 	 * 
