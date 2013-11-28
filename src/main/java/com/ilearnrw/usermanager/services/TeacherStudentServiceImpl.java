@@ -3,10 +3,12 @@ package com.ilearnrw.usermanager.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.ilearnrw.usermanager.dao.TeacherStudentDao;
 import com.ilearnrw.usermanager.model.User;
 
+@Component
 public class TeacherStudentServiceImpl implements TeacherStudentService {
 
 	@Autowired

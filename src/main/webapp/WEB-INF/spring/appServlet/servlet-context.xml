@@ -39,15 +39,7 @@
 
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
-	<beans:bean id="userDao" class="com.ilearnrw.usermanager.dao.UserDaoImpl" />
-	<beans:bean id="roleDao" class="com.ilearnrw.usermanager.dao.RoleDaoImpl" />
-	<beans:bean id="permissionDao" class="com.ilearnrw.usermanager.dao.PermissionDaoImpl" />
-	<beans:bean id="teacherStudentDao" class="com.ilearnrw.usermanager.dao.TeacherStudentImpl" />
-	<beans:bean id="userService" class="com.ilearnrw.usermanager.services.UserServiceImpl" />
-	<beans:bean id="roleService" class="com.ilearnrw.usermanager.services.RoleServiceImpl" />
-	<beans:bean id="permissionService" class="com.ilearnrw.usermanager.services.PermissionServiceImpl" />
 	<beans:bean id="teacherStudentService" class="com.ilearnrw.usermanager.services.TeacherStudentServiceImpl" />
-	
 	<beans:bean id="profileProvider" name="ProfileProvider"
 		class="com.ilearnrw.services.profileAccessUpdater.DbProfileProvider">
 	</beans:bean>

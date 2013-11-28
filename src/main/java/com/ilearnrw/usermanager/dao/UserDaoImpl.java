@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Component;
 
 import com.ilearnrw.usermanager.model.User;
 
+@Component
 public class UserDaoImpl implements UserDao {
 
 	@Autowired

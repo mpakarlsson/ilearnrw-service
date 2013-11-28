@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.apache.commons.lang.StringUtils;
+
+import com.ilearnrw.services.datalogger.LogEntry.Tag;
 
 
 /**
@@ -107,7 +110,7 @@ public class DataloggerController {
 					)
 	public @ResponseBody
 	String addLog(
-			@RequestBody LogEntry log
+			@Valid @RequestBody LogEntry log
 			) {
 		
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(dataLoggerDataSource)
@@ -120,7 +123,7 @@ public class DataloggerController {
 		
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("inUserId", log.getUserId());
-		args.put("inTag", log.getTag());
+		args.put("inTag", ";" + StringUtils.join(log.getTags(), ";") + ";");
 		args.put("inValue", log.getValue());
 		args.put("inApplicationId", log.getApplicationId());
 		args.put("inSessionId", log.getSessionId());
@@ -253,20 +256,20 @@ public class DataloggerController {
 			/*Parse the tags CSV string.*/
 			List<String> tagList = Arrays.asList(tags.split(";"));
 			if(tagList.size() == 1)
-				w.add(new Filter("tag=?", tagList.get(0)));
+				w.add(new Filter("tag LIKE ?", "%;" + tagList.get(0) + ";%"));
 			else if(tagList.size() > 1 )
 			{
 				Boolean first = true;
 				Iterator<String> tagItr = tagList.iterator();
 			    while (tagItr.hasNext()) {
-			    	String tag = tagItr.next();
+			    	String tag = "%;" + tagItr.next() + ";%";
 					if( first ) {
 						first = false;
-						w.add(new Filter("tag IN (?,", tag, false));
+						w.add(new Filter("tag LIKE ? ", tag, false));
 					} else if( tagItr.hasNext())
-				    	w.add(new Filter("?,", tag, false));
+				    	w.add(new Filter("OR tag LIKE ? ", tag, false));
 			    	else
-				    	w.add(new Filter("?)", tag));
+				    	w.add(new Filter("OR tag LIKE ?", tag));
 			    }
 			}
 			/*else ignore*/
@@ -315,8 +318,10 @@ public class DataloggerController {
 				
 				@Override
 				public void processRow(ResultSet rs) throws SQLException {
+					List<String> tagsStrings = Arrays.asList(rs.getString("tag").split(";"));
+					tagsStrings = tagsStrings.subList(1, tagsStrings.size());
 					LogEntry log = new LogEntry(rs.getString("userId"),
-												rs.getString("tag"),
+												tagsStrings,
 												rs.getString("value"),
 												rs.getString("applicationId"),
 												rs.getTimestamp("timestamp"),
@@ -350,8 +355,18 @@ public class DataloggerController {
 		return new LogEntryResult(page, pageResult.totalAmountOfPages, results, debugInfo.toString());
 	}
 
-
-
+	/**
+	 * Gets the last session id registered by an application.
+	 * @param applicationId - Required, the id of the application.
+	 * @return A JSON object with the format {"lastSession":"testSessionId"}.
+	 */
 	
+	@RequestMapping(value = "/logs/getsession/{applicationId}", method = RequestMethod.GET)
+	public @ResponseBody
+		String getLastSessionId(@PathVariable String applicationId) {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
+		String sql = "SELECT MAX(sessionId) FROM logs WHERE applicationId = ?";
+		return "{\"lastSession\":\"" + jdbcTemplate.queryForObject(sql, new Object[] { applicationId }, String.class) + "\"}";
+	}
 	
 }
