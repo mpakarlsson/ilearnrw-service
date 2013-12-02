@@ -39,7 +39,6 @@
 
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
-	<beans:bean id="teacherStudentService" class="com.ilearnrw.usermanager.services.TeacherStudentServiceImpl" />
 	<beans:bean id="profileProvider" name="ProfileProvider"
 		class="com.ilearnrw.services.profileAccessUpdater.DbProfileProvider">
 	</beans:bean>
