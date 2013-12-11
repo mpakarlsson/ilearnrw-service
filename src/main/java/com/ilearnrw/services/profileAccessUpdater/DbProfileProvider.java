@@ -1,9 +1,9 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
-import ilearnrw.user.profile.UserSeveritiesToProblems;
 import ilearnrw.utils.LanguageCode;
 
 import java.sql.ResultSet;
@@ -231,11 +231,11 @@ public class DbProfileProvider implements IProfileProvider {
 	 * @param languageCode
 	 * @return
 	 */
-	UserProfile getProfile(String userId,LC_Base languageCode) {
+	UserProfile getProfile(String userId, LC_Base languageCode) {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
-		final UserSeveritiesToProblems severitiesToProblems = new UserSeveritiesToProblems();
+		final UserProblems severitiesToProblems = new UserProblems();
 		severitiesToProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 
@@ -260,13 +260,13 @@ public class DbProfileProvider implements IProfileProvider {
 									}
 								}
 							}});
-		return new UserProfile(language.getLanguageCode(),
+		return new UserProfile(
 				severitiesToProblems,
 				preferences);
 	}
-	void storeProfile(String userId, UserProfile profile) throws QueryParamException 
+	void storeProfile(String userId, UserProfile profile) throws QueryParamException, ProfileProviderException 
 	{
-		final LC_Base language = getLanguage(profile.getLanguage());
+		final LC_Base language = getLanguage(userId);
 		final class ReplaceQuery {
 			public void add(String name, Object value){
 				params.add(name);
@@ -322,12 +322,12 @@ public class DbProfileProvider implements IProfileProvider {
 		replaceQuery.add("prefFontSize", profile.getPreferences().getFontSize());
 		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 		{
-			replaceQuery.add(String.format("index_%s", x), profile.getUserSeveritiesToProblems().getWorkingIndex(x));
+			replaceQuery.add(String.format("index_%s", x), profile.getUserProblems().getWorkingIndex(x));
 			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 			{
 				try {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
-								 profile.getUserSeveritiesToProblems().getSeverity(x, y));
+								 profile.getUserProblems().getSeverity(x, y));
 				} catch (java.lang.NullPointerException ex) {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
 								 0); //Default to 0 when there is no severity.

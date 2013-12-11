@@ -71,7 +71,7 @@ public class ProfileAccessUpdaterController {
 	UserSeverities getProblems(
 			@RequestParam(value = "userId", required = true) String userId)
 			throws ProfileProviderException {
-		return profileProvider.getProfile(userId).getUserSeveritiesToProblems()
+		return profileProvider.getProfile(userId).getUserProblems()
 				.getUserSeverities();
 	}
 
@@ -155,12 +155,12 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "y", required = true) int y)
 			throws ProfileProviderException {
 		UserProfile profile = profileProvider.getProfile(userId);
-		profile.getUserSeveritiesToProblems()
+		profile.getUserProblems()
 				.getUserSeverities()
 				.setSeverity(
 						x,
 						y,
-						profile.getUserSeveritiesToProblems().getUserSeverities()
+						profile.getUserProblems().getUserSeverities()
 								.getSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
 		return profileProvider.getProfile(userId);
