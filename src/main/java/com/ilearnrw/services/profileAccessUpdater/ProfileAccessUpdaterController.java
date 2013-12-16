@@ -1,5 +1,8 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
+import java.util.List;
+
+import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
@@ -89,6 +92,21 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "userId", required = true) String userId)
 			throws ProfileProviderException {
 		return profileProvider.getProfile(userId);
+	}
+	
+	@RequestMapping(value = "/profile/details", method = RequestMethod.GET)
+	public @ResponseBody
+	UserDetails getDetails(
+			@RequestParam(value = "userId", required = true) String userId)
+			throws ProfileProviderException {
+		return profileProvider.getDetails(userId);
+	}
+	
+	@RequestMapping(value = "/profile/list", method = RequestMethod.GET)
+	public @ResponseBody
+	List<String> getUserIdList()
+			throws ProfileProviderException {
+		return profileProvider.getUserIdList();
 	}
 
 	/**

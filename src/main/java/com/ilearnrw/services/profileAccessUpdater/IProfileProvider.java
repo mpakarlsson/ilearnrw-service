@@ -1,5 +1,8 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
+import java.util.List;
+
+import ilearnrw.user.UserDetails;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
@@ -70,4 +73,7 @@ public interface IProfileProvider {
 	 * @throws ProfileProviderException
 	 */
 	void deleteProfile(String userId) throws ProfileProviderException;
+	
+	UserDetails getDetails(String userId) throws ProfileProviderException;
+	List<String> getUserIdList();
 }

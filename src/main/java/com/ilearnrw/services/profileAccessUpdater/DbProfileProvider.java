@@ -1,5 +1,6 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
+import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
@@ -15,6 +16,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
@@ -63,6 +65,8 @@ public class DbProfileProvider implements IProfileProvider {
 
 	@Autowired
 	DataSource profileDataSource;
+	@Autowired
+	DataSource usersDataSource;
 	@Override
 	public UserProfile getProfile(String userId)
 			throws ProfileProviderException {
@@ -197,7 +201,8 @@ public class DbProfileProvider implements IProfileProvider {
 			return new LC_English();
 		return new LC_Greek();
 	}
-	LC_Base getLanguage(String userId) throws ProfileProviderException {
+	
+	int getLanguageCode(String userId) throws ProfileProviderException {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		final class LanguageCodeResult
 		{
@@ -215,7 +220,11 @@ public class DbProfileProvider implements IProfileProvider {
 						});
 		if( languageCodeResult.languageCode == -1 )
 			throw new ProfileProviderException(Type.userDoesNotExist, "User not found in ProfileLanguage table.");
-		return getLanguage(languageCodeResult.languageCode);
+		return languageCodeResult.languageCode;
+	}
+	
+	LC_Base getLanguage(String userId) throws ProfileProviderException {
+		return getLanguage(getLanguageCode(userId));
 	}
 	
 	
@@ -338,5 +347,19 @@ public class DbProfileProvider implements IProfileProvider {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		jdbcTemplate.update(replaceQuery.getQuery(language),
 							replaceQuery.getParams());
+	}
+
+	@Override
+	public UserDetails getDetails(String userId) throws ProfileProviderException {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
+		Object[] params = {userId};
+		String username = jdbcTemplate.queryForObject("SELECT username FROM users WHERE id=?", params, String.class);
+		return new UserDetails(username, 0, LanguageCode.fromInteger(getLanguageCode(userId)));
+	}
+
+	@Override
+	public List<String> getUserIdList() {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
+		return jdbcTemplate.queryForList("SELECT id FROM users", String.class);
 	}
 }
