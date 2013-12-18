@@ -46,9 +46,6 @@ public class TextClassificationController {
 		Classifier cls = new Classifier(profile, text, languageAnalyzer);
 		cls.calculateProblematicWords(false);
 		
-		TextClassificationResults res = new TextClassificationResults();
-		res.setNumberOfTotalWords(cls.getText().getNumberOfWords());
-	
-		return res;
+		return cls.getUserProblemsToText().getTextClassificationResults();
 	}
 }
