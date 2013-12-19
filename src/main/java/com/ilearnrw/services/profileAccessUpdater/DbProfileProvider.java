@@ -1,9 +1,10 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.problems.ProblemDefinitionIndex;
+import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
-import ilearnrw.user.profile.UserProblems;
 import ilearnrw.utils.LanguageCode;
 
 import java.sql.ResultSet;
@@ -235,7 +236,9 @@ public class DbProfileProvider implements IProfileProvider {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
-		final UserProblems severitiesToProblems = new UserProblems();
+
+		ProblemDefinitionIndex definitionIndex = new ProblemDefinitionIndex(language.getProblemDefinitionIndexSize_X(), language.getLanguageCode());
+		final UserProblems severitiesToProblems = new UserProblems(definitionIndex, false);
 		severitiesToProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 
