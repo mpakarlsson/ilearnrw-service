@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
-import com.ilearnrw.services.datalogger.LogEntryResult;
+import com.ilearnrw.services.datalogger.model.LogEntryResult;
 import com.ilearnrw.services.security.Tokens;
 
 @Component
@@ -29,7 +29,7 @@ public class AuthenticatedRestClient {
 	
 	private String rolesUri = "user/roles?token={token}";
 	private String authUri = "user/auth?username={username}&pass={pass}";
-	private String logsUri = "logs/{userId}?page={page}";
+	private String logsUri = "logs/{username}?page={page}";
 
 	public AuthenticatedRestClient() {
 		this.template = new RestTemplate();
@@ -82,10 +82,10 @@ public class AuthenticatedRestClient {
 	public LogEntryResult getLogs(Map<String, String> args)
 	{
 		List<String> stringArgsList = new ArrayList<String>();
-		stringArgsList.add(args.get("userId"));
+		stringArgsList.add(args.get("username"));
 		stringArgsList.add(args.get("page"));
 		String logsUri = getLogsUri();
-		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId", "sessionId"))
+		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId"))
 			if (args.containsKey(param))
 			{
 				logsUri = logsUri.concat("&" + param + "={" + param + "}");

@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.ilearnrw.services.datalogger.LogEntryResult;
+import com.ilearnrw.services.datalogger.model.LogEntryResult;
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.security.Tokens;
@@ -143,16 +143,16 @@ public class UserManagerController {
 	
 	/* Users logs */
 	
-	@RequestMapping(value = "users/{userId}/logs/page/{page}", method = RequestMethod.GET)
-	public String viewLogs(@PathVariable String userId,
+	@RequestMapping(value = "users/{username}/logs/page/{page}", method = RequestMethod.GET)
+	public String viewLogs(@PathVariable String username,
 			@PathVariable String page,
 			ModelMap model,
 			HttpServletRequest request) {
 
 		Map<String, String> args = new HashMap<String, String>();
-		args.put("userId", userId);
+		args.put("username", username);
 		args.put("page", page);
-		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId", "sessionId"))
+		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId"))
 			if (request.getSession().getAttribute(param) != null)
 				args.put(param, (String) request.getSession().getAttribute(param));
 		LogEntryResult result = restClient.getLogs(args);
@@ -160,14 +160,13 @@ public class UserManagerController {
 		return "users/logs";
 	}
 	
-	@RequestMapping(value = "users/{userId}/logs/page/{page}", method = RequestMethod.POST)
-	public String viewLogsFiltered(@PathVariable String userId,
+	@RequestMapping(value = "users/{username}/logs/page/{page}", method = RequestMethod.POST)
+	public String viewLogsFiltered(@PathVariable String username,
 			@PathVariable String page,
 			@RequestParam(value = "timestart", required = false) String timestart,
 			@RequestParam(value = "timeend", required = false) String timeend,
 			@RequestParam(value = "tags", required = false) String tags,
 			@RequestParam(value = "applicationId", required = false) String applicationId,
-			@RequestParam(value = "sessionId", required = false) String sessionId,
 			ModelMap model,
 			HttpServletRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
@@ -175,7 +174,6 @@ public class UserManagerController {
 		map.put("timeend", timeend);
 		map.put("tags", tags);
 		map.put("applicationId", applicationId);
-		map.put("sessionId", sessionId);
 		for (Map.Entry<String, String> entry : map.entrySet())
 		{
 			if (entry.getValue() != null && !entry.getValue().isEmpty())
@@ -184,7 +182,7 @@ public class UserManagerController {
 				request.getSession().removeAttribute(entry.getKey());
 		}
 		
-		return viewLogs(userId, page, model, request);
+		return viewLogs(username, page, model, request);
 	}
 	
 	/* Users profile */
