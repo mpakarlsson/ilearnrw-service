@@ -55,7 +55,7 @@ public class DataloggerController {
 	 * 
 	 * @return List of userId's.
 	 */
-	@RequestMapping(value = "/log/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/logs/users", method = RequestMethod.GET)
 	public @ResponseBody
 	List<String> getUsers() {
 		return logEntryService.getUsers();
@@ -66,7 +66,7 @@ public class DataloggerController {
 	 * 
 	 * @return "pong" as a JSON string object.
 	 */
-	@RequestMapping(value = "/log/ping", method = RequestMethod.GET)
+	@RequestMapping(value = "/logs/ping", method = RequestMethod.GET)
 	public @ResponseBody
 	String ping() {
 		return "\"pong\"";
@@ -81,7 +81,7 @@ public class DataloggerController {
 	 *            - A LogEntry object in JSON Format.
 	 * @return The string "Added" as a JSON string object.
 	 */
-	@RequestMapping(headers = { "Accept=application/json" }, value = "/log", method = RequestMethod.POST)
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/logs", method = RequestMethod.POST)
 	public @ResponseBody
 	int addLog(@Valid @RequestBody LogEntry log) {
 		int result = -1;
