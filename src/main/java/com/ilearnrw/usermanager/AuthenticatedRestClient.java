@@ -18,6 +18,7 @@ import org.springframework.web.util.UriTemplate;
 
 import com.ilearnrw.services.datalogger.model.LogEntryResult;
 import com.ilearnrw.services.security.Tokens;
+import com.ilearnrw.usermanager.model.User;
 
 @Component
 public class AuthenticatedRestClient {
@@ -28,6 +29,7 @@ public class AuthenticatedRestClient {
 	private String baseUri;
 	
 	private String rolesUri = "user/roles?token={token}";
+	private String userDetailsUri = "user/details/{username}";
 	private String authUri = "user/auth?username={username}&pass={pass}";
 	private String logsUri = "logs/{username}?page={page}";
 
@@ -56,6 +58,10 @@ public class AuthenticatedRestClient {
 		return get(getAuthUri(), Tokens.class, username, pass);
 	}
 	
+	public String getUserDetailsUri() {
+		return baseUri + userDetailsUri;
+	}
+	
 	public String getRolesUri() {
 		return baseUri + rolesUri;
 	}
@@ -68,6 +74,9 @@ public class AuthenticatedRestClient {
 		return baseUri + logsUri;
 	}
 
+	public User getUserDetails(String username) {
+		return get(getUserDetailsUri(), User.class, username);
+	}
 
 	public List<String> getRoles(String token){
 		List list = this.get(getRolesUri(), List.class, token);

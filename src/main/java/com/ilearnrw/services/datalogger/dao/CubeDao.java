@@ -21,7 +21,7 @@ public interface CubeDao {
 
 	int getUserIdByName(String username);
 
-	int createUser(String username, char gender, int birthyear, String language);
+	int createUser(String username, String gender, int birthyear, String language);
 
 	int getProblemByCategoryAndIndex(int problemCategory, int problemIndex);
 

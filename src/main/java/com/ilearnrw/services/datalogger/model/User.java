@@ -9,10 +9,11 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String username;
-	private char gender;
+	private String gender;
 	private int birthyear;
 	private String language;
-	public User(int id, String username, char gender, int birthyear,
+
+	public User(int id, String username, String gender, int birthyear,
 			String language) {
 		super();
 		this.id = id;
@@ -38,10 +39,10 @@ public class User implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
-	public void setGender(char gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 	public int getBirthyear() {

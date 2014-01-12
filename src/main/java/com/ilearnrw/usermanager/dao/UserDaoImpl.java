@@ -31,9 +31,12 @@ public class UserDaoImpl implements UserDao {
 				.withTableName("users").usingGeneratedKeyColumns("id");
 
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
-		parameters.put("username", user.username);
-		parameters.put("password", user.password);
-		parameters.put("enabled", user.enabled);
+		parameters.put("username", user.getUsername());
+		parameters.put("password", user.getPassword());
+		parameters.put("enabled", user.isEnabled());
+		parameters.put("birthdate", user.getBirthdate());
+		parameters.put("gender", user.getGender());
+		parameters.put("language", user.getLanguage());
 		Number newId = insert.executeAndReturnKey(parameters);
 
 		user.setId(newId.intValue());
@@ -63,8 +66,8 @@ public class UserDaoImpl implements UserDao {
 	public void updateData(User user) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.update(
-				"update users set username=?, password=?, enabled=? where id=?",
-				user.username, user.password, user.enabled, user.getId());
+				"update users set username=?, password=?, enabled=?, birthdate=?, gender=?, language=? where id=?",
+				user.getUsername(), user.getPassword(), user.isEnabled(), user.getBirthdate(), user.getGender(), user.getLanguage(), user.getId());
 
 	}
 
@@ -75,6 +78,16 @@ public class UserDaoImpl implements UserDao {
 				new Object[] { id },
 				new BeanPropertyRowMapper<User>(User.class));
 		return user;
+	}
+
+	@Override
+	public User getUserByUsername(String username) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		User user = template.queryForObject("select * from users where username=?",
+				new Object[] { username },
+				new BeanPropertyRowMapper<User>(User.class));
+		return user;
+		
 	}
 
 }

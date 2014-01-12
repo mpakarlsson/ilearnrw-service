@@ -104,7 +104,7 @@ public class CubeDaoImpl implements CubeDao {
 	}
 
 	@Override
-	public int createUser(String username, char gender, int birthyear,
+	public int createUser(String username, String gender, int birthyear,
 			String language) {
 
 		Map<String, Object> parameters = new HashMap<String, Object>(2);

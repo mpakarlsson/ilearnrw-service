@@ -17,6 +17,7 @@
 	<context:component-scan base-package="com.ilearnrw.services.rest" />
 	<context:component-scan base-package="com.ilearnrw.services.datalogger" />
 	<context:component-scan base-package="com.ilearnrw.services.profileAccessUpdater" />
+	<context:component-scan base-package="com.ilearnrw.usermanager" />
 
 	<security:global-method-security
 		secured-annotations="enabled" pre-post-annotations="enabled">
@@ -26,6 +27,11 @@
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven content-negotiation-manager="cnManager">
 	</annotation-driven>
+
+	<beans:bean id="appsConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<beans:property name="location" value="classpath:api.properties" />
+	</beans:bean>
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
 		up static resources in the ${webappRoot}/resources directory -->
@@ -68,6 +74,11 @@
 				<beans:bean
 					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
 					<beans:property name="name" value="cube_problems" />
+				</beans:bean>
+
+				<beans:bean
+					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+					<beans:property name="name" value="users" />
 				</beans:bean>
 
 			</beans:set>

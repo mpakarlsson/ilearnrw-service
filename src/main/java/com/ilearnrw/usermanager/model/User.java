@@ -1,5 +1,7 @@
 package com.ilearnrw.usermanager.model;
 
+import java.util.Date;
+
 import javax.validation.constraints.Size;
 
 public class User {
@@ -7,13 +9,19 @@ public class User {
 	private Integer id;
 
 	@Size(min = 4, max = 20)
-	public String username;
+	private String username;
 
 	@Size(min = 4, max = 20)
-	public String password;
+	private String password;
 
-	public boolean enabled;
+	private boolean enabled;
 
+	@Size(max = 1)
+	private String gender;
+	private Date birthdate;
+	private String language;
+
+	
 	public User() {
 	}
 
@@ -57,5 +65,31 @@ public class User {
 	public boolean equals(Object obj) {
 		return id == ((User)obj).id;
 	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public Date getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(Date birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+	
 	
 }

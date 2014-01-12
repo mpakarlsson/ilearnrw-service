@@ -6,16 +6,20 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.ilearnrw.services.datalogger.dao.CubeDao;
+import com.ilearnrw.services.datalogger.dao.TimeUtils;
 import com.ilearnrw.services.datalogger.model.ListWithCount;
 import com.ilearnrw.services.datalogger.model.LogEntry;
 import com.ilearnrw.services.datalogger.model.Problem;
 import com.ilearnrw.services.datalogger.model.Session;
 import com.ilearnrw.services.datalogger.model.SessionType;
 import com.ilearnrw.services.datalogger.model.SystemTags;
+import com.ilearnrw.services.datalogger.model.User;
 import com.ilearnrw.services.datalogger.model.WordCount;
+import com.ilearnrw.usermanager.AuthenticatedRestClient;
 
 @Component
 public class CubeServiceImpl implements CubeService {
@@ -25,6 +29,9 @@ public class CubeServiceImpl implements CubeService {
 	@Autowired
 	CubeDao cubeDao;
 
+	@Autowired
+	AuthenticatedRestClient restClient;
+	
 	@Override
 	public boolean handle(LogEntry entry) {
 
@@ -107,13 +114,23 @@ public class CubeServiceImpl implements CubeService {
 	private int findOrCreateUser(String username) {
 		int id = cubeDao.getUserIdByName(username);
 		if (id == -1) {
-			// TODO fetch user data via REST call
-			int birthyear = 2013;
-			char gender = 'M';
-			String language = "EN";
-			id = cubeDao.createUser(username, gender, birthyear, language);
+			User user = getUserDetailsFromRemoteService(username);
+			id = cubeDao.createUser(username, user.getGender(), user.getBirthyear(), user.getLanguage());
 		}
 		return id;
+	}
+
+	@Cacheable(value = "users", unless = "#result == null")
+	private User getUserDetailsFromRemoteService(String username) {
+		LOG.debug(String.format("Fetching data for %s from remote service", username));
+		com.ilearnrw.usermanager.model.User user = restClient.getUserDetails(username);
+		
+		if (user == null) {
+			LOG.debug(String.format("User %s not found by remote service!", username));
+			return new User(-1, username, " ", 1900, "");
+		}
+		
+		return new User(user.getId(), username, user.getGender(), TimeUtils.getBirthYear(user.getBirthdate()), user.getLanguage());
 	}
 
 	private int findOrCreateApplication(String applicationId) {
