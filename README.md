@@ -18,9 +18,10 @@ connections settings.
 
 *Initial database import*
 
-There are 2 SQL files that you need to run:
+The following SQL files need to be run for a clean deployment:
 
     /src/main/resources/db.sql
-    /src/main/resources/datalogger.sql
+    /src/main/resources/datalogs.sql
+	/src/main/resources/cube.sql
 
-Note, The tables for storing user profiles has to be generated.
+Note, The tables for storing user profiles has to be generated using http://api.ilearnrw.eu/ilearnrw/profile/generateSql

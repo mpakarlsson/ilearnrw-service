@@ -15,5 +15,7 @@ public interface UserService {
 
 	public void deleteData(int id);
 
+	public User getUserByUsername(String username);
+
 
 }

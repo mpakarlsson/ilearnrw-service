@@ -38,6 +38,13 @@
 		<property name="password" value="${dataloggerdb.password}" />
 	</bean>
 
+	<bean id="dataLoggerCubeDataSource" name="DataloggerCubeDatasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${dataloggercubedb.driver}" />
+		<property name="url" value="${dataloggercubedb.url}" />
+		<property name="username" value="${dataloggercubedb.username}" />
+		<property name="password" value="${dataloggercubedb.password}" />
+	</bean>
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

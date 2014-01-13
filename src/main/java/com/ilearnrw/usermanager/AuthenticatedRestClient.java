@@ -16,8 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
-import com.ilearnrw.services.datalogger.LogEntryResult;
+import com.ilearnrw.services.datalogger.model.LogEntryResult;
 import com.ilearnrw.services.security.Tokens;
+import com.ilearnrw.usermanager.model.User;
 
 @Component
 public class AuthenticatedRestClient {
@@ -28,8 +29,9 @@ public class AuthenticatedRestClient {
 	private String baseUri;
 	
 	private String rolesUri = "user/roles?token={token}";
+	private String userDetailsUri = "user/details/{username}";
 	private String authUri = "user/auth?username={username}&pass={pass}";
-	private String logsUri = "logs/{userId}?page={page}";
+	private String logsUri = "logs/{username}?page={page}";
 
 	public AuthenticatedRestClient() {
 		this.template = new RestTemplate();
@@ -56,6 +58,10 @@ public class AuthenticatedRestClient {
 		return get(getAuthUri(), Tokens.class, username, pass);
 	}
 	
+	public String getUserDetailsUri() {
+		return baseUri + userDetailsUri;
+	}
+	
 	public String getRolesUri() {
 		return baseUri + rolesUri;
 	}
@@ -68,6 +74,9 @@ public class AuthenticatedRestClient {
 		return baseUri + logsUri;
 	}
 
+	public User getUserDetails(String username) {
+		return get(getUserDetailsUri(), User.class, username);
+	}
 
 	public List<String> getRoles(String token){
 		List list = this.get(getRolesUri(), List.class, token);
@@ -82,10 +91,10 @@ public class AuthenticatedRestClient {
 	public LogEntryResult getLogs(Map<String, String> args)
 	{
 		List<String> stringArgsList = new ArrayList<String>();
-		stringArgsList.add(args.get("userId"));
+		stringArgsList.add(args.get("username"));
 		stringArgsList.add(args.get("page"));
 		String logsUri = getLogsUri();
-		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId", "sessionId"))
+		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId"))
 			if (args.containsKey(param))
 			{
 				logsUri = logsUri.concat("&" + param + "={" + param + "}");

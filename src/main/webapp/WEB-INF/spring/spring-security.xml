@@ -28,14 +28,12 @@
 		entry-point-ref="authenticationEntryPoint">
 		<intercept-url pattern="/user/auth" access="permitAll" />
 		<intercept-url pattern="/user/newtokens" access="permitAll" />
-		<intercept-url pattern="/log" access="permitAll" />
-		<intercept-url pattern="/log/*" access="permitAll" />
-		<intercept-url pattern="/logs/*" access="permitAll" />
-		<intercept-url pattern="/logs/*/*" access="permitAll" />
+		<intercept-url pattern="/user/details/*" access="permitAll" />
+		<intercept-url pattern="/logs/**" access="permitAll" />
 
 		<intercept-url pattern="/profile" access="permitAll" />
 		<intercept-url pattern="/profile/*" access="permitAll" />
-		<intercept-url pattern="/profile/*/*" access="permitAll" />
+		<intercept-url pattern="/profile/**" access="permitAll" />
 
 		<intercept-url pattern="/text/classify/*" access="permitAll" />
 		

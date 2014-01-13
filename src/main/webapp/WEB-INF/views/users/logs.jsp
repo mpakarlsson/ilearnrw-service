@@ -31,7 +31,7 @@
 		<legend>
 			Current filters
 		</legend>
-		<c:if test="${ empty sessionScope.tags and empty sessionScope.applicationId and empty sessionScope.timestart and empty sessionScope.timeend and empty sessionScope.sessionId}">
+		<c:if test="${ empty sessionScope.tags and empty sessionScope.applicationId and empty sessionScope.timestart and empty sessionScope.timeend}">
 			There are no current filters applied.
 		</c:if>
 		<c:if test="${not empty sessionScope.tags}">
@@ -46,9 +46,6 @@
 		<c:if test="${not empty sessionScope.timeend}">
 			Time end: <c:out value="${sessionScope.timeend}"/><br/>
 		</c:if>
-		<c:if test="${not empty sessionScope.sessionId}">
-			Session ID: <c:out value="${sessionScope.sessionId}"/><br/>
-		</c:if>
 	</fieldset>
 	<fieldset>
 		<legend>
@@ -59,7 +56,6 @@
 			<label>Application ID:</label><input type="text" name="applicationId" value="<c:out value="${sessionScope.applicationId}"/>"/><br/>
 			<label>Time start:</label><input type="text" name="timestart" value="<c:out value="${sessionScope.timestart}"/>"/><br/>
 			<label>Time end:</label><input type="text" name="timeend" value="<c:out value="${sessionScope.timeend}"/>"/><br/>
-			<label>Session ID:</label><input type="text" name="sessionId" value="<c:out value="${sessionScope.sessionId}"/>"/><br/>
 			<input type="submit" value="Apply filters">
 		</form:form>
 	</fieldset>
@@ -71,21 +67,19 @@
 		    <c:when test="${ not empty logEntryResult.results}">
 				<table border="1">
 					<tr>
-						<th>User ID</th>
-						<th>Tags</th>
+						<th>Username</th>
+						<th>Tag</th>
 						<th>Value</th>
 						<th>Application ID</th>
 						<th>Time</th>
-						<th>Session ID</th>
 					</tr>
 					<c:forEach items="${logEntryResult.results}" var="log">
 						<tr>
-							<td>${log.userId}</td>
-							<td>${log.tags}</td>
+							<td>${log.username}</td>
+							<td>${log.tag}</td>
 							<td>${log.value}</td>
 							<td>${log.applicationId}</td>
 							<td>${log.timestamp}</td>
-							<td>${log.sessionId}</td>
 						</tr>
 					</c:forEach>
 				</table>

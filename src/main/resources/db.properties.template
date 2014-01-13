@@ -12,6 +12,13 @@ dataloggerdb.driver=com.mysql.jdbc.Driver
 dataloggerdb.username=root
 dataloggerdb.password=
 
+# database to store datalogger cube data
+dataloggercubedb.url=jdbc:mysql://localhost:3306/datalogs
+dataloggercubedb.dialect=org.hibernate.dialect.MySQLDialect
+dataloggercubedb.driver=com.mysql.jdbc.Driver
+dataloggercubedb.username=root
+dataloggercubedb.password=
+
 # database with user's profiles
 profiledb.url=jdbc:mysql://localhost:3306/profiles
 profiledb.dialect=org.hibernate.dialect.MySQLDialect

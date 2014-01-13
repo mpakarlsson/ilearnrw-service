@@ -33,6 +33,8 @@ import com.ilearnrw.services.security.RefreshTokenData;
 import com.ilearnrw.services.security.RestToken;
 import com.ilearnrw.services.security.TokenUtils;
 import com.ilearnrw.services.security.Tokens;
+import com.ilearnrw.usermanager.model.User;
+import com.ilearnrw.usermanager.services.UserService;
 
 @Controller
 public class AuthController {
@@ -41,7 +43,10 @@ public class AuthController {
 
 	@Autowired
 	@Qualifier("userService")
-	private UserDetailsService userService;
+	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private KeyBasedPersistenceTokenService tokenService;
@@ -95,7 +100,7 @@ public class AuthController {
 
 		try {
 
-			UserDetails userDetails = userService.loadUserByUsername(username);
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
 			if (userDetails.getPassword().compareTo(pass) != 0) {
 				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -119,9 +124,9 @@ public class AuthController {
 
 	@RequestMapping(value = "/user/details/{username}", method = RequestMethod.GET)
 	public @ResponseBody
-	UserDetails userDetailsById(@PathVariable String username) {
-		UserDetails details = userService.loadUserByUsername(username);
-		return details;
+	User userDetailsById(@PathVariable String username) {
+		User user = userService.getUserByUsername(username);
+		return user;
 	}
 
 	@RequestMapping(value = "/user/roles", method = RequestMethod.GET)
@@ -135,14 +140,6 @@ public class AuthController {
 		
 		}
 		return roles;
-	}
-
-	@RequestMapping(value = "/user/info", method = RequestMethod.GET)
-	public @ResponseBody
-	RestToken userInfo() {
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
-		return (RestToken) auth;
 	}
 
 	@RequestMapping(value = "/user/id", method = RequestMethod.GET)
