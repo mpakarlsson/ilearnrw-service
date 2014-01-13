@@ -81,7 +81,7 @@ public class UserManagerController {
 	@Autowired
 	private AuthenticatedRestClient restClient;
 
-	@Autowired(required=false)
+	@Autowired(required = false)
 	CacheManager cacheManager;
 
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
@@ -455,14 +455,14 @@ public class UserManagerController {
 
 	@RequestMapping(value = "/cache", method = RequestMethod.GET)
 	public @ResponseBody
-	String clearCache(
+	Map<String, List<String>> clearCache(
 			@RequestParam(value = "clear", required = false) boolean clear) {
 
 		if (cacheManager == null) {
-			return "No cache manager set!";
+			return null;
 		}
-		
-		StringBuilder sb = new StringBuilder();
+
+		Map<String, List<String>> map = new HashMap<String, List<String>>();
 
 		for (String cacheName : cacheManager.getCacheNames()) {
 			ConcurrentMapCache cache = (ConcurrentMapCache) cacheManager
@@ -470,17 +470,19 @@ public class UserManagerController {
 			if (cache == null) {
 				continue;
 			}
-			
-			Set set = cache.getNativeCache().entrySet();
-			for(Object o: set) {
-				sb.append(o.toString());
-			}
-			
+
+			List<String> list = new ArrayList<String>();
+			map.put(cacheName, list);
 			if (clear) {
 				cache.clear();
-			}
+			} else {
 
+				Set set = cache.getNativeCache().entrySet();
+				for (Object o : set) {
+					list.add(o.toString());
+				}
+			}
 		}
-		return sb.toString();
+		return map;
 	}
 }
