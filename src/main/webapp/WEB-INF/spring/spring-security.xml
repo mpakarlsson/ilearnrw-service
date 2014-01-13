@@ -36,6 +36,8 @@
 		<intercept-url pattern="/profile" access="permitAll" />
 		<intercept-url pattern="/profile/*" access="permitAll" />
 		<intercept-url pattern="/profile/*/*" access="permitAll" />
+
+		<intercept-url pattern="/text/classify/*" access="permitAll" />
 		
 		<!-- needed for the login form -->
 		<intercept-url pattern="/resources/style.css" access="permitAll" />

@@ -2,6 +2,7 @@ package com.ilearnrw.services.profileAccessUpdater;
 
 import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
@@ -16,7 +17,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
@@ -201,8 +201,7 @@ public class DbProfileProvider implements IProfileProvider {
 			return new LC_English();
 		return new LC_Greek();
 	}
-	
-	int getLanguageCode(String userId) throws ProfileProviderException {
+	LC_Base getLanguage(String userId) throws ProfileProviderException {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		final class LanguageCodeResult
 		{
@@ -220,11 +219,7 @@ public class DbProfileProvider implements IProfileProvider {
 						});
 		if( languageCodeResult.languageCode == -1 )
 			throw new ProfileProviderException(Type.userDoesNotExist, "User not found in ProfileLanguage table.");
-		return languageCodeResult.languageCode;
-	}
-	
-	LC_Base getLanguage(String userId) throws ProfileProviderException {
-		return getLanguage(getLanguageCode(userId));
+		return getLanguage(languageCodeResult.languageCode);
 	}
 	
 	
@@ -244,7 +239,10 @@ public class DbProfileProvider implements IProfileProvider {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
-		final UserProblems severitiesToProblems = new UserProblems();
+		ProblemDefinitionIndex definitionIndex = new ProblemDefinitionIndex(language.getProblemDefinitionIndexSize_X(), language.getLanguageCode());
+		for (int i=0; i<language.getProblemDefinitionIndexSize_X(); i++)
+			definitionIndex.constructProblemRow(i, language.getProblemDefinitionIndexSizes_Y()[i]);
+		final UserProblems severitiesToProblems = new UserProblems(definitionIndex, false);
 		severitiesToProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 
@@ -269,13 +267,13 @@ public class DbProfileProvider implements IProfileProvider {
 									}
 								}
 							}});
-		return new UserProfile(
+		return new UserProfile(language.getLanguageCode(),
 				severitiesToProblems,
 				preferences);
 	}
-	void storeProfile(String userId, UserProfile profile) throws QueryParamException, ProfileProviderException 
+	void storeProfile(String userId, UserProfile profile) throws QueryParamException
 	{
-		final LC_Base language = getLanguage(userId);
+		final LC_Base language = getLanguage(profile.getLanguage());
 		final class ReplaceQuery {
 			public void add(String name, Object value){
 				params.add(name);
@@ -354,7 +352,7 @@ public class DbProfileProvider implements IProfileProvider {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
 		Object[] params = {userId};
 		String username = jdbcTemplate.queryForObject("SELECT username FROM users WHERE id=?", params, String.class);
-		return new UserDetails(username, 0, LanguageCode.fromInteger(getLanguageCode(userId)));
+		return new UserDetails(username, 0, getLanguage(userId).getLanguageCode());
 	}
 
 	@Override
