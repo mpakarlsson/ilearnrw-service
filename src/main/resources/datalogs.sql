@@ -1,11 +1,17 @@
-CREATE TABLE logs (
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	userId VARCHAR(32),
-	tag VARCHAR(32),
-	value VARCHAR(512),
-	applicationId VARCHAR(32),
-	timestamp DATETIME,
-	sessionId VARCHAR(32)
+CREATE TABLE `logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) DEFAULT NULL,
+  `applicationId` varchar(20) DEFAULT NULL,
+  `tag` varchar(100) DEFAULT NULL,
+  `word` varchar(100) DEFAULT NULL,
+  `problem_category` smallint(6) DEFAULT NULL,
+  `problem_index` smallint(6) DEFAULT NULL,
+  `duration` decimal(10,0) DEFAULT NULL,
+  `level` varchar(100) DEFAULT NULL,
+  `mode` varchar(100) DEFAULT NULL,
+  `value` text,
+  `timestamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
 
 DELIMITER //
