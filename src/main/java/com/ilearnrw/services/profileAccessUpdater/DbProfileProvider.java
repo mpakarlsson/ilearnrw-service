@@ -174,8 +174,8 @@ public class DbProfileProvider implements IProfileProvider {
 	static private class LC_English implements LC_Base
 	{
 		static final String TableName = "LC_English";
-		static final Integer ProblemDefinitionIndexSize_X = 9;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
+		static final Integer ProblemDefinitionIndexSize_X = 6;
+		static final Integer[] ProblemDefinitionIndexSizes_Y = {37,72,61,40,57,127};
 
 		public String getTableName() { return TableName; }
 		@Override
