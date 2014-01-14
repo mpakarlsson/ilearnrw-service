@@ -32,8 +32,11 @@ public class AuthenticatedRestClient {
 	private RestTemplate template;
 	private HttpHeaders headers;
 
-	@Value("${api.baseurl}")
-	private String baseUri;
+	@Value("${auth.baseurl}")
+	private String authBaseUri;
+
+	@Value("${logs.baseurl}")
+	private String logsBaseUri;
 
 	private String rolesUri = "user/roles?token={token}";
 	private String userDetailsUri = "user/details/{username}";
@@ -101,19 +104,19 @@ public class AuthenticatedRestClient {
 	}
 
 	public String getUserDetailsUri() {
-		return baseUri + userDetailsUri;
+		return authBaseUri + userDetailsUri;
 	}
 
 	public String getRolesUri() {
-		return baseUri + rolesUri;
+		return authBaseUri + rolesUri;
 	}
 
 	public String getAuthUri() {
-		return baseUri + authUri;
+		return authBaseUri + authUri;
 	}
 
 	public String getLogsUri() {
-		return baseUri + logsUri;
+		return logsBaseUri + logsUri;
 	}
 
 	public User getUserDetails(String username) {

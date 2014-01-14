@@ -4,10 +4,20 @@ ilearnrw-service
 Development environment
 =======================
 
-List of requrements:
+List of requirements:
 
     * Spring MVC3
     * Database server
+
+Server configuration
+======================
+HTTPS must be activated. This can be done by following the tutorial here: http://java.dzone.com/articles/setting-ssl-tomcat-5-minutes
+The changes must be done on developer machines from STS, Package Explorer/Servers/VMware vFabric tc Server Developer Edition v2.9-config/server.xml, otherwise changes will be overwritten.
+
+Properties files:
+api.properties & apps.properties
+auth.baseurl = the URL at which the Authentication API is available, default https://localhost:8443/test/
+logs.baseurl = the URL at which the DataLogger API is available, default https://localhost:8443/test/
 
 Database configuration
 ======================
