@@ -6,6 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,16 +31,52 @@ import com.ilearnrw.usermanager.model.User;
 public class AuthenticatedRestClient {
 	private RestTemplate template;
 	private HttpHeaders headers;
-	
+
 	@Value("${api.baseurl}")
 	private String baseUri;
-	
+
 	private String rolesUri = "user/roles?token={token}";
 	private String userDetailsUri = "user/details/{username}";
 	private String authUri = "user/auth?username={username}&pass={pass}";
 	private String logsUri = "logs/{username}?page={page}";
 
+	private static class NullHostnameVerifier implements HostnameVerifier {
+		public boolean verify(String hostname, SSLSession session) {
+			return true;
+		}
+	}
+
 	public AuthenticatedRestClient() {
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+
+			public void checkClientTrusted(
+					java.security.cert.X509Certificate[] certs, String authType) {
+				// No need to implement.
+			}
+
+			public void checkServerTrusted(
+					java.security.cert.X509Certificate[] certs, String authType) {
+				// No need to implement.
+			}
+		} };
+
+		// Install the all-trusting trust manager
+		try {
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection
+					.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection
+					.setDefaultHostnameVerifier(new NullHostnameVerifier());
+			SSLContext.setDefault(sc);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
 		this.template = new RestTemplate();
 		this.headers = new HttpHeaders() {
 			{
@@ -52,16 +95,15 @@ public class AuthenticatedRestClient {
 
 		return response.getBody();
 	}
-	
-	public Tokens getTokens(String username, String pass)
-	{
+
+	public Tokens getTokens(String username, String pass) {
 		return get(getAuthUri(), Tokens.class, username, pass);
 	}
-	
+
 	public String getUserDetailsUri() {
 		return baseUri + userDetailsUri;
 	}
-	
+
 	public String getRolesUri() {
 		return baseUri + rolesUri;
 	}
@@ -69,7 +111,7 @@ public class AuthenticatedRestClient {
 	public String getAuthUri() {
 		return baseUri + authUri;
 	}
-	
+
 	public String getLogsUri() {
 		return baseUri + logsUri;
 	}
@@ -78,7 +120,7 @@ public class AuthenticatedRestClient {
 		return get(getUserDetailsUri(), User.class, username);
 	}
 
-	public List<String> getRoles(String token){
+	public List<String> getRoles(String token) {
 		List list = this.get(getRolesUri(), List.class, token);
 		List<String> result = new ArrayList<String>();
 		for (Object s : list) {
@@ -87,16 +129,15 @@ public class AuthenticatedRestClient {
 		return result;
 
 	}
-	
-	public LogEntryResult getLogs(Map<String, String> args)
-	{
+
+	public LogEntryResult getLogs(Map<String, String> args) {
 		List<String> stringArgsList = new ArrayList<String>();
 		stringArgsList.add(args.get("username"));
 		stringArgsList.add(args.get("page"));
 		String logsUri = getLogsUri();
-		for (String param : Arrays.asList("timestart", "timeend", "tags", "applicationId"))
-			if (args.containsKey(param))
-			{
+		for (String param : Arrays.asList("timestart", "timeend", "tags",
+				"applicationId"))
+			if (args.containsKey(param)) {
 				logsUri = logsUri.concat("&" + param + "={" + param + "}");
 				stringArgsList.add(args.get(param));
 			}

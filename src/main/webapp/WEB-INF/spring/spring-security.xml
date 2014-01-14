@@ -26,16 +26,15 @@
 		injected. -->
 	<http create-session="stateless" use-expressions="true"
 		entry-point-ref="authenticationEntryPoint">
-		<intercept-url pattern="/user/auth" access="permitAll" />
-		<intercept-url pattern="/user/newtokens" access="permitAll" />
-		<intercept-url pattern="/user/details/*" access="permitAll" />
-		<intercept-url pattern="/logs/**" access="permitAll" />
+		<intercept-url pattern="/user/auth" access="permitAll" requires-channel="https" />
+		<intercept-url pattern="/user/newtokens" access="permitAll" requires-channel="https" />
+		<intercept-url pattern="/user/details/*" access="permitAll" requires-channel="https" />
+		<intercept-url pattern="/logs/**" access="permitAll" requires-channel="https"/>
 
-		<intercept-url pattern="/profile" access="permitAll" />
-		<intercept-url pattern="/profile/*" access="permitAll" />
-		<intercept-url pattern="/profile/**" access="permitAll" />
+		<intercept-url pattern="/profile" access="permitAll" requires-channel="https"/>
+		<intercept-url pattern="/profile/**" access="permitAll" requires-channel="https"/>
 		
-		<intercept-url pattern="/cache" access="permitAll" />
+		<intercept-url pattern="/cache" access="permitAll" requires-channel="https" />
 		
 		<!-- needed for the login form -->
 		<intercept-url pattern="/resources/style.css" access="permitAll" />
