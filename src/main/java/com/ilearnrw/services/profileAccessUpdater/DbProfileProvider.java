@@ -260,7 +260,7 @@ public class DbProfileProvider implements IProfileProvider {
 									}
 								}
 							}});
-		return new UserProfile(
+		return new UserProfile(languageCode.getLanguageCode(),
 				severitiesToProblems,
 				preferences);
 	}

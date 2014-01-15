@@ -6,7 +6,9 @@ import ilearnrw.user.profile.UserSeverities;
 import ilearnrw.utils.LanguageCode;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -89,6 +91,14 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "userId", required = true) String userId)
 			throws ProfileProviderException {
 		return profileProvider.getProfile(userId);
+	}
+	
+	@RequestMapping(value = "/profile/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasPermission(#id, 'READ_PROFILE')")
+	public @ResponseBody
+	String getProfile(
+			@PathVariable int id) {
+		return "access to profile with id " + id + " granted!";
 	}
 
 	/**
