@@ -16,6 +16,7 @@
 		<intercept-url pattern="/apps/login" access="permitAll" />
 		<intercept-url pattern="/apps/logout" access="permitAll" />
 		<intercept-url pattern="/apps/loginfailed" access="permitAll" />
+		<intercept-url pattern="/apps/resources/**" access="permitAll"/>
 		<intercept-url pattern="/apps/**" access="isAuthenticated()" />
 		<form-login login-page="/apps/login" default-target-url="/apps/home"
 			authentication-failure-url="/apps/loginfailed" />
@@ -36,9 +37,6 @@
 		<intercept-url pattern="/profile/**" access="permitAll" />
 
 		<intercept-url pattern="/text/classify/*" access="permitAll" />
-		
-		<!-- needed for the login form -->
-		<intercept-url pattern="/resources/style.css" access="permitAll" />
 
 		<!-- this implies that any method has a valid token parameter -->
 		<intercept-url pattern="/**" access="isAuthenticated()" />
