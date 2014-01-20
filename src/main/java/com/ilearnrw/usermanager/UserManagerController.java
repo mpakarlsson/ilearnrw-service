@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -204,7 +206,7 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewProfile(@PathVariable String userId, ModelMap model)
-			throws ProfileProviderException {
+			throws ProfileProviderException, Exception {
 		UserProfile profile = null;
 		try {
 			profile = profileProvider.getProfile(userId);
@@ -213,7 +215,13 @@ public class UserManagerController {
 		}
 
 		if (profile == null) {
-			profileProvider.createProfile(userId, LanguageCode.EN);
+			User current = userService.getUser(Integer.parseInt(userId));
+			if (current.getLanguage().equalsIgnoreCase("EN"))
+				profileProvider.createProfile(userId, LanguageCode.EN);
+			else if (current.getLanguage().equalsIgnoreCase("GR"))
+				profileProvider.createProfile(userId, LanguageCode.GR);
+			else 
+				throw new Exception("User language not found");
 			profile = profileProvider.getProfile(userId);
 		}
 
@@ -302,11 +310,19 @@ public class UserManagerController {
 	public String insertUser(@Valid @ModelAttribute("user") User user,
 			BindingResult result, ModelMap model) {
 
+		if (userService.getUserByUsername(user.getUsername()) != null)
+			result.rejectValue("username", "username.exists");
 		if (result.hasErrors())
+		{
+			if (result.hasFieldErrors("birthdate"))
+			{
+				for (Iterator iterator = result.getFieldErrors("birthdate").iterator(); iterator.hasNext(); )
+					System.out.println(((FieldError)iterator.next()).getCode());
+			}
 			return "users/form.insert";
+		}
 		userService.insertData(user);
 
-		model.put("message", "inserted");
 		return "redirect:/apps/panel";
 	}
 

@@ -2,6 +2,7 @@ package com.ilearnrw.usermanager.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
 public class User {
@@ -15,13 +16,12 @@ public class User {
 	private String password;
 
 	private boolean enabled;
-
-	@Size(max = 1)
 	private String gender;
+	
+	@Past
 	private Date birthdate;
 	private String language;
 
-	
 	public User() {
 	}
 

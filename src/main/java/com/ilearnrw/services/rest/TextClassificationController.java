@@ -49,7 +49,7 @@ public class TextClassificationController {
 		InputStream greekDictionary = request.getSession().getServletContext().getResourceAsStream("/data/greek_dictionary.txt");
 		InputStream greekSoundDictionary = request.getSession().getServletContext().getResourceAsStream("/data/greek_sound_similarity.txt");
 		if (greekDictionary == null)
-			throw new FileNotFoundException("/data/greek_sound_similarity.txt");
+			throw new FileNotFoundException("/data/greek_dictionary.txt");
 		if (greekSoundDictionary == null)
 			throw new FileNotFoundException("/data/greek_sound_similarity.txt");
 		if( profile.getLanguage() == LanguageCode.EN)
