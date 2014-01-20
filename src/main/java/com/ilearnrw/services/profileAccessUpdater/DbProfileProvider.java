@@ -1,6 +1,8 @@
 package com.ilearnrw.services.profileAccessUpdater;
 
+import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
@@ -63,6 +65,8 @@ public class DbProfileProvider implements IProfileProvider {
 
 	@Autowired
 	DataSource profileDataSource;
+	@Autowired
+	DataSource usersDataSource;
 	@Override
 	public UserProfile getProfile(String userId)
 			throws ProfileProviderException {
@@ -170,8 +174,8 @@ public class DbProfileProvider implements IProfileProvider {
 	static private class LC_English implements LC_Base
 	{
 		static final String TableName = "LC_English";
-		static final Integer ProblemDefinitionIndexSize_X = 9;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
+		static final Integer ProblemDefinitionIndexSize_X = 6;
+		static final Integer[] ProblemDefinitionIndexSizes_Y = {37,72,61,40,57,127};
 
 		public String getTableName() { return TableName; }
 		@Override
@@ -235,7 +239,10 @@ public class DbProfileProvider implements IProfileProvider {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
-		final UserProblems severitiesToProblems = new UserProblems();
+		ProblemDefinitionIndex definitionIndex = new ProblemDefinitionIndex(language.getProblemDefinitionIndexSize_X(), language.getLanguageCode());
+		for (int i=0; i<language.getProblemDefinitionIndexSize_X(); i++)
+			definitionIndex.constructProblemRow(i, language.getProblemDefinitionIndexSizes_Y()[i]);
+		final UserProblems severitiesToProblems = new UserProblems(definitionIndex, false);
 		severitiesToProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 
@@ -260,13 +267,13 @@ public class DbProfileProvider implements IProfileProvider {
 									}
 								}
 							}});
-		return new UserProfile(languageCode.getLanguageCode(),
+		return new UserProfile(language.getLanguageCode(),
 				severitiesToProblems,
 				preferences);
 	}
-	void storeProfile(String userId, UserProfile profile) throws QueryParamException, ProfileProviderException 
+	void storeProfile(String userId, UserProfile profile) throws QueryParamException
 	{
-		final LC_Base language = getLanguage(userId);
+		final LC_Base language = getLanguage(profile.getLanguage());
 		final class ReplaceQuery {
 			public void add(String name, Object value){
 				params.add(name);
@@ -338,5 +345,19 @@ public class DbProfileProvider implements IProfileProvider {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		jdbcTemplate.update(replaceQuery.getQuery(language),
 							replaceQuery.getParams());
+	}
+
+	@Override
+	public UserDetails getDetails(String userId) throws ProfileProviderException {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
+		Object[] params = {userId};
+		String username = jdbcTemplate.queryForObject("SELECT username FROM users WHERE id=?", params, String.class);
+		return new UserDetails(username, 0, getLanguage(userId).getLanguageCode());
+	}
+
+	@Override
+	public List<String> getUserIdList() {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
+		return jdbcTemplate.queryForList("SELECT id FROM users", String.class);
 	}
 }

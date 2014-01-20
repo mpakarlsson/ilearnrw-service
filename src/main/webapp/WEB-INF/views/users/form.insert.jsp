@@ -1,4 +1,5 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -26,8 +27,44 @@
 				<form:errors path="password" class="error"/>
 			</span>
 			<span>
+				<label >Birth date</label>
+				<fmt:formatDate value="${user.birthdate}" var="dateString" pattern="yyyy/MM/dd" />
+				<form:input path="birthdate" value="${dateString}" />
+				<form:errors path="birthdate" class="error"/>
+			</span>
+			<span>
 				<label >Enabled</label>
 				<form:checkbox path="enabled"/>
+			</span>
+		</fieldset>
+		<fieldset>
+			<legend>
+				Gender
+			</legend>
+			<span>
+				<label >Male</label>
+				<form:radiobutton path="gender" value="M" />
+				<form:errors path="gender" class="error"/>
+			</span>
+			<span>
+				<label >Female</label>
+				<form:radiobutton path="gender" value="F" />
+				<form:errors path="gender" class="error"/>
+			</span>
+		</fieldset>
+		<fieldset>
+			<legend>
+				Language
+			</legend>
+			<span>
+				<label >English</label>
+				<form:radiobutton path="language" value="EN" />
+				<form:errors path="language" class="error"/>
+			</span>
+			<span>
+				<label >Greek</label>
+				<form:radiobutton path="language" value="GR" />
+				<form:errors path="language" class="error"/>
 			</span>
 		</fieldset>
 		<span class="buttonrow">

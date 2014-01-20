@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -83,11 +84,15 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public User getUserByUsername(String username) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		User user = template.queryForObject("select * from users where username=?",
-				new Object[] { username },
-				new BeanPropertyRowMapper<User>(User.class));
+		User user;
+		try {
+			user = template.queryForObject("select * from users where username=?",
+					new Object[] { username },
+					new BeanPropertyRowMapper<User>(User.class));
+		} catch (DataAccessException e) {
+			user = null;
+		}
 		return user;
-		
 	}
 
 }

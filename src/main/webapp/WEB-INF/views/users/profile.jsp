@@ -10,37 +10,51 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
 </head>
 <body>
+	<div class="form-container">
 	<form:form
 		action="${pageContext.servletContext.contextPath}/apps/users/${userId}/profile"
 		method="POST" modelAttribute="profile">
 		
-		<form:hidden path="userSeveritiesToProblems.userSeverities.length" />
-		
-		<label>Language</label>
-		<form:input path="language" />
+		<form:hidden path="userProblems.userSeverities.length" />
+		<fieldset>
+		<legend>Preferences</legend>
 		<label>Font size</label>
 		<form:input path="preferences.fontSize" />
-		<form:hidden path="userSeveritiesToProblems.problems" />
-		<form:hidden path="userSeveritiesToProblems.userSeverities.indices" />
-		
+		<form:hidden path="userProblems.problems" />
+		<form:hidden path="userProblems.userSeverities.indices" />
 		<input type="submit" value="Submit" />
-		<br/>
+		</fieldset>
+		<fieldset>
+		<legend>Severities</legend>
+		<table border="1">
 		<c:forEach var="row"
-			items="${profile.userSeveritiesToProblems.userSeverities.severities}"
+			items="${profile.userProblems.userSeverities.severities}"
 			varStatus="statusRow">
+			<tr>
+			<td>
 			<label>Index <c:out value="${statusRow.index}"/> = </label>
+			</td>
+			<td>
 			<form:input
-					path="userSeveritiesToProblems.userSeverities.indices[${statusRow.index}]" size="2"/>
+					path="userProblems.userSeverities.indices[${statusRow.index}]" size="2"/>
+			</td>
+			<td>
 			<label>Severities:</label>
 			<form:hidden
-				path="userSeveritiesToProblems.userSeverities.severities[${statusRow.index}]" />
+				path="userProblems.userSeverities.severities[${statusRow.index}]" />
+			</td>
 			<c:forEach var="col" items="${row}" varStatus="statusCol">
+				<td>
 				<form:input
-					path="userSeveritiesToProblems.userSeverities.severities[${statusRow.index}][${statusCol.index}]" size="2" style="width: 20px"/>
+					path="userProblems.userSeverities.severities[${statusRow.index}][${statusCol.index}]" size="2" style="width: 20px"/>
+				</td>
 			</c:forEach>
-			<br/>
+			</tr>
 		</c:forEach>
+		</table>
+		</fieldset>
 
 	</form:form>
+	</div>
 </body>
 </html>
