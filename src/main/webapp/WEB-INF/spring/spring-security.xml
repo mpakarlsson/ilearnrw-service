@@ -12,6 +12,11 @@
 	<!-- if you want only specific pattern to avoid security, define different 
 		http blocks here with security="none" -->
 
+	<http use-expressions="true" pattern="/" security="none">
+	</http>
+	<http use-expressions="true" pattern="/endpoints" security="none">
+	</http>
+
 	<http use-expressions="true" pattern="/apps/**">
 		<intercept-url pattern="/apps/login" access="permitAll" />
 		<intercept-url pattern="/apps/logout" access="permitAll" />
