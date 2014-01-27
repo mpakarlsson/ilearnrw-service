@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,9 @@ public class TextClassificationController {
 	@Autowired
 	IProfileProvider profileProvider;
 	
+	@Value("${data.folder}")
+	private String dataFolder;
+	
     private static final Logger log = LoggerFactory.getLogger(TextClassificationResults.class);
 
 	@RequestMapping(headers = {"Accept=application/json"},
@@ -46,12 +50,12 @@ public class TextClassificationController {
 	{
 		UserProfile profile = profileProvider.getProfile(userId);
 		LanguageAnalyzerAPI languageAnalyzer = null;
-		InputStream greekDictionary = request.getSession().getServletContext().getResourceAsStream("/data/greek_dictionary.txt");
-		InputStream greekSoundDictionary = request.getSession().getServletContext().getResourceAsStream("/data/greek_sound_similarity.txt");
+		InputStream greekDictionary = request.getSession().getServletContext().getResourceAsStream(dataFolder + "greek_dictionary.txt");
+		InputStream greekSoundDictionary = request.getSession().getServletContext().getResourceAsStream(dataFolder + "greek_sound_similarity.txt");
 		if (greekDictionary == null)
-			throw new FileNotFoundException("/data/greek_dictionary.txt");
+			throw new FileNotFoundException(dataFolder + "greek_dictionary.txt");
 		if (greekSoundDictionary == null)
-			throw new FileNotFoundException("/data/greek_sound_similarity.txt");
+			throw new FileNotFoundException(dataFolder + "greek_sound_similarity.txt");
 		if( profile.getLanguage() == LanguageCode.EN)
 			languageAnalyzer = new EnglishLanguageAnalyzer();
 		else
