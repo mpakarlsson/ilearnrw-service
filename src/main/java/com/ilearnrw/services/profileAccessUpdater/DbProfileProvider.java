@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
 
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException.Type;
 
 
@@ -239,11 +240,10 @@ public class DbProfileProvider implements IProfileProvider {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
-		ProblemDefinitionIndex definitionIndex = new ProblemDefinitionIndex(language.getProblemDefinitionIndexSize_X(), language.getLanguageCode());
-		for (int i=0; i<language.getProblemDefinitionIndexSize_X(); i++)
-			definitionIndex.constructProblemRow(i, language.getProblemDefinitionIndexSizes_Y()[i]);
-		final UserProblems severitiesToProblems = new UserProblems(definitionIndex, false);
-		severitiesToProblems.setUserSeverities(userSeverities);
+		final UserProblems userProblems = new UserProblems();
+		//userProblems.loadTestEnglishProblems();
+		userProblems.loadTestGreekProblems();
+		userProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
@@ -268,7 +268,7 @@ public class DbProfileProvider implements IProfileProvider {
 								}
 							}});
 		return new UserProfile(language.getLanguageCode(),
-				severitiesToProblems,
+				userProblems,
 				preferences);
 	}
 	void storeProfile(String userId, UserProfile profile) throws QueryParamException
@@ -345,19 +345,5 @@ public class DbProfileProvider implements IProfileProvider {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		jdbcTemplate.update(replaceQuery.getQuery(language),
 							replaceQuery.getParams());
-	}
-
-	@Override
-	public UserDetails getDetails(String userId) throws ProfileProviderException {
-		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
-		Object[] params = {userId};
-		String username = jdbcTemplate.queryForObject("SELECT username FROM users WHERE id=?", params, String.class);
-		return new UserDetails(username, 0, getLanguage(userId).getLanguageCode());
-	}
-
-	@Override
-	public List<String> getUserIdList() {
-		final JdbcTemplate jdbcTemplate = new JdbcTemplate(usersDataSource);
-		return jdbcTemplate.queryForList("SELECT id FROM users", String.class);
 	}
 }

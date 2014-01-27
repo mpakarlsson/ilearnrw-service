@@ -73,7 +73,5 @@ public interface IProfileProvider {
 	 * @throws ProfileProviderException
 	 */
 	void deleteProfile(String userId) throws ProfileProviderException;
-	
-	UserDetails getDetails(String userId) throws ProfileProviderException;
-	List<String> getUserIdList();
+
 }

@@ -2,6 +2,7 @@ package com.ilearnrw.services.rest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,7 @@ import org.springframework.security.core.token.Token;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,6 +32,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.services.security.RefreshTokenData;
 import com.ilearnrw.services.security.RestToken;
 import com.ilearnrw.services.security.TokenUtils;
@@ -149,5 +153,22 @@ public class AuthController {
 		Authentication auth = SecurityContextHolder.getContext()
 				.getAuthentication();
 		return auth.getPrincipal().toString();
+	}
+	
+	@RequestMapping(value = "/user/list", method = RequestMethod.GET)
+	public @ResponseBody
+	List<User> getUserIdList() {
+		return userService.getUserList();
+	}
+	
+	@RequestMapping(value = "/user/firstUserByLanguage/{language}", method = RequestMethod.GET)
+	public @ResponseBody
+	User getUserByLanguage(@PathVariable String language) {
+		for (User user : userService.getUserList())
+		{
+			if (user.getLanguage().equals(language))
+				return user;
+		}
+		return null;
 	}
 }
