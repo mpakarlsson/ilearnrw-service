@@ -242,7 +242,7 @@ public class DbProfileProvider implements IProfileProvider {
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
 		final UserProblems userProblems = new UserProblems();
 		//userProblems.loadTestEnglishProblems();
-		userProblems.loadTestGreekProblems();
+		//userProblems.loadTestGreekProblems();
 		userProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 

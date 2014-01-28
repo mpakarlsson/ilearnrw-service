@@ -1,0 +1,2429 @@
+{
+  "problemsIndex": [
+    {
+      "URI": "Syllable division",
+      "type": {
+        "url": "Syllable division"
+      }
+    },
+    {
+      "URI": "Vowel sounds",
+      "type": {
+        "url": "Vowel sounds"
+      }
+    },
+    {
+      "URI": "Suffixing",
+      "type": {
+        "url": "Suffixing"
+      }
+    },
+    {
+      "URI": "Prefixing",
+      "type": {
+        "url": "Prefixing"
+      }
+    },
+    {
+      "URI": "Phon-Graph",
+      "type": {
+        "url": "Phon-Graph"
+      }
+    },
+    {
+      "URI": "Letter Patterns",
+      "type": {
+        "url": "Letter Patterns"
+      }
+    }
+  ],
+  "problems": [
+   // Syllable division
+    [ 
+      {
+        "descriptions": [
+          "Closed and Open syllables"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "vc/cv"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "v/cv"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "v/v"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "vc/v"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "qu as vc/cv, v/cv and v/v"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "-ture as vc/cv, v/cv and vc/v"
+        ],
+        "problemType": "SYLLABLE_PATTERN"
+      },
+      {
+        "descriptions": [
+          "ation-eɪʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+          "otion-əʊʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+          "ition-ɪʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+          "ution-uːʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+          "action-ækʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+          "ection-ekʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "iction-ɪkʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "uction-ʌkʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ention-enʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ble-bəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "fle-fəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ple-pəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "tle-təl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "dle-dəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "kle-kəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "cle-kəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "gle-ɡəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "zle-zəl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "stle-səl"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "asion-eɪʒən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "usion-uːʒən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ision-ɪʒən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "osion-əʊʒən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "mission-mɪʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ession-eʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ussion-ʌʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "version-vɜːʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "ulsion-ʌlʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "cian-ʃən"
+        ],
+        "problemType": "SUFFIX_PATTERN"
+      },
+      {
+        "descriptions": [
+        "3 syllables or higher"
+        ],
+        "problemType": "SYLLABLE_COUNT"
+      }
+    ],
+    //Vowel Sounds 
+    [
+      {
+        "descriptions": [
+          "i-ɪ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "a-æ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "o-ɒ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "i-aɪ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "e-e"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "u-ʌ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ar-ɑː"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ee-iː"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "or-ɔː"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+         "y-i"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "y-aɪ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ie-aɪ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "i_C_e-aɪ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+        "a_C_e-eɪ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ay-eɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "er-ə"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "oo-uː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "oo-ʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "o_C_e-əʊ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "u_C_e-juː"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ea-iː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ea-e"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ou-aʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "igh-aɪ"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "o-ʌ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ice-ɪs"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ai-eɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ow-əʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ow-aʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "oa-əʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "o-əʊ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "e_C_e-iː"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ir-ɜː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ur-ɜː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "wor-wɜː"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "oi-ɔɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "oy-ɔɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ie-iː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "au-ɔː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "aw-ɔː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ore-ɔː"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ew-juː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ue-uː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ear-ɜː"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "y-ɪ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "y_C_e-aɪ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ou-aʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ei-iː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ei-eɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "eigh-eɪ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "our-ə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ar-ə"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ui-uː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ui-ɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ey-iː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ey-eɪ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "oe-əʊ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "eu-juː"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "eur-ə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ine-aɪn"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ine-ʒɪn"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "ine-iːn"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "air-eə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "are-eə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ear-eə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ear-ɪə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "eer-ɪə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ere-ɪə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ure-ʊə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "oor-ʊə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "our-ʊə"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "a-ɒ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      }   
+    ], 
+    //SUFFIX
+    [
+      {
+        "descriptions": [
+          "s"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ed"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "es"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "less"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ness"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "en"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ing"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ful"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ish"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ist"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ing"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "ed"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "en"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "ish"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "y"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "y"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "ly"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ity"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ility"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ty"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ing"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "ed"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "y"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "en"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "er"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "er"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "er"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "ed-d"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ed-d"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "ed-d"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "ed-t"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ed-t"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "ed-t"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "est"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "est"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "est"
+        ],
+        "problemType": "SUFFIX_DOUBLE"
+      },
+      {
+        "descriptions": [
+          "al"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "al"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "es"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ed"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ly"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ness"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ful"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "less"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "er"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "est"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "For words longer than one syllable: [double rule] if syllable before suffix stressed but [add rule] if first syllable stressed. Suffix -ing"
+        ],
+        "problemType": "SUFFIX_STRESS_PATTERN"
+      },
+      {
+        "descriptions": [
+          "For words longer than one syllable: [double rule] if syllable before suffix stressed but [add rule] if first syllable stressed. Suffix -ed"
+        ],
+        "problemType": "SUFFIX_STRESS_PATTERN"
+      },
+      {
+        "descriptions": [
+          "ous"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "ous"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "ous"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "tious"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "cious"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ious"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "uous"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "or"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "or"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "able"
+        ],
+        "problemType": "SUFFIX_ADD"
+      },
+      {
+        "descriptions": [
+          "able"
+        ],
+        "problemType": "SUFFIX_DROP"
+      },
+      {
+        "descriptions": [
+          "able"
+        ],
+        "problemType": "SUFFIX_CHANGE"
+      },
+      {
+        "descriptions": [
+          "ment"
+        ],
+        "problemType": "SUFFIX_ADD"
+      }
+    ], 
+    //PREFIX
+    [
+      {
+        "descriptions": [
+          "un"
+        ],
+        "problemType": "PREFIX"
+      },
+      {
+        "descriptions": [
+          "mis"
+        ],
+        "problemType": "PREFIX"
+      },
+      {
+        "descriptions": [
+          "under"
+        ],
+        "problemType": "PREFIX"
+      },
+      {
+        "descriptions": [
+          "over"
+        ],
+        "problemType": "PREFIX"
+      },
+      {
+        "descriptions": [
+          "ad"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "abb"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "acc"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "aff"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "agg"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "all"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "ann"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "app"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "arr"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "ass"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "att"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "con"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "coll"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "corr"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "comm"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "in"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "ill"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "imm"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "irr"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "im"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "ir"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "sub"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "succ"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "suff"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "sugg"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "supp"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "summ"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "surr"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "dis"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "diff"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "ob"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "off"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "opp"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "occ"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "ex"
+        ],
+        "problemType": "PREFIX_GROUP"
+      },
+      {
+        "descriptions": [
+          "eff"
+        ],
+        "problemType": "PREFIX_GROUP"
+      }
+    ],
+    //PHON-GRAPH 
+    [ 
+      {
+        "descriptions": [
+          "t-t"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "tt-t"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ed-t"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+          "p-p"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "pp-p"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "n-n"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "nn-n"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "s-s"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ss-s"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "c-s"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "d-d"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "dd-d"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ed-d"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+          "h-h"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "r-r"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "rr-r"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "m-m"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "mm-m"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "b-b"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "bb-b"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "l-l"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ll-l"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "f-f"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ff-f"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ph-f"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "g-g"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "gg-g"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "k-k"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "c-k"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ck-k"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ng-ŋ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "nk-ŋk"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "th-θ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "v-v"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "w-w"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "sh-ʃ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "s-ʃ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ss-ʃ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "tion-ʃən"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "tial-ʃəl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "y-j"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "j-dʒ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "g-dʒ"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "dg-dʒ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "qu-k"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "z-z"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "zz-z"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "s-z"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "se-z"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ze-z"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "ch-tʃ"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "tch-tʃ"
+        ],
+        "problemType": "TRIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "sion-ʒən"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "sure-ʒə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+          "th-ð"
+        ],
+        "problemType": "DIGRAPH_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "x-ɡz"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      },
+      {
+        "descriptions": [
+          "x-ks"
+        ],
+        "problemType": "LETTER_EQUALS_PHONEME"
+      }
+    ], 
+    // Letter Patterns
+    [
+      {
+        "descriptions": [
+         "ip-ɪp"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+       {
+        "descriptions": [
+         "in-ɪn"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+       {
+        "descriptions": [
+         "st-st"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+       {
+        "descriptions": [
+         "sp-sp"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+       {
+        "descriptions": [
+         "sn-sn"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "sm-sm"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "ad-æd"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "and-ænd"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "de-de"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "act-ækt"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "sc-sk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "cr-kr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "dr-dr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "pr-pr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "tr-tr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "str-str"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "spr-spr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "scr-skr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "am-æm"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "amp-æmp"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "im-ɪm"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_b-b"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "br-br"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_lt-lt"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "bl-bl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "cl-kl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "pl-pl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "sl-sl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "spl-spl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_ll-l"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_ss-s"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_ft-ft"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "elf-elf"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "fl-fl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "fr-fr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_g-g"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "gl-gl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "gr-gr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_sk-sk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_lk-lk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "sk-sk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "_V_ng-ŋ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_nk-ŋk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "thank-θæŋk",
+         "than-ðæn"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "ath-ɑːθ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "oth-ɒθ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ength-eŋθ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_ck-k"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ic-ɪk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ve-v"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "sw-sw"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "tw-tw"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "dw-dw"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "wa-wɒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "swa-swɒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_sh-ʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "shr-ʃr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_x-ks"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "zz-z"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_ff-f"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_nch-ntʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "arch-tʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_ce-ɪs"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_nce-ns"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "wh-w"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "_V_ge-dʒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_rge-dʒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_nge-ndʒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_dge-dʒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "c-s"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "sc-s"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "age-ɪdʒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "ege-ɪdʒ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "_V_tch-tʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ph-f"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "pph-f"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "ch-k"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "ch-ʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "kn-n"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "gn-n"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "gh-g"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "ps-s"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "rh-r"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "mb-m"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "bt-t"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "mn-m"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "wr-r"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "pt-pt"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "st-s"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "gu-g"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "gue-g"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "sc-s"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "pro-prə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "pre-prɪ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "que-k"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "sch-sk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_BEGINS"
+      },
+      {
+        "descriptions": [
+         "xc-ksk"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "xc-ks"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "ayor-eə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ayer-eɪə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      // TODO: FIX THIS ELEMENT LINE 392 profileV5.xlsx
+      {
+        "descriptions": [
+         "al_C_"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "oh-əʊ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "cial-ʃəl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "tial-ʃəl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "cqu-kwa"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "ngue-ŋ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      // TODO : FIX THIS ELEMENT LINE 398 profileV5.xlsx
+      {
+        "descriptions": [
+         "ol_C_-əʊ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+       // TODO : FIX THIS ELEMENT LINE 399 profileV5.xlsx
+      {
+        "descriptions": [
+         "quar_C_-kwɒ,kwɔː"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "_C_re-tə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ro-ra,rə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "sci-saɪ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "scle-səl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "sure-ʒə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ti-ʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "ci-ʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "zure-ʒə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "thr-θr"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_CONTAINS"
+      },
+      {
+        "descriptions": [
+         "nd-nd"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "nt-nt"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "nch-ntʃ"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "mp-mp"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "ology-ɒlədʒi"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "cise-saɪz"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "dual-dʒʊə"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "tual-tʃʊəl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "sual-ʒuəl"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      },
+      {
+        "descriptions": [
+         "tory-str̩i"
+        ],
+        "problemType": "PATTERN_EQUALS_PRONUNCIATION_ENDS"
+      }
+    ]
+  ],
+  "language": "EN"
+}

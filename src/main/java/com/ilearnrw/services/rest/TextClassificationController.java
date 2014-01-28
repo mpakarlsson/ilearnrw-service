@@ -6,6 +6,8 @@ import java.io.InputStream;
 import ilearnrw.languagetools.LanguageAnalyzerAPI;
 import ilearnrw.languagetools.english.EnglishLanguageAnalyzer;
 import ilearnrw.languagetools.greek.GreekLanguageAnalyzer;
+import ilearnrw.resource.ResourceLoader;
+import ilearnrw.resource.ResourceLoader.Type;
 import ilearnrw.textclassification.Classifier;
 import ilearnrw.textclassification.Text;
 import ilearnrw.textclassification.TextClassificationResults;
@@ -35,8 +37,7 @@ public class TextClassificationController {
 	@Autowired
 	IProfileProvider profileProvider;
 	
-	@Value("${data.folder}")
-	private String dataFolder;
+
 	
     private static final Logger log = LoggerFactory.getLogger(TextClassificationResults.class);
 
@@ -50,16 +51,10 @@ public class TextClassificationController {
 	{
 		UserProfile profile = profileProvider.getProfile(userId);
 		LanguageAnalyzerAPI languageAnalyzer = null;
-		InputStream greekDictionary = request.getSession().getServletContext().getResourceAsStream(dataFolder + "greek_dictionary.txt");
-		InputStream greekSoundDictionary = request.getSession().getServletContext().getResourceAsStream(dataFolder + "greek_sound_similarity.txt");
-		if (greekDictionary == null)
-			throw new FileNotFoundException(dataFolder + "greek_dictionary.txt");
-		if (greekSoundDictionary == null)
-			throw new FileNotFoundException(dataFolder + "greek_sound_similarity.txt");
 		if( profile.getLanguage() == LanguageCode.EN)
 			languageAnalyzer = new EnglishLanguageAnalyzer();
 		else
-			languageAnalyzer = new GreekLanguageAnalyzer(greekDictionary, greekSoundDictionary);
+			languageAnalyzer = new GreekLanguageAnalyzer();
 
 		Text text = new Text(analyzeText, profile.getLanguage());
 		Classifier cls = new Classifier(profile, text, languageAnalyzer);

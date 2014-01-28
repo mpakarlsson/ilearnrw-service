@@ -33,6 +33,9 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<beans:property name="location" value="classpath:api.properties" />
 	</beans:bean>
+	
+	<beans:bean id="customerService" 
+           class="com.ilearnrw.resource.SpringResourceLoader" />
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
 		up static resources in the ${webappRoot}/resources directory -->
