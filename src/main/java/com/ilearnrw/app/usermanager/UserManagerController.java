@@ -98,18 +98,6 @@ public class UserManagerController {
 		return "panel";
 	}
 
-	@RequestMapping(value = "/home")
-	public String home(Principal principal, HttpServletRequest request,
-			ModelMap model) {
-		LOG.info("Returning home view");
-		String serverTime = (new Date()).toString();
-		model.addAttribute("serverTime", serverTime);
-		model.addAttribute("username", request.getSession()
-				.getAttribute("user"));
-		model.addAttribute("principal", principal.getName());
-		return "home";
-	}
-
 	@RequestMapping(value = "/logout")
 	public String logout(HttpServletRequest request) {
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -154,7 +142,7 @@ public class UserManagerController {
 			model.addAttribute("error", e.getMessage());
 			return "login";
 		}
-		return "redirect:/apps/home";
+		return "redirect:/apps/panel";
 	}
 
 	/* Users logs */

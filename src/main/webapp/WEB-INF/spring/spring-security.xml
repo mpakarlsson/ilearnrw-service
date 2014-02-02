@@ -26,7 +26,7 @@
 		<intercept-url pattern="/apps/loginfailed" access="permitAll" />
 		<intercept-url pattern="/apps/resources/**" access="permitAll"/>
 		<intercept-url pattern="/apps/**" access="isAuthenticated()" />
-		<form-login login-page="/apps/login" default-target-url="/apps/home"
+		<form-login login-page="/apps/login" default-target-url="/apps/panel"
 			authentication-failure-url="/apps/loginfailed" />
 		<logout logout-success-url="/apps/logout" />
 	</http>
