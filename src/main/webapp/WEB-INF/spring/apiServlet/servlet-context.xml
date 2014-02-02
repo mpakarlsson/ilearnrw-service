@@ -12,11 +12,8 @@
 	<!-- DispatcherServlet Context: defines this servlet's request-processing 
 		infrastructure -->
 			
-	<context:component-scan base-package="com.ilearnrw.api.endpoints" />
 	<context:component-scan base-package="com.ilearnrw.common" />
-	<context:component-scan base-package="com.ilearnrw.api.auth" />	
-	<context:component-scan base-package="com.ilearnrw.api.datalogger" />
-	<context:component-scan base-package="com.ilearnrw.api.profileAccessUpdater" />
+	<context:component-scan base-package="com.ilearnrw.api" />
 
 	<security:global-method-security
 		secured-annotations="enabled" pre-post-annotations="enabled">

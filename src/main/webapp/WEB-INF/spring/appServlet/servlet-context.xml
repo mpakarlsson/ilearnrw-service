@@ -12,10 +12,7 @@
 		infrastructure -->
 
 	<context:component-scan base-package="com.ilearnrw.common" />
-	<context:component-scan base-package="com.ilearnrw.api.auth" />
-	<context:component-scan base-package="com.ilearnrw.common.security.users.dao" />
-	<context:component-scan base-package="com.ilearnrw.common.security.users.services" />
-	<context:component-scan base-package="com.ilearnrw.app.usermanager" />
+	<context:component-scan base-package="com.ilearnrw.app" />
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
