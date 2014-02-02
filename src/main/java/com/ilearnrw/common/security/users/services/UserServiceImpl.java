@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ilearnrw.app.usermanager.model.User;
 import com.ilearnrw.common.security.users.dao.UserDao;
+import com.ilearnrw.common.security.users.model.User;
 
 @Service
 public class UserServiceImpl implements UserService {

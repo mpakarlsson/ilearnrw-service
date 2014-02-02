@@ -33,25 +33,21 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
 
 @Controller
 public class TextClassificationController {
-	
+
 	@Autowired
 	IProfileProvider profileProvider;
-	
 
-	
-    private static final Logger log = LoggerFactory.getLogger(TextClassificationResults.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(TextClassificationResults.class);
 
-	@RequestMapping(headers = {"Accept=application/json"},
-					value = "/text/classify/{userId}", 
-					method = RequestMethod.POST,
-					produces = "text/plain;charset=UTF-8")
-	public @ResponseBody TextClassificationResults classify(HttpServletRequest request,
-														   @PathVariable String userId,
-														   @Valid @RequestBody String analyzeText) throws ProfileProviderException, FileNotFoundException
-	{
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/text/classify/{userId}", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+	public @ResponseBody
+	TextClassificationResults classify(HttpServletRequest request,
+			@PathVariable String userId, @Valid @RequestBody String analyzeText)
+			throws ProfileProviderException, FileNotFoundException {
 		UserProfile profile = profileProvider.getProfile(userId);
 		LanguageAnalyzerAPI languageAnalyzer = null;
-		if( profile.getLanguage() == LanguageCode.EN)
+		if (profile.getLanguage() == LanguageCode.EN)
 			languageAnalyzer = new EnglishLanguageAnalyzer();
 		else
 			languageAnalyzer = new GreekLanguageAnalyzer();
@@ -59,7 +55,7 @@ public class TextClassificationController {
 		Text text = new Text(analyzeText, profile.getLanguage());
 		Classifier cls = new Classifier(profile, text, languageAnalyzer);
 		cls.calculateProblematicWords(false);
-		
+
 		return cls.getUserProblemsToText().getTextClassificationResults();
 	}
 }

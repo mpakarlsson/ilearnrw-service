@@ -2,7 +2,7 @@ package com.ilearnrw.common.security.users.services;
 
 import java.util.List;
 
-import com.ilearnrw.app.usermanager.model.User;
+import com.ilearnrw.common.security.users.model.User;
 
 public interface UserService {
 	public List<User> getUserList();

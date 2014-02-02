@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import com.ilearnrw.app.usermanager.model.User;
+import com.ilearnrw.common.security.users.model.User;
 
 @Repository
 public class UserDaoImpl implements UserDao {

@@ -24,8 +24,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
-import com.ilearnrw.app.usermanager.model.User;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.User;
 
 @Component
 public class AuthenticatedRestClient {

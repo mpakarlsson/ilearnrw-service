@@ -15,8 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import com.ilearnrw.app.usermanager.model.Role;
-import com.ilearnrw.app.usermanager.model.User;
+import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.User;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {

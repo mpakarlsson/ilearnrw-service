@@ -3,7 +3,7 @@ package com.ilearnrw.common.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
-import com.ilearnrw.app.usermanager.model.User;
+import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 

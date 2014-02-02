@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.ilearnrw.app.usermanager.model.User;
 import com.ilearnrw.common.security.users.dao.TeacherStudentDao;
+import com.ilearnrw.common.security.users.model.User;
 
 @Service
 public class TeacherStudentServiceImpl implements TeacherStudentService {

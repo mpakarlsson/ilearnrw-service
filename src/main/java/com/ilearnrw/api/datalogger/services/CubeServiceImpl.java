@@ -124,7 +124,7 @@ public class CubeServiceImpl implements CubeService {
 	@Cacheable(value = "users", unless = "#result == null")
 	private User getUserDetailsFromRemoteService(String username) {
 		LOG.debug(String.format("Fetching data for %s from remote service", username));
-		com.ilearnrw.app.usermanager.model.User user = authenticatedRestClient.getUserDetails(username);
+		com.ilearnrw.common.security.users.model.User user = authenticatedRestClient.getUserDetails(username);
 		
 		if (user == null) {
 			LOG.debug(String.format("User %s not found by remote service!", username));

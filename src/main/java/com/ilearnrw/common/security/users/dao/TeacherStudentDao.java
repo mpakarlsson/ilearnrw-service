@@ -2,7 +2,7 @@ package com.ilearnrw.common.security.users.dao;
 
 import java.util.List;
 
-import com.ilearnrw.app.usermanager.model.User;
+import com.ilearnrw.common.security.users.model.User;
 
 public interface TeacherStudentDao {
 	

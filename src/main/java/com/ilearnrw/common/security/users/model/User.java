@@ -1,4 +1,4 @@
-package com.ilearnrw.app.usermanager.model;
+package com.ilearnrw.common.security.users.model;
 
 import java.util.Date;
 

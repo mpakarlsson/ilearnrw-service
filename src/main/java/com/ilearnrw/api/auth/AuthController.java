@@ -29,12 +29,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ilearnrw.app.usermanager.model.User;
 import com.ilearnrw.common.security.AuthTokenData;
 import com.ilearnrw.common.security.RefreshTokenData;
 import com.ilearnrw.common.security.RestToken;
 import com.ilearnrw.common.security.TokenUtils;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 

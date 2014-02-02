@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.ilearnrw.app.usermanager.model.Permission;
-import com.ilearnrw.app.usermanager.model.Role;
+import com.ilearnrw.common.security.users.model.Permission;
+import com.ilearnrw.common.security.users.model.Role;
 
 public class RoleForm {
 

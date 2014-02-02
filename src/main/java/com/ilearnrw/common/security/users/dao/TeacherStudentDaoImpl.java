@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import com.ilearnrw.app.usermanager.model.User;
+import com.ilearnrw.common.security.users.model.User;
 
 @Repository
 public class TeacherStudentDaoImpl implements TeacherStudentDao {

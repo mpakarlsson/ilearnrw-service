@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.ilearnrw.app.usermanager.model.Permission;
-import com.ilearnrw.app.usermanager.model.Role;
 import com.ilearnrw.common.security.users.dao.PermissionDao;
+import com.ilearnrw.common.security.users.model.Permission;
+import com.ilearnrw.common.security.users.model.Role;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {

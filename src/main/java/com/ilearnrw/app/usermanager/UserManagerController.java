@@ -47,11 +47,11 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
 import com.ilearnrw.app.usermanager.form.RoleForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserForm;
-import com.ilearnrw.app.usermanager.model.Permission;
-import com.ilearnrw.app.usermanager.model.Role;
-import com.ilearnrw.app.usermanager.model.User;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.Permission;
+import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.PermissionService;
 import com.ilearnrw.common.security.users.services.RoleService;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
