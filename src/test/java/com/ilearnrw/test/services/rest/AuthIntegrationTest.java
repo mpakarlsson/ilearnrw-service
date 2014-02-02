@@ -27,11 +27,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ilearnrw.services.profileAccessUpdater.IProfileProvider;
-import com.ilearnrw.services.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.services.rest.AuthController;
-import com.ilearnrw.services.security.RefreshTokenData;
-import com.ilearnrw.services.security.Tokens;
+import com.ilearnrw.api.auth.AuthController;
+import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
+import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.common.security.RefreshTokenData;
+import com.ilearnrw.common.security.Tokens;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

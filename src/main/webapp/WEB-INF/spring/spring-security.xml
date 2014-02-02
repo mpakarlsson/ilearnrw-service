@@ -2,12 +2,15 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-3.1.xsd
 	http://www.springframework.org/schema/util
-	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- if you want only specific pattern to avoid security, define different 
 		http blocks here with security="none" -->
@@ -37,9 +40,6 @@
 		<intercept-url pattern="/user/details/*" access="permitAll" requires-channel="http" />
 		<intercept-url pattern="/logs/**" access="permitAll" requires-channel="http"/>
 
-		<intercept-url pattern="/profile" access="permitAll" requires-channel="http"/>
-		<intercept-url pattern="/profile/**" access="permitAll" requires-channel="http"/>
-		
 		<intercept-url pattern="/cache" access="permitAll" requires-channel="http" />
 
 		<intercept-url pattern="/text/classify/*" access="permitAll" />
@@ -50,6 +50,13 @@
 		<custom-filter ref="basicAuthenticationFilter" position="BASIC_AUTH_FILTER" />
 		<custom-filter ref="customRestFilter" after="BASIC_AUTH_FILTER" />
 	</http>
+
+	<beans:import resource="db.xml" />
+
+	<context:component-scan base-package="com.ilearnrw.common.rest" />
+	<context:component-scan base-package="com.ilearnrw.common.security" />
+	<context:component-scan base-package="com.ilearnrw.common.security.users.dao" />
+	<context:component-scan base-package="com.ilearnrw.common.security.users.services" />
 
 	<beans:bean id="basicAuthenticationFilter"
 		class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
@@ -66,17 +73,17 @@
 
 
 	<beans:bean id="permissionEvaluator"
-		class="com.ilearnrw.services.security.UsersPermissionEvaluator">
+		class="com.ilearnrw.common.security.UsersPermissionEvaluator">
 		<beans:constructor-arg index="0">
 			<beans:map key-type="java.lang.String"
-				value-type="com.ilearnrw.services.security.PermissionChecker">
+				value-type="com.ilearnrw.common.security.PermissionChecker">
 				<beans:entry key="READ_PROFILE" value-ref="profilePermissionChecker" />
 			</beans:map>
 		</beans:constructor-arg>
 	</beans:bean>
 
 	<beans:bean id="profilePermissionChecker"
-		class="com.ilearnrw.services.security.ProfilePermissionChecker">
+		class="com.ilearnrw.common.security.ProfilePermissionChecker">
 	</beans:bean>
 
 	<!-- The authenticationEntryPoint allows us to customise to start the authentication 
@@ -89,7 +96,7 @@
 	</beans:bean>
 
 	<beans:bean id="customRestFilter"
-		class="com.ilearnrw.services.security.RestSecurityFilter">
+		class="com.ilearnrw.common.security.RestSecurityFilter">
 		<beans:constructor-arg name="authenticationManager"
 			ref="restAuthenticationManager" />
 		<beans:constructor-arg name="authenticationEntryPoint"
@@ -121,10 +128,8 @@
 		/> <user name="test_user" password="test_password" authorities="ROLE_STUDENT" 
 		/> </user-service> -->
 
-	<beans:import resource="db.xml" />
-
-	<beans:bean id="userService"
-		class="com.ilearnrw.services.security.SpringSecurityDaoImpl">
+	<beans:bean id="userDetailsService"
+		class="com.ilearnrw.common.security.SpringSecurityDaoImpl">
 		<beans:property name="dataSource" ref="usersDataSource" />
 		<beans:property name="enableGroups" value="true" />
 		<beans:property name="enableAuthorities" value="false" />
@@ -162,9 +167,9 @@
 		is the place where you would normally hook into a more complex authentication 
 		system and user data layer. -->
 	<beans:bean id="restAuthenticationProvider"
-		class="com.ilearnrw.services.security.RestAuthenticationProvider">
+		class="com.ilearnrw.common.security.RestAuthenticationProvider">
 		<beans:constructor-arg name="userDetailsService"
-			ref="userService" />
+			ref="userDetailsService" />
 	</beans:bean>
 
 	<beans:bean id="secureRandom"

@@ -14,11 +14,11 @@
 	<!-- DispatcherServlet Context: defines this servlet's request-processing 
 		infrastructure -->
 
-	<context:component-scan base-package="com.ilearnrw.endpoints" />
-	<context:component-scan base-package="com.ilearnrw.services.rest" />
-	<context:component-scan base-package="com.ilearnrw.services.datalogger" />
-	<context:component-scan base-package="com.ilearnrw.services.profileAccessUpdater" />
-	<context:component-scan base-package="com.ilearnrw.usermanager" />
+	<context:component-scan base-package="com.ilearnrw.api.endpoints" />
+	<context:component-scan base-package="com.ilearnrw.common" />
+	<context:component-scan base-package="com.ilearnrw.api.auth" />	
+	<context:component-scan base-package="com.ilearnrw.api.datalogger" />
+	<context:component-scan base-package="com.ilearnrw.api.profileAccessUpdater" />
 
 	<security:global-method-security
 		secured-annotations="enabled" pre-post-annotations="enabled">
@@ -35,7 +35,7 @@
 	</beans:bean>
 	
 	<beans:bean id="customerService" 
-           class="com.ilearnrw.resource.SpringResourceLoader" />
+           class="com.ilearnrw.common.SpringResourceLoader" />
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
 		up static resources in the ${webappRoot}/resources directory -->
@@ -91,7 +91,7 @@
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
 	<beans:bean id="profileProvider" name="ProfileProvider"
-		class="com.ilearnrw.services.profileAccessUpdater.DbProfileProvider">
+		class="com.ilearnrw.api.profileAccessUpdater.DbProfileProvider">
 	</beans:bean>
 
 
@@ -102,15 +102,15 @@
 		<beans:property name="order" value="0" />
 	</beans:bean>
 	<beans:bean id="restExceptionResolver"
-		class="com.ilearnrw.services.rest.RestExceptionHandler">
+		class="com.ilearnrw.common.rest.RestExceptionHandler">
 		<beans:property name="order" value="100" />
 		<beans:property name="errorResolver">
-			<beans:bean class="com.ilearnrw.services.rest.DefaultRestErrorResolver">
+			<beans:bean class="com.ilearnrw.common.rest.DefaultRestErrorResolver">
 				<beans:property name="defaultMoreInfoUrl" value="mailto:support@mycompany.com" />
 				<beans:property name="exceptionMappingDefinitions">
 					<beans:map>
 						<!-- 404 -->
-						<beans:entry key="com.ilearnrw.services.rest.UnknownResourceException"
+						<beans:entry key="com.ilearnrw.common.rest.UnknownResourceException"
 							value="404, _exmsg" />
 
 						<!-- 500 (catch all): -->
@@ -121,4 +121,6 @@
 		</beans:property>
 	</beans:bean>
 
+	<beans:bean id="userDao" class="com.ilearnrw.common.security.users.dao.UserDaoImpl">
+	</beans:bean>
 </beans:beans>
