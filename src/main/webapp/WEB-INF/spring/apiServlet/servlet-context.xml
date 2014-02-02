@@ -4,16 +4,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:cache="http://www.springframework.org/schema/cache"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<!-- DispatcherServlet Context: defines this servlet's request-processing 
 		infrastructure -->
-
+			
 	<context:component-scan base-package="com.ilearnrw.api.endpoints" />
 	<context:component-scan base-package="com.ilearnrw.common" />
 	<context:component-scan base-package="com.ilearnrw.api.auth" />	
@@ -60,34 +58,6 @@
 		<beans:property name="defaultContentType" value="application/json" />
 	</beans:bean>
 
-	<cache:annotation-driven cache-manager="cacheManager" />
-
-	<!-- generic cache manager -->
-	<beans:bean id="cacheManager"
-		class="org.springframework.cache.support.SimpleCacheManager">
-		<beans:property name="caches">
-			<beans:set>
-				<beans:bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
-					<beans:property name="name" value="cube_users" />
-				</beans:bean>
-				<beans:bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
-					<beans:property name="name" value="cube_applications" />
-				</beans:bean>
-				<beans:bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
-					<beans:property name="name" value="cube_problems" />
-				</beans:bean>
-
-				<beans:bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
-					<beans:property name="name" value="users" />
-				</beans:bean>
-
-			</beans:set>
-		</beans:property>
-	</beans:bean>
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
 
 	<beans:bean id="profileProvider" name="ProfileProvider"

@@ -15,10 +15,8 @@
 	<!-- if you want only specific pattern to avoid security, define different 
 		http blocks here with security="none" -->
 
-	<http use-expressions="true" pattern="/" security="none">
-	</http>
-	<http use-expressions="true" pattern="/endpoints" security="none">
-	</http>
+	<http use-expressions="true" pattern="/cache" security="none" />
+	<http use-expressions="true" pattern="/endpoints" security="none" />
 
 	<http use-expressions="true" pattern="/apps/**">
 		<intercept-url pattern="/apps/login" access="permitAll" />
@@ -40,8 +38,6 @@
 		<intercept-url pattern="/user/details/*" access="permitAll" requires-channel="http" />
 		<intercept-url pattern="/logs/**" access="permitAll" requires-channel="http"/>
 
-		<intercept-url pattern="/cache" access="permitAll" requires-channel="http" />
-
 		<intercept-url pattern="/text/classify/*" access="permitAll" />
 
 		<!-- this implies that any method has a valid token parameter -->
@@ -50,8 +46,6 @@
 		<custom-filter ref="basicAuthenticationFilter" position="BASIC_AUTH_FILTER" />
 		<custom-filter ref="customRestFilter" after="BASIC_AUTH_FILTER" />
 	</http>
-
-	<beans:import resource="db.xml" />
 
 	<context:component-scan base-package="com.ilearnrw.common.rest" />
 	<context:component-scan base-package="com.ilearnrw.common.security" />

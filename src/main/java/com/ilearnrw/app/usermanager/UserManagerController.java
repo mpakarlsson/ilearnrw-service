@@ -84,9 +84,6 @@ public class UserManagerController {
 	@Autowired
 	private AuthenticatedRestClient restClient;
 
-	@Autowired(required = false)
-	CacheManager cacheManager;
-
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
 	public String panel(ModelMap modelMap) {
 		modelMap.addAttribute("teachers",
@@ -458,36 +455,4 @@ public class UserManagerController {
 		return "redirect:/apps/panel";
 	}
 
-	@RequestMapping(value = "/cache", method = RequestMethod.GET)
-	public @ResponseBody
-	Map<String, List<String>> clearCache(
-			@RequestParam(value = "clear", required = false) boolean clear) {
-
-		if (cacheManager == null) {
-			return null;
-		}
-
-		Map<String, List<String>> map = new HashMap<String, List<String>>();
-
-		for (String cacheName : cacheManager.getCacheNames()) {
-			ConcurrentMapCache cache = (ConcurrentMapCache) cacheManager
-					.getCache(cacheName);
-			if (cache == null) {
-				continue;
-			}
-
-			List<String> list = new ArrayList<String>();
-			map.put(cacheName, list);
-			if (clear) {
-				cache.clear();
-			} else {
-
-				Set set = cache.getNativeCache().entrySet();
-				for (Object o : set) {
-					list.add(o.toString());
-				}
-			}
-		}
-		return map;
-	}
 }

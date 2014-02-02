@@ -6,5 +6,7 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
+	<import resource="cache.xml"/>
+	<import resource="db.xml" />
 
 </beans>
