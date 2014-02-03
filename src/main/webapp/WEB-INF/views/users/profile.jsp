@@ -20,6 +20,7 @@
 		<legend>Preferences</legend>
 		<label>Font size</label>
 		<form:input path="preferences.fontSize" />
+		<form:hidden path="language" />
 		<form:hidden path="userProblems.problems" />
 		<form:hidden path="userProblems.userSeverities.indices" />
 		<input type="submit" value="Submit" />
