@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
@@ -40,10 +41,10 @@ public class TextClassificationController {
 	private static final Logger log = LoggerFactory
 			.getLogger(TextClassificationResults.class);
 
-	@RequestMapping(headers = { "Accept=application/json" }, value = "/text/classify/{userId}", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/text/classify", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	public @ResponseBody
 	TextClassificationResults classify(HttpServletRequest request,
-			@PathVariable String userId, @Valid @RequestBody String analyzeText)
+			@RequestParam("userId") String userId, @Valid @RequestBody String analyzeText)
 			throws ProfileProviderException, FileNotFoundException {
 		UserProfile profile = profileProvider.getProfile(userId);
 		LanguageAnalyzerAPI languageAnalyzer = null;

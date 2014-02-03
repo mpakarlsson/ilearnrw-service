@@ -159,8 +159,8 @@ public class DbProfileProvider implements IProfileProvider {
 	static private class LC_Greek implements LC_Base
 	{
 		static final String TableName = "LC_Greek";
-		static final Integer ProblemDefinitionIndexSize_X = 9;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,20,7,10};
+		static final Integer ProblemDefinitionIndexSize_X = 8;
+		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,27,10};
 		@Override
 		public String getTableName() { return TableName; }
 		@Override
@@ -242,7 +242,7 @@ public class DbProfileProvider implements IProfileProvider {
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
 		final UserProblems userProblems = new UserProblems();
 		//userProblems.loadTestEnglishProblems();
-		userProblems.loadTestGreekProblems();
+		//userProblems.loadTestGreekProblems();
 		userProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 

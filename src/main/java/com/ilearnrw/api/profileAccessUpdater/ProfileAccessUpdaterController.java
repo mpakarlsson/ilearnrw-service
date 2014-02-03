@@ -4,6 +4,9 @@ import java.util.List;
 
 import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.problems.EnglishProblems;
+import ilearnrw.user.problems.GreekProblems;
+import ilearnrw.user.problems.Problems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
 import ilearnrw.utils.LanguageCode;
@@ -66,6 +69,24 @@ public class ProfileAccessUpdaterController {
 		return profileProvider.getProfile(userId).getPreferences();
 	}
 
+	/**
+	 * Fetch the problem definitions for an user's language
+	 * 
+	 * @param userId
+	 * @return UserSeverities
+	 */
+	@RequestMapping(value = "/profile/problemDefinitions", method = RequestMethod.GET)
+	public @ResponseBody
+	Problems getProblemDefinitions(
+			@RequestParam(value = "userId", required = true) String userId)
+			throws ProfileProviderException {
+		LanguageCode lCode = profileProvider.getProfile(userId).getLanguage();
+		if (lCode == LanguageCode.EN)
+			return new EnglishProblems();
+		else
+			return new GreekProblems();
+	}
+	
 	/**
 	 * Fetch a users problem severities
 	 * 
