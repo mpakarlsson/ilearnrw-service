@@ -214,7 +214,7 @@ public class UserManagerController {
 		model.put("userId", userId);
 		model.put("profile", profile);
 		model.put("problems", profile.getUserProblems().getUserSeverities()
-				.getIndices());
+				.getSystemIndices());
 
 		return "users/profile";
 	}

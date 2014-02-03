@@ -259,7 +259,7 @@ public class DbProfileProvider implements IProfileProvider {
 								/*Read severities and indices.*/
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
-									userSeverities.setWorkingIndex(x, rs.getInt(String.format("index_%s", x)));
+									userSeverities.setSystemIndex(x, rs.getInt(String.format("index_%s", x)));
 									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
@@ -329,7 +329,7 @@ public class DbProfileProvider implements IProfileProvider {
 		replaceQuery.add("prefFontSize", profile.getPreferences().getFontSize());
 		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 		{
-			replaceQuery.add(String.format("index_%s", x), profile.getUserProblems().getWorkingIndex(x));
+			replaceQuery.add(String.format("index_%s", x), profile.getUserProblems().getSystemIndex(x));
 			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 			{
 				try {
