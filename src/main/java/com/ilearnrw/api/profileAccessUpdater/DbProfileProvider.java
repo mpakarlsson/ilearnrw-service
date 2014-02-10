@@ -133,7 +133,10 @@ public class DbProfileProvider implements IProfileProvider {
 					sb.append(y);
 					sb.append(" TINYINT,\n");
 				}
-				sb.append("index_");
+				sb.append("system_index_");
+				sb.append(x);
+				sb.append(" TINYINT,\n");
+				sb.append("teacher_index_");
 				sb.append(x);
 				if(x < language.getProblemDefinitionIndexSize_X() - 1)
 					sb.append(" TINYINT,\n");
