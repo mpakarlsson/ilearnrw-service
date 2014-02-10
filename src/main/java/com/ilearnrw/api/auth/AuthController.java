@@ -18,6 +18,7 @@ import org.springframework.security.core.token.KeyBasedPersistenceTokenService;
 import org.springframework.security.core.token.Token;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +56,9 @@ public class AuthController {
 
 	@Autowired
 	private KeyBasedPersistenceTokenService tokenService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	@PreAuthorize("hasPermission('', 'PERM1')")
@@ -112,7 +116,7 @@ public class AuthController {
 			UserDetails userDetails = userDetailsService
 					.loadUserByUsername(username);
 
-			if (userDetails.getPassword().compareTo(pass) != 0) {
+			if (!passwordEncoder.matches(pass, userDetails.getPassword())) {
 				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
 						"Invalid user credentials");
 				LOG.debug(String.format("Invalid credentials for user %s",
@@ -127,7 +131,8 @@ public class AuthController {
 				UserDetails teacherDetails = userDetailsService
 						.loadUserByUsername(teacher);
 
-				if (teacherDetails.getPassword().compareTo(teacherPass) != 0) {
+				//String hashedTeacherPassword = passwordEncoder.encode(teacherPass);
+				if (!passwordEncoder.matches(teacherPass, teacherDetails.getPassword())) {
 					httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
 							"Invalid credentials for teacher");
 					LOG.debug(String.format(
@@ -155,10 +160,14 @@ public class AuthController {
 					.allocateToken(serializedAuthTokenData);
 			return new Tokens(authToken.getKey(), refreshToken.getKey());
 
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			LOG.debug(e.getMessage());
+			try {
+				httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+						"Exception processing credentials!");
+			} catch (IOException e1) {
+				LOG.debug(e.getMessage());
+			}
 		}
 
 		return null;

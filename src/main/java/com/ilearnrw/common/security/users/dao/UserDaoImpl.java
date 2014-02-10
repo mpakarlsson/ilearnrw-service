@@ -13,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -28,13 +29,16 @@ public class UserDaoImpl implements UserDao {
 	@Autowired
 	private RoleDao roleDao;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	public int insertData(User user) {
 		SimpleJdbcInsert insert = new SimpleJdbcInsert(dataSource)
 				.withTableName("users").usingGeneratedKeyColumns("id");
 
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
 		parameters.put("username", user.getUsername());
-		parameters.put("password", user.getPassword());
+		parameters.put("password", passwordEncoder.encode(user.getPassword()));
 		parameters.put("enabled", user.isEnabled());
 		parameters.put("birthdate", user.getBirthdate());
 		parameters.put("gender", user.getGender());
@@ -69,7 +73,7 @@ public class UserDaoImpl implements UserDao {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.update(
 				"update users set username=?, password=?, enabled=?, birthdate=?, gender=?, language=? where id=?",
-				user.getUsername(), user.getPassword(), user.isEnabled(), user.getBirthdate(), user.getGender(), user.getLanguage(), user.getId());
+				user.getUsername(), passwordEncoder.encode(user.getPassword()), user.isEnabled(), user.getBirthdate(), user.getGender(), user.getLanguage(), user.getId());
 
 	}
 

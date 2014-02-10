@@ -9,7 +9,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,7 +45,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
 
 	private Authentication getAuthenticatedUser(UserDetails userDetails) {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		//authorities.add(new SimpleGrantedAuthority("ROLE_API_USER"));
+		// authorities.add(new SimpleGrantedAuthority("ROLE_API_USER"));
 		authorities.addAll(userDetails.getAuthorities());
 
 		return new RestToken(userDetails.getUsername(),

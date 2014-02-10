@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/security
@@ -22,7 +21,7 @@
 		<intercept-url pattern="/apps/login" access="permitAll" />
 		<intercept-url pattern="/apps/logout" access="permitAll" />
 		<intercept-url pattern="/apps/loginfailed" access="permitAll" />
-		<intercept-url pattern="/apps/resources/**" access="permitAll"/>
+		<intercept-url pattern="/apps/resources/**" access="permitAll" />
 		<intercept-url pattern="/apps/**" access="isAuthenticated()" />
 		<form-login login-page="/apps/login" default-target-url="/apps/panel"
 			authentication-failure-url="/apps/loginfailed" />
@@ -33,11 +32,18 @@
 		injected. -->
 	<http create-session="stateless" use-expressions="true"
 		entry-point-ref="authenticationEntryPoint">
-		<intercept-url pattern="/user/auth" access="permitAll" requires-channel="http" />
-		<intercept-url pattern="/user/newtokens" access="permitAll" requires-channel="http" />
-		<intercept-url pattern="/user/details/*" access="permitAll" requires-channel="http" />
-		<intercept-url pattern="/logs/**" access="permitAll" requires-channel="http"/>
+		<intercept-url pattern="/user/auth" access="permitAll"
+			requires-channel="http" />
+		<intercept-url pattern="/user/newtokens" access="permitAll"
+			requires-channel="http" />
+		<intercept-url pattern="/user/details/*" access="permitAll"
+			requires-channel="http" />
+		<intercept-url pattern="/logs/**" access="permitAll"
+			requires-channel="http" />
 
+		<intercept-url pattern="/profile/generateSql" access="permitAll" />
+		<intercept-url pattern="/setup" access="permitAll" />
+		
 		<intercept-url pattern="/text/classify/*" access="permitAll" />
 
 		<!-- this implies that any method has a valid token parameter -->
@@ -117,10 +123,6 @@
 	<beans:bean id="passwordEncoder"
 		class="org.springframework.security.crypto.password.StandardPasswordEncoder">
 	</beans:bean>
-	<!-- <user-service id="usersService"> <user name="student" password="student" 
-		authorities="ROLE_STUDENT" /> <user name="student2" password="student2" authorities="ROLE_STUDENT" 
-		/> <user name="test_user" password="test_password" authorities="ROLE_STUDENT" 
-		/> </user-service> -->
 
 	<beans:bean id="userDetailsService"
 		class="com.ilearnrw.common.security.SpringSecurityDaoImpl">
@@ -130,27 +132,22 @@
 		<beans:property name="authoritiesByUsernameQuery">
 			<beans:value>
 				SELECT R.name, U.username
-                FROM roles R
-                JOIN role_members
-                JOIN users U on U.id = RM.members_id
-                RM on R.id =
-                RM.roles_id
-                WHERE
-                U.username=?
+				FROM roles R
+				JOIN role_members RM on R.id = RM.roles_id
+				JOIN users U on U.id = RM.members_id
+				WHERE
+				U.username=?
 			</beans:value>
 		</beans:property>
 		<beans:property name="groupAuthoritiesByUsernameQuery">
 			<beans:value>
 				SELECT R.id, R.name, P.name
-	            FROM roles R
-                JOIN role_members
-                RM on R.id = RM.roles_id
-                JOIN users U on U.id = RM.members_id
-                JOIN
-                role_permissions RP ON RP.roles_id = R.id
-                JOIN permissions P ON P.id
-                = RP.permissions_id
-                WHERE U.username=?
+				FROM roles R
+				JOIN role_members RM on R.id = RM.roles_id
+				JOIN users U on U.id = RM.members_id
+				JOIN role_permissions RP ON RP.roles_id = R.id
+				JOIN permissions P ON P.id = RP.permissions_id
+				WHERE U.username=?
 			</beans:value>
 		</beans:property>
 	</beans:bean>

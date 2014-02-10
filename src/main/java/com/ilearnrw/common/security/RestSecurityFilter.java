@@ -26,6 +26,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 
+/**
+ * @author cantemir.mihu
+ * All requests are routed through this filter. The filter looks
+ * for a request parameter called "token". If it is present, it 
+ * tries to interpret it as a token and if it is valid it passes it over to 
+ * the AuthenticationManager to authenticate the request 
+ */
 public class RestSecurityFilter extends GenericFilterBean {
 	private static Logger LOG = Logger
 			.getLogger(RestSecurityFilter.class);

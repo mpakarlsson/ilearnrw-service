@@ -46,7 +46,16 @@ public class RoleDaoImpl implements RoleDao {
 				new BeanPropertyRowMapper<Role>(Role.class));
 		return role;
 	}
-	
+
+	@Override
+	public Role getRole(String roleName) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		Role role = template.queryForObject("select * from roles where name=?",
+				new Object[] { roleName },
+				new BeanPropertyRowMapper<Role>(Role.class));
+		return role;
+	}
+
 	@Override
 	public int insertData(Role role) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);

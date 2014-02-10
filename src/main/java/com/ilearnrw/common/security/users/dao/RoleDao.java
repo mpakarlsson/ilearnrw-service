@@ -20,4 +20,6 @@ public interface RoleDao {
 	public List<Role> getRoleList(User user);
 
 	public void setRoleList(User user, List<Role> roles);
+
+	public Role getRole(String roleName);
 }
