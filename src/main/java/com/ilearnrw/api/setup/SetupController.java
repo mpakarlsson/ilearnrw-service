@@ -1,25 +1,23 @@
 package com.ilearnrw.api.setup;
 
-import ilearnrw.languagetools.greek.GreekDictionaryLoader;
-import ilearnrw.textclassification.Word;
-import ilearnrw.textclassification.greek.GreekWord;
+import ilearnrw.utils.LanguageCode;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
+import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
 import com.ilearnrw.common.security.users.model.User;
@@ -39,13 +37,50 @@ public class SetupController {
 	@Autowired
 	PermissionService permissionService;
 
+	@Autowired
+	IProfileProvider profileProvider;
+
 	private static Logger LOG = Logger.getLogger(SetupController.class);
 
 	private List<String> outputLog = new ArrayList<String>();
-	
+
 	@RequestMapping(value = "/setup", method = RequestMethod.GET)
 	public @ResponseBody
 	List<String> setup() {
+		createUsersRolesPermissions();
+		createProfiles();
+		return outputLog;
+	}
+
+	private void createProfiles() {
+		List<User> users = userService.getUserList();
+
+		profileProvider.createTables();
+		
+		for (User user : users) {
+			try {
+				profileProvider.deleteProfile(user.getId().toString());
+			} catch (ProfileProviderException e) {
+				LOG.debug(String.format(
+						"Exception when deleting profile for user %s: %s",
+						user.getUsername(), e.getMessage()));
+			}
+			try {
+				profileProvider.createProfile(user.getId().toString(),
+						LanguageCode.fromString(user.getLanguage()));
+				outputLog.add(String.format(
+						"Profile created for user %s (Language=%s)",
+						user.getUsername(), user.getLanguage()));
+			} catch (ProfileProviderException e) {
+				outputLog.add(String.format(
+						"Exception on profile for user %s: %s",
+						user.getUsername(), e.getMessage()));
+			}
+		}
+
+	}
+
+	private void createUsersRolesPermissions() {
 		List<User> users = new ArrayList<User>();
 
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -113,16 +148,20 @@ public class SetupController {
 			roleService.setRoleList(teacher, teacherRole);
 			outputLog.add("Added roles for teacher");
 
-			
-			permissionService.setPermissionList(roleService.getRole("ROLE_ADMIN"), permissionService.getPermissionList());
-			permissionService.setPermissionList(roleService.getRole("ROLE_STUDENT"), permissionService.getPermissionList());
-			permissionService.setPermissionList(roleService.getRole("ROLE_TEACHER"), permissionService.getPermissionList());
+			permissionService.setPermissionList(
+					roleService.getRole("ROLE_ADMIN"),
+					permissionService.getPermissionList());
+			permissionService.setPermissionList(
+					roleService.getRole("ROLE_STUDENT"),
+					permissionService.getPermissionList());
+			permissionService.setPermissionList(
+					roleService.getRole("ROLE_TEACHER"),
+					permissionService.getPermissionList());
 
 		} catch (Exception e) {
 			outputLog.add("Exception: " + e.getMessage());
 		}
 
-		return outputLog;
 	}
 
 	private User createGirl(String name) {
@@ -151,8 +190,20 @@ public class SetupController {
 		permissions.add(perm);
 
 		for (Permission p : permissions) {
-			permissionService.insertData(p);
-			outputLog.add(String.format("Added permission: %s", p.getName()));
+			Permission existingPermission = permissionService.getPermission(p
+					.getName());
+
+			if (existingPermission == null) {
+				try {
+					permissionService.insertData(p);
+					outputLog.add(String.format("Added permission: %s",
+							p.getName()));
+				} catch (Exception e) {
+					outputLog.add(String.format(
+							"Exception when adding permission %s: %s",
+							p.getName(), e.getMessage()));
+				}
+			}
 		}
 
 		return permissions;
@@ -174,14 +225,18 @@ public class SetupController {
 
 		for (Role r : roles) {
 			try {
-				roleService.insertData(r);
-				outputLog.add(String.format("Added role: %s", r.getName()));
-				
+				Role existingRole = roleService.getRole(r.getName());
+				if (existingRole == null) {
+					roleService.insertData(r);
+					outputLog.add(String.format("Added role: %s", r.getName()));
+				}
+
 			} catch (Exception e) {
-				outputLog.add(String.format("Exception on role %s: %s", r.getName(), e.getMessage()));
+				outputLog.add(String.format("Exception on role %s: %s",
+						r.getName(), e.getMessage()));
 			}
 		}
-		
+
 		return roles;
 
 	}
@@ -189,8 +244,22 @@ public class SetupController {
 	private void createUsers(List<User> users) {
 		for (User u : users) {
 			try {
+				User existingUser = userService.getUserByUsername(u
+						.getUsername());
+				userService.deleteData(existingUser.getId());
+				profileProvider.deleteProfile(existingUser.getId().toString());
+			} catch (Exception ex) {
+				LOG.debug(String.format("Could not delete user %s",
+						u.getUsername()));
+			} catch (ProfileProviderException e) {
+				LOG.debug(String.format(
+						"Exception when deleting profile for user %s",
+						u.getUsername()));
+			}
+			try {
 				userService.insertData(u);
-				outputLog.add(String.format("Inserted user %s!", u.getUsername()));
+				outputLog.add(String.format("Inserted user %s!",
+						u.getUsername()));
 			} catch (Exception e) {
 				outputLog.add(String.format("Exception on user %s: %s",
 						u.getUsername(), e.getMessage()));

@@ -3,6 +3,7 @@ package com.ilearnrw.common.security.users.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,11 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public Role getRole(int id) {
-		return roleDao.getRole(id);
+		try {
+			return roleDao.getRole(id);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -53,7 +58,11 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public Role getRole(String roleName) {
-		return roleDao.getRole(roleName);
+		try {
+			return roleDao.getRole(roleName);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 }

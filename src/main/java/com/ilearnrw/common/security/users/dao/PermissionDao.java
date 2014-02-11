@@ -20,4 +20,6 @@ public interface PermissionDao {
 	public List<Permission> getPermissionList(Role role);
 
 	public void setPermissionList(Role role, List<Permission> permissions);
+
+	public Permission getPermission(String name);
 }

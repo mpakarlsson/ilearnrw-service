@@ -74,4 +74,5 @@ public interface IProfileProvider {
 	 */
 	void deleteProfile(String userId) throws ProfileProviderException;
 
+	void createTables();
 }
