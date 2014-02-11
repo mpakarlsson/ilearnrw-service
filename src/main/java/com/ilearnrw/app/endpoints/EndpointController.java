@@ -1,4 +1,4 @@
-package com.ilearnrw.api.endpoints;
+package com.ilearnrw.app.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,17 +15,12 @@ public class EndpointController {
 	public EndpointController(RequestMappingHandlerMapping handlerMapping) {
 		this.handlerMapping = handlerMapping;
 	}
-	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String root(Model model) {
-		return "endpointsMain";
-	}
 
 	@RequestMapping(value = "/endpoints", method = RequestMethod.GET)
 	public String endpoints(Model model) {
 		model.addAttribute("handlerMethods",
 				this.handlerMapping.getHandlerMethods());
-		model.addAttribute("title", "API endpoints");
+		model.addAttribute("title", "Web application endpoints");
 		return "endpoints";
 	}
 }
