@@ -20,7 +20,6 @@
 				<table border="1">
 					<tr>
 						<th>Username</th>
-						<th>Password</th>
 						<th>Enabled</th>
 						<th></th>
 						<th></th>
@@ -30,7 +29,6 @@
 					<c:forEach items="${users}" var="o">
 						<tr>
 							<td>${o.username}</td>
-							<td>${o.password}</td>
 							<td>${o.enabled}</td>
 							<td><a href='<c:url value='users/${o.id}/edit'/>'>Edit</a></td>
 							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a></td>

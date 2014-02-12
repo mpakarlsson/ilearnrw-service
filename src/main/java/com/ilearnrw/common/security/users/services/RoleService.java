@@ -21,4 +21,6 @@ public interface RoleService {
 
 	public void setRoleList(User user, List<Role> roles);
 	
+	public Role getRole(String roleName);
+	
 }

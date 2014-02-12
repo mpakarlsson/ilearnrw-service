@@ -16,10 +16,15 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.lf5.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.test.jdbc.SimpleJdbcTestUtils;
 
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException.Type;
@@ -110,6 +115,12 @@ public class DbProfileProvider implements IProfileProvider {
 			throw new ProfileProviderException(Type.userDoesNotExist, "SQL Delete did not return 1 row affected.");
 	}
 	
+	public void createTables() {
+		JdbcTemplate template = new JdbcTemplate(profileDataSource);
+		Resource resource = new ByteArrayResource(generateSQLTables().getBytes());
+		JdbcTestUtils.executeSqlScript(template, resource, true);
+	}
+	
 	static public String generateSQLTables() {
 		StringBuilder ret = new StringBuilder();
 
@@ -117,7 +128,7 @@ public class DbProfileProvider implements IProfileProvider {
 		for(LC_Base language : languages)
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.append("CREATE TABLE ");
+			sb.append("CREATE TABLE IF NOT EXISTS ");
 			sb.append(language.getTableName());
 			sb.append(" (\n");
 			sb.append("userid VARCHAR(32) NOT NULL PRIMARY KEY,\n");
@@ -146,7 +157,7 @@ public class DbProfileProvider implements IProfileProvider {
 			ret.append(sb);
 			ret.append("\n\n");
 		}
-		ret.append("CREATE TABLE ProfileLanguage (");
+		ret.append("CREATE TABLE IF NOT EXISTS ProfileLanguage (");
 		ret.append("userId VARCHAR(32) NOT NULL PRIMARY KEY,");
 		ret.append("languageCode TINYINT NOT NULL);");
 		return ret.toString();

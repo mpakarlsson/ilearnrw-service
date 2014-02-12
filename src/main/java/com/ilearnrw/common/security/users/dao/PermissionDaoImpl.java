@@ -91,4 +91,13 @@ public class PermissionDaoImpl implements PermissionDao {
 		});
 	}
 
+	@Override
+	public Permission getPermission(String name) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		Permission permission = template.queryForObject("select * from permissions where name=?",
+				new Object[] { name },
+				new BeanPropertyRowMapper<Permission>(Permission.class));
+		return permission;
+	}
+
 }

@@ -3,6 +3,7 @@ package com.ilearnrw.common.security.users.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ public class PermissionServiceImpl implements PermissionService {
 
 	@Autowired
 	PermissionDao permissionDao;
-	
+
 	@Override
 	public List<Permission> getPermissionList() {
 		return permissionDao.getPermissionList();
@@ -23,7 +24,11 @@ public class PermissionServiceImpl implements PermissionService {
 
 	@Override
 	public Permission getPermission(int id) {
-		return permissionDao.getPermission(id);
+		try {
+			return permissionDao.getPermission(id);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -49,6 +54,15 @@ public class PermissionServiceImpl implements PermissionService {
 	@Override
 	public void setPermissionList(Role role, List<Permission> permissions) {
 		permissionDao.setPermissionList(role, permissions);
+	}
+
+	@Override
+	public Permission getPermission(String name) {
+		try {
+			return permissionDao.getPermission(name);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 }

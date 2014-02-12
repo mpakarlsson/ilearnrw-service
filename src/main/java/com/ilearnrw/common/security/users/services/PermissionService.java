@@ -21,4 +21,6 @@ public interface PermissionService {
 	
 	public void setPermissionList(Role role, List<Permission> permissions);
 
+	public Permission getPermission(String name);
+
 }
