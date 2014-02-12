@@ -343,7 +343,8 @@ public class DbProfileProvider implements IProfileProvider {
 		replaceQuery.add("prefFontSize", profile.getPreferences().getFontSize());
 		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 		{
-			replaceQuery.add(String.format("index_%s", x), profile.getUserProblems().getSystemIndex(x));
+			replaceQuery.add(String.format("system_index_%s", x), profile.getUserProblems().getSystemIndex(x));
+			replaceQuery.add(String.format("teacher_index_%s", x), profile.getUserProblems().getSystemIndex(x));
 			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 			{
 				try {
