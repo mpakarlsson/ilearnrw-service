@@ -39,24 +39,26 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * ---
  * 
  * The complete user profile is stored in one table. Since the size of the
- * severity_X_Y matrix and the index_X list will be dependent on the
+ * severity_X_Y matrix and the system_index_X, teacher_index_X list will be dependent on the
  * ProblemDefinitionIndex we need 1 table for each language.
  * 
  * Note, that X, Y will range from 0 to the size of the ProblemDefinitionIndex.
  * 
  *	 		LC_Greek
  * ------------------------------
- *       userId | PK, VARCHAR(32)
- * prefFontSize | INTEGER
- * severity_X_Y | SHORT
- *      index_X | SHORT
+ *          userId | PK, VARCHAR(32)
+ *    prefFontSize | INTEGER
+ *    severity_X_Y | SHORT
+ *  system_index_X | SHORT
+ * teacher_index_X | SHORT
  * 
  * 			LC_English
  * ------------------------------
- *       userId | PK, VARCHAR(32)
- * prefFontSize | INTEGER
- * severity_X_Y | SHORT
- *      index_X | SHORT
+ *          userId | PK, VARCHAR(32)
+ *    prefFontSize | INTEGER
+ *    severity_X_Y | SHORT
+ *  system_index_X | SHORT
+ * teacher_index_X | SHORT
  *
  * In order to not have to supply the users language code a third table is required:
  * 
@@ -273,7 +275,8 @@ public class DbProfileProvider implements IProfileProvider {
 								/*Read severities and indices.*/
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
-									userSeverities.setSystemIndex(x, rs.getInt(String.format("index_%s", x)));
+									userSeverities.setSystemIndex(x, rs.getInt(String.format("system_index_%s", x)));
+									userSeverities.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));
 									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
