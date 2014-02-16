@@ -2,6 +2,7 @@ package com.ilearnrw.api.profileAccessUpdater;
 
 import java.util.List;
 
+import ilearnrw.textclassification.Word;
 import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.problems.EnglishProblems;
@@ -195,5 +196,44 @@ public class ProfileAccessUpdaterController {
 								.getSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
 		return profileProvider.getProfile(userId);
+	}
+	
+	/**
+	 * Adds a tricky word 
+	 * 
+	 * @param userId
+	 * @param word
+	 * @return
+	 */
+	@RequestMapping(value = "/profile/trickywords/add", method = RequestMethod.GET)
+	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
+	public @ResponseBody String addTrickyWord(
+			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "word", required = true) String word)
+			throws ProfileProviderException {
+		UserProfile profile = profileProvider.getProfile(userId);
+		profile.getUserProblems().getTrickyWords().add(new Word(word));
+		profileProvider.updateProfile(userId, profile);
+		return "ok";
+	}
+	
+	/**
+	 * Deletes a tricky word 
+	 * 
+	 * @param userId
+	 * @param word
+	 * @return
+	 */
+	@RequestMapping(value = "/profile/trickywords/delete", method = RequestMethod.GET)
+	public @ResponseBody String deleteTrickyWord(
+			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "word", required = true) String word)
+			throws ProfileProviderException {
+		UserProfile profile = profileProvider.getProfile(userId);
+		if (profile.getUserProblems().getTrickyWords().remove(new Word(word)))
+			profileProvider.updateProfile(userId, profile);
+		else
+			return "word not found";
+		return "ok";
 	}
 }
