@@ -21,40 +21,57 @@
 		<label>Font size</label>
 		<form:input path="preferences.fontSize" />
 		<form:hidden path="language" />
-		<form:hidden path="userProblems.problems" />
-		<form:hidden path="userProblems.userSeverities.indices" />
-		<input type="submit" value="Submit" />
 		</fieldset>
 		<fieldset>
 		<legend>Severities</legend>
+		<!-- form:hidden path="userProblems.problems" /-->
+		<form:hidden path="userProblems.userSeverities.systemIndices" />
+		<form:hidden path="userProblems.userSeverities.teacherIndices" />
 		<table border="1">
+		<tr>
+			<th>Row</th>
+			<th>System Index</th>
+			<th>Teacher Index</th>
+			<th colspan="1000">Severities</th>
+		</tr>
 		<c:forEach var="row"
 			items="${profile.userProblems.userSeverities.severities}"
 			varStatus="statusRow">
 			<tr>
 			<td>
-			<label>Index <c:out value="${statusRow.index}"/> = </label>
+				<c:out value="${statusRow.index}"/>
 			</td>
 			<td>
 			<form:input
-					path="userProblems.userSeverities.indices[${statusRow.index}]" size="2"/>
+					path="userProblems.userSeverities.systemIndices[${statusRow.index}]" size="2"/>
 			</td>
 			<td>
-			<label>Severities:</label>
+			<form:input
+					path="userProblems.userSeverities.teacherIndices[${statusRow.index}]" size="2"/>
+			</td>
+			<td>
+			Severities:
+			</td>
 			<form:hidden
 				path="userProblems.userSeverities.severities[${statusRow.index}]" />
-			</td>
 			<c:forEach var="col" items="${row}" varStatus="statusCol">
-				<td>
+			<td>
 				<form:input
 					path="userProblems.userSeverities.severities[${statusRow.index}][${statusCol.index}]" size="2" style="width: 20px"/>
-				</td>
+			</td>
 			</c:forEach>
 			</tr>
 		</c:forEach>
 		</table>
 		</fieldset>
-
+		<fieldset>
+		<legend>Tricky Words</legend>
+		<label>Words</label>
+		<form:input path="userProblems.trickyWords" />
+		</fieldset>
+		<span class="buttonrow">
+		    <input type="submit" value="Submit"></input>
+		</span>
 	</form:form>
 	</div>
 </body>
