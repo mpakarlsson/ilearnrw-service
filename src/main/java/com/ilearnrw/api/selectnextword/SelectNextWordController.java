@@ -2,6 +2,7 @@ package com.ilearnrw.api.selectnextword;
 
 import ilearnrw.languagetools.greek.GreekDictionary;
 import ilearnrw.languagetools.greek.GreekDictionaryLoader;
+import ilearnrw.structs.sets.SortedTreeSet;
 import ilearnrw.textclassification.Word;
 import ilearnrw.textclassification.greek.GreekWord;
 
@@ -34,10 +35,13 @@ public class SelectNextWordController {
 		//GreekDictionaryLoader loader = new GreekDictionaryLoader();
 		GreekDictionary dictionary = new GreekDictionary();
 		dictionary.loadWords();
-		List<Word> subList = dictionary.getWords().subList(0, count);
+		SortedTreeSet subList = dictionary.getWords();
 		List<Word> result = new ArrayList<Word>();
+		int i = 0;
 		for (Word w : subList) {
 			result.add(w);
+			if (i++ >= 10)
+				break;
 		}
 		return result;
 	}
