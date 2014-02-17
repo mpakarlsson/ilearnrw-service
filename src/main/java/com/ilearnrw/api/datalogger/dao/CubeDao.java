@@ -1,5 +1,7 @@
 package com.ilearnrw.api.datalogger.dao;
 
+import ilearnrw.utils.LanguageCode;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +25,9 @@ public interface CubeDao {
 
 	int createUser(String username, String gender, int birthyear, String language);
 
-	int getProblemByCategoryAndIndex(int problemCategory, int problemIndex);
+	int getProblemByCategoryIndexAndLanguage(int problemCategory, int problemIndex, LanguageCode languageCode);
 
-	int createProblem(int problemCategory, int problemIndex, String description);
+	int createProblem(int problemCategory, int problemIndex, int languageCode, String description);
 
 	int createFact(Timestamp timestamp, int userId, int appId, int problemId,
 			String word, String wordStatus, float duration, int learnSessionId,

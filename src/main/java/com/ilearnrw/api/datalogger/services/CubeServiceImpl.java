@@ -1,5 +1,8 @@
 package com.ilearnrw.api.datalogger.services;
 
+import ilearnrw.user.problems.Problems;
+import ilearnrw.utils.LanguageCode;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +49,7 @@ public class CubeServiceImpl implements CubeService {
 		int userId = findOrCreateUser(entry.getUsername());
 		
 		int problemId = findOrCreateProblem(entry.getProblemCategory(),
-				entry.getProblemIndex());
+				entry.getProblemIndex(), entry.getUsername());
 
 		int learnSessionId = getLastSessionIdByType(entry.getUsername(), SessionType.LEARN);
 		if (entry.getTag().compareTo(SystemTags.LEARN_SESSION_START) == 0) {
@@ -103,11 +106,18 @@ public class CubeServiceImpl implements CubeService {
 		return cubeDao.createSession(type, value, timestamp, username);
 	}
 
-	private int findOrCreateProblem(int problemCategory, int problemIndex) {
-		int id = cubeDao.getProblemByCategoryAndIndex(problemCategory,
-				problemIndex);
+	private int findOrCreateProblem(int problemCategory, int problemIndex, String username) {
+		com.ilearnrw.common.security.users.model.User user = authenticatedRestClient.getUserDetails(username);
+		LanguageCode languageCode = LanguageCode.fromString(user.getLanguage());
+		int id = cubeDao.getProblemByCategoryIndexAndLanguage(problemCategory,
+				problemIndex, languageCode);
 		if (id == -1) {
-			id = cubeDao.createProblem(problemCategory, problemIndex, "");
+			Problems problemDescriptions = authenticatedRestClient.getProblemDefinitions(user.getId());
+			String description = problemDescriptions
+					.getProblemDefinitionIndex()
+					.getProblemDescription(problemCategory, problemIndex)
+					.getDescriptionsTosString();
+			id = cubeDao.createProblem(problemCategory, problemIndex, languageCode.getCode(), description);
 		}
 		return id;
 	}

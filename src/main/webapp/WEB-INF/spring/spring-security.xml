@@ -40,6 +40,8 @@
 			requires-channel="http" />
 		<intercept-url pattern="/user/details/*" access="permitAll"
 			requires-channel="http" />
+		<intercept-url pattern="/profile/problemDefinitions" access="permitAll"
+			requires-channel="http" />
 		<intercept-url pattern="/logs/**" access="permitAll"
 			requires-channel="http" />
 

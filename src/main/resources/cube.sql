@@ -14,13 +14,15 @@ CREATE TABLE `facts` (
   `app_round_session_ref` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=latin1$$
+
 delimiter $$
 
 CREATE TABLE `problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category` smallint(6) DEFAULT NULL,
   `idx` smallint(6) DEFAULT NULL,
-  `description` text,
+  `language` smallint(6) DEFAULT NULL,
+  `description` text character set utf8 collate utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1$$
 
