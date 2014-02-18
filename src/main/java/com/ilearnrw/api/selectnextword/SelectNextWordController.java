@@ -1,10 +1,11 @@
 package com.ilearnrw.api.selectnextword;
 
+import ilearnrw.languagetools.WordDictionary;
 import ilearnrw.languagetools.greek.GreekDictionary;
-import ilearnrw.languagetools.greek.GreekDictionaryLoader;
 import ilearnrw.structs.sets.SortedTreeSet;
 import ilearnrw.textclassification.Word;
-import ilearnrw.textclassification.greek.GreekWord;
+import ilearnrw.user.problems.wordlists.ProblemsWordLists;
+import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
 
 @Controller
 public class SelectNextWordController {
@@ -29,18 +31,23 @@ public class SelectNextWordController {
 	public @ResponseBody
 	List<Word> selectNextWords(
 			@RequestParam(value = "activity", required = true) String activity,
+			@RequestParam(value = "userId", required = true) int userId,
+			@RequestParam(value = "probId", required = true) String probId,
 			@RequestParam(value = "count", required = true) int count,
 			@RequestParam(value = "percent_new_words", required = false) Integer percentNewWords,
 			@RequestParam(value = "only_tricky_words", required = false) Boolean onlyTrickyWords) {
-		//GreekDictionaryLoader loader = new GreekDictionaryLoader();
-		GreekDictionary dictionary = new GreekDictionary();
-		dictionary.loadWords();
+		ProblemsWordLists pwl = new ProblemsWordLists(LanguageCode.GR);
+		String[] parts = probId.split("_");
+		int i = Integer.parseInt(parts[0]);
+		int j = Integer.parseInt(parts[1]);
+		WordDictionary dictionary = pwl.get(i, j);
+		CubeService cs = new CubeServiceImpl();
 		SortedTreeSet subList = dictionary.getWords();
 		List<Word> result = new ArrayList<Word>();
-		int i = 0;
+		int ii = 0;
 		for (Word w : subList) {
 			result.add(w);
-			if (i++ >= 10)
+			if (ii++ >= 10)
 				break;
 		}
 		return result;
