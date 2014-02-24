@@ -105,12 +105,12 @@ public class SetupController {
 			sue_t.setLanguage("EN");
 			users.add(sue_t);
 
-			User chris_t = createBoy("chris_t");
+			User chris_t = createBoy("Maria_Begineraki");
 			chris_t.setBirthdate(df.parse("2007-04-21"));
 			chris_t.setLanguage("GR");
 			users.add(chris_t);
 
-			User xena_t = createGirl("xena_t");
+			User xena_t = createGirl("Giorgos_Expertidis");
 			xena_t.setBirthdate(df.parse("2009-09-11"));
 			xena_t.setLanguage("GR");
 			users.add(xena_t);

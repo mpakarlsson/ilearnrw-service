@@ -175,8 +175,8 @@ public class DbProfileProvider implements IProfileProvider {
 	static private class LC_Greek implements LC_Base
 	{
 		static final String TableName = "LC_Greek";
-		static final Integer ProblemDefinitionIndexSize_X = 8;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,27,10};
+		static final Integer ProblemDefinitionIndexSize_X = 9;
+		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,27,10,8};
 		@Override
 		public String getTableName() { return TableName; }
 		@Override
@@ -275,12 +275,12 @@ public class DbProfileProvider implements IProfileProvider {
 								/*Read severities and indices.*/
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
-									userSeverities.setSystemIndex(x, rs.getInt(String.format("system_index_%s", x)));
-									userSeverities.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));
+									userProblems.setSystemIndex(x, rs.getInt(String.format("system_index_%s", x)));
+									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));
 									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
-										userSeverities.setSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
+										userProblems.setSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
 									}
 								}
 							}});

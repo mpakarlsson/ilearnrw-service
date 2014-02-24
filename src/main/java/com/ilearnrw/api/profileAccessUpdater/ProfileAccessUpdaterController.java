@@ -186,11 +186,8 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "y", required = true) int y)
 			throws ProfileProviderException {
 		UserProfile profile = profileProvider.getProfile(userId);
-		profile.getUserProblems()
-				.getUserSeverities()
-				.setSeverity(
-						x,
-						y,
+		profile.getUserProblems().setSeverity(
+						x, y,
 						profile.getUserProblems().getUserSeverities()
 								.getSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
