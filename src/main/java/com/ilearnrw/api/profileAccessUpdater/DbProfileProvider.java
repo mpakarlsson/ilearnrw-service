@@ -276,14 +276,14 @@ public class DbProfileProvider implements IProfileProvider {
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
 									userProblems.setSystemIndex(x, rs.getInt(String.format("system_index_%s", x)));
-									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));
-									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
+									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
-										userProblems.setSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
+										userProblems.getUserSeverities().setSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
 									}
 								}
 							}});
+
 		return new UserProfile(language.getLanguageCode(),
 				userProblems,
 				preferences);
