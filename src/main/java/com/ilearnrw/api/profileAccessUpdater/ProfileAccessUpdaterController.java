@@ -4,13 +4,10 @@ import java.util.List;
 
 import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
-import ilearnrw.user.problems.EnglishProblems;
-import ilearnrw.user.problems.GreekProblems;
-import ilearnrw.user.problems.Problems;
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
 import ilearnrw.utils.LanguageCode;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -77,14 +74,11 @@ public class ProfileAccessUpdaterController {
 	 */
 	@RequestMapping(value = "/profile/problemDefinitions", method = RequestMethod.GET)
 	public @ResponseBody
-	Problems getProblemDefinitions(
+	ProblemDefinitionIndex getProblemDefinitions(
 			@RequestParam(value = "userId", required = true) String userId)
 			throws ProfileProviderException {
 		LanguageCode lCode = profileProvider.getProfile(userId).getLanguage();
-		if (lCode == LanguageCode.EN)
-			return new EnglishProblems();
-		else
-			return new GreekProblems();
+		return new ProblemDefinitionIndex(lCode);
 	}
 	
 	/**
@@ -186,10 +180,9 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "y", required = true) int y)
 			throws ProfileProviderException {
 		UserProfile profile = profileProvider.getProfile(userId);
-		profile.getUserProblems().setSeverity(
+		profile.getUserProblems().setUserSeverity(
 						x, y,
-						profile.getUserProblems().getUserSeverities()
-								.getSeverity(x, y) + 1);
+						profile.getUserProblems().getUserSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
 		return profileProvider.getProfile(userId);
 	}

@@ -52,7 +52,7 @@ public class SelectNextActivityController {
 			possibleActivities.add("TEST_ACTIVITY");
 			dummy1.setActivities(possibleActivities);
 			dummy1.setProblemDescription(profile.getUserProblems().getProblemDescription(0, 0));
-			dummy1.setProblemSeverity(profile.getUserProblems().getSeverity(0, 0));
+			dummy1.setProblemSeverity(profile.getUserProblems().getUserSeverity(0, 0));
 			dummy.add(dummy1);
 			return dummy;
 

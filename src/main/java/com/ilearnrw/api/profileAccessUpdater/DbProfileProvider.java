@@ -256,9 +256,8 @@ public class DbProfileProvider implements IProfileProvider {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
-		final UserProblems userProblems = new UserProblems();
-		//userProblems.loadTestEnglishProblems();
-		//userProblems.loadTestGreekProblems();
+		final UserProblems userProblems = new UserProblems(languageCode.getLanguageCode());
+
 		userProblems.setUserSeverities(userSeverities);
 		final UserPreferences preferences = new UserPreferences();
 
@@ -279,7 +278,7 @@ public class DbProfileProvider implements IProfileProvider {
 									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
-										userProblems.getUserSeverities().setSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
+										userProblems.setUserSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
 									}
 								}
 							}});
@@ -352,7 +351,7 @@ public class DbProfileProvider implements IProfileProvider {
 			{
 				try {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
-								 profile.getUserProblems().getSeverity(x, y));
+								 profile.getUserProblems().getUserSeverity(x, y));
 				} catch (java.lang.NullPointerException ex) {
 					replaceQuery.add(String.format("severity_%s_%s", x,y),
 								 0); //Default to 0 when there is no severity.
