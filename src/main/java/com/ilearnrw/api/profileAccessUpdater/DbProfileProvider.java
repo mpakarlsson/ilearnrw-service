@@ -91,7 +91,7 @@ public class DbProfileProvider implements IProfileProvider {
 	@Override
 	public UserProfile getProfile(int userId)
 			throws ProfileProviderException {
-		return getProfile(userId, getLanguage(userId));
+		return getProfile(userId, getLanguage(String.valueOf(userId)));
 	}
 
 	@Override
@@ -173,8 +173,6 @@ public class DbProfileProvider implements IProfileProvider {
 			ret.append("\n\n");
 		}
 		ret.append("CREATE TABLE IF NOT EXISTS ProfileLanguage (");
-		ret.append("userId INT NOT NULL PRIMARY KEY,");
-		ret.append("languageCode TINYINT NOT NULL);");
 		ret.append("userId INT NOT NULL PRIMARY KEY,");
 		ret.append("languageCode TINYINT NOT NULL);\n");
 		ret.append("CREATE TABLE IF NOT EXISTS TrickyWords (");
@@ -293,7 +291,8 @@ public class DbProfileProvider implements IProfileProvider {
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
 									userProblems.setSystemIndex(x, rs.getInt(String.format("system_index_%s", x)));
-									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
+									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));
+									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
 										userProblems.setUserSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
