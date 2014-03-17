@@ -116,7 +116,7 @@ public class CubeServiceImpl implements CubeService {
 			String description = problemDescriptions
 					.getProblemDefinitionIndex()
 					.getProblemDescription(problemCategory, problemIndex)
-					.getDescriptionsTosString();
+					.returnDescriptionsAsString();
 			id = cubeDao.createProblem(problemCategory, problemIndex, languageCode.getCode(), description);
 		}
 		return id;

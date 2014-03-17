@@ -5,6 +5,7 @@ import ilearnrw.user.problems.Problems;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -91,14 +93,7 @@ public class AuthenticatedRestClient {
 			System.out.println(e);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.disable(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES);
-		MappingJacksonHttpMessageConverter messageConverter = new MappingJacksonHttpMessageConverter();
-		messageConverter.setObjectMapper(mapper);
-		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
-		messageConverters.add(messageConverter);
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setMessageConverters(messageConverters);
 		this.template = restTemplate;
 		
 		this.headers = new HttpHeaders() {
