@@ -191,7 +191,7 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewProfile(@PathVariable String userId, ModelMap model)
+	public String viewProfile(@PathVariable int userId, ModelMap model)
 			throws ProfileProviderException, Exception {
 		UserProfile profile = null;
 		try {
@@ -201,7 +201,7 @@ public class UserManagerController {
 		}
 
 		if (profile == null) {
-			User current = userService.getUser(Integer.parseInt(userId));
+			User current = userService.getUser(userId);
 			if (current.getLanguage().equalsIgnoreCase("EN"))
 				profileProvider.createProfile(userId, LanguageCode.EN);
 			else if (current.getLanguage().equalsIgnoreCase("GR"))
@@ -222,7 +222,7 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
-			@PathVariable String userId) throws ProfileProviderException {
+			@PathVariable int userId) throws ProfileProviderException {
 		profileProvider.updateProfile(userId, profile);
 		return "redirect:/apps/panel";
 	}
