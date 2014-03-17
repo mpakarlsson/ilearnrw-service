@@ -15,9 +15,11 @@
 		http blocks here with security="none" -->
 
 	<http use-expressions="true" pattern="/cache" security="none" />
+	<http use-expressions="true" pattern="/" security="none" />
 	<http use-expressions="true" pattern="/endpoints" security="none" />
 
 	<http use-expressions="true" pattern="/apps/**">
+		<intercept-url pattern="/apps/endpoints" access="permitAll" />
 		<intercept-url pattern="/apps/login" access="permitAll" />
 		<intercept-url pattern="/apps/logout" access="permitAll" />
 		<intercept-url pattern="/apps/loginfailed" access="permitAll" />
@@ -37,6 +39,8 @@
 		<intercept-url pattern="/user/newtokens" access="permitAll"
 			requires-channel="http" />
 		<intercept-url pattern="/user/details/*" access="permitAll"
+			requires-channel="http" />
+		<intercept-url pattern="/profile/problemDefinitions" access="permitAll"
 			requires-channel="http" />
 		<intercept-url pattern="/logs/**" access="permitAll"
 			requires-channel="http" />

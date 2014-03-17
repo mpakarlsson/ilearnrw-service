@@ -1,5 +1,7 @@
 package com.ilearnrw.api.datalogger.dao;
 
+import ilearnrw.utils.LanguageCode;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -119,15 +121,15 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	@Cacheable(value = "cube_problems", unless = "#result == -1")
-	public int getProblemByCategoryAndIndex(int problemCategory,
-			int problemIndex) {
+	public int getProblemByCategoryIndexAndLanguage(int problemCategory,
+			int problemIndex, LanguageCode languageCode) {
 		LOG.debug(String.format("Hitting DB to get problem [%d,%d]",
 				problemCategory, problemIndex));
 		try {
 			Problem problem = jdbcTemplate
 					.queryForObject(
-							"select * from problems where `category`=? and `idx`=? limit 0,1",
-							new Object[] { problemCategory, problemIndex },
+							"select * from problems where `category`=? and `idx`=? and `language`=? limit 0,1",
+							new Object[] { problemCategory, problemIndex, languageCode },
 							new BeanPropertyRowMapper<Problem>(Problem.class));
 			return problem.getId();
 		} catch (Exception ex) {
@@ -138,12 +140,13 @@ public class CubeDaoImpl implements CubeDao {
 	}
 
 	@Override
-	public int createProblem(int problemCategory, int problemIndex,
+	public int createProblem(int problemCategory, int problemIndex, int languageCode,
 			String description) {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("category", problemCategory);
 		parameters.put("idx", problemIndex);
+		parameters.put("language", languageCode);
 		parameters.put("description", description);
 
 		return insertAndReturnKey("problems", parameters);

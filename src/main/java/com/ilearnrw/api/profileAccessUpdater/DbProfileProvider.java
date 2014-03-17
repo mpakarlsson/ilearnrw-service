@@ -1,5 +1,6 @@
 package com.ilearnrw.api.profileAccessUpdater;
 
+import ilearnrw.textclassification.Word;
 import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
@@ -8,6 +9,7 @@ import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
 import ilearnrw.utils.LanguageCode;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,8 +22,11 @@ import org.apache.log4j.lf5.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -67,6 +72,13 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * ------------------------------------
  * 		 userId | PK, INTEGER, NOT NULL
  * languageCode | INT, NOT NULL
+ * 
+ * The tricky words are stored in a separate table
+ * 
+ * 		TrickyWords
+ * ------------------------------------
+ * 		 userId | VARCHAR(32), NOT NULL
+ *         word | VARCHAR(45)
  * 
  */
 @Service
@@ -163,6 +175,11 @@ public class DbProfileProvider implements IProfileProvider {
 		ret.append("CREATE TABLE IF NOT EXISTS ProfileLanguage (");
 		ret.append("userId INT NOT NULL PRIMARY KEY,");
 		ret.append("languageCode TINYINT NOT NULL);");
+		ret.append("userId INT NOT NULL PRIMARY KEY,");
+		ret.append("languageCode TINYINT NOT NULL);\n");
+		ret.append("CREATE TABLE IF NOT EXISTS TrickyWords (");
+		ret.append("userId INT NOT NULL,");
+		ret.append("word VARCHAR(45) NULL);");
 		return ret.toString();
 	}
 	private interface LC_Base
@@ -284,11 +301,22 @@ public class DbProfileProvider implements IProfileProvider {
 								}
 							}});
 
+		final List<Word> trickyWords = new ArrayList<Word>();
+		jdbcTemplate.query("SELECT word FROM trickywords WHERE userId=?",
+				params,
+				new RowCallbackHandler() {
+					@Override
+					public void processRow(ResultSet rs) throws SQLException {
+						trickyWords.add(new Word(rs.getString("word")));
+					}
+				});
+		userProblems.setTrickyWords(trickyWords);
 		return new UserProfile(language.getLanguageCode(),
 				userProblems,
 				preferences);
 	}
-	void storeProfile(int userId, UserProfile profile) throws QueryParamException
+
+	void storeProfile(final int userId, final UserProfile profile) throws QueryParamException
 	{
 		final LC_Base language = getLanguage(profile.getLanguage());
 		final class ReplaceQuery {
@@ -363,5 +391,20 @@ public class DbProfileProvider implements IProfileProvider {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		jdbcTemplate.update(replaceQuery.getQuery(language),
 							replaceQuery.getParams());
+		Object[] params = {userId};
+		jdbcTemplate.update("DELETE FROM TrickyWords WHERE userId = ?", params);
+		jdbcTemplate.batchUpdate("INSERT INTO TrickyWords (userId, word) VALUES (?, ?)", new BatchPreparedStatementSetter() {
+			
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ps.setInt(1, userId);
+				ps.setString(2, profile.getUserProblems().getTrickyWords().get(i).getWord());
+			}
+			
+			@Override
+			public int getBatchSize() {
+				return profile.getUserProblems().getTrickyWords().size();
+			}
+		});
 	}
 }

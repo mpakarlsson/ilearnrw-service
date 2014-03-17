@@ -1,8 +1,6 @@
 package com.ilearnrw.api.profileAccessUpdater;
 
-import java.util.List;
-
-import ilearnrw.user.UserDetails;
+import ilearnrw.textclassification.Word;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProfile;
@@ -11,7 +9,6 @@ import ilearnrw.utils.LanguageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,7 +58,7 @@ public class ProfileAccessUpdaterController {
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	UserPreferences getPreferences(
-			@RequestParam(value = "userId", required = true) String userId)
+			@RequestParam(value = "userId", required = true) int userId)
 			throws ProfileProviderException {
 		return profileProvider.getProfile(userId).getPreferences();
 	}
@@ -75,7 +72,7 @@ public class ProfileAccessUpdaterController {
 	@RequestMapping(value = "/profile/problemDefinitions", method = RequestMethod.GET)
 	public @ResponseBody
 	ProblemDefinitionIndex getProblemDefinitions(
-			@RequestParam(value = "userId", required = true) String userId)
+			@RequestParam(value = "userId", required = true) int userId)
 			throws ProfileProviderException {
 		LanguageCode lCode = profileProvider.getProfile(userId).getLanguage();
 		return new ProblemDefinitionIndex(lCode);
@@ -91,7 +88,7 @@ public class ProfileAccessUpdaterController {
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	UserSeverities getProblems(
-			@RequestParam(value = "userId", required = true) String userId)
+			@RequestParam(value = "userId", required = true) int userId)
 			throws ProfileProviderException {
 		return profileProvider.getProfile(userId).getUserProblems()
 				.getUserSeverities();
@@ -109,7 +106,7 @@ public class ProfileAccessUpdaterController {
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	UserProfile getProfile(
-			@RequestParam(value = "userId", required = true) String userId)
+			@RequestParam(value = "userId", required = true) int userId)
 			throws ProfileProviderException {
 		return profileProvider.getProfile(userId);
 	}
@@ -125,7 +122,7 @@ public class ProfileAccessUpdaterController {
 	@RequestMapping(value = "/profile/create", method = RequestMethod.GET)
 	public @ResponseBody
 	String createProfile(
-			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "userId", required = true) int userId,
 			@RequestParam(value = "languageCode", required = true) Integer languageCode)
 			throws ProfileProviderException {
 		if (languageCode == 1)
@@ -145,7 +142,7 @@ public class ProfileAccessUpdaterController {
 	@RequestMapping(value = "/profile/delete", method = RequestMethod.GET)
 	public @ResponseBody
 	String deleteProfile(
-			@RequestParam(value = "userId", required = true) String userId)
+			@RequestParam(value = "userId", required = true) int userId)
 			throws ProfileProviderException {
 		profileProvider.deleteProfile(userId);
 		return "ok";
@@ -155,7 +152,7 @@ public class ProfileAccessUpdaterController {
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	String updateProfile(
-			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "userId", required = true) int userId,
 			@RequestBody UserProfile newProfile)
 			throws ProfileProviderException {
 		profileProvider.updateProfile(userId, newProfile);
@@ -175,7 +172,7 @@ public class ProfileAccessUpdaterController {
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	UserProfile IncrementUserProfileSeverity(
-			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "userId", required = true) int userId,
 			@RequestParam(value = "x", required = true) int x,
 			@RequestParam(value = "y", required = true) int y)
 			throws ProfileProviderException {
@@ -185,5 +182,44 @@ public class ProfileAccessUpdaterController {
 						profile.getUserProblems().getUserSeverity(x, y) + 1);
 		profileProvider.updateProfile(userId, profile);
 		return profileProvider.getProfile(userId);
+	}
+	
+	/**
+	 * Adds a tricky word 
+	 * 
+	 * @param userId
+	 * @param word
+	 * @return
+	 */
+	@RequestMapping(value = "/profile/trickywords/add", method = RequestMethod.GET)
+	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
+	public @ResponseBody String addTrickyWord(
+			@RequestParam(value = "userId", required = true) int userId,
+			@RequestParam(value = "word", required = true) String word)
+			throws ProfileProviderException {
+		UserProfile profile = profileProvider.getProfile(userId);
+		profile.getUserProblems().getTrickyWords().add(new Word(word));
+		profileProvider.updateProfile(userId, profile);
+		return "ok";
+	}
+	
+	/**
+	 * Deletes a tricky word 
+	 * 
+	 * @param userId
+	 * @param word
+	 * @return
+	 */
+	@RequestMapping(value = "/profile/trickywords/delete", method = RequestMethod.GET)
+	public @ResponseBody String deleteTrickyWord(
+			@RequestParam(value = "userId", required = true) int userId,
+			@RequestParam(value = "word", required = true) String word)
+			throws ProfileProviderException {
+		UserProfile profile = profileProvider.getProfile(userId);
+		if (profile.getUserProblems().getTrickyWords().remove(new Word(word)))
+			profileProvider.updateProfile(userId, profile);
+		else
+			return "word not found";
+		return "ok";
 	}
 }
