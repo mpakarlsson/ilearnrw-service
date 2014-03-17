@@ -23,6 +23,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.jdbc.SimpleJdbcTestUtils;
 
@@ -46,7 +47,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  *	 		LC_Greek
  * ------------------------------
- *          userId | PK, VARCHAR(32)
+ *          userId | PK, INTEGER
  *    prefFontSize | INTEGER
  *    severity_X_Y | SHORT
  *  system_index_X | SHORT
@@ -54,7 +55,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 			LC_English
  * ------------------------------
- *          userId | PK, VARCHAR(32)
+ *          userId | PK, INTEGER
  *    prefFontSize | INTEGER
  *    severity_X_Y | SHORT
  *  system_index_X | SHORT
@@ -64,11 +65,11 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 		ProfileLanguage
  * ------------------------------------
- * 		 userId | PK, VARCHAR(32), NOT NULL
+ * 		 userId | PK, INTEGER, NOT NULL
  * languageCode | INT, NOT NULL
  * 
  */
-@Controller
+@Service
 public class DbProfileProvider implements IProfileProvider {
 
 	@Autowired
@@ -76,13 +77,13 @@ public class DbProfileProvider implements IProfileProvider {
 	@Autowired
 	DataSource usersDataSource;
 	@Override
-	public UserProfile getProfile(String userId)
+	public UserProfile getProfile(int userId)
 			throws ProfileProviderException {
 		return getProfile(userId, getLanguage(userId));
 	}
 
 	@Override
-	public void updateProfile(String userId, UserProfile newProfile)
+	public void updateProfile(int userId, UserProfile newProfile)
 			throws ProfileProviderException {
 		try {
 			storeProfile(userId, newProfile);
@@ -93,7 +94,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void createProfile(String userId, LanguageCode languageCode)
+	public void createProfile(int userId, LanguageCode languageCode)
 			throws ProfileProviderException {
 		JdbcTemplate template = new JdbcTemplate(profileDataSource);
 		int i = template.update("INSERT INTO ProfileLanguage (userId, languageCode)VALUES(?,?)",
@@ -110,7 +111,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void deleteProfile(String userId) throws ProfileProviderException {
+	public void deleteProfile(int userId) throws ProfileProviderException {
 		JdbcTemplate template = new JdbcTemplate(profileDataSource);
 		int i = template.update("DELETE FROM ProfileLanguage WHERE userId=?", userId);
 		if( i != 1)
@@ -133,7 +134,7 @@ public class DbProfileProvider implements IProfileProvider {
 			sb.append("CREATE TABLE IF NOT EXISTS ");
 			sb.append(language.getTableName());
 			sb.append(" (\n");
-			sb.append("userid VARCHAR(32) NOT NULL PRIMARY KEY,\n");
+			sb.append("userid INT NOT NULL PRIMARY KEY,\n");
 			sb.append("prefFontSize INT,\n");
 
 			for(int x=0; x<language.getProblemDefinitionIndexSize_X();x++)
@@ -160,7 +161,7 @@ public class DbProfileProvider implements IProfileProvider {
 			ret.append("\n\n");
 		}
 		ret.append("CREATE TABLE IF NOT EXISTS ProfileLanguage (");
-		ret.append("userId VARCHAR(32) NOT NULL PRIMARY KEY,");
+		ret.append("userId INT NOT NULL PRIMARY KEY,");
 		ret.append("languageCode TINYINT NOT NULL);");
 		return ret.toString();
 	}
@@ -252,7 +253,7 @@ public class DbProfileProvider implements IProfileProvider {
 	 * @param languageCode
 	 * @return
 	 */
-	UserProfile getProfile(String userId, LC_Base languageCode) {
+	UserProfile getProfile(int userId, LC_Base languageCode) {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
@@ -287,7 +288,7 @@ public class DbProfileProvider implements IProfileProvider {
 				userProblems,
 				preferences);
 	}
-	void storeProfile(String userId, UserProfile profile) throws QueryParamException
+	void storeProfile(int userId, UserProfile profile) throws QueryParamException
 	{
 		final LC_Base language = getLanguage(profile.getLanguage());
 		final class ReplaceQuery {

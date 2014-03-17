@@ -52,27 +52,27 @@ public interface IProfileProvider {
 	 * @param userId
 	 * @return Returns a UserProfile if available. 
 	 */
-	UserProfile getProfile(String userId) throws ProfileProviderException;
+	UserProfile getProfile(int userId) throws ProfileProviderException;
 	/**
 	 * Updates a profile with the values from "newProfile"
 	 * @param userId
 	 * @param newProfile
 	 * @throws ProfileProviderException
 	 */
-	void updateProfile(String userId, UserProfile newProfile) throws ProfileProviderException;
+	void updateProfile(int userId, UserProfile newProfile) throws ProfileProviderException;
 	/**
 	 * Creates a new profile
 	 * @param userId
 	 * @param languageCode
 	 * @throws ProfileProviderException
 	 */
-	void createProfile(String userId, LanguageCode languageCode) throws ProfileProviderException;
+	void createProfile(int userId, LanguageCode languageCode) throws ProfileProviderException;
 	/**
 	 * Deletes a profile
 	 * @param userId
 	 * @throws ProfileProviderException
 	 */
-	void deleteProfile(String userId) throws ProfileProviderException;
+	void deleteProfile(int userId) throws ProfileProviderException;
 
 	void createTables();
 }
