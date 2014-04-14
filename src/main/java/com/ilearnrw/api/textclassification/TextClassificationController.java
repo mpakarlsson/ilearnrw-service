@@ -47,14 +47,9 @@ public class TextClassificationController {
 			@RequestParam("userId") String userId, @Valid @RequestBody String analyzeText)
 			throws ProfileProviderException, FileNotFoundException {
 		UserProfile profile = profileProvider.getProfile(userId);
-		LanguageAnalyzerAPI languageAnalyzer = null;
-		if (profile.getLanguage() == LanguageCode.EN)
-			languageAnalyzer = new EnglishLanguageAnalyzer();
-		else
-			languageAnalyzer = new GreekLanguageAnalyzer();
 
 		Text text = new Text(analyzeText, profile.getLanguage());
-		Classifier cls = new Classifier(profile, text, languageAnalyzer);
+		Classifier cls = new Classifier(profile, text);
 		cls.calculateProblematicWords(false);
 
 		return cls.getUserProblemsToText().getTextClassificationResults();
