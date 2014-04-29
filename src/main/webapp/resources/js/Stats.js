@@ -1,52 +1,52 @@
-$(function (){
-(function basic_bars(container, horizontal) {
+$(fetchStuff);
+function fetchStuff()
+{
+	$.ajax({
+		url: "stats/test",
+		}).done(function(data){
+			var data_obj = jQuery.parseJSON(data);
+			var d1 = [];
+			var tks = [];
+			var labels = [];
+			var hi = 0.5;
 
-    var
-    horizontal = (horizontal ? true : false),
-        // Show horizontal bars
-        d1 = [],
-        // First data series
-        d2 = [],
-        // Second data series
-        point, // Data point variable declaration
-        i;
+			for(var i in data_obj)
+			{
+				labels.push(i);
+				tks.push([hi,i]);
+			    d1.push([hi,data_obj[i]/1]);
+			    hi = hi+1;
+			}
+			
+			function testt(obj)
+			{
+				return labels[obj.index] + ":" + obj.y;
+			}
+			Flotr.draw(
+					$("#main")[0],
+					{
+						data:d1
+					}, 
+					{
+				        bars: {
+				            show: true,
+				            horizontal: false,
+				            shadowSize: 0,
+				            barWidth: 0.5
+				        },
+				        mouse: {
+				            track: true,
+				            trackFormatter: testt,
+				            relative: true
+				        },
+				        xaxis: {
+				        	ticks: tks,
+				        },
+				        yaxis: {
+				            min: 0,
+				            autoscaleMargin: 1
+				        }
+				    });
+		});
+};
 
-    for (i = 0; i < 4; i++) {
-
-        if (horizontal) {
-            point = [Math.ceil(Math.random() * 10), i];
-        } else {
-            point = [i, Math.ceil(Math.random() * 10)];
-        }
-
-        d1.push(point);
-
-        if (horizontal) {
-            point = [Math.ceil(Math.random() * 10), i + 0.5];
-        } else {
-            point = [i + 0.5, Math.ceil(Math.random() * 10)];
-        }
-
-        d2.push(point);
-    };
-
-    // Draw the graph
-    Flotr.draw(
-    container, [d1, d2], {
-        bars: {
-            show: true,
-            horizontal: horizontal,
-            shadowSize: 0,
-            barWidth: 0.5
-        },
-        mouse: {
-            track: true,
-            relative: true
-        },
-        yaxis: {
-            min: 0,
-            autoscaleMargin: 1
-        }
-    });
-})(document.getElementById("main"));
-});
