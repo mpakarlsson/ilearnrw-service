@@ -30,3 +30,24 @@ CREATE TABLE `teachers_students` (
   PRIMARY KEY (`student_id`,`teacher_id`)
 );
 
+
+CREATE TABLE `applications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `ilearnrw`.`applications` (`id`, `name`) VALUES 
+(1, 'Profile Setup'),
+(2, 'Whack a Mole'),
+(3, 'Endless Runner'),
+(4, 'Harvest'),
+(5, 'Serenade Hero'),
+(6, 'Moving Pathways'),
+(7, 'Eye Exam'),
+(8, 'Train Dispatcher'),
+(9, 'Drop Chops'),
+(10, 'Game World'),
+(11, 'Social Network'),
+(12, 'Logging Screen'),
+(13, 'Mail Sorter')

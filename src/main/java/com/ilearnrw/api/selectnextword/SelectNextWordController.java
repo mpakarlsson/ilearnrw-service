@@ -72,8 +72,9 @@ public class SelectNextWordController {
 		CubeService cs = new CubeServiceImpl();
 		SortedTreeSet subList = dictionary.getWords();
 		List<GameElement> result = new ArrayList<GameElement>();
-		ArrayList<Word> words = subList.getRandomElementsNotIn(10, null);
+		ArrayList<Word> words = subList.getRandomElementsNotIn(count, null);
 		for (Word w : words) {
+			System.err.println(w.toString());
 			result.add(new GameElement(false, w, i, j));
 		}
 		return result;
