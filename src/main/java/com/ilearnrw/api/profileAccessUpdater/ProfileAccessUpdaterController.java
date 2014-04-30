@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 
 /**
@@ -36,6 +37,7 @@ public class ProfileAccessUpdaterController {
 
 	@Autowired
 	IProfileProvider profileProvider;
+
 
 	/**
 	 * Used to generate the SQL tables based of the information in the LC_Greek
@@ -151,10 +153,27 @@ public class ProfileAccessUpdaterController {
 		return "ok";
 	}
 
-	@RequestMapping(value = "/profile", method = RequestMethod.POST)
+	@RequestMapping(value = "/profile/update", method = RequestMethod.POST)
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	String updateProfile(
+			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "category", required = false) Integer category,
+			@RequestParam(value = "index", required = false) Integer index)
+			throws ProfileProviderException {
+		if (category == null || index == null){
+			
+		}
+		else{
+			profileProvider.updateProfileEntry(userId, category, index);
+		}
+		return "ok";
+	}
+
+	@RequestMapping(value = "/profile/set_new", method = RequestMethod.POST)
+	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
+	public @ResponseBody
+	String setProfile(
 			@RequestParam(value = "userId", required = true) String userId,
 			@RequestBody UserProfile newProfile)
 			throws ProfileProviderException {

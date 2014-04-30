@@ -301,6 +301,17 @@ public class CubeDaoImpl implements CubeDao {
 
 		return execute(sql, count, namedParameters, Problem.class);
 	}
+	
+	@Override
+	public String getUsername(int userId) {
+		String sql = "select username from users where id=:userId limit 1";
+
+		Map<String, Object> namedParameters = new HashMap<String, Object>();
+		namedParameters.put("userid", userId);
+
+		ListWithCount<String> l = execute(sql, false, namedParameters, String.class);
+		return l.getList().get(0);
+	}
 
 	@Override
 	public ListWithCount<WordCount> getWordsByProblem(int userId, int category,

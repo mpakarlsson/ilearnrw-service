@@ -43,6 +43,8 @@ public interface CubeDao {
 	ListWithCount<WordCount> getWordsForUser(int userId, String status,
 			String timestart, String timeend, boolean count);
 
+	String getUsername(int userId);
+	
 	ListWithCount<Problem> getProblems(int userId, String timestart,
 			String timeend, boolean count);
 

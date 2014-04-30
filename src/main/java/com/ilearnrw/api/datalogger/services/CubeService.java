@@ -26,6 +26,8 @@ public interface CubeService {
 
 	ListWithCount<WordCount> getAllWords(String status, String timestart,
 			String timeend, boolean count);
+
+	String getUsername(int userId);
 	
 	ListWithCount<Problem> getProblems(String username, String timestart,
 			String timeend, boolean count);

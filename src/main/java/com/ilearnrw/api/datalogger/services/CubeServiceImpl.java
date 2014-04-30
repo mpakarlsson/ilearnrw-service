@@ -184,6 +184,11 @@ public class CubeServiceImpl implements CubeService {
 		int userId = cubeDao.getUserIdByName(username);
 		return cubeDao.getProblems(userId, timestart, timeend, count);
 	}
+	
+	@Override
+	public String getUsername(int userId) {
+		return cubeDao.getUsername(userId);
+	}
 
 	@Override
 	public ListWithCount<WordCount> getWordsByProblem(String username,
