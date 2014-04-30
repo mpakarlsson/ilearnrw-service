@@ -9,6 +9,7 @@ import com.ilearnrw.api.datalogger.model.Problem;
 import com.ilearnrw.api.datalogger.model.Session;
 import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 
 public interface CubeDao {
 
@@ -47,6 +48,9 @@ public interface CubeDao {
 
 	ListWithCount<WordCount> getWordsByProblem(int userId, int category,
 			int index, String timestart, String timeend, boolean count);
+
+	ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(int userId, int category,
+			int index, String timestart, String timeend, int numberOfSessions, boolean count);
 
 	ListWithCount<Problem> getProblemsByGenderAndAge(String gender, int age,
 			String timestart, String timeend, boolean count);

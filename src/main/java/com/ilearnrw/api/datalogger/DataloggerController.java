@@ -217,6 +217,18 @@ public class DataloggerController {
 		return cubeService.getWordsByProblem(username, category, index, filters.getTimestart(), filters.getTimeend(), filters.isCount());
 	}
 
+	@RequestMapping(value = "/logs/{username}/{problem_category}/{problem_index}/{number_of_sessions}/words", method = RequestMethod.GET)
+	public @ResponseBody
+	ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(
+			@PathVariable("username") String username,
+			@PathVariable("problem_category") int category,
+			@PathVariable("problem_index") int index,
+			@PathVariable("number_of_sessions") int numberOfSessions,
+			@ModelAttribute RequestFilters filters) {
+
+		return cubeService.getWordsByProblemAndSessions(username, category, index, filters.getTimestart(), filters.getTimeend(), numberOfSessions, filters.isCount());
+	}
+
 	@RequestMapping(value = "/logs/problems/{gender}/{age}", method = RequestMethod.GET)
 	public @ResponseBody
 	ListWithCount<Problem> getProblemsByGenderAndAge(

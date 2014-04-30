@@ -26,6 +26,7 @@ import com.ilearnrw.api.datalogger.model.Session;
 import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 
 @Repository
 public class CubeDaoImpl implements CubeDao {
@@ -321,6 +322,34 @@ public class CubeDaoImpl implements CubeDao {
 		namedParameters.put("end", TimeUtils.maxIfNull(timeend));
 
 		return execute(sql, count, namedParameters, WordCount.class);
+	}
+
+	@Override
+	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(int userId, int category,
+			int index, String timestart, String timeend, int numberOfSessions, boolean count) {
+		String sql = "select  f.word, sum(f.word_status='WORD_DISPLAYED') as count, "
+				+ "sum(f.word_status='WORD_SUCCESS') as succeed, "
+				+ "sum(f.word_status='WORD_FAILED') as failed "
+				+ "from facts f "
+				+ "left join problems p on f.problem_ref=p.id "
+				+ "right join ( "
+				+ "select app_session_ref as theid from facts "
+				+ "where user_ref=:userid "
+				+ "group by app_session_ref order by app_session_ref desc limit :numberOfSessions ) "
+				+ "as s on f.app_session_ref=s.theid "
+				+ "where p.id is not null  and f.user_ref=:userid " 
+				+ "and f.timestamp>=:start and f.timestamp<=:end "
+				+ "and p.category=:category and p.idx=:index" + " group by f.word";
+
+		Map<String, Object> namedParameters = new HashMap<String, Object>();
+		namedParameters.put("userid", userId);
+		namedParameters.put("category", category);
+		namedParameters.put("index", index);
+		namedParameters.put("start", TimeUtils.minIfNull(timestart));
+		namedParameters.put("end", TimeUtils.maxIfNull(timeend));
+		namedParameters.put("numberOfSessions", numberOfSessions>=0 ? numberOfSessions : Integer.MAX_VALUE);
+
+		return execute(sql, count, namedParameters, WordSuccessCount.class);
 	}
 
 	private <T> ListWithCount<T> execute(String sql, boolean count,
