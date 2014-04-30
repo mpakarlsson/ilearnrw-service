@@ -162,7 +162,7 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "index", required = false) Integer index)
 			throws ProfileProviderException {
 		if (category == null || index == null){
-			
+			profileProvider.updateTheProfileAutomatically(userId);
 		}
 		else{
 			profileProvider.updateProfileEntry(userId, category, index);

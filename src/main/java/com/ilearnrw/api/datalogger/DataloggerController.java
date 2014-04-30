@@ -49,6 +49,14 @@ public class DataloggerController {
 	@Autowired
 	CubeService cubeService;
 
+	public List<WordSuccessCount> getListOfSuccessesAndFailures(String userId, int category, int index){
+		String username = cubeService.getUsername(Integer.parseInt(userId));
+		ListWithCount<WordSuccessCount> l = 
+				cubeService.getWordsByProblemAndSessions(username, 
+						category, index, null, null, 20, true);
+		return l.getList();
+	}
+	
 	/**
 	 * Temporary test function which lists all avaliable users in the datalogger
 	 * database.

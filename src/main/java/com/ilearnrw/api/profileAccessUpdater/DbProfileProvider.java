@@ -26,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.jdbc.SimpleJdbcTestUtils;
 
+import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.ListWithCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.services.CubeService;
@@ -78,8 +79,8 @@ public class DbProfileProvider implements IProfileProvider {
 	DataSource profileDataSource;
 	@Autowired
 	DataSource usersDataSource;
-	@Autowired
-	CubeService cubeService;
+	
+	private DataloggerController dl = new DataloggerController();
 	
 	@Override
 	public UserProfile getProfile(String userId)
@@ -92,11 +93,8 @@ public class DbProfileProvider implements IProfileProvider {
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
-			String username = cubeService.getUsername(Integer.parseInt(userId));
-			ListWithCount<WordSuccessCount> l = 
-					cubeService.getWordsByProblemAndSessions(username, 
-							category, index, null, null, 20, true);
-			List<WordSuccessCount> thelist = l.getList();
+			List<WordSuccessCount> thelist = dl.getListOfSuccessesAndFailures(userId, category, index);
+			
 			int SuccessSum = 0, FailSum = 0, count = 0;
 			for (WordSuccessCount wc : thelist){
 				count += wc.getCount();
@@ -115,7 +113,10 @@ public class DbProfileProvider implements IProfileProvider {
 			else 
 				up.getUserProblems().setUserSeverity(category, index, 3);
 			storeProfile(userId, up);
-		} catch (QueryParamException e) {
+		} catch(Exception e){
+			System.err.println(e.toString());
+		}
+		catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}
 	}
@@ -127,9 +128,9 @@ public class DbProfileProvider implements IProfileProvider {
 		for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
 			for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
 				updateProfileEntry(userId, i, j);
+				System.err.println(userId);
 			}
 		}
-		
 	}
 
 	@Override
