@@ -52,7 +52,7 @@ public interface CubeDao {
 			int index, String timestart, String timeend, boolean count);
 
 	ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(int userId, int category,
-			int index, String timestart, String timeend, int numberOfSessions, boolean count);
+			int index, String timestart, String timeend, int numberOfSessions);
 
 	ListWithCount<Problem> getProblemsByGenderAndAge(String gender, int age,
 			String timestart, String timeend, boolean count);

@@ -104,6 +104,21 @@ public class CubeDaoImpl implements CubeDao {
 		}
 
 	}
+	
+	@Override
+	public String getUsername(int userId) {
+		LOG.debug("Hitting DB to get user with id " + userId);
+		try {
+			User user = jdbcTemplate.queryForObject(
+					"select * from users where id = ? limit 0,1",
+					new Object[] { userId }, new BeanPropertyRowMapper<User>(
+							User.class));
+			return user.getUsername();
+		} catch (Exception ex) {
+			LOG.debug("User not found: " + userId);
+			return "";
+		}
+	}
 
 	@Override
 	public int createUser(String username, String gender, int birthyear,
@@ -301,17 +316,6 @@ public class CubeDaoImpl implements CubeDao {
 
 		return execute(sql, count, namedParameters, Problem.class);
 	}
-	
-	@Override
-	public String getUsername(int userId) {
-		String sql = "select username from users where id=:userId limit 1";
-
-		Map<String, Object> namedParameters = new HashMap<String, Object>();
-		namedParameters.put("userid", userId);
-
-		ListWithCount<String> l = execute(sql, false, namedParameters, String.class);
-		return l.getList().get(0);
-	}
 
 	@Override
 	public ListWithCount<WordCount> getWordsByProblem(int userId, int category,
@@ -337,7 +341,7 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(int userId, int category,
-			int index, String timestart, String timeend, int numberOfSessions, boolean count) {
+			int index, String timestart, String timeend, int numberOfSessions) {
 		String sql = "select  f.word, sum(f.word_status='WORD_DISPLAYED') as count, "
 				+ "sum(f.word_status='WORD_SUCCESS') as succeed, "
 				+ "sum(f.word_status='WORD_FAILED') as failed "
@@ -360,7 +364,7 @@ public class CubeDaoImpl implements CubeDao {
 		namedParameters.put("end", TimeUtils.maxIfNull(timeend));
 		namedParameters.put("numberOfSessions", numberOfSessions>=0 ? numberOfSessions : Integer.MAX_VALUE);
 
-		return execute(sql, count, namedParameters, WordSuccessCount.class);
+		return execute(sql, false, namedParameters, WordSuccessCount.class);
 	}
 
 	private <T> ListWithCount<T> execute(String sql, boolean count,

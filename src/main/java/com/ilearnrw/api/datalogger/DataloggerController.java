@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,18 +48,12 @@ public class DataloggerController {
 	LogEntryService logEntryService;
 
 	@Autowired
+	@Qualifier("cubeService")
 	CubeService cubeService;
 
-	public List<WordSuccessCount> getListOfSuccessesAndFailures(String userId, int category, int index){
-		String username = cubeService.getUsername(Integer.parseInt(userId));
-		ListWithCount<WordSuccessCount> l = 
-				cubeService.getWordsByProblemAndSessions(username, 
-						category, index, null, null, 20, true);
-		return l.getList();
-	}
 	
 	/**
-	 * Temporary test function which lists all avaliable users in the datalogger
+	 * Temporary test function which lists all available users in the datalogger
 	 * database.
 	 * 
 	 * @return List of userId's.

@@ -12,7 +12,7 @@ CREATE TABLE `logs` (
   `value` text,
   `timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
 
 DELIMITER //
 CREATE PROCEDURE addLog(IN inUserId VARCHAR(32), IN inTag VARCHAR(32), IN inValue VARCHAR(512), IN inApplicationId VARCHAR(32), IN inSessionId VARCHAR(32))

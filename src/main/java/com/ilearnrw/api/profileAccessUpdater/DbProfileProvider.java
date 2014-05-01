@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.lf5.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +31,7 @@ import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.ListWithCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException.Type;
 
@@ -80,7 +82,9 @@ public class DbProfileProvider implements IProfileProvider {
 	@Autowired
 	DataSource usersDataSource;
 	
-	private DataloggerController dl = new DataloggerController();
+	@Autowired
+	@Qualifier("cubeServiceForProfiles")
+	CubeService cubeService;
 	
 	@Override
 	public UserProfile getProfile(String userId)
@@ -93,7 +97,11 @@ public class DbProfileProvider implements IProfileProvider {
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
-			List<WordSuccessCount> thelist = dl.getListOfSuccessesAndFailures(userId, category, index);
+			String username = cubeService.getUsername(Integer.parseInt(userId));
+			ListWithCount<WordSuccessCount> l = 
+					cubeService.getWordsByProblemAndSessions(username, 
+							category, index, null, null, 20, true);
+			List<WordSuccessCount> thelist = l.getList();
 			
 			int SuccessSum = 0, FailSum = 0, count = 0;
 			for (WordSuccessCount wc : thelist){
@@ -101,6 +109,7 @@ public class DbProfileProvider implements IProfileProvider {
 				SuccessSum += wc.getSucceed();
 				FailSum += wc.getFailed();
 			}
+			System.err.println(SuccessSum+" "+FailSum+" "+count);
 			if (count<20)
 				return;
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);

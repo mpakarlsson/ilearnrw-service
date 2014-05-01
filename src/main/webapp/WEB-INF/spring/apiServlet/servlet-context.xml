@@ -90,4 +90,11 @@
 
 	<beans:bean id="userDao" class="com.ilearnrw.common.security.users.dao.UserDaoImpl">
 	</beans:bean>
+		  
+	<beans:bean id="cubeService" class="com.ilearnrw.api.datalogger.services.CubeServiceImpl">
+	</beans:bean>
+		  
+	<beans:bean id="cubeServiceForProfiles" class="com.ilearnrw.api.datalogger.services.CubeServiceImpl">
+	</beans:bean>
+	
 </beans:beans>

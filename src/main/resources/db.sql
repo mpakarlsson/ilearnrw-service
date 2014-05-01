@@ -38,16 +38,16 @@ CREATE TABLE `applications` (
 );
 
 INSERT INTO `ilearnrw`.`applications` (`id`, `name`) VALUES 
-(1, 'Profile Setup'),
-(2, 'Whack a Mole'),
-(3, 'Endless Runner'),
-(4, 'Harvest'),
-(5, 'Serenade Hero'),
-(6, 'Moving Pathways'),
-(7, 'Eye Exam'),
-(8, 'Train Dispatcher'),
-(9, 'Drop Chops'),
-(10, 'Game World'),
-(11, 'Social Network'),
-(12, 'Logging Screen'),
-(13, 'Mail Sorter')
+(0, 'Mail Sorter'),
+(1, 'Whack a Mole'),
+(2, 'Endless Runner'),
+(3, 'Harvest'),
+(4, 'Serenade Hero'),
+(5, 'Moving Pathways'),
+(6, 'Eye Exam'),
+(7, 'Train Dispatcher'),
+(8, 'Drop Chops'),
+(9, 'Game World'),
+(10, 'Social Network'),
+(11, 'Logging Screen'),
+(12, 'Profile Setup')

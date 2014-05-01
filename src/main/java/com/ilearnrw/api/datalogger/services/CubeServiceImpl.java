@@ -203,7 +203,7 @@ public class CubeServiceImpl implements CubeService {
 			int category, int index, String timestart, String timeend,
 			int numberOfSessions, boolean count) {
 		int userId = cubeDao.getUserIdByName(username);
-		return cubeDao.getWordsByProblemAndSessions(userId, category, index, timestart, timeend, numberOfSessions, count);
+		return cubeDao.getWordsByProblemAndSessions(userId, category, index, timestart, timeend, numberOfSessions);
 	}
 
 	@Override
