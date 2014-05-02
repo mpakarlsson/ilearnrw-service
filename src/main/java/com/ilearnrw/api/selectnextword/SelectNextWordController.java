@@ -1,6 +1,5 @@
 package com.ilearnrw.api.selectnextword;
 
-import ilearnrw.games.mapping.GamesInformation;
 import ilearnrw.languagetools.WordDictionary;
 import ilearnrw.languagetools.greek.GreekDictionary;
 import ilearnrw.structs.sets.SortedTreeSet;
@@ -26,6 +25,7 @@ import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
 import com.ilearnrw.api.profileAccessUpdater.DbProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.app.games.mapping.GamesInformation;
 
 @Controller
 public class SelectNextWordController {

@@ -48,7 +48,6 @@ public class DataloggerController {
 	LogEntryService logEntryService;
 
 	@Autowired
-	@Qualifier("cubeService")
 	CubeService cubeService;
 
 	

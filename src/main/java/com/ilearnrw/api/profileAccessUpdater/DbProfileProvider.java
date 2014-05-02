@@ -83,7 +83,6 @@ public class DbProfileProvider implements IProfileProvider {
 	DataSource usersDataSource;
 	
 	@Autowired
-	@Qualifier("cubeServiceForProfiles")
 	CubeService cubeService;
 	
 	@Override
@@ -93,7 +92,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void updateProfileEntry(String userId, int category, int index)
+	public void updateProfileEntry(String userId, int category, int index, int threshold)
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
@@ -109,8 +108,7 @@ public class DbProfileProvider implements IProfileProvider {
 				SuccessSum += wc.getSucceed();
 				FailSum += wc.getFailed();
 			}
-			System.err.println(SuccessSum+" "+FailSum+" "+count);
-			if (count<20)
+			if (count<threshold)
 				return;
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
 			if (pcnt >0.95)
@@ -131,13 +129,12 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void updateTheProfileAutomatically(String userId)
+	public void updateTheProfileAutomatically(String userId, int threshold)
 			throws ProfileProviderException {
 		UserProfile up = getProfile(userId);
 		for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
 			for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
-				updateProfileEntry(userId, i, j);
-				System.err.println(userId);
+				updateProfileEntry(userId, i, j, threshold);
 			}
 		}
 	}

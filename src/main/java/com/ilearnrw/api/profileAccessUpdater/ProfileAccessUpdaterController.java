@@ -154,7 +154,7 @@ public class ProfileAccessUpdaterController {
 	}
 
 	@RequestMapping(value = "/profile/update", method = RequestMethod.POST)
-	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
+	//@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	String updateProfile(
 			@RequestParam(value = "userId", required = true) String userId,
@@ -162,10 +162,10 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "index", required = false) Integer index)
 			throws ProfileProviderException {
 		if (category == null || index == null){
-			profileProvider.updateTheProfileAutomatically(userId);
+			profileProvider.updateTheProfileAutomatically(userId, 20);
 		}
 		else{
-			profileProvider.updateProfileEntry(userId, category, index);
+			profileProvider.updateProfileEntry(userId, category, index, 20);
 		}
 		return "ok";
 	}
