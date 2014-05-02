@@ -28,7 +28,7 @@ public class InfoServiceImpl implements InfoService {
 	public InfoServiceImpl(InfoDao infoDao)
 	{
 		this.infoDao = infoDao;
-		apps = getApps();
+		apps = infoDao.getApps();
 		englishProbs = getProblems("EN");
 		greekProbs = getProblems("GR");
 		
@@ -40,12 +40,25 @@ public class InfoServiceImpl implements InfoService {
 	@Override
 	public Application getApplication(int id) {
 		
-		return infoDao.getApplication(id);
+		for (Application app: apps)
+			if (app.getId() == id)
+				return app;
+		return null;
+
 	}
+	
+	@Override
+	public Application getApplicationByAppId(String appId) {
+		for (Application app: apps)
+			if (app.getAppId().compareToIgnoreCase(appId) == 0)
+				return app;
+		return null;
+	}
+
 
 	@Override
 	public List<Application> getApps() {
-		return infoDao.getApps();
+		return apps;
 	}
 
 	@Override
@@ -67,12 +80,6 @@ public class InfoServiceImpl implements InfoService {
 		return -1;
 	}
 
-	public Application getApp(int id) {
-		for (Application app: apps)
-			if (app.getId() == id)
-				return app;
-		return null;
-	}
 	public Problem getProblem(String probName, LanguageCode lan) {
 		if (lan == LanguageCode.EN) {
 			for (Problem p: englishProbs)
@@ -135,7 +142,7 @@ public class InfoServiceImpl implements InfoService {
 	}
 		
 	public boolean allowsLetters(int appId){
-		return getApp(appId).isLetters();
+		return getApplication(appId).isLetters();
 	}
 	public boolean allowsLetters(String appName){
 		int id = getAppID(appName);
@@ -145,7 +152,7 @@ public class InfoServiceImpl implements InfoService {
 	}
 	
 	public boolean allowsWords(int appId){
-		return getApp(appId).isWords();
+		return getApplication(appId).isWords();
 	}
 	public boolean allowsWords(String appName){
 		int id = getAppID(appName);
@@ -155,7 +162,7 @@ public class InfoServiceImpl implements InfoService {
 	}
 	
 	public boolean allowsSentences(int appId){
-		return getApp(appId).isSentences();
+		return getApplication(appId).isSentences();
 	}
 	public boolean allowsSentences(String appName){
 		int id = getAppID(appName);

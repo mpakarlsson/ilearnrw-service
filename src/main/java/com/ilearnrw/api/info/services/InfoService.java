@@ -9,6 +9,7 @@ import com.ilearnrw.api.info.model.Problem;
 
 public interface InfoService {
 	public Application getApplication(int id);
+	public Application getApplicationByAppId(String appId);
 
 	public List<Application> getApps();
 

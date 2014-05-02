@@ -33,29 +33,30 @@ CREATE TABLE `teachers_students` (
 
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `appId` VARCHAR(45) NULL,
   `name` varchar(20) DEFAULT NULL,
   `letters` BIT NULL, 
   `words` BIT NULL, 
-  `sentence` BIT NULL
+  `sentence` BIT NULL,
   PRIMARY KEY (`id`)
 );
 
 SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';
 
-INSERT INTO `ilearnrw`.`applications` (`id`, `name`, `letters`, `words`, `sentence`) VALUES 
-(0, 'Mail Sorter', 0, 1, 0),
-(1, 'Whack a Mole', 0, 1, 0),
-(2, 'Endless Runner', 0, 1, 0),
-(3, 'Harvest', 0, 1, 0),
-(4, 'Serenade Hero', 0, 0, 1),
-(5, 'Moving Pathways', 1, 1, 0),
-(6, 'Eye Exam', 1, 0, 1),
-(7, 'Train Dispatcher', 0, 1, 0),
-(8, 'Drop Chops', 0, 1, 0),
-(9, 'Game World', 0, 0, 0),
-(10, 'Social Network', 0, 0, 0),
-(11, 'Logging Screen', 0, 0, 0),
-(12, 'Profile Setup', 0, 0, 0);
+INSERT INTO `ilearnrw`.`applications` (`id`, `appId`, `name`, `letters`, `words`, `sentence`) VALUES 
+(0, 'MAIL_SORTER', 'Mail Sorter', 0, 1, 0),
+(1, 'WHAK_A_MOLE', 'Whack a Mole', 0, 1, 0),
+(2, 'ENDLESS_RUNNER', 'Endless Runner', 0, 1, 0),
+(3, 'HARVEST', 'Harvest', 0, 1, 0),
+(4, 'SERENADE_HERO', 'Serenade Hero', 0, 0, 1),
+(5, 'MOVING_PATHWAYS', 'Moving Pathways', 1, 1, 0),
+(6, 'EYE_EXAM', 'Eye Exam', 1, 0, 1),
+(7, 'TRAIN_DISPATCHER', 'Train Dispatcher', 0, 1, 0),
+(8, 'DROP_CHOPS', 'Drop Chops', 0, 1, 0),
+(9, 'GAME_WORLD', 'Game World', 0, 0, 0),
+(10, 'SOCIAL_NETWORK', 'Social Network', 0, 0, 0),
+(11, 'LOGGING_SCREEN', 'Logging Screen', 0, 0, 0),
+(12, 'PROFILE_SETUP', 'Profile Setup', 0, 0, 0);
 
 
 CREATE  TABLE `ilearnrw`.`problems` (

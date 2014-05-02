@@ -143,8 +143,8 @@ public class CubeServiceImpl implements CubeService {
 	private int findOrCreateApplication(String applicationId) {
 		int id = cubeDao.getApplicationIdByAppId(applicationId);
 		if (id == -1) {
-			Application app = infoService.getApplication(Integer.parseInt(applicationId));
-			id = cubeDao.createApplication(applicationId, app.getName());
+			Application app = infoService.getApplicationByAppId(applicationId);
+			id = cubeDao.createApplication(app.getAppId(), app.getName());
 		}
 		return id;
 	}

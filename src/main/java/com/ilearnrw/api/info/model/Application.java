@@ -3,6 +3,7 @@ package com.ilearnrw.api.info.model;
 public class Application {
 	private int id;
 	private String name;
+	private String appId;
 	
 	private boolean letters;
 	private boolean sentences;
@@ -37,6 +38,12 @@ public class Application {
 	}
 	public void setWords(boolean words) {
 		this.words = words;
+	}
+	public String getAppId() {
+		return appId;
+	}
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 	
 	
