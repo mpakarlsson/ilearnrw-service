@@ -154,7 +154,7 @@ public class ProfileAccessUpdaterController {
 	}
 
 	@RequestMapping(value = "/profile/update", method = RequestMethod.POST)
-	//@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
+	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
 	String updateProfile(
 			@RequestParam(value = "userId", required = true) String userId,

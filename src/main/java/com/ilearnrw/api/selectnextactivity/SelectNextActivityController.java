@@ -49,7 +49,7 @@ public class SelectNextActivityController {
 			List<NextActivities> dummy = new ArrayList<NextActivities>();
 			NextActivities dummy1 = new NextActivities();
 			List<String> possibleActivities = new ArrayList<String>();
-			possibleActivities.add("TEST_ACTIVITY");
+			possibleActivities.add("Whack a Mole");
 			dummy1.setActivities(possibleActivities);
 			dummy1.setProblemDescription(profile.getUserProblems().getProblemDescription(0, 0));
 			dummy1.setProblemSeverity(profile.getUserProblems().getUserSeverity(0, 0));
