@@ -47,26 +47,27 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	@Cacheable(value = "cube_applications", unless = "#result == -1")
-	public int getApplicationIdByName(String applicationName) {
-		LOG.debug("Hitting DB to get application " + applicationName);
+	public int getApplicationIdByAppId(String applicationId) {
+		LOG.debug("Hitting DB to get application " + applicationId);
 		try {
 
 			Application app = jdbcTemplate.queryForObject(
-					"select * from applications where name like ? limit 0,1",
-					new Object[] { applicationName },
+					"select * from applications where app_id like ? limit 0,1",
+					new Object[] { applicationId },
 					new BeanPropertyRowMapper<Application>(Application.class));
 			return app.getId();
 		} catch (Exception ex) {
-			LOG.debug("Application not found: " + applicationName);
+			LOG.debug("Application not found: " + applicationId);
 			return -1;
 
 		}
 	}
 
 	@Override
-	public int createApplication(String applicationId) {
+	public int createApplication(String applicationId, String name) {
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
-		parameters.put("name", applicationId);
+		parameters.put("app_id", applicationId);
+		parameters.put("name", name);
 
 		return insertAndReturnKey("applications", parameters);
 	}

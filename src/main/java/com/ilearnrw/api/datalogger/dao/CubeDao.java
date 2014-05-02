@@ -16,9 +16,9 @@ public interface CubeDao {
 	public static final int NO_USER = -1;
 	
 
-	int getApplicationIdByName(String applicationId);
+	int getApplicationIdByAppId(String applicationId);
 
-	int createApplication(String applicationId);
+	int createApplication(String applicationId, String name);
 
 	int getUserIdByName(String username);
 

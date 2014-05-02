@@ -21,6 +21,8 @@ import com.ilearnrw.api.datalogger.model.SystemTags;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.info.model.Application;
+import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
 
 @Service
@@ -33,6 +35,9 @@ public class CubeServiceImpl implements CubeService {
 
 	@Autowired
 	AuthenticatedRestClient authenticatedRestClient;
+
+	@Autowired
+	InfoService infoService;
 	
 	@Override
 	public boolean handle(LogEntry entry) {
@@ -136,9 +141,10 @@ public class CubeServiceImpl implements CubeService {
 	}
 
 	private int findOrCreateApplication(String applicationId) {
-		int id = cubeDao.getApplicationIdByName(applicationId);
+		int id = cubeDao.getApplicationIdByAppId(applicationId);
 		if (id == -1) {
-			id = cubeDao.createApplication(applicationId);
+			Application app = infoService.getApplication(Integer.parseInt(applicationId));
+			id = cubeDao.createApplication(applicationId, app.getName());
 		}
 		return id;
 	}

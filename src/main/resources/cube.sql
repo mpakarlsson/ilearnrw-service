@@ -54,6 +54,7 @@ delimiter $$
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) DEFAULT NULL,
+  `app_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci$$
 
