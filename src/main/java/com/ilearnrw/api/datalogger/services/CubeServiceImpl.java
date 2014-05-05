@@ -23,6 +23,9 @@ import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.SystemTags;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.info.model.Application;
+import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
 
 @Service
@@ -35,6 +38,9 @@ public class CubeServiceImpl implements CubeService {
 
 	@Autowired
 	AuthenticatedRestClient authenticatedRestClient;
+
+	@Autowired
+	InfoService infoService;
 	
 	@Override
 	public boolean handle(LogEntry entry) {
@@ -145,9 +151,10 @@ public class CubeServiceImpl implements CubeService {
 	}
 
 	private int findOrCreateApplication(String applicationId) {
-		int id = cubeDao.getApplicationIdByName(applicationId);
+		int id = cubeDao.getApplicationIdByAppId(applicationId);
 		if (id == -1) {
-			id = cubeDao.createApplication(applicationId);
+			Application app = infoService.getApplicationByAppId(applicationId);
+			id = cubeDao.createApplication(app.getAppId(), app.getName());
 		}
 		return id;
 	}
@@ -193,6 +200,11 @@ public class CubeServiceImpl implements CubeService {
 		int userId = cubeDao.getUserIdByName(username);
 		return cubeDao.getProblems(userId, timestart, timeend, count);
 	}
+	
+	@Override
+	public String getUsername(int userId) {
+		return cubeDao.getUsername(userId);
+	}
 
 	@Override
 	public ListWithCount<WordCount> getWordsByProblem(String username,
@@ -200,6 +212,14 @@ public class CubeServiceImpl implements CubeService {
 			boolean count) {
 		int userId = cubeDao.getUserIdByName(username);
 		return cubeDao.getWordsByProblem(userId, category, index, timestart, timeend, count);
+	}
+
+	@Override
+	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(String username,
+			int category, int index, String timestart, String timeend,
+			int numberOfSessions, boolean count) {
+		int userId = cubeDao.getUserIdByName(username);
+		return cubeDao.getWordsByProblemAndSessions(userId, category, index, timestart, timeend, numberOfSessions);
 	}
 
 	@Override

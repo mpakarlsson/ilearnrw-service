@@ -28,6 +28,7 @@ import com.ilearnrw.api.datalogger.model.Session;
 import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 
 @Repository
 public class CubeDaoImpl implements CubeDao {
@@ -48,26 +49,27 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	@Cacheable(value = "cube_applications", unless = "#result == -1")
-	public int getApplicationIdByName(String applicationName) {
-		LOG.debug("Hitting DB to get application " + applicationName);
+	public int getApplicationIdByAppId(String applicationId) {
+		LOG.debug("Hitting DB to get application " + applicationId);
 		try {
 
 			Application app = jdbcTemplate.queryForObject(
-					"select * from applications where name like ? limit 0,1",
-					new Object[] { applicationName },
+					"select * from applications where app_id like ? limit 0,1",
+					new Object[] { applicationId },
 					new BeanPropertyRowMapper<Application>(Application.class));
 			return app.getId();
 		} catch (Exception ex) {
-			LOG.debug("Application not found: " + applicationName);
+			LOG.debug("Application not found: " + applicationId);
 			return -1;
 
 		}
 	}
 
 	@Override
-	public int createApplication(String applicationId) {
+	public int createApplication(String applicationId, String name) {
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
-		parameters.put("name", applicationId);
+		parameters.put("app_id", applicationId);
+		parameters.put("name", name);
 
 		return insertAndReturnKey("applications", parameters);
 	}
@@ -104,6 +106,21 @@ public class CubeDaoImpl implements CubeDao {
 			return -1;
 		}
 
+	}
+	
+	@Override
+	public String getUsername(int userId) {
+		LOG.debug("Hitting DB to get user with id " + userId);
+		try {
+			User user = jdbcTemplate.queryForObject(
+					"select * from users where id = ? limit 0,1",
+					new Object[] { userId }, new BeanPropertyRowMapper<User>(
+							User.class));
+			return user.getUsername();
+		} catch (Exception ex) {
+			LOG.debug("User not found: " + userId);
+			return "";
+		}
 	}
 
 	@Override
@@ -324,6 +341,34 @@ public class CubeDaoImpl implements CubeDao {
 		namedParameters.put("end", TimeUtils.maxIfNull(timeend));
 
 		return execute(sql, count, namedParameters, WordCount.class);
+	}
+
+	@Override
+	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(int userId, int category,
+			int index, String timestart, String timeend, int numberOfSessions) {
+		String sql = "select  f.word, sum(f.word_status='WORD_DISPLAYED') as count, "
+				+ "sum(f.word_status='WORD_SUCCESS') as succeed, "
+				+ "sum(f.word_status='WORD_FAILED') as failed "
+				+ "from facts f "
+				+ "left join problems p on f.problem_ref=p.id "
+				+ "right join ( "
+				+ "select app_session_ref as theid from facts "
+				+ "where user_ref=:userid "
+				+ "group by app_session_ref order by app_session_ref desc limit :numberOfSessions ) "
+				+ "as s on f.app_session_ref=s.theid "
+				+ "where p.id is not null  and f.user_ref=:userid " 
+				+ "and f.timestamp>=:start and f.timestamp<=:end "
+				+ "and p.category=:category and p.idx=:index" + " group by f.word";
+
+		Map<String, Object> namedParameters = new HashMap<String, Object>();
+		namedParameters.put("userid", userId);
+		namedParameters.put("category", category);
+		namedParameters.put("index", index);
+		namedParameters.put("start", TimeUtils.minIfNull(timestart));
+		namedParameters.put("end", TimeUtils.maxIfNull(timeend));
+		namedParameters.put("numberOfSessions", numberOfSessions>=0 ? numberOfSessions : Integer.MAX_VALUE);
+
+		return execute(sql, false, namedParameters, WordSuccessCount.class);
 	}
 
 	private <T> ListWithCount<T> execute(String sql, boolean count,

@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.lf5.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -32,6 +33,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.jdbc.SimpleJdbcTestUtils;
 
+import com.ilearnrw.api.datalogger.DataloggerController;
+import com.ilearnrw.api.datalogger.model.ListWithCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException.Type;
 
@@ -77,7 +83,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 		TrickyWords
  * ------------------------------------
- * 		 userId | VARCHAR(32), NOT NULL
+ * 		 userId | INTEGER, NOT NULL
  *         word | VARCHAR(45)
  * 
  */
@@ -88,10 +94,62 @@ public class DbProfileProvider implements IProfileProvider {
 	DataSource profileDataSource;
 	@Autowired
 	DataSource usersDataSource;
+	
+	@Autowired
+	CubeService cubeService;
+	
 	@Override
 	public UserProfile getProfile(int userId)
 			throws ProfileProviderException {
 		return getProfile(userId, getLanguage(String.valueOf(userId)));
+	}
+
+	@Override
+	public void updateProfileEntry(int userId, int category, int index, int threshold)
+			throws ProfileProviderException {
+		try {
+			UserProfile up = getProfile(userId);
+			String username = cubeService.getUsername(userId);
+			ListWithCount<WordSuccessCount> l = 
+					cubeService.getWordsByProblemAndSessions(username, 
+							category, index, null, null, 20, true);
+			List<WordSuccessCount> thelist = l.getList();
+			
+			int SuccessSum = 0, FailSum = 0, count = 0;
+			for (WordSuccessCount wc : thelist){
+				count += wc.getCount();
+				SuccessSum += wc.getSucceed();
+				FailSum += wc.getFailed();
+			}
+			if (count<threshold)
+				return;
+			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
+			if (pcnt >0.95)
+				up.getUserProblems().setUserSeverity(category, index, 0);
+			else if (pcnt >0.80)
+				up.getUserProblems().setUserSeverity(category, index, 1);
+			else if (pcnt >0.65)
+				up.getUserProblems().setUserSeverity(category, index, 2);
+			else 
+				up.getUserProblems().setUserSeverity(category, index, 3);
+			storeProfile(userId, up);
+		} catch(Exception e){
+			System.err.println(e.toString());
+		}
+		catch (QueryParamException e) {
+			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
+		}
+	}
+
+	@Override
+	public void updateTheProfileAutomatically(int userId, int threshold)
+			throws ProfileProviderException {
+		UserProfile up = getProfile(userId);
+		for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
+			for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
+				updateProfileEntry(userId, i, j, threshold);
+			}
+		}
 	}
 
 	@Override

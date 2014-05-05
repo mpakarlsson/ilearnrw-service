@@ -1,40 +1,28 @@
 package com.ilearnrw.api.selectnextword;
 
-import ilearnrw.games.mapping.GamesInformation;
-import ilearnrw.languagetools.WordDictionary;
-import ilearnrw.languagetools.greek.GreekDictionary;
-import ilearnrw.structs.sets.SortedTreeSet;
-import ilearnrw.textclassification.Word;
+import ilearnrw.languagetools.extras.WordList;
+import ilearnrw.textclassification.english.EnglishWord;
+import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.wordlists.ProblemsWordLists;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.ilearnrw.api.datalogger.services.CubeService;
-import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
-import com.ilearnrw.api.profileAccessUpdater.DbProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.app.games.mapping.GamesInformation;
 
 @Controller
 public class SelectNextWordController {
 
 	@Autowired
 	IProfileProvider profileProvider;
-
-	private static Logger LOG = Logger
-			.getLogger(SelectNextWordController.class);
 
 	@RequestMapping(value = "/activity/new_data", method = RequestMethod.GET)
 	public @ResponseBody
@@ -43,12 +31,15 @@ public class SelectNextWordController {
 			@RequestParam(value = "userId", required = true) int userId,
 			@RequestParam(value = "probId", required = true) String probId,
 			@RequestParam(value = "count", required = true) int count,
+			@RequestParam(value = "difficultyLevel", required = false) Integer difficultyLevel,
 			@RequestParam(value = "evaluation_mode", required = true) int evaluationMode,
 			@RequestParam(value = "new_words_percentage", required = false) Integer newWordsPercentage,
 			@RequestParam(value = "only_tricky_words", required = false) Boolean onlyTrickyWords) {
 		String[] parts = probId.split("_");
 		int i = Integer.parseInt(parts[0]);
 		int j = Integer.parseInt(parts[1]);
+		if (difficultyLevel == null)
+			difficultyLevel = 0;
 
 		UserProfile user = null;
 		try {
@@ -58,6 +49,8 @@ public class SelectNextWordController {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.err.println("appId");
 		if (user == null)
 			return null;
 		LanguageCode lc = user.getLanguage();
@@ -66,15 +59,17 @@ public class SelectNextWordController {
 			return null;
 		if (!(GamesInformation.getAppRelatedProblems(appId, lc)).contains(i))
 			return null;
+		
+		System.err.println(appId);
 
-		ProblemsWordLists pwl = new ProblemsWordLists(lc);
-		WordDictionary dictionary = pwl.get(i, j);
-		CubeService cs = new CubeServiceImpl();
-		SortedTreeSet subList = dictionary.getWords();
 		List<GameElement> result = new ArrayList<GameElement>();
-		ArrayList<Word> words = subList.getRandomElementsNotIn(10, null);
-		for (Word w : words) {
-			result.add(new GameElement(false, w, i, j));
+		ProblemsWordLists pwl = new ProblemsWordLists(lc);
+		WordList wlist = pwl.get(i, j);
+		for (String w : wlist.getRandomWords(count, difficultyLevel)) {
+			if (lc==LanguageCode.EN)
+				result.add(new GameElement(false, new EnglishWord(w), i, j));
+			else
+				result.add(new GameElement(false, new GreekWord(w), i, j));
 		}
 		return result;
 	}
