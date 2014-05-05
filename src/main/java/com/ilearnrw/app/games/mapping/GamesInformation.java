@@ -125,16 +125,18 @@ public class GamesInformation {
 		if (lan == LanguageCode.EN) {
 			if (appId > appsProbsCorrespondanceEN[0].length)
 				return null;
-			for (int i = 0; i < appsProbsCorrespondanceEN[i].length; i++)
+			for (int i = 0; i < appsProbsCorrespondanceEN.length; i++)
 				if (appsProbsCorrespondanceEN[i][appId])
 					res.add(i);
-		} else {
-			if (appId > appsProbsCorrespondanceGR.length)
+		} 
+		else {
+			if (appId > appsProbsCorrespondanceGR[0].length)
 				return null;
-			for (int i = 0; i < appsProbsCorrespondanceGR[i].length; i++)
+			for (int i=0; i<appsProbsCorrespondanceGR.length; i++){
 				if (appsProbsCorrespondanceGR[i][appId]){
 					res.add(i);
 				}
+			}
 		}
 		return res;
 	}

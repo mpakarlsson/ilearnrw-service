@@ -34,6 +34,8 @@ public class ProfileInitializationControler {
 	@Autowired
 	IProfileProvider profileProvider;
 	
+	// find css style at src/main/webapp/resources/css/style.css
+	
 	@RequestMapping(value = "/users/{userId}/initialize", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewUserUpdateForm(@PathVariable int userId, 

@@ -1,9 +1,12 @@
 package com.ilearnrw.api.selectnextword;
 
 import ilearnrw.languagetools.WordDictionary;
+import ilearnrw.languagetools.extras.WordList;
 import ilearnrw.languagetools.greek.GreekDictionary;
 import ilearnrw.structs.sets.SortedTreeSet;
 import ilearnrw.textclassification.Word;
+import ilearnrw.textclassification.english.EnglishWord;
+import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.wordlists.ProblemsWordLists;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
@@ -66,16 +69,16 @@ public class SelectNextWordController {
 			return null;
 		if (!(GamesInformation.getAppRelatedProblems(appId, lc)).contains(i))
 			return null;
+		
 
-		ProblemsWordLists pwl = new ProblemsWordLists(lc);
-		WordDictionary dictionary = pwl.get(i, j);
-		CubeService cs = new CubeServiceImpl();
-		SortedTreeSet subList = dictionary.getWords();
 		List<GameElement> result = new ArrayList<GameElement>();
-		ArrayList<Word> words = subList.getRandomElementsNotIn(count, null);
-		for (Word w : words) {
-			System.err.println(w.toString());
-			result.add(new GameElement(false, w, i, j));
+		ProblemsWordLists pwl = new ProblemsWordLists(lc);
+		WordList wlist = pwl.get(i, j);
+		for (String w : wlist.getRandomWords(count, 1)) {
+			if (lc==LanguageCode.EN)
+				result.add(new GameElement(false, new EnglishWord(w), i, j));
+			else
+				result.add(new GameElement(false, new GreekWord(w), i, j));
 		}
 		return result;
 	}
