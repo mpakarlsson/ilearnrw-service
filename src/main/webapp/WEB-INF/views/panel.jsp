@@ -35,7 +35,7 @@
 							<td><a href='<c:url value='users/${o.id}/profile'/>'>View
 									Profile</a></td>
 							<td><a
-								href='<c:url value='users/${o.username}/logs/page/1'/>'>View
+								href='<c:url value='users/${o.id}/logs/page/1'/>'>View
 									Logs</a></td>
 						</tr>
 					</c:forEach>

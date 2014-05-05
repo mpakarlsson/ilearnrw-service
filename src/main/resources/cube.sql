@@ -13,8 +13,7 @@ CREATE TABLE `facts` (
   `app_session_ref` int(11) DEFAULT NULL,
   `app_round_session_ref` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=latin1$$
-
+) DEFAULT CHARSET=utf8$$
 delimiter $$
 
 CREATE TABLE `problems` (
@@ -24,7 +23,7 @@ CREATE TABLE `problems` (
   `language` smallint(6) DEFAULT NULL,
   `description` text character set utf8 collate utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1$$
+) DEFAULT CHARSET=utf8$$
 
 delimiter $$
 
@@ -35,7 +34,7 @@ CREATE TABLE `sessions` (
   `start` timestamp NULL DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=latin1$$
+) DEFAULT CHARSET=utf8$$
 
 delimiter $$
 
@@ -48,7 +47,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1$$
+) DEFAULT CHARSET=utf8$$
 
 
 delimiter $$
@@ -57,5 +56,5 @@ CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1 COMMENT='	'$$
+) DEFAULT CHARSET=utf8$$
 

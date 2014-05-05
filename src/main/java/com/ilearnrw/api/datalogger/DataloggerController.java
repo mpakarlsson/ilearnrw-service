@@ -129,10 +129,10 @@ public class DataloggerController {
 	 *            - Optional, Session Id to filter.
 	 * @return A LogEntryResult object in JSON format.
 	 */
-	@RequestMapping(value = "/logs/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/logs/{userId}", method = RequestMethod.GET)
 	public @ResponseBody
 	LogEntryResult getLogs(
-			@PathVariable String username,
+			@PathVariable Integer userId,
 			/*
 			 * Following parameters are "semi-required" if they are not set,
 			 * defaults will be used
@@ -145,7 +145,7 @@ public class DataloggerController {
 			 */
 			@RequestParam(value = "tags", required = false) String tags,
 			@RequestParam(value = "applicationId", required = false) String applicationId) {
-		LogEntryFilter filter = new LogEntryFilter(username, timestart,
+		LogEntryFilter filter = new LogEntryFilter(userId, timestart,
 				timeend, page, tags, applicationId);
 		return logEntryService.getLogs(filter);
 	}
