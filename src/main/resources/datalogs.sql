@@ -19,4 +19,4 @@ CREATE PROCEDURE addLog(IN inUserId VARCHAR(32), IN inTag VARCHAR(32), IN inValu
 BEGIN
 	INSERT INTO logs(userId,tag,value,applicationId,timestamp,sessionId)VALUES(inUserId,inTag,inValue,inApplicationId,NOW(),inSessionId);
 END //
-DELIMITER;
+DELIMITER ; //

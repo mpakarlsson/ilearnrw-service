@@ -57,3 +57,5 @@ CREATE TABLE `applications` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1 COMMENT='	'$$
 
+delimiter ; $$
+
