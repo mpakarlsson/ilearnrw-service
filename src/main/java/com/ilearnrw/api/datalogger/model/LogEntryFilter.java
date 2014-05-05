@@ -9,7 +9,8 @@ public class LogEntryFilter {
 	public String tag;
 	public String applicationId;
 	
-	public LogEntryFilter(String username, String timestart, String timeend, Integer page, String tag, String applicationId)
+	public LogEntryFilter(String username, String timestart, String timeend, 
+			Integer page, String tag, String applicationId)
 	{
 		this.username = username;
 		this.timestart = timestart;

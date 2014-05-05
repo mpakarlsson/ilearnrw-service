@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,8 +50,9 @@ public class DataloggerController {
 	@Autowired
 	CubeService cubeService;
 
+	
 	/**
-	 * Temporary test function which lists all avaliable users in the datalogger
+	 * Temporary test function which lists all available users in the datalogger
 	 * database.
 	 * 
 	 * @return List of userId's.
@@ -215,6 +217,18 @@ public class DataloggerController {
 			@ModelAttribute RequestFilters filters) {
 
 		return cubeService.getWordsByProblem(username, category, index, filters.getTimestart(), filters.getTimeend(), filters.isCount());
+	}
+
+	@RequestMapping(value = "/logs/{username}/{problem_category}/{problem_index}/{number_of_sessions}/words", method = RequestMethod.GET)
+	public @ResponseBody
+	ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(
+			@PathVariable("username") String username,
+			@PathVariable("problem_category") int category,
+			@PathVariable("problem_index") int index,
+			@PathVariable("number_of_sessions") int numberOfSessions,
+			@ModelAttribute RequestFilters filters) {
+
+		return cubeService.getWordsByProblemAndSessions(username, category, index, filters.getTimestart(), filters.getTimeend(), numberOfSessions, filters.isCount());
 	}
 
 	@RequestMapping(value = "/logs/problems/{gender}/{age}", method = RequestMethod.GET)

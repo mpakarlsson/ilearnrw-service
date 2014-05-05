@@ -61,6 +61,22 @@ public interface IProfileProvider {
 	 */
 	void updateProfile(String userId, UserProfile newProfile) throws ProfileProviderException;
 	/**
+	 * Updates a 'cell' of the user's profile based on the logs stored on datalogger
+	 * @param userId
+	 * @param category
+	 * @param index
+	 * @throws ProfileProviderException
+	 */
+	void updateProfileEntry(String userId, int category, int index, int threshold) 
+			throws ProfileProviderException;
+	/**
+	 * Updates the user's profile based on the logs stored on datalogger
+	 * @param userId
+	 * @throws ProfileProviderException
+	 */
+	void updateTheProfileAutomatically(String userId, int threshold) 
+			throws ProfileProviderException;
+	/**
 	 * Creates a new profile
 	 * @param userId
 	 * @param languageCode

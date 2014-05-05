@@ -1,26 +1,26 @@
 # database with user login information and permissions
-usersdb.url=jdbc:mysql://localhost:3306/ilearnrw
+usersdb.url=jdbc:mysql://localhost:3306/ilearnrw?useUnicode=true&characterEncoding=utf8
 usersdb.dialect=org.hibernate.dialect.MySQLDialect
 usersdb.driver=com.mysql.jdbc.Driver
 usersdb.username=root
 usersdb.password=
 
 # database to store datalogger entries
-dataloggerdb.url=jdbc:mysql://localhost:3306/datalogs
+dataloggerdb.url=jdbc:mysql://localhost:3306/datalogs?useUnicode=true&characterEncoding=utf8
 dataloggerdb.dialect=org.hibernate.dialect.MySQLDialect
 dataloggerdb.driver=com.mysql.jdbc.Driver
 dataloggerdb.username=root
 dataloggerdb.password=
 
 # database to store datalogger cube data
-dataloggercubedb.url=jdbc:mysql://localhost:3306/datalogs
+dataloggercubedb.url=jdbc:mysql://localhost:3306/datalogs?useUnicode=true&characterEncoding=utf8
 dataloggercubedb.dialect=org.hibernate.dialect.MySQLDialect
 dataloggercubedb.driver=com.mysql.jdbc.Driver
 dataloggercubedb.username=root
 dataloggercubedb.password=
 
 # database with user's profiles
-profiledb.url=jdbc:mysql://localhost:3306/profiles
+profiledb.url=jdbc:mysql://localhost:3306/profiles?useUnicode=true&characterEncoding=utf8
 profiledb.dialect=org.hibernate.dialect.MySQLDialect
 profiledb.driver=com.mysql.jdbc.Driver
 profiledb.username=root
