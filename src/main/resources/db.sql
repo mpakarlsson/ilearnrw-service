@@ -43,7 +43,7 @@ CREATE TABLE `applications` (
 
 SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';
 
-INSERT INTO `ilearnrw`.`applications` (`id`, `appId`, `name`, `letters`, `words`, `sentence`) VALUES 
+INSERT INTO `applications` (`id`, `appId`, `name`, `letters`, `words`, `sentence`) VALUES 
 (0, 'MAIL_SORTER', 'Mail Sorter', 0, 1, 0),
 (1, 'WHAK_A_MOLE', 'Whack a Mole', 0, 1, 0),
 (2, 'ENDLESS_RUNNER', 'Endless Runner', 0, 1, 0),
@@ -59,13 +59,13 @@ INSERT INTO `ilearnrw`.`applications` (`id`, `appId`, `name`, `letters`, `words`
 (12, 'PROFILE_SETUP', 'Profile Setup', 0, 0, 0);
 
 
-CREATE  TABLE `ilearnrw`.`problems` (
+CREATE  TABLE `problems` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `title` VARCHAR(200) NULL ,
   `language` VARCHAR(2) NULL ,
   PRIMARY KEY (`id`) );
 
-INSERT INTO `ilearnrw`.`problems` (`title`, `language`) VALUES 
+INSERT INTO `problems` (`title`, `language`) VALUES 
 ('Syllable Division', 'EN'),
 ('Vowel Sounds', 'EN'),
 ('Suffixing', 'EN'),
@@ -87,13 +87,13 @@ INSERT INTO `ilearnrw`.`problems` (`title`, `language`) VALUES
 ('Visual Similarity', 'GR');
 
 
-CREATE  TABLE `ilearnrw`.`apps_problems` (
+CREATE  TABLE `apps_problems` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `id_application` INT NULL ,
   `id_problem` INT NULL ,
   PRIMARY KEY (`id`) );
 
- INSERT INTO `ilearnrw`.`apps_problems`
+ INSERT INTO `apps_problems`
 (`id_application`,`id_problem`)
 VALUES
 ((select id from applications where name like 'Mail Sorter'), (select id from problems where title like 'Vowel Sounds' AND language like 'EN')),
