@@ -13,6 +13,7 @@
 
 	<context:component-scan base-package="com.ilearnrw.common" />
 	<context:component-scan base-package="com.ilearnrw.app" />
+	<context:component-scan base-package="com.ilearnrw.api" />
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
@@ -39,8 +40,4 @@
 
 
 	<beans:bean class="org.springframework.mock.web.MockServletContext" />
-
-	<beans:bean id="profileProvider" name="ProfileProvider"
-		class="com.ilearnrw.api.profileAccessUpdater.DbProfileProvider">
-	</beans:bean>
 </beans:beans>

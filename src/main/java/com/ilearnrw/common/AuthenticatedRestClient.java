@@ -1,8 +1,11 @@
 package com.ilearnrw.common;
 
+import ilearnrw.user.problems.Problems;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,17 +16,24 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
+import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
 import com.ilearnrw.common.security.Tokens;
 import com.ilearnrw.common.security.users.model.User;
 
@@ -31,17 +41,24 @@ import com.ilearnrw.common.security.users.model.User;
 public class AuthenticatedRestClient {
 	private RestTemplate template;
 	private HttpHeaders headers;
+	
+	private static Logger LOG = Logger.getLogger(CubeServiceImpl.class);
 
 	@Value("${auth.baseurl}")
 	private String authBaseUri;
 
 	@Value("${logs.baseurl}")
 	private String logsBaseUri;
+	
+	@Value("${profile.baseurl}")
+	private String profileBaseUri;
 
 	private String rolesUri = "user/roles?token={token}";
 	private String userDetailsUri = "user/details/{username}";
 	private String authUri = "user/auth?username={username}&pass={pass}";
 	private String logsUri = "logs/{username}?page={page}";
+	private String problemDefinitionsUri = "profile/problemDefinitions?userId={userId}";
+	private String profileCreateUri = "profile/create?userId={userId}&languageCode={languageCode}";
 
 	private static class NullHostnameVerifier implements HostnameVerifier {
 		public boolean verify(String hostname, SSLSession session) {
@@ -80,7 +97,9 @@ public class AuthenticatedRestClient {
 			System.out.println(e);
 		}
 
-		this.template = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
+		this.template = restTemplate;
+		
 		this.headers = new HttpHeaders() {
 			{
 				byte[] encodedAuthorisation = Base64.encode(new String(
@@ -92,6 +111,7 @@ public class AuthenticatedRestClient {
 	}
 
 	public <T> T get(String url, Class<T> responseType, Object... urlVariables) {
+		LOG.debug(url);
 		URI expanded = new UriTemplate(url).expand(urlVariables);
 		ResponseEntity<T> response = template.exchange(expanded,
 				HttpMethod.GET, new HttpEntity<Object>(headers), responseType);
@@ -117,6 +137,14 @@ public class AuthenticatedRestClient {
 
 	public String getLogsUri() {
 		return logsBaseUri + logsUri;
+	}
+	
+	public String getProblemDefinitionsUri() {
+		return profileBaseUri + problemDefinitionsUri ;
+	}
+
+	private String getProfileCreateUri() {
+		return profileBaseUri + profileCreateUri;
 	}
 
 	public User getUserDetails(String username) {
@@ -145,5 +173,13 @@ public class AuthenticatedRestClient {
 				stringArgsList.add(args.get(param));
 			}
 		return get(logsUri, LogEntryResult.class, stringArgsList.toArray());
+	}
+
+	public Problems getProblemDefinitions(int userId) {
+		return get(getProblemDefinitionsUri(), Problems.class, userId);
+	}
+
+	public void createProfile(int userId, String language) {
+		get(getProfileCreateUri(), Void.class, userId, language);
 	}
 }

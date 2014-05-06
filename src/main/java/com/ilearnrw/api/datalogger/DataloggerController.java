@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,8 +50,9 @@ public class DataloggerController {
 	@Autowired
 	CubeService cubeService;
 
+	
 	/**
-	 * Temporary test function which lists all avaliable users in the datalogger
+	 * Temporary test function which lists all available users in the datalogger
 	 * database.
 	 * 
 	 * @return List of userId's.
@@ -129,10 +131,10 @@ public class DataloggerController {
 	 *            - Optional, Session Id to filter.
 	 * @return A LogEntryResult object in JSON format.
 	 */
-	@RequestMapping(value = "/logs/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/logs/{userId}", method = RequestMethod.GET)
 	public @ResponseBody
 	LogEntryResult getLogs(
-			@PathVariable String username,
+			@PathVariable Integer userId,
 			/*
 			 * Following parameters are "semi-required" if they are not set,
 			 * defaults will be used
@@ -145,7 +147,7 @@ public class DataloggerController {
 			 */
 			@RequestParam(value = "tags", required = false) String tags,
 			@RequestParam(value = "applicationId", required = false) String applicationId) {
-		LogEntryFilter filter = new LogEntryFilter(username, timestart,
+		LogEntryFilter filter = new LogEntryFilter(userId, timestart,
 				timeend, page, tags, applicationId);
 		return logEntryService.getLogs(filter);
 	}
@@ -215,6 +217,18 @@ public class DataloggerController {
 			@ModelAttribute RequestFilters filters) {
 
 		return cubeService.getWordsByProblem(username, category, index, filters.getTimestart(), filters.getTimeend(), filters.isCount());
+	}
+
+	@RequestMapping(value = "/logs/{username}/{problem_category}/{problem_index}/{number_of_sessions}/words", method = RequestMethod.GET)
+	public @ResponseBody
+	ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(
+			@PathVariable("username") String username,
+			@PathVariable("problem_category") int category,
+			@PathVariable("problem_index") int index,
+			@PathVariable("number_of_sessions") int numberOfSessions,
+			@ModelAttribute RequestFilters filters) {
+
+		return cubeService.getWordsByProblemAndSessions(username, category, index, filters.getTimestart(), filters.getTimeend(), numberOfSessions, filters.isCount());
 	}
 
 	@RequestMapping(value = "/logs/problems/{gender}/{age}", method = RequestMethod.GET)

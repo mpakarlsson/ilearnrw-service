@@ -90,4 +90,5 @@
 
 	<beans:bean id="userDao" class="com.ilearnrw.common.security.users.dao.UserDaoImpl">
 	</beans:bean>
+	
 </beans:beans>

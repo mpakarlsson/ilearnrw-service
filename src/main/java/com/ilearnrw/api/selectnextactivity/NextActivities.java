@@ -1,33 +1,63 @@
 package com.ilearnrw.api.selectnextactivity;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import ilearnrw.user.problems.ProblemDescription;
+public class NextActivities implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private List<String> activity;
+	private int category, index;
 
-public class NextActivities {
+	public NextActivities() {
+		this.activity = new ArrayList<String>();
+		this.category = -1;
+		this.index = -1;
+	}
+	
+	public NextActivities(int category, int index) {
+		this.category = category;
+		this.index = index;
+		this.activity = new ArrayList<String>();
+	}
+	
+	public NextActivities(List<String> activity,  int category, int index) {
+		this.category = category;
+		this.index = index;
+		this.activity = activity;
+	}
 
-	private ProblemDescription problemDescription;
-	private int problemSeverity;
-	private List<String> activities;
+	public void setProblem(int category, int index) {
+		this.category = category;
+		this.index = index;
+	}
 	
-	
-	public ProblemDescription getProblemDescription() {
-		return problemDescription;
+	public void addActivity(String app){
+		this.activity.add(app);
 	}
-	public void setProblemDescription(ProblemDescription problemDescription) {
-		this.problemDescription = problemDescription;
+
+	public int getCategory() {
+		return category;
 	}
-	public int getProblemSeverity() {
-		return problemSeverity;
+
+	public void setCategory(int category) {
+		this.category = category;
 	}
-	public void setProblemSeverity(int problemSeverity) {
-		this.problemSeverity = problemSeverity;
+
+	public int getIndex() {
+		return index;
 	}
-	public List<String> getActivities() {
-		return activities;
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
-	public void setActivities(List<String> activities) {
-		this.activities = activities;
+
+	public List<String> getActivity() {
+		return activity;
+	}
+
+	public void setActivity(List<String> activity) {
+		this.activity = activity;
 	}
 	
 }

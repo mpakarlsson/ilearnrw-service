@@ -127,7 +127,7 @@ public class AuthIntegrationTest {
 	@Test
 	public void testUserProfileSerialization() throws ProfileProviderException, IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
-		UserProfile profile = profileProvider.getProfile("1");
+		UserProfile profile = profileProvider.getProfile(1);
 		String s = objectMapper.writeValueAsString(profile);
 		
 		UserProfile profileBack = objectMapper.readValue(s, UserProfile.class);

@@ -1,8 +1,8 @@
 package com.ilearnrw.api.datalogger.model;
 
 public class WordCount {
-	private String word;
-	private int count;
+	protected String word;
+	protected int count;
 
 	public WordCount() {
 		this.word = null;

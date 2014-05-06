@@ -16,21 +16,23 @@ th,td {
 	<div id="wrapper">
 		<h1>ILearnRW Endpoints</h1>
 		<fieldset id="users">
-			<legend> API endpoints </legend>
+			<legend> ${title} </legend>
 			<table border="1">
 				<tr>
 					<th>Endpoint URL</th>
 					<th>HTML method</th>
 					<th>Java class</th>
 					<th>Java method</th>
+					
+					<th>Return type</th>
+					<th>Parameters</th>
+					<th>Annotations</th>
 				</tr>
 				<c:forEach items="${handlerMethods}" var="entry">
-					<c:if
-						test="${entry.value.method.declaringClass ne \"class com.ilearnrw.usermanager.UserManagerController\"}">
 						<tr>
 							<td><c:forEach
 									items="${entry.key.patternsCondition.patterns}" var="pattern">
-									<a href="${pageContext.request.contextPath}${pattern}">${pattern}</a>
+									<a href="${fn:substringAfter(pattern, '/')}">${pattern}</a>
 								</c:forEach></td>
 							<td><c:forEach items="${entry.key.methodsCondition.methods}"
 									var="method">
@@ -41,40 +43,17 @@ ${method}
 							<c:set var="lastClass"
 								value="${entry.value.method.declaringClass}"></c:set>
 							<td>${entry.value.method.name}</td>
+							
+							<td>${entry.value.method.returnType}</td>
+							<td>
+							<c:forEach items="${entry.value.method.parameterTypes}" var="parameter">
+								${parameter.name}
+							</c:forEach>
+							<td>
+							<c:forEach items="${entry.value.method.declaredAnnotations}" var="annotation">
+								${annotation}
+							</c:forEach>
 						</tr>
-					</c:if>
-				</c:forEach>
-			</table>
-		</fieldset>
-		<fieldset id="users">
-			<legend> Web application endpoints </legend>
-			<table border="1">
-				<tr>
-					<th>Endpoint URL</th>
-					<th>HTML method</th>
-					<th>Java class</th>
-					<th>Java method</th>
-				</tr>
-				<c:forEach items="${handlerMethods}" var="entry">
-					<c:if
-						test="${entry.value.method.declaringClass eq \"class com.ilearnrw.usermanager.UserManagerController\"}">
-						<tr>
-
-							<td><c:forEach
-									items="${entry.key.patternsCondition.patterns}" var="pattern">
-									<a href="${pageContext.request.contextPath}/apps${pattern}">/apps${pattern}</a>
-								</c:forEach></td>
-							<td><c:forEach items="${entry.key.methodsCondition.methods}"
-									var="method">
-${method}
-</c:forEach></td>
-							<td><c:if
-									test="${entry.value.method.declaringClass ne lastClass}">${fn:substringAfter(entry.value.method.declaringClass,'ilearnrw.')}</c:if></td>
-							<c:set var="lastClass"
-								value="${entry.value.method.declaringClass}"></c:set>
-							<td>${entry.value.method.name}</td>
-						</tr>
-					</c:if>
 				</c:forEach>
 			</table>
 		</fieldset>

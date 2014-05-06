@@ -87,7 +87,9 @@ public class RestSecurityFilter extends GenericFilterBean {
 	        Token receivedToken = tokenService.verifyToken(tokenKey);
 		
 			if (TokenUtils.isExpired(receivedToken)) {
-				throw new BadCredentialsException("timeout");
+				LOG.debug("Token expired");
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+				return;
 			}
 
 	        RestToken token = RestToken.fromToken(receivedToken);

@@ -11,6 +11,7 @@ import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.model.Problem;
 import com.ilearnrw.api.datalogger.model.Session;
 import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 
 public interface CubeService {
 
@@ -25,12 +26,17 @@ public interface CubeService {
 
 	ListWithCount<WordCount> getAllWords(String status, String timestart,
 			String timeend, boolean count);
+
+	String getUsername(int userId);
 	
 	ListWithCount<Problem> getProblems(String username, String timestart,
 			String timeend, boolean count);
 
 	ListWithCount<WordCount> getWordsByProblem(String username, int category,
 			int index, String timestart, String timeend, boolean count);
+
+	ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(String username, int category,
+			int index, String timestart, String timeend, int numberOfSessions, boolean count);
 
 	ListWithCount<Problem> getProblemsByGenderAndAge(String gender, int age,
 			String timestart, String timeend, boolean count);

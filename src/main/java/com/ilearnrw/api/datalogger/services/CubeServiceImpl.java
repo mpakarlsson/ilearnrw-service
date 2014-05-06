@@ -1,5 +1,8 @@
 package com.ilearnrw.api.datalogger.services;
 
+import ilearnrw.user.problems.Problems;
+import ilearnrw.utils.LanguageCode;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,9 @@ import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.SystemTags;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.info.model.Application;
+import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
 
 @Service
@@ -32,6 +38,9 @@ public class CubeServiceImpl implements CubeService {
 
 	@Autowired
 	AuthenticatedRestClient authenticatedRestClient;
+
+	@Autowired
+	InfoService infoService;
 	
 	@Override
 	public boolean handle(LogEntry entry) {
@@ -46,7 +55,7 @@ public class CubeServiceImpl implements CubeService {
 		int userId = findOrCreateUser(entry.getUsername());
 		
 		int problemId = findOrCreateProblem(entry.getProblemCategory(),
-				entry.getProblemIndex());
+				entry.getProblemIndex(), entry.getUsername());
 
 		int learnSessionId = getLastSessionIdByType(entry.getUsername(), SessionType.LEARN);
 		if (entry.getTag().compareTo(SystemTags.LEARN_SESSION_START) == 0) {
@@ -103,11 +112,18 @@ public class CubeServiceImpl implements CubeService {
 		return cubeDao.createSession(type, value, timestamp, username);
 	}
 
-	private int findOrCreateProblem(int problemCategory, int problemIndex) {
-		int id = cubeDao.getProblemByCategoryAndIndex(problemCategory,
-				problemIndex);
+	private int findOrCreateProblem(int problemCategory, int problemIndex, String username) {
+		com.ilearnrw.common.security.users.model.User user = authenticatedRestClient.getUserDetails(username);
+		LanguageCode languageCode = LanguageCode.fromString(user.getLanguage());
+		int id = cubeDao.getProblemByCategoryIndexAndLanguage(problemCategory,
+				problemIndex, languageCode);
 		if (id == -1) {
-			id = cubeDao.createProblem(problemCategory, problemIndex, "");
+			Problems problemDescriptions = authenticatedRestClient.getProblemDefinitions(user.getId());
+			String description = problemDescriptions
+					.getProblemDefinitionIndex()
+					.getProblemDescription(problemCategory, problemIndex)
+					.returnDescriptionsAsString();
+			id = cubeDao.createProblem(problemCategory, problemIndex, languageCode.getCode(), description);
 		}
 		return id;
 	}
@@ -135,9 +151,10 @@ public class CubeServiceImpl implements CubeService {
 	}
 
 	private int findOrCreateApplication(String applicationId) {
-		int id = cubeDao.getApplicationIdByName(applicationId);
+		int id = cubeDao.getApplicationIdByAppId(applicationId);
 		if (id == -1) {
-			id = cubeDao.createApplication(applicationId);
+			Application app = infoService.getApplicationByAppId(applicationId);
+			id = cubeDao.createApplication(app.getAppId(), app.getName());
 		}
 		return id;
 	}
@@ -183,6 +200,11 @@ public class CubeServiceImpl implements CubeService {
 		int userId = cubeDao.getUserIdByName(username);
 		return cubeDao.getProblems(userId, timestart, timeend, count);
 	}
+	
+	@Override
+	public String getUsername(int userId) {
+		return cubeDao.getUsername(userId);
+	}
 
 	@Override
 	public ListWithCount<WordCount> getWordsByProblem(String username,
@@ -190,6 +212,14 @@ public class CubeServiceImpl implements CubeService {
 			boolean count) {
 		int userId = cubeDao.getUserIdByName(username);
 		return cubeDao.getWordsByProblem(userId, category, index, timestart, timeend, count);
+	}
+
+	@Override
+	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(String username,
+			int category, int index, String timestart, String timeend,
+			int numberOfSessions, boolean count) {
+		int userId = cubeDao.getUserIdByName(username);
+		return cubeDao.getWordsByProblemAndSessions(userId, category, index, timestart, timeend, numberOfSessions);
 	}
 
 	@Override

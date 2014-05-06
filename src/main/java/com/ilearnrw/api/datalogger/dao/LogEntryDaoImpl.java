@@ -191,9 +191,9 @@ public class LogEntryDaoImpl implements LogEntryDao {
 		/*
 		 * Add required parameters to the query.
 		 */
-		queryWhere.append("username=? AND timestamp BETWEEN ? AND ?");
-		String username = filter.username;
-		params.add(username);
+		queryWhere.append("userId=? AND timestamp BETWEEN ? AND ?");
+		Integer userId = filter.userId;
+		params.add(userId);
 		params.add(timestart);
 		params.add(timeend);
 

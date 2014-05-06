@@ -44,7 +44,7 @@ public class TextClassificationController {
 	@RequestMapping(headers = { "Accept=application/json" }, value = "/text/classify", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	public @ResponseBody
 	TextClassificationResults classify(HttpServletRequest request,
-			@RequestParam("userId") String userId, @Valid @RequestBody String analyzeText)
+			@RequestParam("userId") int userId, @Valid @RequestBody String analyzeText)
 			throws ProfileProviderException, FileNotFoundException {
 		UserProfile profile = profileProvider.getProfile(userId);
 

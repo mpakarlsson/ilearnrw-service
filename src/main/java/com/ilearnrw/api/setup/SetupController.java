@@ -59,14 +59,14 @@ public class SetupController {
 		
 		for (User user : users) {
 			try {
-				profileProvider.deleteProfile(user.getId().toString());
+				profileProvider.deleteProfile(user.getId());
 			} catch (ProfileProviderException e) {
 				LOG.debug(String.format(
 						"Exception when deleting profile for user %s: %s",
 						user.getUsername(), e.getMessage()));
 			}
 			try {
-				profileProvider.createProfile(user.getId().toString(),
+				profileProvider.createProfile(user.getId(),
 						LanguageCode.fromString(user.getLanguage()));
 				outputLog.add(String.format(
 						"Profile created for user %s (Language=%s)",
@@ -247,7 +247,7 @@ public class SetupController {
 				User existingUser = userService.getUserByUsername(u
 						.getUsername());
 				userService.deleteData(existingUser.getId());
-				profileProvider.deleteProfile(existingUser.getId().toString());
+				profileProvider.deleteProfile(existingUser.getId());
 			} catch (Exception ex) {
 				LOG.debug(String.format("Could not delete user %s",
 						u.getUsername()));
