@@ -1,10 +1,35 @@
-$(fetchStuff);
-function fetchStuff()
+$(function(){
+	loadData('stats/test');
+	$("button#1").click(function()
+		{
+			loadData('stats/test');
+		});
+	$("button#2").click(function()
+			{
+				loadData('stats/test2');
+			});
+	$("button#3").click(function()
+			{
+				loadData('stats/test3');
+			});
+	$("button#4").click(function()
+			{
+				loadData('stats/test4');
+			});
+	$("button#5").click(function()
+			{
+				loadData('stats/test5');
+			});
+});
+function loadData(url)
 {
 	$.ajax({
-		url: "stats/test",
+		url: url,
+		type : 'POST',
+		data: JSON.stringify({'userId':5,'test':'hi there'}),
+		contentType : 'application/json'
 		}).done(function(data){
-			var data_obj = jQuery.parseJSON(data);
+			var data_obj = data;
 			var d1 = [];
 			var tks = [];
 			var labels = [];

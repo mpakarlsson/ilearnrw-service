@@ -14,7 +14,11 @@
 <body>
 
 <div id="main"></div>
-<button onclick=""></button>
+<button id="1">Test</button>
+<button id="2">Test2</button>
+<button id="3">Test3</button>
+<button id="4">Test4</button>
+<button id="5">Test5</button>
 
 </body>
 </html>
