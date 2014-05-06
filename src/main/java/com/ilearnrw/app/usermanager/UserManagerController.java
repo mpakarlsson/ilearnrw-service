@@ -201,14 +201,7 @@ public class UserManagerController {
 		}
 
 		if (profile == null) {
-			User current = userService.getUser(userId);
-			if (current.getLanguage().equalsIgnoreCase("EN"))
-				profileProvider.createProfile(userId, LanguageCode.EN);
-			else if (current.getLanguage().equalsIgnoreCase("GR"))
-				profileProvider.createProfile(userId, LanguageCode.GR);
-			else 
-				throw new Exception("User language not found");
-			profile = profileProvider.getProfile(userId);
+			throw new Exception("No profile available.");
 		}
 
 		model.put("userId", userId);

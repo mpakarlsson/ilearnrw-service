@@ -18,7 +18,7 @@ th,td {
 		<fieldset id="users">
 			<legend> Endpoints </legend>
 			<ul>
-			<li><a href="${pageContext.request.contextPath}/endpoints">API endpoints</a><br/></li>
+			<li><a href="${pageContext.request.contextPath}/endpoints-api">API endpoints</a><br/></li>
 			<li><a href="${pageContext.request.contextPath}/apps/endpoints">Web application endpoints</a></li>
 			</ul>
 		</fieldset>

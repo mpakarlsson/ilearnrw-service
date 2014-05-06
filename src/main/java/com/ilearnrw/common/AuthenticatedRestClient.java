@@ -49,12 +49,16 @@ public class AuthenticatedRestClient {
 
 	@Value("${logs.baseurl}")
 	private String logsBaseUri;
+	
+	@Value("${profile.baseurl}")
+	private String profileBaseUri;
 
 	private String rolesUri = "user/roles?token={token}";
 	private String userDetailsUri = "user/details/{username}";
 	private String authUri = "user/auth?username={username}&pass={pass}";
 	private String logsUri = "logs/{username}?page={page}";
 	private String problemDefinitionsUri = "profile/problemDefinitions?userId={userId}";
+	private String profileCreateUri = "profile/create?userId={userId}&languageCode={languageCode}";
 
 	private static class NullHostnameVerifier implements HostnameVerifier {
 		public boolean verify(String hostname, SSLSession session) {
@@ -136,7 +140,11 @@ public class AuthenticatedRestClient {
 	}
 	
 	public String getProblemDefinitionsUri() {
-		return logsBaseUri + problemDefinitionsUri ;
+		return profileBaseUri + problemDefinitionsUri ;
+	}
+
+	private String getProfileCreateUri() {
+		return profileBaseUri + profileCreateUri;
 	}
 
 	public User getUserDetails(String username) {
@@ -169,5 +177,9 @@ public class AuthenticatedRestClient {
 
 	public Problems getProblemDefinitions(int userId) {
 		return get(getProblemDefinitionsUri(), Problems.class, userId);
+	}
+
+	public void createProfile(int userId, String language) {
+		get(getProfileCreateUri(), Void.class, userId, language);
 	}
 }

@@ -125,12 +125,9 @@ public class ProfileAccessUpdaterController {
 	public @ResponseBody
 	String createProfile(
 			@RequestParam(value = "userId", required = true) int userId,
-			@RequestParam(value = "languageCode", required = true) Integer languageCode)
+			@RequestParam(value = "languageCode", required = true) String languageCode)
 			throws ProfileProviderException {
-		if (languageCode == 1)
-			profileProvider.createProfile(userId, LanguageCode.EN);
-		else
-			profileProvider.createProfile(userId, LanguageCode.GR);
+		profileProvider.createProfile(userId, LanguageCode.fromString(languageCode));
 		return "ok";
 	}
 

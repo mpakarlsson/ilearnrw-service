@@ -16,7 +16,7 @@
 
 	<http use-expressions="true" pattern="/cache" security="none" />
 	<http use-expressions="true" pattern="/" security="none" />
-	<http use-expressions="true" pattern="/endpoints" security="none" />
+	<http use-expressions="true" pattern="/endpoints-api" security="none" />
 
 	<http use-expressions="true" pattern="/apps/**">
 		<intercept-url pattern="/apps/endpoints" access="permitAll" />

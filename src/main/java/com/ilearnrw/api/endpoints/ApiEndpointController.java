@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Controller
-public class EndpointController {
+public class ApiEndpointController {
 	private final RequestMappingHandlerMapping handlerMapping;
 
 	@Autowired
-	public EndpointController(RequestMappingHandlerMapping handlerMapping) {
+	public ApiEndpointController(RequestMappingHandlerMapping handlerMapping) {
 		this.handlerMapping = handlerMapping;
 	}
 	
@@ -21,7 +21,7 @@ public class EndpointController {
 		return "endpointsMain";
 	}
 
-	@RequestMapping(value = "/endpoints", method = RequestMethod.GET)
+	@RequestMapping(value = "/endpoints-api", method = RequestMethod.GET)
 	public String endpoints(Model model) {
 		model.addAttribute("handlerMethods",
 				this.handlerMapping.getHandlerMethods());
