@@ -234,7 +234,7 @@ public class DbProfileProvider implements IProfileProvider {
 	{
 		static final String TableName = "LC_Greek";
 		static final Integer ProblemDefinitionIndexSize_X = 9;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,27,10,8};
+		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,5,13,17,6,26,10,8};
 		@Override
 		public String getTableName() { return TableName; }
 		@Override

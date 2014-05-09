@@ -1,19 +1,23 @@
 package com.ilearnrw.api.selectnextword;
 
+import ilearnrw.languagetools.extras.DoubleWordList;
 import ilearnrw.languagetools.extras.WordList;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.wordlists.ProblemsWordLists;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.app.games.mapping.GamesInformation;
@@ -64,8 +68,9 @@ public class SelectNextWordController {
 
 		List<GameElement> result = new ArrayList<GameElement>();
 		ProblemsWordLists pwl = new ProblemsWordLists(lc);
-		WordList wlist = pwl.get(i, j);
-		for (String w : wlist.getRandomWords(count, difficultyLevel)) {
+		DoubleWordList thelist = new DoubleWordList(pwl.get(i, j).getWords());
+
+		for (String w : thelist.getRandomWords(count, difficultyLevel)) {
 			if (lc==LanguageCode.EN)
 				result.add(new GameElement(false, new EnglishWord(w), i, j));
 			else

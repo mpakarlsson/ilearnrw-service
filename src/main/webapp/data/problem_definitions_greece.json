@@ -155,10 +155,10 @@
       },
       {
         "descriptions": [
-          "άι",
-          "όι"
+          "αί",
+          "οί"
         ],
-        "problemType": "CONTAINS_LETTERS_ON_CONSEQUTIVE_SYLLABLES"
+        "problemType": "CONTAINS_LETTERS_ON_SAME_SYLLABLES"
       },
       {
         "descriptions": [
@@ -295,12 +295,6 @@
       }
     ],
     [
-      {
-        "descriptions": [
-          "εϋ"
-        ],
-        "problemType": "CONTAINS"
-      },
       {
         "descriptions": [
           "οϋ"
@@ -592,15 +586,14 @@
       {
         "descriptions": [
           "ου",
-          "ων",
           "ες",
-          "ων",
+          "ές",
           "εις",
           "εων",
-          "ες",
+          "είς",
+          "έων",
           "ών",
-          "ων",
-          "ου",
+          "ού",
           "ων"
         ],
         "problemType": "IS_NOUN_AND_ENDS_WITH"
@@ -608,6 +601,7 @@
       {
         "descriptions": [
           "ες",
+          "ές",
           "ε",
           "άς",
           "ά",
@@ -659,14 +653,14 @@
           "ος",
           "η",
           "ο",
-          "ος",
           "α",
-          "ο",
+          "ας",
+          "άς",
           "ός",
           "ιά",
           "ό",
           "ης",
-          "α",
+          "ά",
           "ικο",
           "ικάς",
           "ικού",
@@ -683,17 +677,12 @@
           "ιά",
           "ί",
           "ής",
-          "ές"
-        ],
-        "problemType": "IS_ADJ_AND_ENDS_WITH"
-      },
-      {
-        "descriptions": [
+          "ές",
           "πολύς",
           "πολλή",
           "πολύ"
         ],
-        "problemType": "EQUALS"
+        "problemType": "IS_ADJ_AND_ENDS_WITH"
       },
       {
         "descriptions": [
@@ -715,17 +704,12 @@
           "ιές",
           "ιά",
           "είς",
-          "ή"
-        ],
-        "problemType": "IS_ADJ_AND_ENDS_WITH"
-      },
-      {
-        "descriptions": [
+          "ή",
           "πολλοί",
           "πολλές",
           "πολλά"
         ],
-        "problemType": "EQUALS"
+        "problemType": "IS_ADJ_AND_ENDS_WITH"
       },
       {
         "descriptions": [
@@ -883,7 +867,7 @@
           "είσα",
           "έν"
         ],
-        "problemType": "IS_PARTICIPLE_AND_ENDS_WITH"
+        "problemType": "IS_ADJ_AND_ENDS_WITH"
       }
     ],
     [
@@ -1147,12 +1131,7 @@
       },
       {
         "descriptions": [
-          "εϋ"
-        ],
-        "problemType": "CONTAINS"
-      },
-      {
-        "descriptions": [
+          "εϋ",
           "οϋ"
         ],
         "problemType": "CONTAINS"
@@ -1248,70 +1227,74 @@
     [
       {
         "descriptions": [
-          "α-ο",
-          "ά-ο",
-          "α-ά",
-          "ά-ό"
+          "α",
+          "ά",
+          "ο",
+          "ό"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "φ-β",
-          "φ-Θ",
-          "θ-β"
+          "φ",
+          "θ",
+          "Θ",
+          "Β",
+          "β"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "ψ-ω",
-          "ψ-ώ"
+          "ψ",
+          "Ψ",
+          "ω",
+          "ώ"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "3-ε",
-          "3-έ",
-          "3-ξ",
-          "ε-ξ",
-          "έ-ξ"
+          "3",
+          "ε",
+          "έ",
+          "ξ"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "κ-χ",
-          "κ-γ",
-          "κ-λ",
-          "χ-γ",
-          "χ-λ",
-          "γ-λ"
+          "κ",
+          "γ",
+          "λ",
+          "χ"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "η-μ",
-          "ή-μ"
+          "η",
+          "ή",
+          "μ"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "π-τ"
+          "π",
+          "Π",
+          "Τ",
+          "τ"
         ],
         "problemType": "VISUAL_SIMILARITY"
       },
       {
         "descriptions": [
-          "δ-ρ",
-          "δ-σ",
-          "δ-6",
-          "ρ-σ",
-          "ρ-6",
-          "σ-6"
+          "δ",
+          "σ",
+          "ρ",
+          "Ρ",
+          "6"
         ],
         "problemType": "VISUAL_SIMILARITY"
       }
