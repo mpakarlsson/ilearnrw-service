@@ -92,7 +92,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void updateProfileEntry(String userId, int category, int index, int threshold)
+	public UpdatedProfileEntry updateProfileEntry(String userId, int category, int index, int threshold)
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
@@ -109,7 +109,9 @@ public class DbProfileProvider implements IProfileProvider {
 				FailSum += wc.getFailed();
 			}
 			if (count<threshold)
-				return;
+				return null;
+			UpdatedProfileEntry update = new UpdatedProfileEntry(category, index, 
+					up.getUserProblems().getUserSeverity(category, index), -1);
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
 			if (pcnt >0.95)
 				up.getUserProblems().setUserSeverity(category, index, 0);
@@ -119,31 +121,51 @@ public class DbProfileProvider implements IProfileProvider {
 				up.getUserProblems().setUserSeverity(category, index, 2);
 			else 
 				up.getUserProblems().setUserSeverity(category, index, 3);
+			update.setNewSeverity(up.getUserProblems().getUserSeverity(category, index));
 			storeProfile(userId, up);
+			if (update.getNewSeverity() != update.getPreviousSeverity())
+				return update;
 		} catch(Exception e){
 			System.err.println(e.toString());
 		}
 		catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}
+		return null;
 	}
 
 	@Override
-	public void updateTheProfileAutomatically(String userId, int threshold)
+	public ArrayList<UpdatedProfileEntry> updateTheProfileAutomatically(String userId, int threshold)
 			throws ProfileProviderException {
+		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 		UserProfile up = getProfile(userId);
 		for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
 			for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
-				updateProfileEntry(userId, i, j, threshold);
+				UpdatedProfileEntry t = updateProfileEntry(userId, i, j, threshold);
+				if (t!=null)
+					updates.add(t);
 			}
 		}
+		return updates;
 	}
 
 	@Override
-	public void updateProfile(String userId, UserProfile newProfile)
+	public ArrayList<UpdatedProfileEntry> updateProfile(String userId, UserProfile newProfile)
 			throws ProfileProviderException {
 		try {
+			ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
+			UserProfile up = getProfile(userId);
+			for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
+				for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
+					UpdatedProfileEntry t = new UpdatedProfileEntry(i, j, 
+							up.getUserProblems().getUserSeverity(i, j), 
+							newProfile.getUserProblems().getUserSeverity(i, j));
+					if (t.getNewSeverity() != t.getPreviousSeverity())
+						updates.add(t);
+				}
+			}
 			storeProfile(userId, newProfile);
+			return updates;
 		} catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}

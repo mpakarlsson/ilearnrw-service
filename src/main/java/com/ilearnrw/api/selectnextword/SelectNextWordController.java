@@ -1,7 +1,6 @@
 package com.ilearnrw.api.selectnextword;
 
 import ilearnrw.languagetools.extras.DoubleWordList;
-import ilearnrw.languagetools.extras.WordList;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.wordlists.ProblemsWordLists;
