@@ -206,9 +206,6 @@ public class UserManagerController {
 
 		model.put("userId", userId);
 		model.put("profile", profile);
-		model.put("problems", profile.getUserProblems().getUserSeverities()
-				.getSystemIndices());
-
 		return "users/profile";
 	}
 
@@ -287,7 +284,7 @@ public class UserManagerController {
 	@RequestMapping(value = "users/new", method = RequestMethod.POST)
 	@Transactional
 	public String insertUser(@Valid @ModelAttribute("user") User user,
-			BindingResult result, ModelMap model) {
+			BindingResult result, ModelMap model) throws ProfileProviderException {
 
 		if (userService.getUserByUsername(user.getUsername()) != null)
 			result.rejectValue("username", "username.exists");
@@ -300,7 +297,8 @@ public class UserManagerController {
 			}
 			return "users/form.insert";
 		}
-		userService.insertData(user);
+		int userId = userService.insertData(user);
+		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
 		return "redirect:/apps/panel";
 	}
