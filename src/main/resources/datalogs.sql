@@ -1,6 +1,6 @@
 CREATE TABLE `logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userId` bigint DEFAULT NULL,
+  `username` varchar(100) DEFAULT NULL,
   `applicationId` varchar(20) DEFAULT NULL,
   `tag` varchar(100) DEFAULT NULL,
   `word` varchar(100) DEFAULT NULL,
