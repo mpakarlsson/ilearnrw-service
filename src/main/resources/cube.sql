@@ -20,7 +20,8 @@ CREATE TABLE `problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category` smallint(6) DEFAULT NULL,
   `idx` smallint(6) DEFAULT NULL,
-  `description` text,
+  `language` smallint(6) DEFAULT NULL,
+  `description` text character set utf8 collate utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci$$
 

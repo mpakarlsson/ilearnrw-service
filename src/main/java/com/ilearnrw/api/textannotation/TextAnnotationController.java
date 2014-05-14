@@ -41,7 +41,7 @@ public class TextAnnotationController {
 			method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	public @ResponseBody
 	HtmlGenerator annotate(HttpServletRequest request,
-			@RequestParam("userId") String userId, @RequestParam("lc") String language, 
+			@RequestParam("userId") int userId, @RequestParam("lc") String language, 
 			@Valid @RequestBody String text)
 			throws ProfileProviderException, FileNotFoundException {
 		UserProfile profile = profileProvider.getProfile(userId);

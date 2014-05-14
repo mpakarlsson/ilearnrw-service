@@ -3,8 +3,6 @@ package com.ilearnrw.app.usermanager;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.app.usermanager.form.UserForm;
-import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.users.model.User;
-import com.ilearnrw.common.security.users.services.RoleService;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
@@ -27,10 +23,7 @@ public class ProfileInitializationControler {
 
 	@Autowired
 	private UserService userService;
-
-	@Autowired
-	private RoleService roleService;
-
+	
 	@Autowired
 	IProfileProvider profileProvider;
 	
@@ -49,20 +42,15 @@ public class ProfileInitializationControler {
 			index = -1;
 		}
 		try {
-			profile = profileProvider.getProfile(""+userId);
 			current = userService.getUser(userId);
+			profile = profileProvider.getProfile(userId);
 		} catch (ProfileProviderException e) {
 			System.err.println(e.toString());
 		}
 
 		if (profile == null) {
-			if (current.getLanguage().equalsIgnoreCase("EN"))
-				profileProvider.createProfile(""+userId, LanguageCode.EN);
-			else if (current.getLanguage().equalsIgnoreCase("GR"))
-				profileProvider.createProfile(""+userId, LanguageCode.GR);
-			else 
-				throw new Exception("User language not found");
-			profile = profileProvider.getProfile(""+userId);
+			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
+			profile = profileProvider.getProfile(userId);
 		}
 
 		model.put("userId", userId);

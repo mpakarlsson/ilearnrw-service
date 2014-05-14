@@ -53,14 +53,14 @@ public interface IProfileProvider {
 	 * @param userId
 	 * @return Returns a UserProfile if available. 
 	 */
-	UserProfile getProfile(String userId) throws ProfileProviderException;
+	UserProfile getProfile(int userId) throws ProfileProviderException;
 	/**
 	 * Updates a profile with the values from "newProfile"
 	 * @param userId
 	 * @param newProfile
 	 * @throws ProfileProviderException
 	 */
-	ArrayList<UpdatedProfileEntry> updateProfile(String userId, UserProfile newProfile) throws ProfileProviderException;
+	ArrayList<UpdatedProfileEntry> updateProfile(int userId, UserProfile newProfile) throws ProfileProviderException;
 	/**
 	 * Updates a 'cell' of the user's profile based on the logs stored on datalogger
 	 * @param userId
@@ -68,14 +68,14 @@ public interface IProfileProvider {
 	 * @param index
 	 * @throws ProfileProviderException
 	 */
-	UpdatedProfileEntry updateProfileEntry(String userId, int category, int index, int threshold) 
+	UpdatedProfileEntry updateProfileEntry(int userId, int category, int index, int threshold) 
 			throws ProfileProviderException;
 	/**
 	 * Updates the user's profile based on the logs stored on datalogger
 	 * @param userId
 	 * @throws ProfileProviderException
 	 */
-	ArrayList<UpdatedProfileEntry> updateTheProfileAutomatically(String userId, int threshold) 
+	ArrayList<UpdatedProfileEntry> updateTheProfileAutomatically(int userId, int threshold)
 			throws ProfileProviderException;
 	/**
 	 * Creates a new profile
@@ -83,13 +83,13 @@ public interface IProfileProvider {
 	 * @param languageCode
 	 * @throws ProfileProviderException
 	 */
-	void createProfile(String userId, LanguageCode languageCode) throws ProfileProviderException;
+	void createProfile(int userId, LanguageCode languageCode) throws ProfileProviderException;
 	/**
 	 * Deletes a profile
 	 * @param userId
 	 * @throws ProfileProviderException
 	 */
-	void deleteProfile(String userId) throws ProfileProviderException;
+	void deleteProfile(int userId) throws ProfileProviderException;
 
 	void createTables();
 }

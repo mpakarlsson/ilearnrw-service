@@ -31,7 +31,7 @@ public class SelectNextWordController {
 	public @ResponseBody
 	List<GameElement> selectNextWords(
 			@RequestParam(value = "activity", required = true) String activity,
-			@RequestParam(value = "userId", required = true) String userId,
+			@RequestParam(value = "userId", required = true) int userId,
 			@RequestParam(value = "probId", required = true) String probId,
 			@RequestParam(value = "count", required = true) int count,
 			@RequestParam(value = "difficultyLevel", required = false) Integer difficultyLevel,
@@ -46,7 +46,7 @@ public class SelectNextWordController {
 
 		UserProfile user = null;
 		try {
-			user = profileProvider.getProfile(""+userId);
+			user = profileProvider.getProfile(userId);
 		} catch (ProfileProviderException e) {
 			e.printStackTrace();
 		}catch (Exception e) {

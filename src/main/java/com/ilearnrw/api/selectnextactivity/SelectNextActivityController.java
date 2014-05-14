@@ -45,7 +45,7 @@ public class SelectNextActivityController {
 		LOG.debug(String.format("Retrieving next activity for user %s", username));
 		User loggedInUser = userService.getUserByUsername(username);
 		try {
-			UserProfile profile = profileProvider.getProfile(loggedInUser.getId().toString());
+			UserProfile profile = profileProvider.getProfile(loggedInUser.getId());
 			List<NextActivities> dummy = new ArrayList<NextActivities>();
 			NextActivities dummy1 = new NextActivities();
 			dummy1.setProblem(3, 1);

@@ -2,17 +2,16 @@ package com.ilearnrw.api.datalogger.model;
 
 
 public class LogEntryFilter {
-	public String username;
+	public Integer userId;
 	public String timestart;
 	public String timeend;
 	public Integer page;
 	public String tag;
 	public String applicationId;
 	
-	public LogEntryFilter(String username, String timestart, String timeend, 
-			Integer page, String tag, String applicationId)
+	public LogEntryFilter(Integer userId, String timestart, String timeend, Integer page, String tag, String applicationId)
 	{
-		this.username = username;
+		this.userId = userId;
 		this.timestart = timestart;
 		this.timeend = timeend;
 		this.page = page;

@@ -1,5 +1,6 @@
 package com.ilearnrw.api.profileAccessUpdater;
 
+import ilearnrw.textclassification.Word;
 import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
@@ -8,6 +9,7 @@ import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
 import ilearnrw.utils.LanguageCode;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,9 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.jdbc.SimpleJdbcTestUtils;
 
@@ -52,7 +58,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  *	 		LC_Greek
  * ------------------------------
- *          userId | PK, VARCHAR(32)
+ *          userId | PK, BIGINT
  *    prefFontSize | INTEGER
  *    severity_X_Y | SHORT
  *  system_index_X | SHORT
@@ -60,7 +66,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 			LC_English
  * ------------------------------
- *          userId | PK, VARCHAR(32)
+ *          userId | PK, BIGINT
  *    prefFontSize | INTEGER
  *    severity_X_Y | SHORT
  *  system_index_X | SHORT
@@ -70,11 +76,18 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 		ProfileLanguage
  * ------------------------------------
- * 		 userId | PK, VARCHAR(32), NOT NULL
+ * 		 userId | PK, BIGINT, NOT NULL
  * languageCode | INT, NOT NULL
  * 
+ * The tricky words are stored in a separate table
+ * 
+ * 		TrickyWords
+ * ------------------------------------
+ * 		 userId | BIGINT, NOT NULL
+ *         word | VARCHAR(45)
+ * 
  */
-@Controller
+@Service
 public class DbProfileProvider implements IProfileProvider {
 
 	@Autowired
@@ -86,17 +99,17 @@ public class DbProfileProvider implements IProfileProvider {
 	CubeService cubeService;
 	
 	@Override
-	public UserProfile getProfile(String userId)
+	public UserProfile getProfile(int userId)
 			throws ProfileProviderException {
-		return getProfile(userId, getLanguage(userId));
+		return getProfile(userId, getLanguage(String.valueOf(userId)));
 	}
 
 	@Override
-	public UpdatedProfileEntry updateProfileEntry(String userId, int category, int index, int threshold)
+	public UpdatedProfileEntry updateProfileEntry(int userId, int category, int index, int threshold)
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
-			String username = cubeService.getUsername(Integer.parseInt(userId));
+			String username = cubeService.getUsername(userId);
 			ListWithCount<WordSuccessCount> l = 
 					cubeService.getWordsByProblemAndSessions(username, 
 							category, index, null, null, 20, true);
@@ -135,7 +148,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public ArrayList<UpdatedProfileEntry> updateTheProfileAutomatically(String userId, int threshold)
+	public ArrayList<UpdatedProfileEntry> updateTheProfileAutomatically(int userId, int threshold)
 			throws ProfileProviderException {
 		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 		UserProfile up = getProfile(userId);
@@ -150,7 +163,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public ArrayList<UpdatedProfileEntry> updateProfile(String userId, UserProfile newProfile)
+	public ArrayList<UpdatedProfileEntry> updateProfile(int userId, UserProfile newProfile)
 			throws ProfileProviderException {
 		try {
 			ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
@@ -173,7 +186,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void createProfile(String userId, LanguageCode languageCode)
+	public void createProfile(int userId, LanguageCode languageCode)
 			throws ProfileProviderException {
 		JdbcTemplate template = new JdbcTemplate(profileDataSource);
 		int i = template.update("INSERT INTO ProfileLanguage (userId, languageCode)VALUES(?,?)",
@@ -190,7 +203,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void deleteProfile(String userId) throws ProfileProviderException {
+	public void deleteProfile(int userId) throws ProfileProviderException {
 		JdbcTemplate template = new JdbcTemplate(profileDataSource);
 		int i = template.update("DELETE FROM ProfileLanguage WHERE userId=?", userId);
 		if( i != 1)
@@ -213,7 +226,7 @@ public class DbProfileProvider implements IProfileProvider {
 			sb.append("CREATE TABLE IF NOT EXISTS ");
 			sb.append(language.getTableName());
 			sb.append(" (\n");
-			sb.append("userid VARCHAR(32) NOT NULL PRIMARY KEY,\n");
+			sb.append("userid BIGINT NOT NULL PRIMARY KEY,\n");
 			sb.append("prefFontSize INT,\n");
 
 			for(int x=0; x<language.getProblemDefinitionIndexSize_X();x++)
@@ -240,8 +253,11 @@ public class DbProfileProvider implements IProfileProvider {
 			ret.append("\n\n");
 		}
 		ret.append("CREATE TABLE IF NOT EXISTS ProfileLanguage (");
-		ret.append("userId VARCHAR(32) NOT NULL PRIMARY KEY,");
-		ret.append("languageCode TINYINT NOT NULL);");
+		ret.append("userId BIGINT NOT NULL PRIMARY KEY,");
+		ret.append("languageCode TINYINT NOT NULL);\n");
+		ret.append("CREATE TABLE IF NOT EXISTS TrickyWords (");
+		ret.append("userId BIGINT NOT NULL,");
+		ret.append("word VARCHAR(45) NULL);");
 		return ret.toString();
 	}
 	private interface LC_Base
@@ -332,7 +348,7 @@ public class DbProfileProvider implements IProfileProvider {
 	 * @param languageCode
 	 * @return
 	 */
-	UserProfile getProfile(String userId, LC_Base languageCode) {
+	UserProfile getProfile(int userId, LC_Base languageCode) {
 		final LC_Base language = languageCode;
 
 		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
@@ -355,7 +371,8 @@ public class DbProfileProvider implements IProfileProvider {
 								for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++)
 								{
 									userProblems.setSystemIndex(x, rs.getInt(String.format("system_index_%s", x)));
-									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
+									userProblems.setTeacherIndex(x, rs.getInt(String.format("teacher_index_%s", x)));
+									userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
 									for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++)
 									{
 										userProblems.setUserSeverity(x, y, rs.getInt(String.format("severity_%s_%s", x,y)));
@@ -363,11 +380,22 @@ public class DbProfileProvider implements IProfileProvider {
 								}
 							}});
 
+		final List<Word> trickyWords = new ArrayList<Word>();
+		jdbcTemplate.query("SELECT word FROM trickywords WHERE userId=?",
+				params,
+				new RowCallbackHandler() {
+					@Override
+					public void processRow(ResultSet rs) throws SQLException {
+						trickyWords.add(new Word(rs.getString("word")));
+					}
+				});
+		userProblems.setTrickyWords(trickyWords);
 		return new UserProfile(language.getLanguageCode(),
 				userProblems,
 				preferences);
 	}
-	void storeProfile(String userId, UserProfile profile) throws QueryParamException
+
+	void storeProfile(final int userId, final UserProfile profile) throws QueryParamException
 	{
 		final LC_Base language = getLanguage(profile.getLanguage());
 		final class ReplaceQuery {
@@ -442,5 +470,20 @@ public class DbProfileProvider implements IProfileProvider {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(profileDataSource);
 		jdbcTemplate.update(replaceQuery.getQuery(language),
 							replaceQuery.getParams());
+		Object[] params = {userId};
+		jdbcTemplate.update("DELETE FROM TrickyWords WHERE userId = ?", params);
+		jdbcTemplate.batchUpdate("INSERT INTO TrickyWords (userId, word) VALUES (?, ?)", new BatchPreparedStatementSetter() {
+			
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ps.setInt(1, userId);
+				ps.setString(2, profile.getUserProblems().getTrickyWords().get(i).getWord());
+			}
+			
+			@Override
+			public int getBatchSize() {
+				return profile.getUserProblems().getTrickyWords().size();
+			}
+		});
 	}
 }
