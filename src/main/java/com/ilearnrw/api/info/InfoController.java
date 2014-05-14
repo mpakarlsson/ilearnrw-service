@@ -31,7 +31,12 @@ public class InfoController {
 			@RequestParam(value = "id", required = true) int id) {
 		return infoService.getApplication(id);
 	}
-
+	
+	@RequestMapping(value = "/info/version", method = RequestMethod.GET)
+	public @ResponseBody
+	String getVersion() {
+		return "2";
+	}
 	@RequestMapping(value = "/info/app/{id}/problems", method = RequestMethod.GET)
 	public @ResponseBody
 	List<Integer> getApplicationProblems(

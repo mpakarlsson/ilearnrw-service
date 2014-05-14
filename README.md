@@ -43,6 +43,7 @@ Deployment
 
 In `WEB-INF/classes/apps.properties` change the api.baseurl property.
 In `WEB-INF/classes/api.properties` change the api.baseurl property;
+In `src/main/java/com/ilearnrw/api/info/InfoController` increase the returned value of the method getVersion() 
 
 Symlink the data directory from the ilearnrw project into the deployment.
 
