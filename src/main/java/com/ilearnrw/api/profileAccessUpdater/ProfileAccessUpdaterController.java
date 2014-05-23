@@ -1,11 +1,16 @@
 package com.ilearnrw.api.profileAccessUpdater;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ilearnrw.textclassification.Word;
+import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
 import ilearnrw.utils.LanguageCode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -150,29 +155,31 @@ public class ProfileAccessUpdaterController {
 	@RequestMapping(value = "/profile/update", method = RequestMethod.POST)
 	//@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
-	String updateProfile(
+	ArrayList<UpdatedProfileEntry> updateProfile(
 			@RequestParam(value = "userId", required = true) int userId,
 			@RequestParam(value = "category", required = false) Integer category,
 			@RequestParam(value = "index", required = false) Integer index)
 			throws ProfileProviderException {
+		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 		if (category == null || index == null){
-			profileProvider.updateTheProfileAutomatically(userId, 20);
+			updates = profileProvider.updateTheProfileAutomatically(userId, 20);
 		}
 		else{
-			profileProvider.updateProfileEntry(userId, category, index, 20);
+			updates.add(profileProvider.updateProfileEntry(userId, category, index, 20));
 		}
-		return "ok";
+		return updates;
 	}
 
 	@RequestMapping(value = "/profile/set_new", method = RequestMethod.POST)
 	@PreAuthorize("hasPermission(#userId, 'READ_PROFILE')")
 	public @ResponseBody
-	String setProfile(
+	ArrayList<UpdatedProfileEntry> setProfile(
 			@RequestParam(value = "userId", required = true) int userId,
 			@RequestBody UserProfile newProfile)
 			throws ProfileProviderException {
-		profileProvider.updateProfile(userId, newProfile);
-		return "ok";
+		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
+		updates = profileProvider.updateProfile(userId, newProfile);
+		return updates;
 	}
 
 	/**

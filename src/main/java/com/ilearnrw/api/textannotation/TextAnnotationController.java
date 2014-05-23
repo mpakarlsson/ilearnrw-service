@@ -1,12 +1,7 @@
 package com.ilearnrw.api.textannotation;
 
+import ilearnrw.annotation.AnnotatedPack;
 import ilearnrw.annotation.HtmlGenerator;
-import ilearnrw.languagetools.LanguageAnalyzerAPI;
-import ilearnrw.languagetools.english.EnglishLanguageAnalyzer;
-import ilearnrw.languagetools.greek.GreekLanguageAnalyzer;
-import ilearnrw.textclassification.Classifier;
-import ilearnrw.textclassification.Text;
-import ilearnrw.textclassification.TextClassificationResults;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
@@ -40,7 +35,7 @@ public class TextAnnotationController {
 	@RequestMapping(headers = { "Accept=application/json" }, value = "/text/annotate", 
 			method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	public @ResponseBody
-	HtmlGenerator annotate(HttpServletRequest request,
+	AnnotatedPack annotate(HttpServletRequest request,
 			@RequestParam("userId") int userId, @RequestParam("lc") String language, 
 			@Valid @RequestBody String text)
 			throws ProfileProviderException, FileNotFoundException {
@@ -49,7 +44,11 @@ public class TextAnnotationController {
 		if (language.equalsIgnoreCase("GR"))
 			lc = LanguageCode.GR;
 		HtmlGenerator hg = new HtmlGenerator(text, profile, lc, "html/template.html");
-
-		return hg;
+		AnnotatedPack ap = new AnnotatedPack();
+		ap.setHtml(hg.getHtml());
+		ap.setTrickyWordList(hg.getTrickyWordsList());
+		ap.setWordSet(hg.getWordSet());
+		
+		return ap;
 	}
 }

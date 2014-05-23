@@ -58,7 +58,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  *	 		LC_Greek
  * ------------------------------
- *          userId | PK, INTEGER
+ *          userId | PK, BIGINT
  *    prefFontSize | INTEGER
  *    severity_X_Y | SHORT
  *  system_index_X | SHORT
@@ -66,7 +66,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 			LC_English
  * ------------------------------
- *          userId | PK, INTEGER
+ *          userId | PK, BIGINT
  *    prefFontSize | INTEGER
  *    severity_X_Y | SHORT
  *  system_index_X | SHORT
@@ -76,14 +76,14 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  * 
  * 		ProfileLanguage
  * ------------------------------------
- * 		 userId | PK, INTEGER, NOT NULL
+ * 		 userId | PK, BIGINT, NOT NULL
  * languageCode | INT, NOT NULL
  * 
  * The tricky words are stored in a separate table
  * 
  * 		TrickyWords
  * ------------------------------------
- * 		 userId | INTEGER, NOT NULL
+ * 		 userId | BIGINT, NOT NULL
  *         word | VARCHAR(45)
  * 
  */
@@ -105,7 +105,7 @@ public class DbProfileProvider implements IProfileProvider {
 	}
 
 	@Override
-	public void updateProfileEntry(int userId, int category, int index, int threshold)
+	public UpdatedProfileEntry updateProfileEntry(int userId, int category, int index, int threshold)
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
@@ -122,7 +122,9 @@ public class DbProfileProvider implements IProfileProvider {
 				FailSum += wc.getFailed();
 			}
 			if (count<threshold)
-				return;
+				return null;
+			UpdatedProfileEntry update = new UpdatedProfileEntry(category, index, 
+					up.getUserProblems().getUserSeverity(category, index), -1);
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
 			if (pcnt >0.95)
 				up.getUserProblems().setUserSeverity(category, index, 0);
@@ -132,31 +134,51 @@ public class DbProfileProvider implements IProfileProvider {
 				up.getUserProblems().setUserSeverity(category, index, 2);
 			else 
 				up.getUserProblems().setUserSeverity(category, index, 3);
+			update.setNewSeverity(up.getUserProblems().getUserSeverity(category, index));
 			storeProfile(userId, up);
+			if (update.getNewSeverity() != update.getPreviousSeverity())
+				return update;
 		} catch(Exception e){
 			System.err.println(e.toString());
 		}
 		catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}
+		return null;
 	}
 
 	@Override
-	public void updateTheProfileAutomatically(int userId, int threshold)
+	public ArrayList<UpdatedProfileEntry> updateTheProfileAutomatically(int userId, int threshold)
 			throws ProfileProviderException {
+		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 		UserProfile up = getProfile(userId);
 		for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
 			for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
-				updateProfileEntry(userId, i, j, threshold);
+				UpdatedProfileEntry t = updateProfileEntry(userId, i, j, threshold);
+				if (t!=null)
+					updates.add(t);
 			}
 		}
+		return updates;
 	}
 
 	@Override
-	public void updateProfile(int userId, UserProfile newProfile)
+	public ArrayList<UpdatedProfileEntry> updateProfile(int userId, UserProfile newProfile)
 			throws ProfileProviderException {
 		try {
+			ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
+			UserProfile up = getProfile(userId);
+			for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
+				for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
+					UpdatedProfileEntry t = new UpdatedProfileEntry(i, j, 
+							up.getUserProblems().getUserSeverity(i, j), 
+							newProfile.getUserProblems().getUserSeverity(i, j));
+					if (t.getNewSeverity() != t.getPreviousSeverity())
+						updates.add(t);
+				}
+			}
 			storeProfile(userId, newProfile);
+			return updates;
 		} catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}
@@ -204,7 +226,7 @@ public class DbProfileProvider implements IProfileProvider {
 			sb.append("CREATE TABLE IF NOT EXISTS ");
 			sb.append(language.getTableName());
 			sb.append(" (\n");
-			sb.append("userid INT NOT NULL PRIMARY KEY,\n");
+			sb.append("userid BIGINT NOT NULL PRIMARY KEY,\n");
 			sb.append("prefFontSize INT,\n");
 
 			for(int x=0; x<language.getProblemDefinitionIndexSize_X();x++)
@@ -231,10 +253,10 @@ public class DbProfileProvider implements IProfileProvider {
 			ret.append("\n\n");
 		}
 		ret.append("CREATE TABLE IF NOT EXISTS ProfileLanguage (");
-		ret.append("userId INT NOT NULL PRIMARY KEY,");
+		ret.append("userId BIGINT NOT NULL PRIMARY KEY,");
 		ret.append("languageCode TINYINT NOT NULL);\n");
 		ret.append("CREATE TABLE IF NOT EXISTS TrickyWords (");
-		ret.append("userId INT NOT NULL,");
+		ret.append("userId BIGINT NOT NULL,");
 		ret.append("word VARCHAR(45) NULL);");
 		return ret.toString();
 	}
@@ -250,7 +272,7 @@ public class DbProfileProvider implements IProfileProvider {
 	{
 		static final String TableName = "LC_Greek";
 		static final Integer ProblemDefinitionIndexSize_X = 9;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,6,13,19,6,27,10,8};
+		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,5,13,17,6,26,10,8};
 		@Override
 		public String getTableName() { return TableName; }
 		@Override

@@ -32,7 +32,7 @@
 							<td>${o.enabled}</td>
 							<td><a href='<c:url value='users/${o.id}/edit'/>'>Edit</a></td>
 							<td><a href='<c:url value='users/${o.id}/delete'/>'>Delete</a></td>
-							<td><a href='<c:url value='users/${o.id}/profile'/>'>View
+							<td><a href='<c:url value='users/${o.username}/profile'/>'>View
 									Profile</a></td>
 							<td><a
 								href='<c:url value='users/${o.id}/logs/page/1'/>'>View

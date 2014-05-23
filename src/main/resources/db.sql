@@ -23,13 +23,11 @@ create table role_permissions(
   roles_id bigint not null,
   permissions_id bigint not null);
   
-
-CREATE TABLE `teachers_students` (
-  `teacher_id` int(11) NOT NULL,
-  `student_id` int(11) NOT NULL,
-  PRIMARY KEY (`student_id`,`teacher_id`)
+CREATE TABLE teachers_students (
+  teacher_id bigint not null,
+  student_id bigint not null,
+  primary key (student_id,teacher_id)
 );
-
 
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

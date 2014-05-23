@@ -189,10 +189,11 @@ public class UserManagerController {
 
 	/* Users profile */
 
-	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.GET)
+	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewProfile(@PathVariable int userId, ModelMap model)
+	public String viewProfile(@PathVariable String username, ModelMap model)
 			throws ProfileProviderException, Exception {
+		Integer userId = userService.getUserByUsername(username).getId();
 		UserProfile profile = null;
 		try {
 			profile = profileProvider.getProfile(userId);
@@ -206,13 +207,10 @@ public class UserManagerController {
 
 		model.put("userId", userId);
 		model.put("profile", profile);
-		model.put("problems", profile.getUserProblems().getUserSeverities()
-				.getSystemIndices());
-
 		return "users/profile";
 	}
 
-	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.POST)
+	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
 			@PathVariable int userId) throws ProfileProviderException {
@@ -287,7 +285,7 @@ public class UserManagerController {
 	@RequestMapping(value = "users/new", method = RequestMethod.POST)
 	@Transactional
 	public String insertUser(@Valid @ModelAttribute("user") User user,
-			BindingResult result, ModelMap model) {
+			BindingResult result, ModelMap model) throws ProfileProviderException {
 
 		if (userService.getUserByUsername(user.getUsername()) != null)
 			result.rejectValue("username", "username.exists");
@@ -300,7 +298,8 @@ public class UserManagerController {
 			}
 			return "users/form.insert";
 		}
-		userService.insertData(user);
+		int userId = userService.insertData(user);
+		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
 		return "redirect:/apps/panel";
 	}
