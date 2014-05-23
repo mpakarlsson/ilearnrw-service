@@ -34,7 +34,7 @@ import com.ilearnrw.api.datalogger.services.LogEntryService;
  *         The required sql routines can be found in datalogs.sql
  * 
  *         Logs ---------------------------------- id | PK, AUTO_INCREMENT
- *         userId | VarChar(32) tag | VarChar(32) value | VarChar(512)
+ *         username | VarChar(32) tag | VarChar(32) value | VarChar(512)
  *         applicationId | VarChar(32) timestamp | DateTime sessionId |
  *         VarChar(32)
  * 
@@ -55,7 +55,7 @@ public class DataloggerController {
 	 * Temporary test function which lists all available users in the datalogger
 	 * database.
 	 * 
-	 * @return List of userId's.
+	 * @return List of usernames.
 	 */
 	@RequestMapping(value = "/logs/users", method = RequestMethod.GET)
 	public @ResponseBody
@@ -102,7 +102,7 @@ public class DataloggerController {
 	 * 
 	 * Url format:
 	 * 
-	 * /logs/<userId>?timestart=<>&timeend=<>&tags=<>;<>;<>&applicationId=<>;
+	 * /logs/<username>?timestart=<>&timeend=<>&tags=<>;<>;<>&applicationId=<>;
 	 * sessionId=<>
 	 * 
 	 * All GET Parameters can be omitted. timestart, timeend and page will be
@@ -113,8 +113,8 @@ public class DataloggerController {
 	 * 
 	 * Page will always be set to 1 if missing.
 	 * 
-	 * @param userId
-	 *            - Required, userId to query (part of the url).
+	 * @param username
+	 *            - Required, username to query (part of the url).
 	 * @param timestart
 	 *            - Optional, Start value of timerange to include in results
 	 *            (YYYY-MM-DD format).
@@ -131,10 +131,10 @@ public class DataloggerController {
 	 *            - Optional, Session Id to filter.
 	 * @return A LogEntryResult object in JSON format.
 	 */
-	@RequestMapping(value = "/logs/{userId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/logs/{username}", method = RequestMethod.GET)
 	public @ResponseBody
 	LogEntryResult getLogs(
-			@PathVariable Integer userId,
+			@PathVariable String username,
 			/*
 			 * Following parameters are "semi-required" if they are not set,
 			 * defaults will be used
@@ -147,7 +147,7 @@ public class DataloggerController {
 			 */
 			@RequestParam(value = "tags", required = false) String tags,
 			@RequestParam(value = "applicationId", required = false) String applicationId) {
-		LogEntryFilter filter = new LogEntryFilter(userId, timestart,
+		LogEntryFilter filter = new LogEntryFilter(username, timestart,
 				timeend, page, tags, applicationId);
 		return logEntryService.getLogs(filter);
 	}

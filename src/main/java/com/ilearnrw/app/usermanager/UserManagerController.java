@@ -189,10 +189,11 @@ public class UserManagerController {
 
 	/* Users profile */
 
-	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.GET)
+	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewProfile(@PathVariable int userId, ModelMap model)
+	public String viewProfile(@PathVariable String username, ModelMap model)
 			throws ProfileProviderException, Exception {
+		Integer userId = userService.getUserByUsername(username).getId();
 		UserProfile profile = null;
 		try {
 			profile = profileProvider.getProfile(userId);
@@ -209,7 +210,7 @@ public class UserManagerController {
 		return "users/profile";
 	}
 
-	@RequestMapping(value = "users/{userId}/profile", method = RequestMethod.POST)
+	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
 			@PathVariable int userId) throws ProfileProviderException {
