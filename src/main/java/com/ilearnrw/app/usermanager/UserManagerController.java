@@ -213,7 +213,8 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
-			@PathVariable int userId) throws ProfileProviderException {
+			@PathVariable String username) throws ProfileProviderException {
+		Integer userId = userService.getUserByUsername(username).getId();
 		profileProvider.updateProfile(userId, profile);
 		return "redirect:/apps/panel";
 	}
