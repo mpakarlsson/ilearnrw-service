@@ -1,5 +1,6 @@
 package com.ilearnrw.api.datalogger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +96,17 @@ public class DataloggerController {
 
 		}
 		return result;
+	}
+
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/logs_array", method = RequestMethod.POST)
+	public @ResponseBody
+	List<Integer> addLogs(@Valid @RequestBody List<LogEntry> logs) {
+		List<Integer> results = new ArrayList<Integer>();
+		for(LogEntry log: logs) {
+			int result = addLog(log);
+			results.add(result);
+		}
+		return results;
 	}
 
 	/**

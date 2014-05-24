@@ -114,6 +114,9 @@ public class CubeServiceImpl implements CubeService {
 
 	private int findOrCreateProblem(int problemCategory, int problemIndex, String username) {
 		com.ilearnrw.common.security.users.model.User user = authenticatedRestClient.getUserDetails(username);
+		if (user == null) {
+			return -1;
+		}
 		LanguageCode languageCode = LanguageCode.fromString(user.getLanguage());
 		int id = cubeDao.getProblemByCategoryIndexAndLanguage(problemCategory,
 				problemIndex, languageCode);
@@ -154,7 +157,13 @@ public class CubeServiceImpl implements CubeService {
 		int id = cubeDao.getApplicationIdByAppId(applicationId);
 		if (id == -1) {
 			Application app = infoService.getApplicationByAppId(applicationId);
-			id = cubeDao.createApplication(app.getAppId(), app.getName());
+			if (app != null) {			
+				id = cubeDao.createApplication(app.getAppId(), app.getName());
+			}
+			else {
+				// this is for unknown applications
+				id = cubeDao.createApplication(applicationId, applicationId);
+			}
 		}
 		return id;
 	}
