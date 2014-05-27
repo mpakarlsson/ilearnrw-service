@@ -381,7 +381,7 @@ public class DbProfileProvider implements IProfileProvider {
 							}});
 
 		final List<Word> trickyWords = new ArrayList<Word>();
-		jdbcTemplate.query("SELECT word FROM trickywords WHERE userId=?",
+		jdbcTemplate.query("SELECT word FROM TrickyWords WHERE userId=?",
 				params,
 				new RowCallbackHandler() {
 					@Override
