@@ -5,6 +5,7 @@ import ilearnrw.utils.LanguageCode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class SetupController {
 		List<User> users = userService.getUserList();
 
 		profileProvider.createTables();
-		
+
 		for (User user : users) {
 			try {
 				profileProvider.deleteProfile(user.getId());
@@ -148,15 +149,18 @@ public class SetupController {
 			roleService.setRoleList(teacher, teacherRole);
 			outputLog.add("Added roles for teacher");
 
-			permissionService.setPermissionList(
-					roleService.getRole("ROLE_ADMIN"),
-					permissionService.getPermissionList());
-			permissionService.setPermissionList(
-					roleService.getRole("ROLE_STUDENT"),
-					permissionService.getPermissionList());
-			permissionService.setPermissionList(
-					roleService.getRole("ROLE_TEACHER"),
-					permissionService.getPermissionList());
+			permissionService.setPermissionList(roleService
+					.getRole("ROLE_ADMIN"), Arrays.asList(
+					permissionService.getPermission("PERMISSION_DEFAULT"),
+					permissionService.getPermission("PERMISSION_ADMIN")));
+			permissionService.setPermissionList(roleService
+					.getRole("ROLE_STUDENT"), Arrays.asList(
+					permissionService.getPermission("PERMISSION_DEFAULT"),
+					permissionService.getPermission("PERMISSION_STUDENT")));
+			permissionService.setPermissionList(roleService
+					.getRole("ROLE_TEACHER"), Arrays.asList(
+					permissionService.getPermission("PERMISSION_DEFAULT"),
+					permissionService.getPermission("PERMISSION_TEACHER")));
 
 		} catch (Exception e) {
 			outputLog.add("Exception: " + e.getMessage());
@@ -186,7 +190,19 @@ public class SetupController {
 		List<Permission> permissions = new ArrayList<Permission>();
 
 		Permission perm = new Permission("1");
-		perm.setName("DEFAULT");
+		perm.setName("PERMISSION_DEFAULT");
+		permissions.add(perm);
+
+		perm = new Permission("2");
+		perm.setName("PERMISSION_ADMIN");
+		permissions.add(perm);
+
+		perm = new Permission("3");
+		perm.setName("PERMISSION_TEACHER");
+		permissions.add(perm);
+
+		perm = new Permission("4");
+		perm.setName("PERMISSION_STUDENT");
 		permissions.add(perm);
 
 		for (Permission p : permissions) {

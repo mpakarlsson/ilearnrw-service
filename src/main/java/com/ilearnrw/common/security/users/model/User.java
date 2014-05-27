@@ -5,6 +5,10 @@ import java.util.Date;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 public class User {
 
 	private Integer id;
@@ -16,10 +20,15 @@ public class User {
 	private String password;
 
 	private boolean enabled;
+	
+	@NotEmpty
 	private String gender;
 	
+	@DateTimeFormat(iso = ISO.DATE)
 	@Past
 	private Date birthdate;
+	
+	@NotEmpty
 	private String language;
 
 	public User() {

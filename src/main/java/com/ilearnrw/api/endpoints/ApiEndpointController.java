@@ -18,7 +18,7 @@ public class ApiEndpointController {
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String root(Model model) {
-		return "endpointsMain";
+		return "endpoints/endpointsMain";
 	}
 
 	@RequestMapping(value = "/endpoints-api", method = RequestMethod.GET)
@@ -26,6 +26,6 @@ public class ApiEndpointController {
 		model.addAttribute("handlerMethods",
 				this.handlerMapping.getHandlerMethods());
 		model.addAttribute("title", "API endpoints");
-		return "endpoints";
+		return "endpoints/endpoints";
 	}
 }

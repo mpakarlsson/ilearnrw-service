@@ -92,25 +92,25 @@ public class UserManagerController {
 		modelMap.addAttribute("roles", roleService.getRoleList());
 		modelMap.addAttribute("permissions",
 				permissionService.getPermissionList());
-		return "panel";
+		return "main/panel";
 	}
 
 	@RequestMapping(value = "/logout")
 	public String logout(HttpServletRequest request) {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		request.getSession().invalidate();
-		return "login";
+		return "main/login";
 	}
 
 	@RequestMapping(value = "/login")
 	public String login() {
-		return "login";
+		return "main/login";
 	}
 
 	@RequestMapping(value = "/loginfailed", method = RequestMethod.GET)
 	public String loginerror(ModelMap model) {
 		model.addAttribute("error", "true");
-		return "login";
+		return "main/login";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -137,12 +137,18 @@ public class UserManagerController {
 
 		} catch (Exception e) {
 			model.addAttribute("error", e.getMessage());
-			return "login";
+			return "main/login";
 		}
 		return "redirect:/apps/panel";
 	}
 
 	/* Users logs */
+	
+	@RequestMapping(value = "users/manage")
+	public String manageUsers(ModelMap modelMap) {
+		modelMap.addAttribute("users", userService.getUserList());
+		return "users/manage";
+	}
 
 	@RequestMapping(value = "users/{username}/logs/page/{page}", method = RequestMethod.GET)
 	public String viewLogs(@PathVariable String username,
@@ -290,14 +296,7 @@ public class UserManagerController {
 		if (userService.getUserByUsername(user.getUsername()) != null)
 			result.rejectValue("username", "username.exists");
 		if (result.hasErrors())
-		{
-			if (result.hasFieldErrors("birthdate"))
-			{
-				for (Iterator iterator = result.getFieldErrors("birthdate").iterator(); iterator.hasNext(); )
-					System.out.println(((FieldError)iterator.next()).getCode());
-			}
 			return "users/form.insert";
-		}
 		int userId = userService.insertData(user);
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
@@ -306,6 +305,12 @@ public class UserManagerController {
 
 	/* Roles */
 
+	@RequestMapping(value = "roles/manage")
+	public String manageRoles(ModelMap modelMap) {
+		modelMap.addAttribute("roles", roleService.getRoleList());
+		return "roles/manage";
+	}
+	
 	@RequestMapping(value = "/roles/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewRoleUpdateForm(@PathVariable int id, ModelMap model) {
@@ -370,6 +375,12 @@ public class UserManagerController {
 	}
 
 	/* Permissions */
+	
+	@RequestMapping(value = "permissions/manage")
+	public String managePermissions(ModelMap modelMap) {
+		modelMap.addAttribute("permissions", permissionService.getPermissionList());
+		return "permissions/manage";
+	}
 
 	@RequestMapping(value = "/permissions/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
