@@ -37,17 +37,17 @@ public class LogEntryResult {
 	@JsonProperty("page")
 	private Integer page;
 	
-	@JsonProperty("total-pages")
+	@JsonProperty("totalPages")
 	private Integer totalPages;
 	
-	@JsonProperty("debug-info")
+	@JsonProperty("debugInfo")
 	private Object debugInfo;
 	
 
 	@JsonProperty("results")
 	private List<LogEntry> results;
 	
-	@JsonProperty("server-time")
+	@JsonProperty("serverTime")
 	private String serverTime;
 
 	public Integer getPage() {
