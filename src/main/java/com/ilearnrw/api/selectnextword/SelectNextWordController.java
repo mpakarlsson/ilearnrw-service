@@ -1,9 +1,8 @@
 package com.ilearnrw.api.selectnextword;
 
-import ilearnrw.languagetools.extras.DoubleWordList;
+import ilearnrw.languagetools.extras.EasyHardList;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
-import ilearnrw.user.problems.wordlists.ProblemsWordLists;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 import com.ilearnrw.app.games.mapping.GamesInformation;
 
 @Controller
@@ -53,7 +53,6 @@ public class SelectNextWordController {
 			e.printStackTrace();
 		}
 		
-		System.err.println("appId");
 		if (user == null)
 			return null;
 		LanguageCode lc = user.getLanguage();
@@ -62,19 +61,29 @@ public class SelectNextWordController {
 			return null;
 		if (!(GamesInformation.getAppRelatedProblems(appId, lc)).contains(i))
 			return null;
-		
-		System.err.println(appId);
 
-		List<GameElement> result = new ArrayList<GameElement>();
-		ProblemsWordLists pwl = new ProblemsWordLists(lc);
-		DoubleWordList thelist = new DoubleWordList(pwl.get(i, j).getWords());
-
-		for (String w : thelist.getRandomWords(count, difficultyLevel)) {
-			if (lc==LanguageCode.EN)
-				result.add(new GameElement(false, new EnglishWord(w), i, j));
-			else
-				result.add(new GameElement(false, new GreekWord(w), i, j));
+		if (appId == 4){
+			List<GameElement> result = new ArrayList<GameElement>();
+			ProblemWordListLoader pwll = new ProblemWordListLoader();
+			pwll.loadSentences(lc);
+			EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
+			for (String w : thelist.getRandom(count, difficultyLevel)) {
+				result.add(new GameElement(w, null));
+			}
+			return result;
 		}
-		return result;
+		else{
+			List<GameElement> result = new ArrayList<GameElement>();
+			ProblemWordListLoader pwll = new ProblemWordListLoader(lc, i, j);
+			EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
+	
+			for (String w : thelist.getRandom(count, difficultyLevel)) {
+				if (lc==LanguageCode.EN)
+					result.add(new GameElement(false, new EnglishWord(w), i, j));
+				else
+					result.add(new GameElement(false, new GreekWord(w), i, j));
+			}
+			return result;
+		}
 	}
 }
