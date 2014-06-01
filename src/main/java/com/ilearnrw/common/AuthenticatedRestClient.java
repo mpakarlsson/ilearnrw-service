@@ -1,11 +1,9 @@
 package com.ilearnrw.common;
 
-import ilearnrw.user.problems.Problems;
-
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,16 +15,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -175,8 +168,8 @@ public class AuthenticatedRestClient {
 		return get(logsUri, LogEntryResult.class, stringArgsList.toArray());
 	}
 
-	public Problems getProblemDefinitions(int userId) {
-		return get(getProblemDefinitionsUri(), Problems.class, userId);
+	public ProblemDefinitionIndex getProblemDefinitions(int userId) {
+		return get(getProblemDefinitionsUri(), ProblemDefinitionIndex.class, userId);
 	}
 
 	public void createProfile(int userId, String language) {

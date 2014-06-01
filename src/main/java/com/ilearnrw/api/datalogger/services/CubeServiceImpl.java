@@ -1,5 +1,6 @@
 package com.ilearnrw.api.datalogger.services;
 
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.problems.Problems;
 import ilearnrw.utils.LanguageCode;
 
@@ -121,9 +122,8 @@ public class CubeServiceImpl implements CubeService {
 		int id = cubeDao.getProblemByCategoryIndexAndLanguage(problemCategory,
 				problemIndex, languageCode);
 		if (id == -1) {
-			Problems problemDescriptions = authenticatedRestClient.getProblemDefinitions(user.getId());
-			String description = problemDescriptions
-					.getProblemDefinitionIndex()
+			ProblemDefinitionIndex problemDefinitionIndex = authenticatedRestClient.getProblemDefinitions(user.getId());
+			String description = problemDefinitionIndex
 					.getProblemDescription(problemCategory, problemIndex)
 					.returnDescriptionsAsString();
 			id = cubeDao.createProblem(problemCategory, problemIndex, languageCode.getCode(), description);
