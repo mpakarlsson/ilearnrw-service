@@ -4,24 +4,33 @@ import ilearnrw.annotation.AnnotatedWord;
 import ilearnrw.textclassification.Word;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class GameElement implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private boolean isFiller;
-	private char theChar;
 	private AnnotatedWord annotatedWord;
-	private String theSentence;
+	private GameSentence annotatedSentence;
 
 	public GameElement(boolean isFiller, Word theWord) {
 		super();
 		this.isFiller = isFiller;
 		annotatedWord = new AnnotatedWord(theWord);
+		this.annotatedSentence = null;
 	}
 
 	public GameElement(boolean isFiller, Word theWord, int category, int index) {
 		super();
 		this.isFiller = isFiller;
 		annotatedWord = new AnnotatedWord(theWord, category, index);
+		this.annotatedSentence = null;
+	}
+
+	public GameElement(String theSentence, ArrayList<String> fillerWords) {
+		super();
+		this.isFiller = false;
+		annotatedWord = null;
+		this.annotatedSentence = new GameSentence(theSentence, fillerWords);
 	}
 
 	public boolean isFiller() {
@@ -42,6 +51,14 @@ public class GameElement implements Serializable {
 
 	public void setAnnotatedWord(AnnotatedWord word) {
 		annotatedWord = word;
+	}
+
+	public GameSentence getAnnotatedSentence() {
+		return annotatedSentence;
+	}
+
+	public void setAnnotatedSentence(GameSentence annotatedSentence) {
+		this.annotatedSentence = annotatedSentence;
 	}
 
 }
