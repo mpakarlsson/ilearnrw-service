@@ -30,8 +30,7 @@
 
     <div id="wrapper">
 
-        <jsp:include page="../includes/top.jsp"></jsp:include>
-        <jsp:include page="../includes/side.jsp"></jsp:include>
+        <jsp:include page="../includes/navigation.jsp"></jsp:include>
 
         <div id="page-wrapper">
             <div class="row">

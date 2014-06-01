@@ -34,6 +34,15 @@
                             <a href="tables.html"><i class="fa fa-table fa-fw"></i> Personal</a>
                         </li>
     			        </sec:authorize>
+						<li class="active">
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Tests<span class="fa arrow"></span></a>
+                            <ul style="height: auto;" class="nav nav-second-level collapse in">
+                                <li>
+                                    <a href="${pageContext.request.contextPath}/apps/tests/logs">Send logs</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
                     </ul>
                     <!-- /#side-menu -->
                 </div>

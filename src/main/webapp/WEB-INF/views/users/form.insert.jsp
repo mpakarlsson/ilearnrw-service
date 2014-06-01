@@ -20,8 +20,8 @@
 
 <body>
 	<div id="wrapper">
-		<jsp:include page="../includes/top.jsp"></jsp:include>
-		<jsp:include page="../includes/side.jsp"></jsp:include>
+		<jsp:include page="../includes/navigation.jsp"></jsp:include>
+		<div id="page-wrapper">
 		<div class="container master-container">
 			<div class="row">
 				<div class="panel panel-info">
@@ -122,6 +122,7 @@
 						</form:form>
 					</div>
 				</div>
+			</div>
 			</div>
 		</div>
 	</div>

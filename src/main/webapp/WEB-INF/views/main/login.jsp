@@ -4,18 +4,34 @@
 <head>
 <title>Login</title>
 <jsp:include page="../includes/includes.jsp"></jsp:include>
-<link rel="stylesheet" type="text/css" href="resources/webapp/css/login.css"></link>
 </head>
 <body>
-    <div class="container">
-
-      <form method="POST" class="form-signin" action="<c:url value='login'/>">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <input name="username" type="text" class="input-block-level" placeholder="Username">
-        <input name="pass" type="password" class="input-block-level" placeholder="Password">
-        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
-      </form>
-
-    </div> <!-- /container -->
+	<div class="container">
+		<c:if test="${not empty error}">
+			<div class="alert alert-danger">
+				<a class="close" data-dismiss="alert">×</a> <strong>Error!</strong>
+				${error}
+			</div>
+		</c:if>
+		<div class="panel panel-default col-xs-12">
+		<form method="POST" class="form-signin" action="login" role="form">
+			<div class="form-group">
+				<h2 class="form-signin-heading">Sign in</h2>
+			</div>
+			<div class="form-group">
+				<input name="username" type="text" class="form-control"
+					placeholder="Username">
+			</div>
+			<div class="form-group">
+				<input name="pass" type="password" class="form-control"
+					placeholder="Password">
+			</div>
+			<div class="form-group">
+				<button class="btn btn-large btn-primary" type="submit">Sign
+					in</button>
+			</div>
+		</form>
+		</div>
+	</div>
 </body>
 </html>
