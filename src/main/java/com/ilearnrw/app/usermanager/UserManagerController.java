@@ -92,7 +92,7 @@ public class UserManagerController {
 		modelMap.addAttribute("roles", roleService.getRoleList());
 		modelMap.addAttribute("permissions",
 				permissionService.getPermissionList());
-		return "main/panel";
+		return "statistics/stats";
 	}
 
 	@RequestMapping(value = "/logout")

@@ -13,6 +13,7 @@
 <title>Test logs</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
+
 <script>
 	function ConvertFormToJSON(form){
 	    var array = jQuery(form).serializeArray();
@@ -78,7 +79,7 @@
 										<label class="col-sm-2 control-label">Site</label>
 										<div class="col-sm-10 ">
 											<input class="form-control" id="site"
-												value="http://api.ilearnrw.eu/ilearnrw/logs">
+												value="${pageContext.request.contextPath}/logs">
 											<p class="col-sm-10 help-block">Url to POST to.</p>
 										</div>
 									</div>
@@ -121,7 +122,7 @@
 												<option>APP_ROUND_SESSION_END</option>
 												<option>WORD_SELECTED</option>
 												<option>WORD_DISPLAYED</option>
-												<option checked="checked" >WORD_SUCCESS</option>
+												<option selected="selected" >WORD_SUCCESS</option>
 												<option>WORD_FAILED</option>
 												<option>PROFILE_UPDATE</option>
 												<option>LOGIN</option>
