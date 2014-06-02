@@ -1,5 +1,11 @@
 package com.ilearnrw.app.usermanager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ilearnrw.languagetools.extras.EasyHardList;
+import ilearnrw.textclassification.english.EnglishWord;
+import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
@@ -14,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.api.selectnextword.GameElement;
+import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.UserService;
@@ -52,6 +60,14 @@ public class ProfileInitializationControler {
 			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
 			profile = profileProvider.getProfile(userId);
 		}
+		
+		int i = 0, j = 3;
+		List<GameElement> result = new ArrayList<GameElement>();
+		ProblemWordListLoader pwll = new ProblemWordListLoader(LanguageCode.GR, i, j);
+		EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
+
+		for (String w : thelist.getRandom(7, 0))
+				result.add(new GameElement(false, new EnglishWord(w), i, j));
 
 		model.put("userId", userId);
 		model.put("username", current.getUsername());
@@ -60,6 +76,8 @@ public class ProfileInitializationControler {
 		model.put("profile", profile);
 		model.put("problems", profile.getUserProblems().getUserSeverities()
 				.getSystemIndices());
+		model.put("result", result);
+				
 		return "users/profile.initialize";
 	}
 }

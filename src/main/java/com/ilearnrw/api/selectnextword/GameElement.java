@@ -26,11 +26,11 @@ public class GameElement implements Serializable {
 		this.annotatedSentence = null;
 	}
 
-	public GameElement(String theSentence, ArrayList<String> fillerWords) {
+	public GameElement(GameSentence sentence) {
 		super();
 		this.isFiller = false;
 		annotatedWord = null;
-		this.annotatedSentence = new GameSentence(theSentence, fillerWords);
+		this.annotatedSentence = sentence;
 	}
 
 	public boolean isFiller() {
