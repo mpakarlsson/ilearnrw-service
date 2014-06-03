@@ -17,7 +17,7 @@ public class ProblemsWordLists {
 			lan = "EN";
 		}
 		probs = new ProblemDefinitionIndex(lc);
-		wordList = new WordList[probs.getIndexLength()][];
+		wordList = new WordList[probs.returnIndexLength()][];
 		for (int i = 0; i < wordList.length; i++) {
 			wordList[i] = new WordList[probs.getRowLength(i)];
 			for (int j = 0; j < wordList[i].length; j++) {

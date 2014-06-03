@@ -39,16 +39,19 @@ public class ProfileInitializationControler {
 	
 	@RequestMapping(value = "/users/{userId}/initialize", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserUpdateForm(@PathVariable int userId, 
-			@RequestParam(value="category", required = false) Integer category, 
-			@RequestParam(value="index", required = false) Integer index, ModelMap model) 
+	public String viewProfileInitializationForm(@PathVariable int userId, 
+			@RequestParam(value="category", required = true) Integer category, 
+			@RequestParam(value="start", required = true) Integer start, 
+			@RequestParam(value="end", required = true) Integer end, ModelMap model) 
 			throws ProfileProviderException, Exception {
 		UserProfile profile = null;
 		User current = null;
-		if (category == null || index == null){
+		if (category == null || start == null || end == null){
 			category = -1;
-			index = -1;
+			start = -1;
+			end = -1;
 		}
+		int index = (start+end)/2;
 		try {
 			current = userService.getUser(userId);
 			profile = profileProvider.getProfile(userId);
@@ -61,14 +64,13 @@ public class ProfileInitializationControler {
 			profile = profileProvider.getProfile(userId);
 		}
 		
-		int i = 0, j = 3;
 		List<GameElement> result = new ArrayList<GameElement>();
-		ProblemWordListLoader pwll = new ProblemWordListLoader(LanguageCode.GR, i, j);
+		ProblemWordListLoader pwll = new ProblemWordListLoader(LanguageCode.GR, category, index);
 		EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
 
 		for (String w : thelist.getRandom(7, 0))
-				result.add(new GameElement(false, new EnglishWord(w), i, j));
-
+				result.add(new GameElement(false, new EnglishWord(w), category, index));
+		
 		model.put("userId", userId);
 		model.put("username", current.getUsername());
 		model.put("category", category);
@@ -79,5 +81,31 @@ public class ProfileInitializationControler {
 		model.put("result", result);
 				
 		return "users/profile.initialize";
+	}
+	
+	@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewProfileInitializationPage(@PathVariable int userId, ModelMap model) 
+			throws ProfileProviderException, Exception {
+		UserProfile profile = null;
+		User current = null;
+		try {
+			current = userService.getUser(userId);
+			profile = profileProvider.getProfile(userId);
+		} catch (ProfileProviderException e) {
+			System.err.println(e.toString());
+		}
+
+		if (profile == null) {
+			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
+			profile = profileProvider.getProfile(userId);
+		}
+		
+		model.put("userId", userId);
+		model.put("username", current.getUsername());
+		model.put("profile", profile.getUserProblems());
+		model.put("problems", profile.getUserProblems().getProblems().getProblemsIndex());
+				
+		return "users/profile.startpage";
 	}
 }

@@ -16,17 +16,16 @@
 		method="GET" modelAttribute="profile">
 		
 		<legend>Profile Initialization for ${username}</legend>
-		<form:hidden path="language" />
 		
 		<table width="100%">
-       <c:forEach items="${result}" var="res" varStatus="inner">
+       <c:forEach items="${profile.getProblems().getProblemsIndex()}" var="res" varStatus="inner">
             <tr>
-                <td>Word: </td>
-                <td> ${res.getAnnotatedWord().toString()} </td>
-                <td> <input type="checkbox" name="wordOk${inner.index}" value="${res.getAnnotatedWord().toString()}">
-                Correct
-                <br>
-                <input type="hidden" name="word${inner.index}" value="${res.getAnnotatedWord().toString()}">
+                <td>Problem:</td>
+                <td  style="text-align:left">   ${res.getURI()} : ${res.getType().getUrl()} </td>
+                <td> 
+                <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?category=1&start=0&end=${profile.getProblems().getRowLength(inner.index)}">
+                Start Test
+                </a>
                 </td>  
             </tr>
         </c:forEach>
