@@ -1,5 +1,6 @@
 package com.ilearnrw.app.usermanager;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,5 +108,49 @@ public class ProfileInitializationControler {
 		model.put("problems", profile.getUserProblems().getProblems().getProblemsIndex());
 				
 		return "users/profile.startpage";
+	}
+	
+	@RequestMapping(value = "/users/{userId}/confirmanswers", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewConfirmAnswersPage(@PathVariable int userId, 
+			@RequestParam(value="succeed", required = false) String[] succeed, 
+			@RequestParam(value="words", required = true) String[] words, ModelMap model) 
+			throws ProfileProviderException, Exception {
+		UserProfile profile = null;
+		User current = null;
+		ArrayList<String> wordlist = convertArrayToUTF8(words);
+		ArrayList<String> succeedlist = convertArrayToUTF8(succeed);
+		System.err.println(wordlist.get(0));
+		try {
+			current = userService.getUser(userId);
+			profile = profileProvider.getProfile(userId);
+		} catch (ProfileProviderException e) {
+			System.err.println(e.toString());
+		}
+
+		if (profile == null) {
+			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
+			profile = profileProvider.getProfile(userId);
+		}
+		
+		model.put("userId", userId);
+		model.put("username", current.getUsername());
+		model.put("succeedlist", succeedlist);
+		model.put("wordlist", wordlist);
+		model.put("profile", profile.getUserProblems());
+		model.put("problems", profile.getUserProblems().getProblems().getProblemsIndex());
+				
+		return "users/profile.confirmpage";
+	}
+	
+	private ArrayList<String> convertArrayToUTF8(String str[]) throws UnsupportedEncodingException{
+		if (str == null)
+			return new ArrayList<String>();
+		ArrayList<String> res = new ArrayList<String>();
+		for (int i = 0; i<str.length; i++){
+			byte[] in = str[i].getBytes("iso-8859-1");
+			res.add(new String(in,"UTF-8"));
+		}
+		return res;
 	}
 }

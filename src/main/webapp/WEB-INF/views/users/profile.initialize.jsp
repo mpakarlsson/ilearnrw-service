@@ -12,7 +12,7 @@
 <body>
 	<div class="form-container">
 	<form:form
-		action="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize"
+		action="${pageContext.servletContext.contextPath}/apps/users/${userId}/confirmanswers"
 		method="GET" modelAttribute="profile">
 		
 		<legend>Profile Initialization for ${username}</legend>
@@ -23,10 +23,10 @@
             <tr>
                 <td>Word: </td>
                 <td> ${res.getAnnotatedWord().toString()} </td>
-                <td> <input type="checkbox" name="wordOk${inner.index}" value="${res.getAnnotatedWord().toString()}">
+                <td> <input type="checkbox" name="succeed" value="${res.getAnnotatedWord().toString()}">
                 Correct
                 <br>
-                <input type="hidden" name="word${inner.index}" value="${res.getAnnotatedWord().toString()}">
+                <input type="hidden" name="words" value="${res.getAnnotatedWord().toString()}">
                 </td>  
             </tr>
         </c:forEach>

@@ -16,20 +16,28 @@
 		method="GET" modelAttribute="profile">
 		
 		<legend>Profile Initialization for ${username}</legend>
-		
+		<%Integer all = 0, correct = 0;%>
 		<table width="100%">
-       <c:forEach items="${profile.getProblems().getProblemsIndex()}" var="res" varStatus="inner">
+       <c:forEach items="${wordlist}" var="res" varStatus="inner">
+					<%all++;%>
             <tr>
-                <td>Problem:</td>
-                <td  style="text-align:left">   ${res.getURI()} : ${res.getType().getUrl()} </td>
-                <td> 
-                <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?category=1&start=0&end=${profile.getProblems().getRowLength(inner.index)}">
-                Start Test
-                </a>
-                </td>  
+                <td>${res}</td>
+                <td  style="text-align:left"> 
+                
+                <c:choose>
+			      <c:when test="${succeedlist.contains(res)}">correct
+					<%correct++;%>
+			      </c:when>
+			
+			      <c:otherwise>fail
+			      <br />
+			      </c:otherwise>
+				</c:choose>
+				</td>
             </tr>
         </c:forEach>
     </table>
+		Score:<%out.print(correct+" / "+all);%> </br>
 		<input type="submit" value="Continue" />
 	</form:form>
 	</div>
