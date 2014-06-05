@@ -17,7 +17,7 @@
 		
 		<legend>Profile Initialization for ${username}</legend>
 		<form:hidden path="language" />
-		
+		${ profile.getUserProblems().getProblemDescription(category, index) }
 		<table width="100%">
        <c:forEach items="${result}" var="res" varStatus="inner">
             <tr>
@@ -31,6 +31,11 @@
             </tr>
         </c:forEach>
     </table>
+       <input type="hidden" name="category" value="${category}">
+       <input type="hidden" name="index" value="${index}">
+       <input type="hidden" name="start" value="${start}">
+       <input type="hidden" name="end" value="${end}">
+       <input type="hidden" name="difficulty" value="${difficulty}">
 		<input type="submit" value="Continue" />
 	</form:form>
 	</div>

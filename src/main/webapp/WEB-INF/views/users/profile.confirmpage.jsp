@@ -16,6 +16,7 @@
 		method="GET" modelAttribute="profile">
 		
 		<legend>Profile Initialization for ${username}</legend>
+		${ profile.getUserProblems().getProblemDescription(category, index) }
 		<%Integer all = 0, correct = 0;%>
 		<table width="100%">
        <c:forEach items="${wordlist}" var="res" varStatus="inner">
@@ -38,6 +39,10 @@
         </c:forEach>
     </table>
 		Score:<%out.print(correct+" / "+all);%> </br>
+       <input type="hidden" name="category" value="${category}">
+       <input type="hidden" name="index" value="${index}">
+       <input type="hidden" name="start" value="${start}">
+       <input type="hidden" name="end" value="${end}">
 		<input type="submit" value="Continue" />
 	</form:form>
 	</div>

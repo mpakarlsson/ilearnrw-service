@@ -18,18 +18,19 @@
 		<legend>Profile Initialization for ${username}</legend>
 		
 		<table width="100%">
-       <c:forEach items="${profile.getProblems().getProblemsIndex()}" var="res" varStatus="inner">
+       <c:forEach items="${profile.getUserProblems().getProblems().getProblemsIndex()}" var="res" varStatus="inner">
             <tr>
                 <td>Problem:</td>
                 <td  style="text-align:left">   ${res.getURI()} : ${res.getType().getUrl()} </td>
                 <td> 
-                <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?category=1&start=0&end=${profile.getProblems().getRowLength(inner.index)}">
+                <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?category=1&start=0&end=${profile.getUserProblems().getProblems().getRowLength(inner.index)}">
                 Start Test
                 </a>
                 </td>  
             </tr>
         </c:forEach>
     </table>
+       <input type="hidden" name="difficulty" value="0">
 		<input type="submit" value="Continue" />
 	</form:form>
 	</div>
