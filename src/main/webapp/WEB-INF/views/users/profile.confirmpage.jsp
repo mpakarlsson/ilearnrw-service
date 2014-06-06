@@ -39,6 +39,7 @@
         </c:forEach>
     </table>
 		Score:<%out.print(correct+" / "+all);%> </br>
+       <input type="hidden" name="difficulty" value="${difficulty}">
        <input type="hidden" name="category" value="${category}">
        <input type="hidden" name="index" value="${index}">
        <input type="hidden" name="start" value="${start}">
