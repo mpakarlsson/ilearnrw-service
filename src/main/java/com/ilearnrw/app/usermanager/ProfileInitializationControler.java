@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ilearnrw.languagetools.extras.EasyHardList;
+import ilearnrw.textclassification.Word;
 import ilearnrw.textclassification.english.EnglishWord;
+import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
@@ -40,12 +42,9 @@ public class ProfileInitializationControler {
 	
 	@Autowired
 	IProfileProvider profileProvider;
-
-	@Autowired
-	LogEntryService logEntryService;
 	
 	@Autowired
-	CubeService cubeService;
+	DataloggerController dataloggerController;
 	// find css style at src/main/webapp/resources/css/style.css
 	
 	ArrayList<LogEntry> theLogs;
@@ -111,12 +110,17 @@ public class ProfileInitializationControler {
 		}
 		
 		List<GameElement> result = new ArrayList<GameElement>();
-		ProblemWordListLoader pwll = new ProblemWordListLoader(LanguageCode.GR, category, index);
+		LanguageCode lan = profile.getLanguage();
+		ProblemWordListLoader pwll = new ProblemWordListLoader(lan, category, index);
 		EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
 
 		ArrayList<String> ws = thelist.getRandom(7, difficulty);
-		for (String w : ws)
+		for (String w : ws){
+			if (lan == LanguageCode.EN)
 				result.add(new GameElement(false, new EnglishWord(w), category, index));
+			else
+				result.add(new GameElement(false, new GreekWord(w), category, index));
+		}
 		
 		createDisplayedLogs(current.getUsername(), category, index, ""+difficulty, ws);
 		
@@ -219,8 +223,9 @@ public class ProfileInitializationControler {
 				System.err.println(theLogs.get(0).getApplicationId());
 				try {
 					LogEntry le = theLogs.remove(0);
-					logEntryService.insertData(le);
-					cubeService.handle(le);
+					dataloggerController.addLog(le);
+					//logEntryService.insertData(le);
+					//cubeService.handle(le);
 				} catch (Exception ex) {
 					LOG.debug("Error when received log: " + ex.getMessage());
 	
