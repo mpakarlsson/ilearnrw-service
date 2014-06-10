@@ -1,30 +1,40 @@
-<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<!DOCTYPE html>
 <html>
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Create roles</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Manage users</title>
+
+<jsp:include page="../includes/includes.jsp"></jsp:include>
+
 </head>
+
 <body>
-<div class="form-container">
-	<form:form action="${pageContext.servletContext.contextPath}/apps/roles/new" method="POST" modelAttribute="role">
-		<fieldset>
-			<legend>
-				Role details
-			</legend>
-			<span>
-				<label >Role name</label>
-				<form:input path="name" />
-				<form:errors path="name" class="error"/>
-			</span>
-		</fieldset>
-		<span class="buttonrow">
-			<input type="submit" value="Submit"/>
-		</span>
-	</form:form>
-</div>
+	<div id="wrapper">
+		<jsp:include page="../includes/navigation.jsp"></jsp:include>
+		<div id="page-wrapper">
+			<form:form action="new" method="POST" modelAttribute="role">
+			    <spring:bind path="name">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="control-label" for="inputName">Role
+							name</label>
+						<div class="controls">
+							<form:input type="text" id="inputName" class="form-control"
+								placeholder="Role name" path="name" required="true"/>
+								<form:errors path="name" class="help-block" for="inputName" />
+						</div>
+				</div>
+				</spring:bind>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form:form>
+		</div>
+	</div>
 </body>
-</html>

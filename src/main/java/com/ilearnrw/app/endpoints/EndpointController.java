@@ -21,6 +21,6 @@ public class EndpointController {
 		model.addAttribute("handlerMethods",
 				this.handlerMapping.getHandlerMethods());
 		model.addAttribute("title", "Web application endpoints");
-		return "endpoints";
+		return "endpoints/endpoints";
 	}
 }

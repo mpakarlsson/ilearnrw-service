@@ -92,7 +92,7 @@ public class DataloggerController {
 			result = logEntryService.insertData(log);
 			cubeService.handle(log);
 		} catch (Exception ex) {
-			LOG.debug("Error when received log: " + ex.getMessage());
+			LOG.error("Error when received log: " + ex.getMessage());
 
 		}
 		return result;

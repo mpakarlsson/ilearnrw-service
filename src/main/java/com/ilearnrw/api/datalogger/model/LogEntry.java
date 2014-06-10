@@ -7,6 +7,9 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -76,6 +79,7 @@ public class LogEntry implements Serializable {
 	private String applicationId;
 
 	@JsonProperty("timestamp")
+	@DateTimeFormat(iso=ISO.DATE_TIME)
 	private Timestamp timestamp;
 
 	@JsonProperty("word")

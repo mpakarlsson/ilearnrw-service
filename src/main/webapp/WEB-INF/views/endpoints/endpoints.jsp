@@ -36,12 +36,13 @@ th,td {
 								</c:forEach></td>
 							<td><c:forEach items="${entry.key.methodsCondition.methods}"
 									var="method">
-${method}
-</c:forEach></td>
-							<td><c:if
-									test="${entry.value.method.declaringClass ne lastClass}">${fn:substringAfter(entry.value.method.declaringClass,'ilearnrw.')}</c:if></td>
-							<c:set var="lastClass"
-								value="${entry.value.method.declaringClass}"></c:set>
+								${method}
+							</c:forEach>
+							<c:if test="${empty entry.key.methodsCondition.methods}">
+							GET
+							</c:if>
+							</td>
+							<td>${fn:substringAfter(entry.value.method.declaringClass,'ilearnrw.')}</td>
 							<td>${entry.value.method.name}</td>
 							
 							<td>${entry.value.method.returnType}</td>
@@ -49,10 +50,12 @@ ${method}
 							<c:forEach items="${entry.value.method.parameterTypes}" var="parameter">
 								${parameter.name}
 							</c:forEach>
+							</td>
 							<td>
 							<c:forEach items="${entry.value.method.declaredAnnotations}" var="annotation">
 								${annotation}
 							</c:forEach>
+							</td>
 						</tr>
 				</c:forEach>
 			</table>
