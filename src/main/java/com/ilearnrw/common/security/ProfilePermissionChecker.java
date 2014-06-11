@@ -20,9 +20,9 @@ public class ProfilePermissionChecker implements PermissionChecker {
 			Object targetDomainObject) {
 
 		boolean isAllowed = false;
-		if (targetDomainObject instanceof String) {
-			String userId = (String) targetDomainObject;
-			User user = userService.getUser(Integer.parseInt(userId));
+		if (targetDomainObject instanceof Integer) {
+			int userId = (Integer) targetDomainObject;
+			User user = userService.getUser(userId);
 			String loggedInUser = (String) authentication.getPrincipal();
 			isAllowed = (loggedInUser.compareTo(user.getUsername()) == 0 || teacherStudentService
 					.isUserStudentOfTeacher(user.getUsername(), loggedInUser));
