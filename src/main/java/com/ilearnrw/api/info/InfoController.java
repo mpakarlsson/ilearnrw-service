@@ -35,7 +35,7 @@ public class InfoController {
 	@RequestMapping(value = "/info/version", method = RequestMethod.GET)
 	public @ResponseBody
 	String getVersion() {
-		return "3";
+		return "4";
 	}
 	@RequestMapping(value = "/info/app/{id}/problems", method = RequestMethod.GET)
 	public @ResponseBody

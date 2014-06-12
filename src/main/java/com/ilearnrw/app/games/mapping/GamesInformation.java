@@ -16,11 +16,20 @@ public class GamesInformation {
 			"Grapheme/Phoneme Correspondence", "Grammar/Function Words",
 			"Word Recognition", "Visual Similarity" };
 	
-	
+
 	private static String apps[] = { "Mail Sorter", "Whack a Mole",
 			"Endless Runner", "Harvest", "Serenade Hero", "Moving Pathways",
 			"Eye Exam", "Train Dispatcher", "Drop Chops" , "Game World", 
 			"Social Network", "Logging Screen", "Profile Setup"};
+	
+	
+	
+	
+	private static String appIds[] = { "MAIL_SORTER", "WHAK_A_MOLE",
+		"ENDLESS_RUNNER", "HARVEST", "SERENADE_HERO", "MOVING_PATHWAYS",
+		"EYE_EXAM", "TRAIN_DISPATCHER", "DROP_CHOPS" , "GAME_WORLD", 
+		"SOCIAL_NETWORK", "LOGGING_SCREEN", "PROFILE_SETUP"};
+	
 	private static boolean appsProbsCorrespondanceEN[][] = {
 			// syl div
 			{ false, false, true, true, false, true, true, true, true, false, false, false, false },
@@ -35,11 +44,12 @@ public class GamesInformation {
 			// lett/wor
 			{ true, true, true, true, false, true, false, false, false, false, false, false, false },
 			// lett names
-			{ true, true, false, true, false, false, false, false, false, false, false, false, false },
+			//{ true, true, false, true, false, false, false, false, false, false, false, false, false },
 			// sight
-			{ true, true, false, false, false, true, false, true, false, false, false, false, false },
+			//{ true, true, false, false, false, true, false, true, false, false, false, false, false },
 			// conf lett
-			{ true, true, false, true, true, true, true, true, false, false, false, false, false } };
+			//{ true, true, false, true, true, true, true, true, false, false, false, false, false }
+			};
 
 	private static boolean appsProbsCorrespondanceGR[][] = {
 			// syl div
@@ -106,6 +116,13 @@ public class GamesInformation {
 		return -1;
 	}
 
+	public static int getAppIDfromStringID(String appStringId) {
+		for (int i = 0; i < appIds.length; i++)
+			if (appIds[i].equalsIgnoreCase(appStringId))
+				return i;
+		return -1;
+	}
+
 	public static int getProblemID(String probName, LanguageCode lan) {
 		if (lan == LanguageCode.EN) {
 			for (int i = 0; i < englishProbs.length; i++)
@@ -141,12 +158,26 @@ public class GamesInformation {
 		return res;
 	}
 
-	public static ArrayList<Integer> getAppRelatedProblems(String appName,
+	public static ArrayList<Integer> getAppRelatedProblems(String appStringID,
 			LanguageCode lan) {
-		int id = getAppID(appName);
+		int id = getAppIDfromStringID(appStringID);
 		if (id==-1)
 			return null;
-		return getProblemRelatedApps(id, lan);
+		ArrayList<Integer> res = new ArrayList<Integer>();
+		if (lan == LanguageCode.EN) {
+			if (id > appsProbsCorrespondanceEN[0].length)
+				return null;
+			for (int i = 0; i < appsProbsCorrespondanceEN.length; i++)
+				if (appsProbsCorrespondanceEN[i][id])
+					res.add(i);
+		} else {
+			if (id > appsProbsCorrespondanceGR[0].length)
+				return null;
+			for (int i = 0; i < appsProbsCorrespondanceGR.length; i++)
+				if (appsProbsCorrespondanceGR[i][id])
+					res.add(i);
+		}
+		return res;
 	}
 
 	public static ArrayList<Integer> getProblemRelatedApps(int probId,
@@ -155,17 +186,17 @@ public class GamesInformation {
 		if (lan == LanguageCode.EN) {
 			if (probId > appsProbsCorrespondanceEN.length)
 				return null;
-			for (int i = 0; i < appsProbsCorrespondanceEN[i].length; i++)
+			for (int i = 0; i < appsProbsCorrespondanceEN[probId].length; i++)
 				if (appsProbsCorrespondanceEN[probId][i])
 					res.add(i);
 		} else {
 			if (probId > appsProbsCorrespondanceGR.length)
 				return null;
-			for (int i = 0; i < appsProbsCorrespondanceGR[i].length; i++)
+			for (int i = 0; i < appsProbsCorrespondanceGR[probId].length; i++)
 				if (appsProbsCorrespondanceGR[probId][i])
 					res.add(i);
 		}
-		return null;
+		return res;
 	}
 
 	public static ArrayList<Integer> getProblemRelatedApps(String prob,
