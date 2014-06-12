@@ -58,6 +58,8 @@ public class SelectNextWordController {
 		LanguageCode lc = user.getLanguage();
 		int appId = GamesInformation.getAppID(activity);
 		if (appId==-1)
+			appId = GamesInformation.getAppIDfromStringID(activity);
+		if (appId==-1)
 			return null;
 		if (!(GamesInformation.getAppRelatedProblems(appId, lc)).contains(i))
 			return null;
