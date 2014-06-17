@@ -96,8 +96,6 @@ public class ProfileInitializationControler {
 			difficulty = 1;
 		else 
 			difficulty = 0;
-		
-		int index = (start+end)/2;
 		try {
 			current = userService.getUser(userId);
 			profile = profileProvider.getProfile(userId);
@@ -108,6 +106,16 @@ public class ProfileInitializationControler {
 			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
 			profile = profileProvider.getProfile(userId);
 		}
+		
+		if (start == end && difficulty == 0){
+			int all = profile.getUserProblems().getRowLength(category);
+			for (int i=0;i<start;i++)
+				profile.getUserProblems().setUserSeverity(category, i, 2);
+			for (int i=start;i<all;i++)
+				profile.getUserProblems().setUserSeverity(category, i, 3);
+			profileProvider.updateProfile(userId, profile);
+		}
+		int index = (start+end)/2;
 		
 		List<GameElement> result = new ArrayList<GameElement>();
 		LanguageCode lan = profile.getLanguage();
@@ -161,7 +169,7 @@ public class ProfileInitializationControler {
 			System.err.println(e.toString());
 		}
 
-		if (profile == null) {
+		if (profile == null){
 			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
 			profile = profileProvider.getProfile(userId);
 		}
