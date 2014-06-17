@@ -34,15 +34,6 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 public class CubeDaoImpl implements CubeDao {
 
 	private static Logger LOG = Logger.getLogger(CubeDaoImpl.class);
-	private JdbcTemplate jdbcTemplate;
-	private NamedParameterJdbcTemplate namedJdbcTemplate;
-
-	@Autowired
-	public void setDataSource(DataSource dataLoggerCubeDataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataLoggerCubeDataSource);
-		this.namedJdbcTemplate = new NamedParameterJdbcTemplate(
-				dataLoggerCubeDataSource);
-	}
 
 	@Autowired
 	DataSource dataLoggerCubeDataSource;
@@ -53,7 +44,7 @@ public class CubeDaoImpl implements CubeDao {
 		LOG.debug("Hitting DB to get application " + applicationId);
 		try {
 
-			Application app = jdbcTemplate.queryForObject(
+			Application app = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
 					"select * from applications where app_id like ? limit 0,1",
 					new Object[] { applicationId },
 					new BeanPropertyRowMapper<Application>(Application.class));
@@ -96,7 +87,7 @@ public class CubeDaoImpl implements CubeDao {
 	public int getUserIdByName(String username) {
 		LOG.debug("Hitting DB to get user " + username);
 		try {
-			User user = jdbcTemplate.queryForObject(
+			User user = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
 					"select * from users where username like ? limit 0,1",
 					new Object[] { username }, new BeanPropertyRowMapper<User>(
 							User.class));
@@ -112,7 +103,7 @@ public class CubeDaoImpl implements CubeDao {
 	public String getUsername(int userId) {
 		LOG.debug("Hitting DB to get user with id " + userId);
 		try {
-			User user = jdbcTemplate.queryForObject(
+			User user = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
 					"select * from users where id = ? limit 0,1",
 					new Object[] { userId }, new BeanPropertyRowMapper<User>(
 							User.class));
@@ -143,7 +134,7 @@ public class CubeDaoImpl implements CubeDao {
 		LOG.debug(String.format("Hitting DB to get problem [%d,%d]",
 				problemCategory, problemIndex));
 		try {
-			Problem problem = jdbcTemplate
+			Problem problem = new JdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(
 							"select * from problems where `category`=? and `idx`=? and `language`=? limit 0,1",
 							new Object[] { problemCategory, problemIndex, languageCode },
@@ -192,7 +183,7 @@ public class CubeDaoImpl implements CubeDao {
 	@Override
 	public int getLastSessionIdByType(String username, SessionType type) {
 		try {
-			Session session = jdbcTemplate
+			Session session = new JdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(
 							"select * from sessions where username=? and sessiontype=? order by start desc limit 0,1",
 							new Object[] { username,
@@ -238,7 +229,7 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public Session getSessionById(int id) {
-		Session session = jdbcTemplate.queryForObject(
+		Session session = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
 				"select * from sessions where id=?", new Object[] { id },
 				new BeanPropertyRowMapper<Session>(Session.class));
 		return session;
@@ -376,13 +367,13 @@ public class CubeDaoImpl implements CubeDao {
 		ListWithCount<T> list = new ListWithCount<T>();
 		if (count) {
 			try {
-				list.setCount(namedJdbcTemplate.queryForObject(sql,
+				list.setCount(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForObject(sql,
 						namedParameters, Integer.class));
 			} catch (IncorrectResultSizeDataAccessException ex) {
 				list.setCount(ex.getActualSize());
 			}
 		} else {
-			list.setList(namedJdbcTemplate.query(sql, namedParameters,
+			list.setList(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).query(sql, namedParameters,
 					new BeanPropertyRowMapper<T>(classT)));
 		}
 		return list;
@@ -393,13 +384,13 @@ public class CubeDaoImpl implements CubeDao {
 		ListWithCount<Map<String, Object>> list = new ListWithCount<Map<String, Object>>();
 		if (count) {
 			try {
-				list.setCount(namedJdbcTemplate.queryForObject(sql,
+				list.setCount(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForObject(sql,
 						namedParameters, Integer.class));
 			} catch (IncorrectResultSizeDataAccessException ex) {
 				list.setCount(ex.getActualSize());
 			}
 		} else {
-			list.setList(namedJdbcTemplate.queryForList(sql, namedParameters));
+			list.setList(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForList(sql, namedParameters));
 		}
 		return list;
 	}
@@ -445,7 +436,7 @@ public class CubeDaoImpl implements CubeDao {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("id", id);
 
-		return namedJdbcTemplate.queryForList(sql, paramMap);
+		return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForList(sql, paramMap);
 	}
 
 	@Override

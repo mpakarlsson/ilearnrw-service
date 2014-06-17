@@ -22,25 +22,16 @@ import com.ilearnrw.api.info.model.Problem;
 public class InfoDaoImpl implements InfoDao {
 
 	private static Logger LOG = Logger.getLogger(InfoDaoImpl.class);
-	private JdbcTemplate jdbcTemplate;
-	private NamedParameterJdbcTemplate namedJdbcTemplate;
 
 	@Autowired
 	@Qualifier("usersDataSource")
 	private DataSource dSource;
 
-	
-	@Autowired
-	public void setDataSource(DataSource dataLoggerCubeDataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dSource);
-		this.namedJdbcTemplate = new NamedParameterJdbcTemplate(
-				dSource);
-	}
 	@Override
 	public Application getApplication(int id) {
 		Map<String, Object> namedParameters = new HashMap<String, Object>();
 		namedParameters.put("id", id);
-		List<Application> entry = namedJdbcTemplate.query("select * from applications where id=:id", 
+		List<Application> entry = new NamedParameterJdbcTemplate(dSource).query("select * from applications where id=:id", 
 				namedParameters,
 				new BeanPropertyRowMapper<Application>(Application.class));
 		if (entry.isEmpty()) {
@@ -50,7 +41,7 @@ public class InfoDaoImpl implements InfoDao {
 	}
 	@Override
 	public List<Application> getApps() {
-		List<Application> results = jdbcTemplate.query("select * from applications", 
+		List<Application> results = new JdbcTemplate(dSource).query("select * from applications", 
 				new BeanPropertyRowMapper<Application>(Application.class)
 		);
 		
@@ -60,7 +51,7 @@ public class InfoDaoImpl implements InfoDao {
 	public List<Problem> getProblems(String language) {
 		Map<String, Object> namedParameters = new HashMap<String, Object>();
 		namedParameters.put("lang", language);
-		List<Problem> results = namedJdbcTemplate.query("select * from problems where language=:lang", 
+		List<Problem> results = new NamedParameterJdbcTemplate(dSource).query("select * from problems where language=:lang", 
 				namedParameters, new BeanPropertyRowMapper<Problem>(Problem.class)
 		);
 		return results;
@@ -71,7 +62,7 @@ public class InfoDaoImpl implements InfoDao {
 		Map<String, Object> namedParameters = new HashMap<String, Object>();
 		namedParameters.put("lang", language);
 
-		List<Map<String, Object>> rows = namedJdbcTemplate.queryForList("select ap.id_application, ap.id_problem from apps_problems ap"
+		List<Map<String, Object>> rows = new NamedParameterJdbcTemplate(dSource).queryForList("select ap.id_application, ap.id_problem from apps_problems ap"
 				+ " left join problems p on p.id=ap.id_problem"
 				+ " where p.language=:lang", namedParameters);
 		List<int[]> results = new ArrayList<int[]>();
