@@ -23,7 +23,7 @@
                 <td>Problem:</td>
                 <td  style="text-align:left">   ${res.getURI()} : ${res.getType().getUrl()} </td>
                 <td> 
-                <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?difficulty=0&category=1&start=0&end=${profile.getUserProblems().getProblems().getRowLength(inner.index)}">
+                <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?difficulty=0&category=${inner.index}&start=0&end=${profile.getUserProblems().getProblems().getRowLength(inner.index)}">
                 Start Test
                 </a>
                 </td>  

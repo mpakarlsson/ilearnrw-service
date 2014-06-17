@@ -106,15 +106,6 @@ public class ProfileInitializationControler {
 			profileProvider.createProfile(userId, LanguageCode.fromString(current.getLanguage()));
 			profile = profileProvider.getProfile(userId);
 		}
-		
-		if (start == end && difficulty == 0){
-			int all = profile.getUserProblems().getRowLength(category);
-			for (int i=0;i<start;i++)
-				profile.getUserProblems().setUserSeverity(category, i, 2);
-			for (int i=start;i<all;i++)
-				profile.getUserProblems().setUserSeverity(category, i, 3);
-			profileProvider.updateProfile(userId, profile);
-		}
 		int index = (start+end)/2;
 		
 		List<GameElement> result = new ArrayList<GameElement>();
@@ -161,7 +152,6 @@ public class ProfileInitializationControler {
 		ArrayList<String> wordlist = convertArrayToUTF8(words);
 		ArrayList<String> succeedlist = convertArrayToUTF8(succeed);
 			
-		int p[] = getNextIndices(start, end ,wordlist, succeedlist);
 		try {
 			current = userService.getUser(userId);
 			profile = profileProvider.getProfile(userId);
@@ -175,8 +165,33 @@ public class ProfileInitializationControler {
 		}
 		
 		createSucceedFailedLogs(current.getUsername(), category, index, ""+difficulty, wordlist, succeedlist);
-				
+
+		String nextPage = "initialize";
+		int p[] = getNextIndices(start, end ,wordlist, succeedlist);
+		if ((int)start == (int)end-1 && (int)difficulty == 0){
+			int all = profile.getUserProblems().getRowLength(category);
+			for (int i=0;i<start;i++)
+				profile.getUserProblems().setUserSeverity(category, i, 2);
+			for (int i=start;i<all;i++)
+				profile.getUserProblems().setUserSeverity(category, i, 3);
+			profileProvider.updateProfile(userId, profile);
+			difficulty = 1;
+			start = 0;
+			p[0] = start;
+			p[1] = end;
+		}
+		if ((int)start == (int)end-1 && (int)difficulty == 1){
+			for (int i=0;i<start;i++)
+				profile.getUserProblems().setUserSeverity(category, i, 1);
+			profileProvider.updateProfile(userId, profile);
+			difficulty = 1;
+			start = 0;
+			p[0] = start;
+			p[1] = end;
+			nextPage = "initprofile";
+		}
 		model.put("userId", userId);
+		model.put("nextPage", nextPage);
 		model.put("username", current.getUsername());
 		model.put("difficulty", difficulty);
 		model.put("category", category);
@@ -228,7 +243,6 @@ public class ProfileInitializationControler {
 		if (theLogs != null && !theLogs.isEmpty()){
 			int x = theLogs.size();
 			while (!theLogs.isEmpty()){
-				System.err.println(theLogs.get(0).getApplicationId());
 				try {
 					LogEntry le = theLogs.remove(0);
 					dataloggerController.addLog(le);
@@ -239,7 +253,6 @@ public class ProfileInitializationControler {
 	
 				}
 			}
-			System.err.println(x);
 		}
 		else if (theLogs == null)
 			theLogs = new ArrayList<LogEntry>();
@@ -265,12 +278,24 @@ public class ProfileInitializationControler {
 		}
 		int res[] = new int[2];
 		if (suc >= threshold){
-			res[0] = (s+e)/2 +1;
-			res[1] = e;
+			if (e == s+1){
+				res[0] = e;
+				res[1] = e;
+			}
+			else{
+				res[0] = (s+e+1)/2;
+				res[1] = e;
+			}
 		}
 		else {
-			res[0] = s;
-			res[1] = (s+e)/2 -1;
+			if (e == s+1){
+				res[0] = s;
+				res[1] = s;
+			}
+			else{
+				res[0] = s;
+				res[1] = (s+e-1)/2;
+			}
 		}
 		return res;
 	}

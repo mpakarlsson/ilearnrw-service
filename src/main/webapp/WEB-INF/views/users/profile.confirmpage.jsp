@@ -12,7 +12,7 @@
 <body>
 	<div class="form-container">
 	<form:form
-		action="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize"
+		action="${pageContext.servletContext.contextPath}/apps/users/${userId}/${nextPage}"
 		method="GET" modelAttribute="profile">
 		
 		<legend>Profile Initialization for ${username}</legend>
