@@ -24,6 +24,7 @@ import com.ilearnrw.common.security.users.model.Role;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.PermissionService;
 import com.ilearnrw.common.security.users.services.RoleService;
+import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
@@ -37,6 +38,9 @@ public class SetupController {
 
 	@Autowired
 	PermissionService permissionService;
+	
+	@Autowired
+	TeacherStudentService teacherStudentService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -48,7 +52,7 @@ public class SetupController {
 	@RequestMapping(value = "/setup", method = RequestMethod.GET)
 	public @ResponseBody
 	List<String> setup() {
-		createUsersRolesPermissions();
+		createUsersRolesPermissionsTeacherStudents();
 		createProfiles();
 		return outputLog;
 	}
@@ -81,7 +85,7 @@ public class SetupController {
 
 	}
 
-	private void createUsersRolesPermissions() {
+	private void createUsersRolesPermissionsTeacherStudents() {
 		List<User> users = new ArrayList<User>();
 
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -106,24 +110,33 @@ public class SetupController {
 			sue_t.setLanguage("EN");
 			users.add(sue_t);
 
-			User chris_t = createBoy("Maria_Begineraki");
-			chris_t.setBirthdate(df.parse("2007-04-21"));
-			chris_t.setLanguage("GR");
-			users.add(chris_t);
+			User maria_b = createBoy("Maria_Begineraki");
+			maria_b.setBirthdate(df.parse("2007-04-21"));
+			maria_b.setLanguage("GR");
+			users.add(maria_b);
 
-			User xena_t = createGirl("Giorgos_Expertidis");
-			xena_t.setBirthdate(df.parse("2009-09-11"));
-			xena_t.setLanguage("GR");
-			users.add(xena_t);
+			User giorgos_e = createGirl("Giorgos_Expertidis");
+			giorgos_e.setBirthdate(df.parse("2009-09-11"));
+			giorgos_e.setLanguage("GR");
+			users.add(giorgos_e);
 
-			User teacher = new User();
-			teacher.setUsername("teacher");
-			teacher.setPassword("test");
-			teacher.setBirthdate(new Date());
-			teacher.setLanguage("EN");
-			teacher.setGender("F");
-			teacher.setEnabled(true);
-			users.add(teacher);
+			User englishteacher = new User();
+			englishteacher.setUsername("englishteacher");
+			englishteacher.setPassword("test");
+			englishteacher.setBirthdate(new Date());
+			englishteacher.setLanguage("EN");
+			englishteacher.setGender("F");
+			englishteacher.setEnabled(true);
+			users.add(englishteacher);
+			
+			User greekteacher = new User();
+			greekteacher.setUsername("greekteacher");
+			greekteacher.setPassword("test");
+			greekteacher.setBirthdate(new Date());
+			greekteacher.setLanguage("GR");
+			greekteacher.setGender("F");
+			greekteacher.setEnabled(true);
+			users.add(greekteacher);
 
 			createUsers(users);
 
@@ -140,13 +153,14 @@ public class SetupController {
 			studentRole.add(roleService.getRole("ROLE_STUDENT"));
 			roleService.setRoleList(joe_t, studentRole);
 			roleService.setRoleList(sue_t, studentRole);
-			roleService.setRoleList(chris_t, studentRole);
-			roleService.setRoleList(xena_t, studentRole);
+			roleService.setRoleList(maria_b, studentRole);
+			roleService.setRoleList(giorgos_e, studentRole);
 			outputLog.add("Added roles for students");
 
 			List<Role> teacherRole = new ArrayList<Role>();
 			teacherRole.add(roleService.getRole("ROLE_TEACHER"));
-			roleService.setRoleList(teacher, teacherRole);
+			roleService.setRoleList(englishteacher, teacherRole);
+			roleService.setRoleList(greekteacher, teacherRole);
 			outputLog.add("Added roles for teacher");
 
 			permissionService.setPermissionList(roleService
@@ -161,7 +175,10 @@ public class SetupController {
 					.getRole("ROLE_TEACHER"), Arrays.asList(
 					permissionService.getPermission("PERMISSION_DEFAULT"),
 					permissionService.getPermission("PERMISSION_TEACHER")));
-
+			
+			teacherStudentService.setStudentList(englishteacher, Arrays.asList(joe_t, sue_t));
+			teacherStudentService.setStudentList(greekteacher, Arrays.asList(maria_b, giorgos_e));
+			
 		} catch (Exception e) {
 			outputLog.add("Exception: " + e.getMessage());
 		}

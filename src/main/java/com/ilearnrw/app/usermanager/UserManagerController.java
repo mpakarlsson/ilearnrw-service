@@ -99,7 +99,7 @@ public class UserManagerController {
 	public String logout(HttpServletRequest request) {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		request.getSession().invalidate();
-		return "main/login";
+		return "redirect:/apps/login";
 	}
 
 	@RequestMapping(value = "/login")
@@ -195,14 +195,13 @@ public class UserManagerController {
 
 	/* Users profile */
 
-	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.GET)
+	@RequestMapping(value = "users/{id}/profile", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewProfile(@PathVariable String username, ModelMap model)
+	public String viewProfile(@PathVariable int id, ModelMap model)
 			throws ProfileProviderException, Exception {
-		Integer userId = userService.getUserByUsername(username).getId();
 		UserProfile profile = null;
 		try {
-			profile = profileProvider.getProfile(userId);
+			profile = profileProvider.getProfile(id);
 		} catch (ProfileProviderException e) {
 			LOG.error(e);
 		}
@@ -211,17 +210,16 @@ public class UserManagerController {
 			throw new Exception("No profile available.");
 		}
 
-		model.put("userId", userId);
+		model.put("userId", id);
 		model.put("profile", profile);
 		return "users/profile";
 	}
 
-	@RequestMapping(value = "users/{username}/profile", method = RequestMethod.POST)
+	@RequestMapping(value = "users/{id}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
-			@PathVariable String username) throws ProfileProviderException {
-		Integer userId = userService.getUserByUsername(username).getId();
-		profileProvider.updateProfile(userId, profile);
+			@PathVariable int id) throws ProfileProviderException {
+		profileProvider.updateProfile(id, profile);
 		return "redirect:/apps/panel";
 	}
 
