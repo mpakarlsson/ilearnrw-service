@@ -23,6 +23,9 @@
     			        </sec:authorize>
                         <sec:authorize ifAnyGranted="PERMISSION_TEACHER">
                         <li>
+                            <a href="${pageContext.request.contextPath}/apps/teachers/${userid}/assign"><i class="fa fa-user fa-fw"></i> Assign Students</a>
+                        </li>
+                        <li>
                             <a href="blank.html"><i class="fa fa-user fa-fw"></i> Students</a>
                         </li>
                         <li>

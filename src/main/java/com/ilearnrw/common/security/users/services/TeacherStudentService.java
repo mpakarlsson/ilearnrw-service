@@ -8,7 +8,9 @@ public interface TeacherStudentService {
 
 	public List<User> getTeacherList();
 	
-	public List<User> getStudentList();
+	public List<User> getAllStudentsList();
+	
+	public List<User> getUnassignedStudentsList();
 	
 	public List<User> getStudentList(User teacher);
 	

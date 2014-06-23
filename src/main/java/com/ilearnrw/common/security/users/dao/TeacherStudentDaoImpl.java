@@ -42,11 +42,25 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 	}
 
 	@Override
-	public List<User> getStudentList() {
+	public List<User> getAllStudentsList() {
 		List<User> studentList = new ArrayList<User>();
 
 		String sql = "select u.id, u.username from users u, role_members rm, roles r "
 				+ "where u.id = rm.members_id and rm.roles_id = r.id and r.name = 'ROLE_STUDENT' ";
+
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		studentList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(
+				User.class));
+		return studentList;
+	}
+	
+	@Override
+	public List<User> getUnassignedStudentsList() {
+		List<User> studentList = new ArrayList<User>();
+
+		String sql = "select u.id, u.username from users u, roles r, role_members rm "
+				+ "where u.id = rm.members_id and rm.roles_id = r.id and r.name = 'ROLE_STUDENT' "
+				+ "and u.id not in (select ts.student_id from teachers_students ts)";
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		studentList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(

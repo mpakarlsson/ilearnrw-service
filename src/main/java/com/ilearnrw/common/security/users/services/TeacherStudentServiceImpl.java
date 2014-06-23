@@ -21,8 +21,13 @@ public class TeacherStudentServiceImpl implements TeacherStudentService {
 	}
 
 	@Override
-	public List<User> getStudentList() {
-		return teacherStudentDao.getStudentList();
+	public List<User> getAllStudentsList() {
+		return teacherStudentDao.getAllStudentsList();
+	}
+	
+	@Override
+	public List<User> getUnassignedStudentsList() {
+		return teacherStudentDao.getUnassignedStudentsList();
 	}
 
 	@Override
@@ -39,6 +44,5 @@ public class TeacherStudentServiceImpl implements TeacherStudentService {
 	public boolean isUserStudentOfTeacher(String userName, String teacherName) {
 		return teacherStudentDao.isUserStudentOfTeacher(userName, teacherName);
 	}
-
 
 }

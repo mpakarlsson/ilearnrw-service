@@ -134,7 +134,9 @@ public class UserManagerController {
 			SecurityContextHolder.getContext().setAuthentication(
 					userAuthentication);
 
-			request.getSession().setAttribute("user", username);
+			request.getSession().setAttribute("username", username);
+			User user = userService.getUserByUsername(username);
+			request.getSession().setAttribute("userid", user.getId());
 
 		} catch (Exception e) {
 			model.addAttribute("error", e.getMessage());
@@ -441,8 +443,10 @@ public class UserManagerController {
 		User teacher = userService.getUser(id);
 		TeacherStudentForm teacherStudentForm = new TeacherStudentForm();
 		teacherStudentForm.setTeacher(teacher);
-		teacherStudentForm.setAllStudents(teacherStudentService
-				.getStudentList());
+		List<User> unassignedStudentsList = teacherStudentService
+				.getUnassignedStudentsList();
+		unassignedStudentsList.addAll(teacherStudentService.getStudentList(teacher));
+		teacherStudentForm.setAllStudents(unassignedStudentsList);
 		teacherStudentForm.setSelectedStudents(teacherStudentService
 				.getStudentList(teacher));
 		model.put("teacherStudentForm", teacherStudentForm);
