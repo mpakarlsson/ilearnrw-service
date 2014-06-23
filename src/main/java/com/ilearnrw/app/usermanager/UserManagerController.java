@@ -3,16 +3,11 @@ package com.ilearnrw.app.usermanager;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.validation.Valid;
@@ -20,10 +15,6 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,14 +24,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
@@ -137,6 +125,7 @@ public class UserManagerController {
 			request.getSession().setAttribute("username", username);
 			User user = userService.getUserByUsername(username);
 			request.getSession().setAttribute("userid", user.getId());
+			request.getSession().setAttribute("students", teacherStudentService.getStudentList(user));
 
 		} catch (Exception e) {
 			model.addAttribute("error", e.getMessage());
@@ -458,10 +447,11 @@ public class UserManagerController {
 	public String viewTeachersAssignForm(
 			@PathVariable int id,
 			@ModelAttribute("teacherStudentForm") TeacherStudentForm teacherStudentForm,
-			BindingResult result, ModelMap model) {
+			BindingResult result, ModelMap model, HttpServletRequest request) {
 		User teacher = userService.getUser(id);
 		teacherStudentService.setStudentList(teacher,
 				teacherStudentForm.getSelectedStudents());
+		request.getSession().setAttribute("students", teacherStudentService.getStudentList(teacher));
 		return "redirect:/apps/panel";
 	}
 

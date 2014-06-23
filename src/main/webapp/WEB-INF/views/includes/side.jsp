@@ -26,7 +26,14 @@
                             <a href="${pageContext.request.contextPath}/apps/teachers/${userid}/assign"><i class="fa fa-user fa-fw"></i> Assign Students</a>
                         </li>
                         <li>
-                            <a href="blank.html"><i class="fa fa-user fa-fw"></i> Students</a>
+                            <a href="#"><i class="fa fa-user fa-fw"></i> Students</a>
+                            <ul style="height: auto;" class="nav nav-second-level collapse in">
+	                            <c:forEach var="student" items="${students}">
+	                            <li>
+                                    <a href="${pageContext.request.contextPath}/apps/${student.id}">${student.username}</a>
+                                </li>
+							    </c:forEach>
+                            </ul>
                         </li>
                         <li>
                             <a href="login.html"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics</a>
