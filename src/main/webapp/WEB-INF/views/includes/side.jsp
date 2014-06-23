@@ -33,6 +33,11 @@
                                     <a href="${pageContext.request.contextPath}/apps/${student.id}">${student.username}</a>
                                 </li>
 							    </c:forEach>
+							    <c:if test="${empty students}">
+								    <li>
+	                                    <a href="#">There are no students assigned to you.</a>
+	                                </li>
+								</c:if>
                             </ul>
                         </li>
                         <li>
