@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
 
-public class RoleForm {
+public class RolePermissionsForm {
 
 	@Valid
 	Role role;

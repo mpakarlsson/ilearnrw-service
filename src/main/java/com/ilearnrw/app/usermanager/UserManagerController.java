@@ -44,9 +44,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.app.usermanager.form.RoleForm;
+import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
-import com.ilearnrw.app.usermanager.form.UserForm;
+import com.ilearnrw.app.usermanager.form.UserNewForm;
+import com.ilearnrw.app.usermanager.form.UserRolesForm;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
 import com.ilearnrw.common.security.users.model.Permission;
@@ -241,7 +242,7 @@ public class UserManagerController {
 	@RequestMapping(value = "/users/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewUserUpdateForm(@PathVariable int id, ModelMap model) {
-		UserForm userForm = new UserForm();
+		UserRolesForm userForm = new UserRolesForm();
 		User user = userService.getUser(id);
 		List<Role> allRoles = roleService.getRoleList();
 		List<Role> selectedRoles = roleService.getRoleList(user);
@@ -256,7 +257,7 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
 	@Transactional
 	public String updateUser(@PathVariable int id,
-			@Valid @ModelAttribute("userform") UserForm userForm,
+			@Valid @ModelAttribute("userform") UserRolesForm userForm,
 			BindingResult result, ModelMap model) {
 		User user = userForm.getUser();
 		user.setId(id);
@@ -283,20 +284,23 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserInsertForm(@ModelAttribute("user") User user) {
+	public String viewUserInsertForm(@Valid @ModelAttribute("userform") UserNewForm form) {
 		return "users/form.insert";
 	}
 
 	@RequestMapping(value = "users/new", method = RequestMethod.POST)
 	@Transactional
-	public String insertUser(@Valid @ModelAttribute("user") User user,
+	public String insertUser(@Valid @ModelAttribute("userform") UserNewForm form,
 			BindingResult result, ModelMap model) throws ProfileProviderException {
 
+		User user = form.getUser();
 		if (userService.getUserByUsername(user.getUsername()) != null)
-			result.rejectValue("username", "username.exists");
+			result.rejectValue("user.username", "user.username.exists");
 		if (result.hasErrors())
 			return "users/form.insert";
 		int userId = userService.insertData(user);
+		if (form.getTeacher())
+			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
 		return "redirect:/apps/panel";
@@ -313,7 +317,7 @@ public class UserManagerController {
 	@RequestMapping(value = "/roles/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewRoleUpdateForm(@PathVariable int id, ModelMap model) {
-		RoleForm roleForm = new RoleForm();
+		RolePermissionsForm roleForm = new RolePermissionsForm();
 		Role role = roleService.getRole(id);
 		List<Permission> allPermissions = permissionService.getPermissionList();
 		List<Permission> selectedPermissions = permissionService
@@ -328,7 +332,7 @@ public class UserManagerController {
 	@RequestMapping(value = "roles/{id}/edit", method = RequestMethod.POST)
 	@Transactional
 	public String updateRole(@PathVariable int id,
-			@Valid @ModelAttribute("roleform") RoleForm roleForm,
+			@Valid @ModelAttribute("roleform") RolePermissionsForm roleForm,
 			BindingResult result, ModelMap model) {
 		Role role = roleForm.getRole();
 		role.setId(id);

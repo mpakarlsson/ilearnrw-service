@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import com.ilearnrw.common.security.users.model.Role;
 import com.ilearnrw.common.security.users.model.User;
 
-public class UserForm {
+public class UserRolesForm {
 	
 	@Valid
 	User user;
