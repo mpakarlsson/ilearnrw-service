@@ -30,7 +30,7 @@
                             <ul style="height: auto;" class="nav nav-second-level collapse in">
 	                            <c:forEach var="student" items="${students}">
 	                            <li>
-                                    <a href="${pageContext.request.contextPath}/apps/${student.id}">${student.username}</a>
+                                    <a href="${pageContext.request.contextPath}/apps/users/${student.id}/profile">${student.username}</a>
                                 </li>
 							    </c:forEach>
 							    <c:if test="${empty students}">
