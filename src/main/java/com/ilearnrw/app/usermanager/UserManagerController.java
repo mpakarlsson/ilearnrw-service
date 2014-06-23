@@ -142,13 +142,14 @@ public class UserManagerController {
 		return "users/manage";
 	}
 
-	@RequestMapping(value = "users/{username}/logs/page/{page}", method = RequestMethod.GET)
-	public String viewLogs(@PathVariable String username,
+	@RequestMapping(value = "users/{id}/logs/page/{page}", method = RequestMethod.GET)
+	public String viewLogs(@PathVariable int id,
 			@PathVariable String page, ModelMap model,
 			HttpServletRequest request) {
 
 		Map<String, String> args = new HashMap<String, String>();
-		args.put("username", username);
+		User user = userService.getUser(id);
+		args.put("username", user.getUsername());
 		args.put("page", page);
 		for (String param : Arrays.asList("timestart", "timeend", "tags",
 				"applicationId"))
@@ -160,9 +161,9 @@ public class UserManagerController {
 		return "users/logs";
 	}
 
-	@RequestMapping(value = "users/{username}/logs/page/{page}", method = RequestMethod.POST)
+	@RequestMapping(value = "users/{id}/logs/page/{page}", method = RequestMethod.POST)
 	public String viewLogsFiltered(
-			@PathVariable String username,
+			@PathVariable int id,
 			@PathVariable String page,
 			@RequestParam(value = "timestart", required = false) String timestart,
 			@RequestParam(value = "timeend", required = false) String timeend,
@@ -182,7 +183,7 @@ public class UserManagerController {
 				request.getSession().removeAttribute(entry.getKey());
 		}
 
-		return viewLogs(username, page, model, request);
+		return viewLogs(id, page, model, request);
 	}
 
 	/* Users profile */
