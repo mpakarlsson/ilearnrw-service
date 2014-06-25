@@ -7,7 +7,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>User profile</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
+<!--  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>  -->
+
+    <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">
 </head>
 <body>
 	<div class="form-container">
