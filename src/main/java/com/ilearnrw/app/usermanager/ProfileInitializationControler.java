@@ -73,8 +73,9 @@ public class ProfileInitializationControler {
 				"USER_SEVERITIES_SET", "PROFILE_SETUP");
 		
 		ArrayList<Integer> categoriesSet = new ArrayList<Integer>();
-		for (LogEntry le : ler.getResults())
-			categoriesSet.add(le.getProblemCategory());
+		if (ler != null)
+			for (LogEntry le : ler.getResults())
+				categoriesSet.add(le.getProblemCategory());
 
 		model.put("categoriesSet", categoriesSet);
 		model.put("userId", userId);
