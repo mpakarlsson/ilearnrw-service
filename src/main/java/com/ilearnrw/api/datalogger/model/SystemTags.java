@@ -30,6 +30,8 @@ public class SystemTags {
 	@Fact
 	public static final String PROFILE_UPDATE = "PROFILE_UPDATE";
 	@Fact
+	public static final String USER_SEVERITIES_SET= "USER_SEVERITIES_SET";
+	@Fact
 	public static final String LOGIN = "LOGIN";
 	@Fact
 	public static final String LOGOUT = "LOGOUT";

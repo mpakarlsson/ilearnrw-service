@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
+import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
@@ -68,6 +69,15 @@ public class ProfileInitializationControler {
 			profile = profileProvider.getProfile(userId);
 		}
 		
+		LogEntryResult ler = dataloggerController.getLogs(current.getUsername(), null, null, null, 
+				"USER_SEVERITIES_SET", "PROFILE_SETUP");
+		
+		ArrayList<Integer> categoriesSet = new ArrayList<Integer>();
+		if (ler != null)
+			for (LogEntry le : ler.getResults())
+				categoriesSet.add(le.getProblemCategory());
+
+		model.put("categoriesSet", categoriesSet);
 		model.put("userId", userId);
 		model.put("username", current.getUsername());
 		model.put("profile", profile);
@@ -84,7 +94,6 @@ public class ProfileInitializationControler {
 			@RequestParam(value="difficulty", required = true) Integer difficulty, 
 			@RequestParam(value="end", required = true) Integer end, ModelMap model) 
 			throws ProfileProviderException, Exception {
-		handleLogs();
 		UserProfile profile = null;
 		User current = null;
 		if (category == null || start == null || end == null){
@@ -122,6 +131,7 @@ public class ProfileInitializationControler {
 		}
 		
 		createDisplayedLogs(current.getUsername(), category, index, ""+difficulty, ws);
+		handleLogs();
 		
 		model.put("userId", userId);
 		model.put("username", current.getUsername());
@@ -165,10 +175,11 @@ public class ProfileInitializationControler {
 		}
 		
 		createSucceedFailedLogs(current.getUsername(), category, index, ""+difficulty, wordlist, succeedlist);
+		handleLogs();
 
 		String nextPage = "initialize";
 		int p[] = getNextIndices(start, end ,wordlist, succeedlist);
-		if ((int)start == (int)end-1 && (int)difficulty == 0){
+		if ((int)start >= (int)end-1 && (int)difficulty == 0){
 			int all = profile.getUserProblems().getRowLength(category);
 			for (int i=0;i<start;i++)
 				profile.getUserProblems().setUserSeverity(category, i, 2);
@@ -180,15 +191,13 @@ public class ProfileInitializationControler {
 			p[0] = start;
 			p[1] = end;
 		}
-		if ((int)start == (int)end-1 && (int)difficulty == 1){
+		if ((int)start >= (int)end-1 && (int)difficulty == 1){
 			for (int i=0;i<start;i++)
 				profile.getUserProblems().setUserSeverity(category, i, 1);
 			profileProvider.updateProfile(userId, profile);
-			difficulty = 1;
-			start = 0;
-			p[0] = start;
-			p[1] = end;
 			nextPage = "initprofile";
+			createCategoryDoneLogs(current.getUsername(), category);
+			handleLogs();
 		}
 		model.put("userId", userId);
 		model.put("nextPage", nextPage);
@@ -239,18 +248,27 @@ public class ProfileInitializationControler {
 		}
 	}
 	
+	private void createCategoryDoneLogs(String username, int problemCategory){
+		if (theLogs == null)
+			theLogs = new ArrayList<LogEntry>();
+		java.util.Date date= new java.util.Date();
+		LogEntry le = new LogEntry(username, "PROFILE_SETUP", new Timestamp(date.getTime()), 
+				"USER_SEVERITIES_SET",  "", problemCategory, -1, 
+				0, "", "EVALUATION_MODE", "");
+		theLogs.add(le);
+	}
+	
 	private void handleLogs(){
 		if (theLogs != null && !theLogs.isEmpty()){
-			int x = theLogs.size();
-			while (!theLogs.isEmpty()){
+			if (!theLogs.isEmpty()){
 				try {
-					LogEntry le = theLogs.remove(0);
-					dataloggerController.addLog(le);
+					//LogEntry le = theLogs.remove(0);
+					dataloggerController.addLogs(theLogs);
+					theLogs.clear();
 					//logEntryService.insertData(le);
 					//cubeService.handle(le);
 				} catch (Exception ex) {
 					LOG.debug("Error when received log: " + ex.getMessage());
-	
 				}
 			}
 		}
@@ -278,7 +296,7 @@ public class ProfileInitializationControler {
 		}
 		int res[] = new int[2];
 		if (suc >= threshold){
-			if (e == s+1){
+			if (e <= s+1){
 				res[0] = e;
 				res[1] = e;
 			}
@@ -288,7 +306,7 @@ public class ProfileInitializationControler {
 			}
 		}
 		else {
-			if (e == s+1){
+			if (e <= s+1){
 				res[0] = s;
 				res[1] = s;
 			}
