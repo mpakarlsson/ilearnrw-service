@@ -27,7 +27,7 @@
                 <td  style="text-align:left">   Set </td>
        <c:forEach items="${profile.getUserProblems().getProblems().getProblemsIndex()}" var="res" varStatus="inner">
             <tr>
-                <td  style="text-align:left">   ${res.getURI()} : ${res.getType().getUrl()} </td>
+                <td  style="text-align:left">   ${res.getUri()} : ${res.getType().getUrl()} </td>
                 <td> 
                 <a href="${pageContext.servletContext.contextPath}/apps/users/${userId}/initialize?difficulty=0&category=${inner.index}&start=0&end=${profile.getUserProblems().getProblems().getRowLength(inner.index)}">
                 Start Test

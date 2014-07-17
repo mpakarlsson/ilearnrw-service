@@ -13,7 +13,7 @@
 	<div class="form-container">
 	<form:form
 		action="${pageContext.servletContext.contextPath}/apps/users/${username}/profile"
-		method="POST" modelAttribute="profile">
+		method="POST" modelAttribute = "profile">
 		
 		<form:hidden path="userProblems.userSeverities.length" />
 		<fieldset>

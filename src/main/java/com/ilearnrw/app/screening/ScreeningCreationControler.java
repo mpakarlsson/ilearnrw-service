@@ -1,4 +1,4 @@
-package com.ilearnrw.app.usermanager;
+package com.ilearnrw.app.screening;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
@@ -35,7 +35,7 @@ import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
-public class ProfileInitializationControler {
+public class ScreeningCreationControler {
 	private static Logger LOG = Logger.getLogger(DataloggerController.class);
 
 	@Autowired
