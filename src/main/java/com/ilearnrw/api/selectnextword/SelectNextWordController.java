@@ -78,8 +78,8 @@ public class SelectNextWordController {
 			List<GameElement> result = new ArrayList<GameElement>();
 			ProblemWordListLoader pwll = new ProblemWordListLoader(lc, i, j);
 			EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
-	
-			for (String w : thelist.getRandom(count, difficultyLevel)) {
+			ArrayList<String> tt = thelist.getRandom(count, difficultyLevel);
+			for (String w : tt) {
 				if (lc==LanguageCode.EN)
 					result.add(new GameElement(false, new EnglishWord(w), i, j));
 				else

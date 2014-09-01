@@ -1,14 +1,16 @@
 package com.ilearnrw.api.profileAccessUpdater;
 
 public class UpdatedProfileEntry {
-	private int category, index, previousSeverity, newSeverity;
+	private int category, index, previousSeverity, newSeverity, previousWorkingIndex, newWorkingIndex;
 
 	public UpdatedProfileEntry(int category, int index, int previousSeverity,
-			int newSeverity) {
+			int newSeverity, int previousWorkingIndex, int newWorkingIndex) {
 		this.category = category;
 		this.index = index;
 		this.previousSeverity = previousSeverity;
 		this.newSeverity = newSeverity;
+		this.previousWorkingIndex = previousWorkingIndex;
+		this.newWorkingIndex = newWorkingIndex;
 	}
 
 	public int getCategory() {
@@ -41,6 +43,22 @@ public class UpdatedProfileEntry {
 
 	public void setNewSeverity(int newSeverity) {
 		this.newSeverity = newSeverity;
+	}
+
+	public int getPreviousWorkingIndex() {
+		return previousWorkingIndex;
+	}
+
+	public void setPreviousWorkingIndex(int previousWorkingIndex) {
+		this.previousWorkingIndex = previousWorkingIndex;
+	}
+
+	public int getNewWorkingIndex() {
+		return newWorkingIndex;
+	}
+
+	public void setNewWorkingIndex(int newWorkingIndex) {
+		this.newWorkingIndex = newWorkingIndex;
 	}
 	
 }

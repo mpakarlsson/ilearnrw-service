@@ -1,9 +1,7 @@
 package com.ilearnrw.api.profileAccessUpdater;
 
 import ilearnrw.textclassification.Word;
-import ilearnrw.user.UserDetails;
 import ilearnrw.user.UserPreferences;
-import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
@@ -18,27 +16,18 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.lf5.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.springframework.test.jdbc.SimpleJdbcTestUtils;
 
-import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.ListWithCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.services.CubeService;
-import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
-import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException.Type;
 
 
@@ -89,6 +78,8 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
  */
 @Service
 public class DbProfileProvider implements IProfileProvider {
+	private int thresholdForSeverityZero = 95, thresholdForSeverityOne = 80, 
+			thresholdForSeverityTwo = 65, numberOfSessionsToConsiderForUpdate = 20;
 
 	@Autowired
 	DataSource profileDataSource;
@@ -124,22 +115,35 @@ public class DbProfileProvider implements IProfileProvider {
 			if (count<threshold)
 				return null;
 			UpdatedProfileEntry update = new UpdatedProfileEntry(category, index, 
-					up.getUserProblems().getUserSeverity(category, index), -1);
+					up.getUserProblems().getUserSeverity(category, index), -1, 
+					up.getUserProblems().getSystemIndex(category), -1);
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
-			if (pcnt >0.95)
+			if (pcnt >thresholdForSeverityZero/100.0)
 				up.getUserProblems().setUserSeverity(category, index, 0);
-			else if (pcnt >0.80)
+			else if (pcnt >thresholdForSeverityOne/100.0)
 				up.getUserProblems().setUserSeverity(category, index, 1);
-			else if (pcnt >0.65)
+			else if (pcnt >thresholdForSeverityTwo/100.0)
 				up.getUserProblems().setUserSeverity(category, index, 2);
 			else 
 				up.getUserProblems().setUserSeverity(category, index, 3);
 			update.setNewSeverity(up.getUserProblems().getUserSeverity(category, index));
 			storeProfile(userId, up);
-			if (update.getNewSeverity() != update.getPreviousSeverity())
+			
+
+			if (update.getNewSeverity() != update.getPreviousSeverity() || 
+					(update.getNewSeverity() == 3 && update.getPreviousSeverity() == 3)){
+				int nwi = update.getPreviousWorkingIndex();
+				if (update.getNewSeverity() < update.getPreviousSeverity())
+					nwi = modifyWorkingIndex(userId, category, true);
+				if (update.getNewSeverity() > update.getPreviousSeverity())
+					nwi = modifyWorkingIndex(userId, category, false);
+				if (update.getNewSeverity() == 3 && update.getPreviousSeverity() == 3)
+					nwi = modifyWorkingIndex(userId, category, false);
+				update.setNewWorkingIndex(nwi);
 				return update;
+			}
 		} catch(Exception e){
-			System.err.println(e.toString());
+			e.getStackTrace();
 		}
 		catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
@@ -166,13 +170,15 @@ public class DbProfileProvider implements IProfileProvider {
 	public ArrayList<UpdatedProfileEntry> updateProfile(int userId, UserProfile newProfile)
 			throws ProfileProviderException {
 		try {
-			ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 			UserProfile up = getProfile(userId);
+			ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 			for (int i=0; i<up.getUserProblems().getNumerOfRows(); i++){
 				for (int j=0;j<up.getUserProblems().getRowLength(i); j++){
 					UpdatedProfileEntry t = new UpdatedProfileEntry(i, j, 
 							up.getUserProblems().getUserSeverity(i, j), 
-							newProfile.getUserProblems().getUserSeverity(i, j));
+							newProfile.getUserProblems().getUserSeverity(i, j), 
+							up.getUserProblems().getSystemIndex(i), 
+							newProfile.getUserProblems().getSystemIndex(i));
 					if (t.getNewSeverity() != t.getPreviousSeverity())
 						updates.add(t);
 				}
@@ -183,6 +189,49 @@ public class DbProfileProvider implements IProfileProvider {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}
 
+	}
+	
+	private int modifyWorkingIndex(int userId, int row, boolean increase){
+		UserProfile up;
+		try {
+			up = getProfile(userId);
+			int wi = up.getUserProblems().getSystemIndex(row);
+			int length = up.getUserProblems().getRowLength(row);
+			if (increase){
+				if (wi<length-1){
+					up.getUserProblems().setSystemIndex(row, wi+1);
+					return wi+1;
+				}
+				else{
+					for (int i=0;i<length; i++){
+						if (up.getUserProblems().getUserSeverities().getSeverity(row, i)>=1){
+							up.getUserProblems().setSystemIndex(row, i);
+							return i;
+						}
+						up.getUserProblems().setSystemIndex(row, length-1);
+					}
+				}
+			}
+			else{
+				if (wi>0){
+					up.getUserProblems().setSystemIndex(row, wi-1);
+					return wi-1;
+				}
+				else{
+					for (int i=0;i<length; i++){
+						if (up.getUserProblems().getUserSeverities().getSeverity(row, i)>=1){
+							up.getUserProblems().setSystemIndex(row, i);
+							return i;
+						}
+						up.getUserProblems().setSystemIndex(row, length-1);
+					}
+				}
+			}
+			return -1;
+		} catch (ProfileProviderException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 
 	@Override

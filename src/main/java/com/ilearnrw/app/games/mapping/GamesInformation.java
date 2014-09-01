@@ -6,72 +6,73 @@ import java.util.ArrayList;
 
 public class GamesInformation {
 	public static GamesInformation mapping = new GamesInformation();
-	private static String englishProbs[] = { "Syllable Division",
-			"Vowel Sounds", "Suffixing", "Prefixing", "Phon-Graph",
-			"Letter Patterns", "Letter Names", "Sight Words",
-			"Confusing Letter Shapes" };
+	private static String englishProbs[] = { "Phon-Graph", 
+			"Vowel Sounds", "Letter Patterns", "Syllable Division",
+			"Suffixing", "Prefixing", "Confusing Letter Shapes", 
+			//"Letter Names", "Sight Words",
+			};
 	private static String greekProbs[] = { "Syllable Division",
 			"Phonemes:Consonants", "Phonemes:Vowels", "Suffixing:Derivational",
 			"Suffixing:Inflectional/Grammatical", "Prefixing",
 			"Grapheme/Phoneme Correspondence", "Grammar/Function Words",
 			"Word Recognition", "Visual Similarity" };
-	
 
 	private static String apps[] = { "Mail Sorter", "Whack a Mole",
 			"Endless Runner", "Harvest", "Serenade Hero", "Moving Pathways",
-			"Eye Exam", "Train Dispatcher", "Drop Chops" , "Game World", 
-			"Social Network", "Logging Screen", "Profile Setup"};
-	
-	
-	
-	
+			"Eye Exam", "Train Dispatcher", "Drop Chops", "Game World",
+			"Social Network", "Logging Screen", "Profile Setup" };
+
 	private static String appIds[] = { "MAIL_SORTER", "WHAK_A_MOLE",
-		"ENDLESS_RUNNER", "HARVEST", "SERENADE_HERO", "MOVING_PATHWAYS",
-		"EYE_EXAM", "TRAIN_DISPATCHER", "DROP_CHOPS" , "GAME_WORLD", 
-		"SOCIAL_NETWORK", "LOGGING_SCREEN", "PROFILE_SETUP"};
-	
+			"ENDLESS_RUNNER", "HARVEST", "SERENADE_HERO", "MOVING_PATHWAYS",
+			"EYE_EXAM", "TRAIN_DISPATCHER", "DROP_CHOPS", "GAME_WORLD",
+			"SOCIAL_NETWORK", "LOGGING_SCREEN", "PROFILE_SETUP" };
+
 	private static boolean appsProbsCorrespondanceEN[][] = {
-			// syl div
-			{ false, false, true, true, false, true, true, true, true, false, false, false, false },
-			// vow soun
-			{ true, true, false, true, false, true, true, false, false, false, false, false, false },
-			// suf
-			{ true, true, true, true, true, false, true, true, true, false, false, false, false },
-			// pref
-			{ true, true, true, true, true, false, true, true, true, false, false, false, false },
-			// gp
-			{ true, true, false, true, false, true, false, true, false, false, false, false, false },
-			// lett/wor
-			{ true, true, true, true, false, true, false, false, false, false, false, false, false },
-			// lett names
-			//{ true, true, false, true, false, false, false, false, false, false, false, false, false },
-			// sight
-			//{ true, true, false, false, false, true, false, true, false, false, false, false, false },
-			// conf lett
-			//{ true, true, false, true, true, true, true, true, false, false, false, false, false }
-			};
+		// gp
+		{ true, true, false, true, false, true, false, true, false, false, false, false, false },
+		// vow soun
+		{ true, true, false, true, false, true, true, false, false, false, false, false, false },
+		// lett/wor
+		{ true, true, true, true, false, true, false, false, false, false, false, false, false },
+		// syl div
+		{ false, false, true, true, false, true, true, true, true, false, false, false, false },
+		// suf
+		{ true, true, true, true, true, false, true, true, true, false, false, false, false },
+		// pref
+		{ true, true, true, true, true, false, true, true, true, false, false, false, false },
+	// lett names
+	// { true, true, false, true, false, false, false, false, false, false,
+	// false, false, false },
+	// sight
+	// { true, true, false, false, false, true, false, true, false, false,
+	// false, false, false },
+		// conf lett
+		{ true, true, false, true, true, true, true, true, false, false, false, false, false }
+	};
 
 	private static boolean appsProbsCorrespondanceGR[][] = {
-			// syl div
-			{ false, false, true, true, false, true, true, true, true, false, false, false, false },
-			// phon:cons
-			{ true, false, false, false, false, true, true, false, false, false, false, false, false },
-			// phon:vow
-			{ false, false, false, true, false, true, true, false, false, false, false, false, false },
-			// der suf
-			{ true, true, true, true, true, false, true, true, true, false, false, false, false },
-			// inf suf
-			{ true, true, true, true, true, false, true, true, false, false, false, false, false },
-			// pref
-			{ true, false, true, true, true, false, true, true, true, false, false, false, false },
-			// gp
-			{ true, true, false, true, false, true, false, false, false, false, false, false, false },
-			// gram fun words
-			{ false, false, false, true, true, true, false, true, false, false, false, false, false },
+		// phon:cons
+		{ true, false, false, false, false, true, true, false, false, false, false, false, false },
+		// phon:vow
+		{ false, false, false, true, false, true, true, false, false, false, false, false, false },
+		// lett vis sim
+		{ true, true, false, false, false, true, false, false, false, false, false, false, false }, 
+		// gp
+		{ true, true, false, true, false, true, false, false, false, false, false, false, false },
+		// syl div
+		{ false, false, true, true, false, true, true, true, true, false, false, false, false },
+		// pref
+		{ true, false, true, true, true, false, true, true, true, false, false, false, false },
+		// der suf
+		{ true, true, true, true, true, false, true, true, true, false, false, false, false },
+		// inf suf
+		{ true, true, true, true, true, false, true, true, false, false, false, false, false },
+		// gram fun words
+		{ false, false, false, true, true, true, false, true, false, false, false, false, false }
 			// word rec
-			{ true, true, false, false, false, true, true, true, false, false, false, false, false },
-			// lett vis sim
-			{ true, true, false, false, false, true, false, false, false, false, false, false, false } };
+			// { true, true, false, false, false, true, true, true, false,
+			// false, false, false, false },
+		};
 
 	// letter, word, sentence
 	private static boolean appsInputsCorrespondance[][] = {
@@ -92,13 +93,13 @@ public class GamesInformation {
 			// "Typing Train Dispatcher"
 			{ false, true, false },
 			// "Drop Chop"
-			{ false, true, false } ,
+			{ false, true, false },
 			// "Game World"
-			{ false, false, false } ,
+			{ false, false, false },
 			// "Social Network"
-			{ false, false, false } ,
+			{ false, false, false },
 			// "Logging Screen"
-			{ false, false, false } ,
+			{ false, false, false },
 			// "Profile Setup"
 			{ false, false, false } };
 
@@ -145,12 +146,11 @@ public class GamesInformation {
 			for (int i = 0; i < appsProbsCorrespondanceEN.length; i++)
 				if (appsProbsCorrespondanceEN[i][appId])
 					res.add(i);
-		} 
-		else {
+		} else {
 			if (appId > appsProbsCorrespondanceGR[0].length)
 				return null;
-			for (int i=0; i<appsProbsCorrespondanceGR.length; i++){
-				if (appsProbsCorrespondanceGR[i][appId]){
+			for (int i = 0; i < appsProbsCorrespondanceGR.length; i++) {
+				if (appsProbsCorrespondanceGR[i][appId]) {
 					res.add(i);
 				}
 			}
@@ -161,7 +161,7 @@ public class GamesInformation {
 	public static ArrayList<Integer> getAppRelatedProblems(String appStringID,
 			LanguageCode lan) {
 		int id = getAppIDfromStringID(appStringID);
-		if (id==-1)
+		if (id == -1)
 			return null;
 		ArrayList<Integer> res = new ArrayList<Integer>();
 		if (lan == LanguageCode.EN) {
@@ -211,17 +211,17 @@ public class GamesInformation {
 		if (lan == LanguageCode.EN) {
 			if (probId > appsProbsCorrespondanceEN.length)
 				return null;
-			for (int i = 0; i < appsProbsCorrespondanceEN[i].length; i++)
+			for (int i = 0; i < appsProbsCorrespondanceEN[probId].length; i++)
 				if (appsProbsCorrespondanceEN[probId][i])
-					res.add(englishProbs[i]);
+					res.add(appIds[i]);
 		} else {
 			if (probId > appsProbsCorrespondanceGR.length)
 				return null;
-			for (int i = 0; i < appsProbsCorrespondanceGR[i].length; i++)
+			for (int i = 0; i < appsProbsCorrespondanceGR[probId].length; i++)
 				if (appsProbsCorrespondanceGR[probId][i])
-					res.add(greekProbs[i]);
+					res.add(appIds[i]);
 		}
-		return null;
+		return res;
 	}
 
 	public static ArrayList<String> getProblemRelatedAppsString(String prob,
@@ -229,33 +229,36 @@ public class GamesInformation {
 		int id = getProblemID(prob, lan);
 		return getProblemRelatedAppsString(id, lan);
 	}
-	
-	public static boolean allowsLetters(int appId){
+
+	public static boolean allowsLetters(int appId) {
 		return appsInputsCorrespondance[appId][0];
 	}
-	public static boolean allowsLetters(String appName){
+
+	public static boolean allowsLetters(String appName) {
 		int id = getAppID(appName);
-		if (id==-1)
+		if (id == -1)
 			return false;
 		return allowsLetters(id);
 	}
-	
-	public static boolean allowsWors(int appId){
+
+	public static boolean allowsWors(int appId) {
 		return appsInputsCorrespondance[appId][1];
 	}
-	public static boolean allowsWors(String appName){
+
+	public static boolean allowsWors(String appName) {
 		int id = getAppID(appName);
-		if (id==-1)
+		if (id == -1)
 			return false;
 		return allowsWors(id);
 	}
-	
-	public static boolean allowsSentences(int appId){
+
+	public static boolean allowsSentences(int appId) {
 		return appsInputsCorrespondance[appId][2];
 	}
-	public static boolean allowsSentences(String appName){
+
+	public static boolean allowsSentences(String appName) {
 		int id = getAppID(appName);
-		if (id==-1)
+		if (id == -1)
 			return false;
 		return allowsSentences(id);
 	}
