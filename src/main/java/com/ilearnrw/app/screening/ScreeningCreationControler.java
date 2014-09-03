@@ -1,16 +1,24 @@
 package com.ilearnrw.app.screening;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import ilearnrw.languagetools.extras.EasyHardList;
+import ilearnrw.prototype.application.JsonHandler;
+import ilearnrw.resource.ResourceLoader.Type;
 import ilearnrw.textclassification.Word;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProfile;
+import ilearnrw.user.profile.clusters.ProfileClusters;
 import ilearnrw.utils.LanguageCode;
+import ilearnrw.utils.screening.ScreeningTest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +26,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
-import com.ilearnrw.api.datalogger.model.LogEntryResult;
-import com.ilearnrw.api.datalogger.services.CubeService;
-import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.api.selectnextword.GameElement;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
-import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
@@ -50,8 +52,55 @@ public class ScreeningCreationControler {
 	
 	ArrayList<LogEntry> theLogs;
 
+	@RequestMapping(value = "/{language}/screening", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewScreeningTestCreatorPage(@PathVariable String language, ModelMap model) 
+			throws ProfileProviderException, Exception {
+		LanguageCode lc = LanguageCode.EN;
+		if (language.equalsIgnoreCase("gr"))
+			lc = LanguageCode.GR;
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		ProfileClusters pc = new ProfileClusters(pdi);
+		
+		ScreeningTest st = new ScreeningTest();
+
+		//st.storeTest("data/testing_screening.json");
+		st.loadTest("data/testing_screening.json");
+		System.err.println(st.getClusterQuestions(0).get(0).getQuestion());
+		
+		model.put("profileClusters", pc);
+		model.put("screeningTest", st);
+		
+		return "screening/creator";
+	}
+	
+	@RequestMapping(value = "/updatecluster", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewProfileInitializationPage(@PathVariable String language, ModelMap model) 
+			throws ProfileProviderException, Exception {
+		LanguageCode lc = LanguageCode.EN;
+		if (language.equalsIgnoreCase("gr"))
+			lc = LanguageCode.GR;
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		ProfileClusters pc = new ProfileClusters(pdi);
+		
+		ScreeningTest st = new ScreeningTest();
+
+		//st.storeTest("data/testing_screening.json");
+		st.loadTest("data/testing_screening.json");
+		for (int i=0;i<10;i++){
+			System.err.println("{"+0+"}");
+		}
+		
+		model.put("profileClusters", pc);
+		model.put("screeningTest", st);
+		
+		return "\"ok\"";
+	}
+	
 	//page that displays the list of problem categories
-	@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
+	//@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewProfileInitializationPage(@PathVariable int userId, ModelMap model) 
 			throws ProfileProviderException, Exception {
@@ -316,5 +365,5 @@ public class ScreeningCreationControler {
 			}
 		}
 		return res;
-	}
+	}*/
 }
