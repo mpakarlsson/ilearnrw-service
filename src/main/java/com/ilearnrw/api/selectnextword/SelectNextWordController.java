@@ -61,8 +61,10 @@ public class SelectNextWordController {
 			appId = GamesInformation.getAppIDfromStringID(activity);
 		if (appId==-1)
 			return null;
-		if (!(GamesInformation.getAppRelatedProblems(appId, lc)).contains(i))
+		/*if (!(GamesInformation.getAppRelatedProblems(appId, lc)).contains(i)){
+			System.out.println(activity + " is not related to problem "+probId);
 			return null;
+		}*/
 
 		if (appId == 4){
 			List<GameElement> result = new ArrayList<GameElement>();
@@ -84,6 +86,7 @@ public class SelectNextWordController {
 					result.add(new GameElement(false, new EnglishWord(w), i, j));
 				else
 					result.add(new GameElement(false, new GreekWord(w), i, j));
+				System.err.println(w);
 			}
 			return result;
 		}

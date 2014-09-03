@@ -19,6 +19,7 @@ import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.clusters.ProfileClusters;
 import ilearnrw.utils.LanguageCode;
 import ilearnrw.utils.screening.ScreeningTest;
+import ilearnrw.utils.screening.TestQuestion;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.gson.Gson;
 import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
@@ -54,11 +57,19 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{language}/screening", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewScreeningTestCreatorPage(@PathVariable String language, ModelMap model) 
+	public String viewScreeningTestCreatorPage(@PathVariable String language, 
+			@RequestParam(value = "cluster", required = false) Integer cluster,
+			ModelMap model) 
 			throws ProfileProviderException, Exception {
 		LanguageCode lc = LanguageCode.EN;
 		if (language.equalsIgnoreCase("gr"))
 			lc = LanguageCode.GR;
+		int currentCluster = -1;
+		if (cluster != null){
+			currentCluster = cluster;
+			System.err.println(cluster);
+		}
+		
 		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
 		ProfileClusters pc = new ProfileClusters(pdi);
 		
@@ -67,7 +78,17 @@ public class ScreeningCreationControler {
 		//st.storeTest("data/testing_screening.json");
 		st.loadTest("data/testing_screening.json");
 		System.err.println(st.getClusterQuestions(0).get(0).getQuestion());
-		
+
+		model.put("cluster", currentCluster);
+		if (currentCluster != -1){
+			ArrayList<TestQuestion> tq = st.getClusterQuestions(cluster);
+			String g = new Gson().toJson(tq);
+			System.err.println(g);
+			model.put("clustersQuestions", g);
+		}
+		else {
+			model.put("clustersQuestions", null);
+		}
 		model.put("profileClusters", pc);
 		model.put("screeningTest", st);
 		

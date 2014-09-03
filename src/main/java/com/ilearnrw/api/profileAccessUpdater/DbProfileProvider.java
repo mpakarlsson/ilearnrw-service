@@ -2,6 +2,7 @@ package com.ilearnrw.api.profileAccessUpdater;
 
 import ilearnrw.textclassification.Word;
 import ilearnrw.user.UserPreferences;
+import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProblems;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.UserSeverities;
@@ -320,8 +321,17 @@ public class DbProfileProvider implements IProfileProvider {
 	static private class LC_Greek implements LC_Base
 	{
 		static final String TableName = "LC_Greek";
-		static final Integer ProblemDefinitionIndexSize_X = 9;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {20,12,5,13,17,6,26,10,8};
+		static Integer ProblemDefinitionIndexSize_X;
+		static Integer[] ProblemDefinitionIndexSizes_Y;
+		
+		private LC_Greek(){
+			final ProblemDefinitionIndex gr = new ProblemDefinitionIndex(LanguageCode.GR);
+			ProblemDefinitionIndexSize_X = gr.getProblemsIndex().length;
+			ProblemDefinitionIndexSizes_Y = new Integer[ProblemDefinitionIndexSize_X];
+			for (int i=0;i<ProblemDefinitionIndexSize_X; i++){
+				ProblemDefinitionIndexSizes_Y[i] = gr.getRowLength(i);
+			}
+		}
 		@Override
 		public String getTableName() { return TableName; }
 		@Override
@@ -336,8 +346,17 @@ public class DbProfileProvider implements IProfileProvider {
 	static private class LC_English implements LC_Base
 	{
 		static final String TableName = "LC_English";
-		static final Integer ProblemDefinitionIndexSize_X = 6;
-		static final Integer[] ProblemDefinitionIndexSizes_Y = {37,72,61,40,57,127};
+		static Integer ProblemDefinitionIndexSize_X;
+		static Integer[] ProblemDefinitionIndexSizes_Y;
+		
+		private LC_English(){
+			final ProblemDefinitionIndex gr = new ProblemDefinitionIndex(LanguageCode.EN);
+			ProblemDefinitionIndexSize_X = gr.getProblemsIndex().length;
+			ProblemDefinitionIndexSizes_Y = new Integer[ProblemDefinitionIndexSize_X];
+			for (int i=0;i<ProblemDefinitionIndexSize_X; i++){
+				ProblemDefinitionIndexSizes_Y[i] = gr.getRowLength(i);
+			}
+		}
 
 		public String getTableName() { return TableName; }
 		@Override

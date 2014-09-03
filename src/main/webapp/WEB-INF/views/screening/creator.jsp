@@ -10,6 +10,21 @@
 <!-- <link rel="stylesheet" type="text/css" href="css/screening_style.css">  -->	
 <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/screening/screening_style.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">
+
+
+<script>
+
+window.onload = function() {
+	obj = JSON.parse('${ clustersQuestions}');
+	 alert(obj[0].question);
+	}
+
+function myFunction1() {
+    document.getElementById("myTextarea").value = "Fifth Avenue, New York City";
+}
+</script>
+
+
 </head>
 <body>
 
@@ -19,6 +34,7 @@
 <li>Go to a cluster
 <select name="forma"  onchange="location = this.options[this.selectedIndex].value;">
 
+ <option value="screening">Select Cluster</option>
 <c:forEach items="${profileClusters.getClustersNumbers()}" var="res" varStatus="inner">
  <option value="screening?cluster=${res}">Cluster ${res}</option>
 </c:forEach>
@@ -28,10 +44,19 @@
 
 <div class="question_box">
    Address: <br>
-<textarea name="vrow" id="myTextarea">
-${screeningTest.getClusterQuestions(0).get(0).getQuestion()}</textarea>
+<p>
+${screeningTest.getClusterQuestions(0).get(0).getQuestion()}</p>
 
-<p>Click the button to change the contents of the text area.</p>
+<button type="button" onclick="myFunction()">Try it</button>
+
+${ clustersQuestions }
+
+</div>
+
+<div class="question_box">
+   Question: <br>
+
+<p>${screeningTest.getClusterQuestions(0).get(1).getQuestion()}</p>
 
 <button type="button" onclick="myFunction()">Try it</button>
 
