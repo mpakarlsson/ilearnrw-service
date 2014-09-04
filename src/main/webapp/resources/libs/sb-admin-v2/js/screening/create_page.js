@@ -1,13 +1,15 @@
+var lastItemPosition = 0;
 function loadClusterQuestions(json) {
 	obj = JSON.parse(json);
 	for (var i=0; i<obj.length; i++){
-		appendQuestion(obj[i], i);
+		appendQuestion(obj[i]);
 	}
 };
 
-function appendQuestion(obj, i) {
+function appendQuestion(obj) {
+	lastItemPosition++;
 	var element = document.createElement('div');
-	element.setAttribute("id", 'question'+i);
+	element.setAttribute("id", 'question'+obj.id);
 	element.setAttribute('class', 'question_box');
 	element.innerHTML = '<label>Question</label>';
 	var str = '<p>';
@@ -16,7 +18,7 @@ function appendQuestion(obj, i) {
 	}
 	if (obj.relatedWords.length>0)
 		str = str+obj.relatedWords[obj.relatedWords.length-1];
-	element.innerHTML = '<h4>Question #'+(i+1)+'</h4><p>'+obj.question+'</p>'+'<h4>Related Words</h4><p>'+str+'</p>';
+	element.innerHTML = '<h4>Question #'+lastItemPosition+'</h4><p>'+obj.question+'</p>'+'<h4>Related Words</h4><p>'+str+'</p>';
 	document.getElementById('questionsListDiv').appendChild(element);
 };
 
@@ -32,7 +34,7 @@ function loadAddQuestionField(cluster) {
 function saveQuestion(cluster) {
 	data = getNewQuestionData();
 	httpPost("http://localhost:8080/test/apps/GR/updatecluster?cluster="+cluster, JSON.stringify(data));
-	appendQuestion(data, 0);
+	appendQuestion(data);
 	clearAddQuestionField();
 };
 
@@ -41,7 +43,8 @@ function getNewQuestionData() {
 	var r = (document.getElementById('newRelatedWords').value).split('#');
 	var data = {
 			question: q,
-			relatedWords: r
+			relatedWords: r,
+			id: -1
 	};
 	return data;
 };

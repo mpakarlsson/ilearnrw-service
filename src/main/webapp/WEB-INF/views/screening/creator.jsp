@@ -31,6 +31,14 @@ ${showAll}
 </select>
 </li>
 </ul>
+</div>	
+
+<h3>Cluster ${cluster } </h3>
+<ul>
+<c:forEach items="${profileClusters.getClusterProblems(cluster)}" var="res" varStatus="inner">
+<li> Pr[${1+res.getCategory()}, ${1+res.getIndex()}]: ${res.getProblemDescription().getHumanReadableDescription() }</li>
+</c:forEach>
+</ul>
 
 <div id="questionsListDiv">
 
@@ -50,7 +58,6 @@ else {
 }
 </script>
 
-</div>	
 
 </body>
 </html>

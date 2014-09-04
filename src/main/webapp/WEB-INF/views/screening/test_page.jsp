@@ -25,28 +25,17 @@
 	<h3>Cluster ${cluster } </h3>
 	<ul>
 	<c:forEach items="${screeningTest.getClusterQuestions(cluster)}" var="questions" varStatus="inner">
-	<li> <% current++; out.print(current); %> ${questions.getQuestion() } <br>${questions.getId() }<br></li>
-		<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
-		${relatedWords}
-		</c:forEach>
+	<li> <% current++; out.print(current); %> ${questions.getQuestion() }<br>${questions.getId() }<br></li>
+
+	<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
+		${relatedWords} <input type="checkbox" name="vehicle" value="displayed" checked> Displayed
+		 <input type="checkbox" name="vehicle" value="Bike"> Correct <br>
+	</c:forEach>
+
 	</c:forEach>
 	</ul>
 </c:forEach>
 
-<script>
-function test(t){
-	var element = document.createElement('div');
-	element.setAttribute("id", 'question');
-	element.setAttribute('class', 'question_box');
-	element.innerHTML = '<label>Question</label>';
-	element.innerHTML = (JSON.parse(t)).questions[0].clusterQuestions[1].question;
-	document.getElementById('testView').appendChild(element);
-	
-}
-</script>
-<script>
-//test('${screeningTest}');
-</script>
 
 </body>
 </html>
