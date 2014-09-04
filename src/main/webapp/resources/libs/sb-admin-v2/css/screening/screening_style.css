@@ -47,14 +47,6 @@ a, a:link, a:active, a:visited, a:hover
 	text-decoration: underline;
 }
 
-#dropdown-list{
-    max-height: 187px;
-    overflow: auto;
-    top: 33px;
-    position: relative;
-    left: 50px;
-    box-shadow:none;
-}
 
 #add-more{
     top: 224px;
@@ -68,12 +60,13 @@ list-style-type: none;
 padding-right: 20px;
 }
 
+
 .question_box{
     background-color: lightgrey;
-    width: 300px;
-    padding: 25px;
-    border: 25px solid navy;
-    margin: 25px;
+    width: 400px;
+    padding: 5px;
+    border: 10px solid navy;
+    margin: 15px;
 }
 
 .question_box1{

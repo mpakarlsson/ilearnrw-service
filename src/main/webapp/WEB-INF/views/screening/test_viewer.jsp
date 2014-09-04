@@ -20,7 +20,7 @@ ${showAll}
 
 <div id="navcontainer">
 <ul id="navlist">
-<li><a href="${pageContext.request.contextPath}/apps/testviewer">View Full Test</a></li>
+<li><a href="#">View Full Test</a></li>
 <li>Go to a cluster
 <select name="forma"  onchange="location = this.options[this.selectedIndex].value;">
 
@@ -32,22 +32,25 @@ ${showAll}
 </li>
 </ul>
 
-<div id="questionsListDiv">
+<div id="testView">
 
 </div>
 
-<div id="addQuestionsDiv">
 
-</div>
 
 <script>
-if ('${showAll}' == 'true'){
-	alert('hmmm');
+function test(t){
+	var element = document.createElement('div');
+	element.setAttribute("id", 'question');
+	element.setAttribute('class', 'question_box');
+	element.innerHTML = '<label>Question</label>';
+	element.innerHTML = (JSON.parse(t)).questions[0].clusterQuestions[1].question;
+	document.getElementById('testView').appendChild(element);
+	
 }
-else {
-	loadClusterQuestions('${ clustersQuestions}');
-	loadAddQuestionField('${cluster}');
-}
+</script>
+<script>
+test('${screeningTest}');
 </script>
 
 </div>	
