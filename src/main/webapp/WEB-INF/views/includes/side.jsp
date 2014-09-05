@@ -26,22 +26,10 @@
                             <a href="${pageContext.request.contextPath}/apps/teachers/${userid}/assign"><i class="fa fa-user fa-fw"></i> Assign Students</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-user fa-fw"></i> Students</a>
-                            <ul style="height: auto;" class="nav nav-second-level collapse in">
-	                            <c:forEach var="student" items="${students}">
-	                            <li>
-                                    <a href="${pageContext.request.contextPath}/apps/users/${student.id}/profile">${student.username}</a>
-                                </li>
-							    </c:forEach>
-							    <c:if test="${empty students}">
-								    <li>
-	                                    <a href="#">There are no students assigned to you.</a>
-	                                </li>
-								</c:if>
-                            </ul>
+                            <a href="${pageContext.request.contextPath}/apps/teachers/manage"><i class="fa fa-user fa-fw"></i> Manage Students</a>
                         </li>
                         <li>
-                            <a href="login.html"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics</a>
+                            <a href="${pageContext.request.contextPath}/apps/users/${userid}/stats"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics</a>
                         </li>
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_STUDENT">

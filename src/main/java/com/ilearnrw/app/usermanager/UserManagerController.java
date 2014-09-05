@@ -81,12 +81,11 @@ public class UserManagerController {
 
 	@RequestMapping(value = "/panel", method = RequestMethod.GET)
 	public String panel(ModelMap modelMap) {
-		modelMap.addAttribute("teachers",
-				teacherStudentService.getTeacherList());
-		modelMap.addAttribute("users", userService.getUserList());
-		modelMap.addAttribute("roles", roleService.getRoleList());
-		modelMap.addAttribute("permissions",
-				permissionService.getPermissionList());
+		return "main/panel";
+	}
+	
+	@RequestMapping(value = "users/{id}/stats", method = RequestMethod.GET)
+	public String stats(ModelMap modelMap) {
 		return "statistics/stats";
 	}
 
@@ -502,6 +501,11 @@ public class UserManagerController {
 				teacherStudentForm.getSelectedStudents());
 		request.getSession().setAttribute("students", teacherStudentService.getStudentList(teacher));
 		return "redirect:/apps/panel";
+	}
+	
+	@RequestMapping(value = "teachers/manage")
+	public String manageStudents(ModelMap modelMap) {
+		return "teachers/manage";
 	}
 
 }
