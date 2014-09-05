@@ -15,6 +15,11 @@
 	<context:component-scan base-package="com.ilearnrw.app" />
 	<context:component-scan base-package="com.ilearnrw.api" />
 
+	<security:global-method-security
+		secured-annotations="enabled" pre-post-annotations="enabled">
+		<security:expression-handler ref="expressionHandler" />
+	</security:global-method-security>
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
 

@@ -112,7 +112,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{language}/testviewer", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
 	public String viewScreeningTest(@PathVariable String language, 
 			ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
