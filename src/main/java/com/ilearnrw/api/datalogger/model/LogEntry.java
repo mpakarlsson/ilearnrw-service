@@ -151,4 +151,14 @@ public class LogEntry implements Serializable {
 		return mode;
 	}
 
+	@Override
+	public String toString() {
+		return "LogEntry [username=" + username + ", tag=" + tag + ", value="
+				+ value + ", applicationId=" + applicationId + ", timestamp="
+				+ timestamp + ", word=" + word + ", problemCategory="
+				+ problemCategory + ", problemIndex=" + problemIndex
+				+ ", duration=" + duration + ", level=" + level + ", mode="
+				+ mode + "]";
+	}
+
 }

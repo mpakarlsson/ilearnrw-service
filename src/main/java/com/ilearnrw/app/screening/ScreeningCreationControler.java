@@ -1,6 +1,8 @@
 package com.ilearnrw.app.screening;
 
 
+import java.io.Serializable;
+import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
+import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.common.security.users.model.User;
@@ -42,49 +45,47 @@ public class ScreeningCreationControler {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
-	IProfileProvider profileProvider;
+	LogEntryService logEntryService;
 	
-	@Autowired
-	DataloggerController dataloggerController;
 	// find css style at src/main/webapp/resources/css/style.css
 	
 	ArrayList<LogEntry> theLogs;
 
-	@RequestMapping(value = "/{language}/screening", method = RequestMethod.GET)
+	@RequestMapping(value = "/screening", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
-	public String viewScreeningTestCreatorPage(@PathVariable String language, 
-			@RequestParam(value = "cluster", required = false) Integer cluster,
-			ModelMap model) 
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
+	public String viewScreeningTestCreatorPage(@RequestParam(value = "cluster", required = false) Integer cluster,
+			ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
-		LanguageCode lc = LanguageCode.EN;
-		if (language.equalsIgnoreCase("gr"))
-			lc = LanguageCode.GR;
+		int userId = (Integer)request.getSession().getAttribute("userid");
+		User user = userService.getUser(userId);
 		int currentCluster = -1;
 		if (cluster != null){
 			currentCluster = cluster;
 			System.err.println(cluster);
 		}
-		
-		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
 		ProfileClusters pc = new ProfileClusters(pdi);
 		
 		ScreeningTest st = new ScreeningTest(pc);
 
-		/*st.addQuestion("καλημέρα πως πάει;", new ArrayList<String>(
-			    Arrays.asList("όλα", "καλά", "φίλε")), 0);
-		st.addQuestion("τι άλλα νέα;", new ArrayList<String>(
-			    Arrays.asList("ήρεμα", "μωρέ")), 0);
-		st.addQuestion("θα παίξουν τώρα αυτά ή τσάμπα τα γράφω;", new ArrayList<String>(
-			    Arrays.asList("θα", "δούμε")), 1);
-		st.addQuestion("βάζω και το τρίτο κλάστερ για δοκιμή;", new ArrayList<String>(
-			    Arrays.asList("καλά", "κάνω")), 2);
+		/*st.addQuestion("hi, how are you?", new ArrayList<String>(
+			    Arrays.asList("fine", "thanks")), 0);
+		st.addQuestion("what is your name?", new ArrayList<String>(
+			    Arrays.asList("old", "years")), 0);
+		st.addQuestion("second cluster, first question", new ArrayList<String>(
+			    Arrays.asList("yeah", "baby")), 1);
+		st.addQuestion("third cluster here", new ArrayList<String>(
+			    Arrays.asList("go", "third")), 2);
 		
-		st.storeTest("data/testing_screening.json");*/
-		
-		st.loadTest("data/testing_screening.json");
+		st.storeTest("data/EN_testing_screening.json");*/
+		if (user.getLanguage().equals("EN"))
+			st.loadTest("data/EN_testing_screening.json");
+		else
+			st.loadTest("data/GR_testing_screening.json");
 		
 		model.put("showAll", st.getClusterQuestions(currentCluster) == null);
 		model.put("cluster", currentCluster);
@@ -101,33 +102,24 @@ public class ScreeningCreationControler {
 		model.put("problemDescriptions", pc);
 
 		model.put("screeningTest", st);
-		for (int i=0; i<st.getQuestions().size(); i++){
-			st.getQuestions().get(i).getClusterNumber();
-			for (int j=0;j<st.getQuestions().get(i).getClusterQuestions().size(); j++){
-				st.getQuestions().get(i).getClusterQuestions().get(j).getQuestion();
-			}
-		}
 		return "screening/creator";
 	}
 
-	@RequestMapping(value = "/{language}/testviewer", method = RequestMethod.GET)
+	@RequestMapping(value = "/testviewer", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
-	public String viewScreeningTest(@PathVariable String language, 
-			ModelMap model, HttpServletRequest request) 
+	public String viewScreeningTest(ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
 		int userId = (Integer)request.getSession().getAttribute("userid");
 		User user = userService.getUser(userId);
-		for (int i=0;i<10;i++)
-			System.err.println(user.getUsername());
-		LanguageCode lc = LanguageCode.EN;
-		if (language.equalsIgnoreCase("gr"))
-			lc = LanguageCode.GR;
-		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
-		
-		st.loadTest("data/testing_screening.json");
+
+		if (user.getLanguage().equals("EN"))
+			st.loadTest("data/EN_testing_screening.json");
+		else
+			st.loadTest("data/GR_testing_screening.json");
 		model.put("profileClusters", pc);
 		model.put("screeningTest", st);
 		return "screening/test_viewer";
@@ -135,39 +127,70 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{userId}/screeningtest", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
 	public String takeScreeningTest(@PathVariable Integer userId, 
-			ModelMap model) 
+			ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
-		UserProfile profile = null;
-		try {
-			profile = profileProvider.getProfile(userId);
-		} catch (ProfileProviderException e) {
-			System.err.println(e.toString());
-		}
-		LanguageCode lc = profile.getLanguage();
-		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		int teacherId = (Integer)request.getSession().getAttribute("userid");
+		User teacher = userService.getUser(teacherId);
+
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(teacher.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
-		
-		st.loadTest("data/testing_screening.json");
+
+		if (teacher.getLanguage().equals("EN"))
+			st.loadTest("data/EN_testing_screening.json");
+		else
+			st.loadTest("data/GR_testing_screening.json");
+		model.put("username", userService.getUser(userId).getUsername());
+		model.put("userId", userId);
 		model.put("profileClusters", pc);
 		model.put("screeningTest", st);
 		return "screening/test_page";
 	}
 
-	@RequestMapping(headers = { "Accept=application/json" }, value = "/{language}/updatecluster", method = RequestMethod.POST)
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/updatecluster", method = RequestMethod.POST)
 	public @ResponseBody
 	String updateClusterQuestions(@Valid @RequestBody TestQuestion question,
-			@RequestParam(value = "cluster", required = false) Integer cluster) {
+			@RequestParam(value = "cluster", required = false) Integer cluster, 
+			HttpServletRequest request) 
+			throws ProfileProviderException, Exception {
+		int teacherId = (Integer)request.getSession().getAttribute("userid");
+		User user = userService.getUser(teacherId);
 		ScreeningTest st = new ScreeningTest();
-		st.loadTest("data/testing_screening.json");
+		if (user.getLanguage().equals("EN"))
+			st.loadTest("data/EN_testing_screening.json");
+		else
+			st.loadTest("data/GR_testing_screening.json");
 		st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
-		st.storeTest("data/testing_screening.json");
+		if (user.getLanguage().equals("EN"))
+			st.storeTest("data/EN_testing_screening.json");
+		else
+			st.storeTest("data/GR_testing_screening.json");
 
 		Gson gson = new Gson();
 		String jsonRepresentation = gson.toJson(st.getClusterQuestions(cluster));
 		return jsonRepresentation;
+	}
+
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/setupstudent", method = RequestMethod.POST)
+	public @ResponseBody
+	int setupStudent(@Valid @RequestBody ArrayList<LogEntry> logs,
+			@RequestParam(value = "userId", required = true) Integer userId, 
+			HttpServletRequest request) 
+			throws ProfileProviderException, Exception {
+		java.util.Date date= new java.util.Date();
+		User user = userService.getUser(userId);
+		int teacherId = (Integer)request.getSession().getAttribute("userid");
+		if (logs != null){
+			for (LogEntry t: logs)
+				logEntryService.insertData(t);
+			//dataloggerController.addLogs(logs);
+		}
+		//LogEntry le = new LogEntry(user.getUsername(), "PROFILE_SETUP", new Timestamp(date.getTime()), 
+		//		"USER_SEVERITIES_SET",  "", -1, -1, 
+		//		0.0, "", "EVALUATION_MODE", "");
+		return userId;
 	}
 	
 	//page that displays the list of problem categories

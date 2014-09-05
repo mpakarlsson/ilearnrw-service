@@ -25,10 +25,10 @@
 	<h3>Cluster ${cluster } </h3>
 	<ul>
 	<c:forEach items="${screeningTest.getClusterQuestions(cluster)}" var="questions" varStatus="inner">
-	<li> <% current++; out.print(current); %> ${questions.getQuestion() } <br>${questions.getId() }<br></li>
-		<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
+	<li> <% current++; out.print(current); %> <strong>Question:</strong> ${questions.getQuestion() } <!-- <br>${questions.getId() }  --><br></li>
+		<!-- <c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
 		${relatedWords}
-		</c:forEach>
+		</c:forEach> -->
 	</c:forEach>
 	</ul>
 </c:forEach>

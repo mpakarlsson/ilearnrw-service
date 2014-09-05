@@ -33,7 +33,7 @@ function loadAddQuestionField(cluster) {
 };
 function saveQuestion(cluster) {
 	data = getNewQuestionData();
-	httpPost("http://localhost:8080/test/apps/GR/updatecluster?cluster="+cluster, JSON.stringify(data));
+	httpPost("http://localhost:8080/test/apps/updatecluster?cluster="+cluster, JSON.stringify(data));
 	appendQuestion(data);
 	clearAddQuestionField();
 };
