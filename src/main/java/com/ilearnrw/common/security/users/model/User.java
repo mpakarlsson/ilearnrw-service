@@ -24,7 +24,6 @@ public class User {
 	@NotEmpty
 	private String gender;
 	
-	@DateTimeFormat(iso = ISO.DATE)
 	@Past
 	private Date birthdate;
 	

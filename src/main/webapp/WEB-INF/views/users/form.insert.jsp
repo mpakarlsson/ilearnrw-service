@@ -15,6 +15,12 @@
 <title>Manage users</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
+<script src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#birthdatepicker").birthdaypicker({});
+  });
+</script>
 
 </head>
 
@@ -57,10 +63,22 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label" for="birthdate">Birth
 										Date</label>
-									<div class="col-sm-10">
-										<form:input type="text" id="birthdate" class="form-control"
-											placeholder="year/month/day" path="user.birthdate" required="true" />
-										<form:errors path="user.birthdate" class="help-block"
+									<div class="col-sm-10" id="birthdatepicker">
+										<fieldset id="birthdate" class='birthday-picker'>
+											<div class="col-sm-3">
+												<form:select type="text" id="date" class="form-control"
+													placeholder="day" path="birthdate.date" required="true" />
+											</div>
+											<div class="col-sm-3">
+											<form:select type="text" id="month" class="form-control"
+												placeholder="month" path="birthdate.month" required="true" />
+											</div>
+											<div class="col-sm-4">
+											<form:select type="text" id="year" class="form-control"
+												placeholder="year" path="birthdate.year" required="true" />
+											</div>
+										</fieldset>
+										<form:errors path="birthdate" class="help-block"
 											for="birthdate" />
 									</div>
 								</div>

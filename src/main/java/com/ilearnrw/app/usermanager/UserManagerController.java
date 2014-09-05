@@ -5,9 +5,13 @@ import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.validation.Valid;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
@@ -236,6 +241,7 @@ public class UserManagerController {
 	public String viewUserUpdateForm(@PathVariable int id, ModelMap model) {
 		UserRolesForm userForm = new UserRolesForm();
 		User user = userService.getUser(id);
+		user.setPassword("");
 		List<Role> allRoles = roleService.getRoleList();
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
@@ -286,6 +292,22 @@ public class UserManagerController {
 			BindingResult result, ModelMap model) throws ProfileProviderException {
 
 		User user = form.getUser();
+		Calendar cal = Calendar.getInstance();
+	    cal.set(Calendar.YEAR, form.getBirthdate().getYear());
+	    cal.set(Calendar.MONTH, form.getBirthdate().getMonth());
+	    cal.set(Calendar.DAY_OF_MONTH, form.getBirthdate().getDate());
+	    Date dateRepresentation = cal.getTime();
+		user.setBirthdate(dateRepresentation);
+		if (result.hasFieldErrors("birthdate.date") || result.hasFieldErrors("birthdate.month") || result.hasFieldErrors("birthdate.year"))
+			result.rejectValue("birthdate", "birthdate.invalid");
+		else if (user.getBirthdate().after(new Date()))
+			result.rejectValue("birthdate", "birthdate.invalid");
+		else {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -100);
+			if (user.getBirthdate().before(calendar.getTime()))
+				result.rejectValue("birthdate", "birthdate.invalid");
+		}
 		if (userService.getUserByUsername(user.getUsername()) != null)
 			result.rejectValue("user.username", "user.username.exists");
 		if (result.hasErrors())
