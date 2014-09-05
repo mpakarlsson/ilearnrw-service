@@ -4,6 +4,7 @@ package com.ilearnrw.app.screening;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import ilearnrw.user.problems.ProblemDefinitionIndex;
@@ -16,6 +17,7 @@ import ilearnrw.utils.screening.TestQuestion;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -31,6 +33,7 @@ import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
@@ -51,6 +54,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{language}/screening", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
 	public String viewScreeningTestCreatorPage(@PathVariable String language, 
 			@RequestParam(value = "cluster", required = false) Integer cluster,
 			ModelMap model) 
@@ -108,9 +112,14 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{language}/testviewer", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
 	public String viewScreeningTest(@PathVariable String language, 
-			ModelMap model) 
+			ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
+		int userId = (Integer)request.getSession().getAttribute("userid");
+		User user = userService.getUser(userId);
+		for (int i=0;i<10;i++)
+			System.err.println(user.getUsername());
 		LanguageCode lc = LanguageCode.EN;
 		if (language.equalsIgnoreCase("gr"))
 			lc = LanguageCode.GR;
@@ -126,6 +135,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{userId}/screeningtest", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
 	public String takeScreeningTest(@PathVariable Integer userId, 
 			ModelMap model) 
 			throws ProfileProviderException, Exception {
