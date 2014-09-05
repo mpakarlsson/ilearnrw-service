@@ -12,6 +12,8 @@ public class UserRolesForm {
 	
 	@Valid
 	User user;
+	@Valid
+	Birthdate birthdate;
 	List<Role> allRoles;
 	List<Role> selectedRoles;
 
@@ -39,5 +41,13 @@ public class UserRolesForm {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public Birthdate getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(Birthdate birthdate) {
+		this.birthdate = birthdate;
 	}
 }

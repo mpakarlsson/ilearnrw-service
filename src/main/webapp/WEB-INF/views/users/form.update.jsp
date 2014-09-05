@@ -1,85 +1,169 @@
-<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<!DOCTYPE html>
 <html>
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Edit user</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
+
+<jsp:include page="../includes/includes.jsp"></jsp:include>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#birthdatepicker").birthdaypicker({ "placeholder" : false });
+		$("#date").val(<c:out value="${userform.birthdate.date}"/>);
+		$("#month").val(<c:out value="${userform.birthdate.month}"/>);
+		$("#year").val(<c:out value="${userform.birthdate.year}"/>);
+	});
+</script>
+
 </head>
+
 <body>
-	<div class="form-container">
-		<form:form action="${pageContext.servletContext.contextPath}/apps/users/${userform.user.id}/edit" method="POST" modelAttribute="userform">
-		<fieldset>
-			<legend>
-				User details
-			</legend>
-			<span>
-				<label >Username</label>
-				<form:input path="user.username" />
-				<form:errors path="user.username" class="error"/>
-			</span>
-			<span>
-				<label >Password</label>
-				<form:input path="user.password" />
-				<form:errors path="user.password" class="error"/>
-			</span>
-			<span>
-				<label >Birth date</label>
-				<fmt:formatDate value="${userform.user.birthdate}" var="dateString" pattern="yyyy/MM/dd" />
-				<form:input path="user.birthdate" value="${dateString}" />
-				<form:errors path="user.birthdate" class="error"/>
-			</span>
-			<span>
-				<label >Enabled</label>
-				<form:checkbox path="user.enabled"/>
-			</span>
-		</fieldset>
-		<fieldset>
-			<legend>
-				Gender
-			</legend>
-			<span>
-				<label >Male</label>
-				<form:radiobutton path="user.gender" value="M" />
-				<form:errors path="user.gender" class="error"/>
-			</span>
-			<span>
-				<label >Female</label>
-				<form:radiobutton path="user.gender" value="F" />
-				<form:errors path="user.gender" class="error"/>
-			</span>
-		</fieldset>
-		<fieldset>
-			<legend>
-				Language
-			</legend>
-			<span>
-				<label >English</label>
-				<form:radiobutton path="user.language" value="EN" />
-				<form:errors path="user.language" class="error"/>
-			</span>
-			<span>
-				<label >Greek</label>
-				<form:radiobutton path="user.language" value="GR" />
-				<form:errors path="user.language" class="error"/>
-			</span>
-		</fieldset>
-		<fieldset>
-			<legend>
-				User roles
-			</legend>
-			<c:if test="${not empty userform.allRoles}">
-				<form:checkboxes items="${userform.allRoles}" path="selectedRoles" itemLabel="name" itemValue="id"></form:checkboxes>
-			</c:if>
-		</fieldset>
-		<span class="buttonrow">
-			<input type="submit" value="Submit"/>
-		</span>
-		</form:form>
+	<div id="wrapper">
+		<jsp:include page="../includes/navigation.jsp"></jsp:include>
+		<div id="page-wrapper">
+			<div class="container master-container">
+				<form:form action="edit" method="POST" modelAttribute="userform"
+					class="form-horizontal" role="form">
+					<div class="row">
+						<div class="panel panel-info">
+							<div class="panel-heading">User details</div>
+							<div class="panel-body">
+								<spring:bind path="user.username">
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label" for="username">Username</label>
+										<div class="col-sm-10">
+											<form:input type="text" id="username"
+												class="form-control col-sm-9" placeholder="Username"
+												path="user.username" required="true" />
+											<form:errors path="user.username" class="help-block"
+												for="username" />
+										</div>
+									</div>
+								</spring:bind>
+
+								<spring:bind path="user.password">
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label" for="password">New password</label>
+										<div class="col-sm-10">
+											<form:input type="text" id="password"
+												class="form-control col-sm-9" placeholder="Password"
+												path="user.password" required="true" />
+											<form:errors path="user.password" class="help-block"
+												for="password" />
+										</div>
+									</div>
+								</spring:bind>
+
+								<spring:bind path="user.birthdate">
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label" for="birthdate">Birth
+											Date</label>
+										<div class="col-sm-10" id="birthdatepicker">
+											<fieldset id="birthdate" class='birthday-picker'>
+												<div class="col-sm-3">
+													<form:select type="text" id="date" class="form-control"
+														placeholder="day" path="birthdate.date" required="true" />
+												</div>
+												<div class="col-sm-3">
+													<form:select type="text" id="month" class="form-control"
+														placeholder="month" path="birthdate.month" required="true" />
+												</div>
+												<div class="col-sm-4">
+													<form:select type="text" id="year" class="form-control"
+														placeholder="year" path="birthdate.year" required="true" />
+												</div>
+											</fieldset>
+											<form:errors path="birthdate" class="help-block"
+												for="birthdate" />
+										</div>
+									</div>
+								</spring:bind>
+
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-10">
+										<div class="checkbox">
+											<label> <form:checkbox path="user.enabled"
+													checked="true" /> Enabled
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<spring:bind path="user.gender">
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label">Gender</label>
+										<div class="col-sm-10">
+											<fieldset>
+												<div class="radio">
+													<label> <form:radiobutton name="gender"
+															path="user.gender" value="M" />Male
+													</label>
+												</div>
+												<div class="radio">
+													<label> <form:radiobutton name="gender"
+															path="user.gender" value="F" />Female
+													</label>
+												</div>
+											</fieldset>
+											<form:errors path="user.gender" class="help-block"
+												for="gender" />
+										</div>
+									</div>
+								</spring:bind>
+
+								<spring:bind path="user.language">
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label">Language</label>
+										<div class="col-sm-10">
+											<fieldset>
+												<div class="radio">
+													<label> <form:radiobutton name="language"
+															path="user.language" value="EN" />English
+													</label>
+												</div>
+												<div class="radio">
+													<label> <form:radiobutton name="language"
+															path="user.language" value="GR" />Greek
+													</label>
+												</div>
+											</fieldset>
+											<form:errors path="user.language" class="help-block"
+												for="language" />
+										</div>
+									</div>
+								</spring:bind>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="panel panel-info">
+							<div class="panel-heading">User roles</div>
+							<div class="panel-body">
+
+								<fieldset>
+									<c:if test="${not empty userform.allRoles}">
+										<form:checkboxes items="${userform.allRoles}"
+											path="selectedRoles" itemLabel="name" itemValue="id"></form:checkboxes>
+									</c:if>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form:form>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

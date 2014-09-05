@@ -12,7 +12,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Manage users</title>
+<title>Add user</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 <script src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>

@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.app.usermanager.form.Birthdate;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
@@ -245,6 +246,13 @@ public class UserManagerController {
 		List<Role> allRoles = roleService.getRoleList();
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
+		Birthdate birthdate = new Birthdate();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(user.getBirthdate());
+		birthdate.setDate(calendar.get(Calendar.DAY_OF_MONTH));
+		birthdate.setMonth(calendar.get(Calendar.MONTH));
+		birthdate.setYear(calendar.get(Calendar.YEAR));
+		userForm.setBirthdate(birthdate);
 		userForm.setAllRoles(allRoles);
 		userForm.setSelectedRoles(selectedRoles);
 
@@ -255,21 +263,41 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
 	@Transactional
 	public String updateUser(@PathVariable int id,
-			@Valid @ModelAttribute("userform") UserRolesForm userForm,
+			@Valid @ModelAttribute("userform") UserRolesForm form,
 			BindingResult result, ModelMap model) {
-		User user = userForm.getUser();
+		User user = form.getUser();
 		user.setId(id);
-		userForm.setUser(user);
-
+		form.setUser(user);
+		Calendar cal = Calendar.getInstance();
+	    cal.set(Calendar.YEAR, form.getBirthdate().getYear());
+	    cal.set(Calendar.MONTH, form.getBirthdate().getMonth());
+	    cal.set(Calendar.DAY_OF_MONTH, form.getBirthdate().getDate());
+	    Date dateRepresentation = cal.getTime();
+		user.setBirthdate(dateRepresentation);
+		if (result.hasFieldErrors("birthdate.date") || result.hasFieldErrors("birthdate.month") || result.hasFieldErrors("birthdate.year"))
+			result.rejectValue("birthdate", "birthdate.invalid");
+		else if (user.getBirthdate().after(new Date()))
+			result.rejectValue("birthdate", "birthdate.invalid");
+		else {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -100);
+			if (user.getBirthdate().before(calendar.getTime()))
+				result.rejectValue("birthdate", "birthdate.invalid");
+		}
+		if (userService.getUserByUsername(user.getUsername()) != null)
+			result.rejectValue("user.username", "user.username.exists");
+		if (result.hasErrors())
+			return "users/form.insert";
+		
 		if (result.hasErrors()) {
 			List<Role> allRoles = roleService.getRoleList();
-			userForm.setAllRoles(allRoles);
+			form.setAllRoles(allRoles);
 			return "users/form.update";
 		}
 
-		userService.updateData(userForm.getUser());
+		userService.updateData(form.getUser());
 		roleService
-				.setRoleList(userForm.getUser(), userForm.getSelectedRoles());
+				.setRoleList(form.getUser(), form.getSelectedRoles());
 		return "redirect:/apps/panel";
 	}
 
