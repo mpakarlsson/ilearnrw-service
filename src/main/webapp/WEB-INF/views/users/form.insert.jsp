@@ -15,11 +15,12 @@
 <title>Add user</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
-<script src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
-    $("#birthdatepicker").birthdaypicker({});
-  });
+	$(document).ready(function() {
+		$("#birthdatepicker").birthdaypicker({});
+	});
 </script>
 
 </head>
@@ -28,10 +29,14 @@
 	<div id="wrapper">
 		<jsp:include page="../includes/navigation.jsp"></jsp:include>
 		<div id="page-wrapper">
-		<div class="container master-container">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="page-header">New user</h1>
+				</div>
+			</div>
 			<div class="row">
 				<div class="panel panel-info">
-					<div class="panel-heading">New user</div>
+					<div class="panel-heading">User details</div>
 					<div class="panel-body">
 						<form:form action="new" method="POST" modelAttribute="userform"
 							class="form-horizontal" role="form">
@@ -42,7 +47,8 @@
 										<form:input type="text" id="username"
 											class="form-control col-sm-9" placeholder="Username"
 											path="user.username" required="true" />
-										<form:errors path="user.username" class="help-block" for="username" />
+										<form:errors path="user.username" class="help-block"
+											for="username" />
 									</div>
 								</div>
 							</spring:bind>
@@ -54,7 +60,8 @@
 										<form:input type="text" id="password"
 											class="form-control col-sm-9" placeholder="Password"
 											path="user.password" required="true" />
-										<form:errors path="user.password" class="help-block" for="password" />
+										<form:errors path="user.password" class="help-block"
+											for="password" />
 									</div>
 								</div>
 							</spring:bind>
@@ -70,12 +77,12 @@
 													placeholder="day" path="birthdate.date" required="true" />
 											</div>
 											<div class="col-sm-3">
-											<form:select type="text" id="month" class="form-control"
-												placeholder="month" path="birthdate.month" required="true" />
+												<form:select type="text" id="month" class="form-control"
+													placeholder="month" path="birthdate.month" required="true" />
 											</div>
 											<div class="col-sm-4">
-											<form:select type="text" id="year" class="form-control"
-												placeholder="year" path="birthdate.year" required="true" />
+												<form:select type="text" id="year" class="form-control"
+													placeholder="year" path="birthdate.year" required="true" />
 											</div>
 										</fieldset>
 										<form:errors path="birthdate" class="help-block"
@@ -87,8 +94,8 @@
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
 									<div class="checkbox">
-										<label> <form:checkbox path="user.enabled" checked="true" />
-											Enabled
+										<label> <form:checkbox path="user.enabled"
+												checked="true" /> Enabled
 										</label>
 									</div>
 								</div>
@@ -110,7 +117,8 @@
 												</label>
 											</div>
 										</fieldset>
-										<form:errors path="user.gender" class="help-block" for="gender" />
+										<form:errors path="user.gender" class="help-block"
+											for="gender" />
 									</div>
 								</div>
 							</spring:bind>
@@ -131,16 +139,16 @@
 												</label>
 											</div>
 										</fieldset>
-										<form:errors path="user.language" class="help-block" for="language" />
+										<form:errors path="user.language" class="help-block"
+											for="language" />
 									</div>
 								</div>
 							</spring:bind>
-							
+
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
 									<div class="checkbox">
-										<label> <form:checkbox path="teacher" />
-											Is teacher
+										<label> <form:checkbox path="teacher" /> Is teacher
 										</label>
 									</div>
 								</div>
@@ -150,7 +158,6 @@
 						</form:form>
 					</div>
 				</div>
-			</div>
 			</div>
 		</div>
 	</div>

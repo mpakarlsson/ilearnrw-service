@@ -23,7 +23,11 @@
 		<jsp:include page="../includes/navigation.jsp"></jsp:include>
 
 		<div id="page-wrapper">
-
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="page-header">Manage permissions</h1>
+				</div>
+			</div>
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>

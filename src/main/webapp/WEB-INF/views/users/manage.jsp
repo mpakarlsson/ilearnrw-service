@@ -23,7 +23,11 @@
 		<jsp:include page="../includes/navigation.jsp"></jsp:include>
 
 		<div id="page-wrapper">
-
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="page-header">Manage users</h1>
+				</div>
+			</div>
 			<table class="table table-striped table-bordered table-condensed">
 				<thead>
 					<tr>
@@ -46,15 +50,16 @@
 							</c:choose>
 							<td>
 								<div class="btn-group">
-									<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"
-										href="#">Actions <span class="caret"></span></a>
+									<a class="btn btn-default btn-xs dropdown-toggle"
+										data-toggle="dropdown" href="#">Actions <span
+										class="caret"></span></a>
 									<ul class="dropdown-menu pull-right">
-										<li><a href="${o.id}/edit"><i
-												class="icon-pencil"></i> Edit</a></li>
-										<li><a href="${o.id}/delete"><i
-												class="icon-trash"></i> Delete</a></li>
-										<li><a href="${o.id}/profile"><i
-												class="icon-user"></i> Profile</a></li>
+										<li><a href="${o.id}/edit"><i class="icon-pencil"></i>
+												Edit</a></li>
+										<li><a href="${o.id}/delete"><i class="icon-trash"></i>
+												Delete</a></li>
+										<li><a href="${o.id}/profile"><i class="icon-user"></i>
+												Profile</a></li>
 										<li><a href="${o.id}/logs/page/1"><i
 												class="icon-user"></i> View Logs</a></li>
 									</ul>

@@ -263,15 +263,15 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
 	@Transactional
 	public String updateUser(@PathVariable int id,
-			@Valid @ModelAttribute("userform") UserRolesForm form,
+			@Valid @ModelAttribute("userform") UserRolesForm userForm,
 			BindingResult result, ModelMap model) {
-		User user = form.getUser();
+		User user = userForm.getUser();
 		user.setId(id);
-		form.setUser(user);
+		userForm.setUser(user);
 		Calendar cal = Calendar.getInstance();
-	    cal.set(Calendar.YEAR, form.getBirthdate().getYear());
-	    cal.set(Calendar.MONTH, form.getBirthdate().getMonth());
-	    cal.set(Calendar.DAY_OF_MONTH, form.getBirthdate().getDate());
+	    cal.set(Calendar.YEAR, userForm.getBirthdate().getYear());
+	    cal.set(Calendar.MONTH, userForm.getBirthdate().getMonth());
+	    cal.set(Calendar.DAY_OF_MONTH, userForm.getBirthdate().getDate());
 	    Date dateRepresentation = cal.getTime();
 		user.setBirthdate(dateRepresentation);
 		if (result.hasFieldErrors("birthdate.date") || result.hasFieldErrors("birthdate.month") || result.hasFieldErrors("birthdate.year"))
@@ -284,20 +284,18 @@ public class UserManagerController {
 			if (user.getBirthdate().before(calendar.getTime()))
 				result.rejectValue("birthdate", "birthdate.invalid");
 		}
-		if (userService.getUserByUsername(user.getUsername()) != null)
-			result.rejectValue("user.username", "user.username.exists");
 		if (result.hasErrors())
 			return "users/form.insert";
 		
 		if (result.hasErrors()) {
 			List<Role> allRoles = roleService.getRoleList();
-			form.setAllRoles(allRoles);
+			userForm.setAllRoles(allRoles);
 			return "users/form.update";
 		}
 
-		userService.updateData(form.getUser());
+		userService.updateData(userForm.getUser());
 		roleService
-				.setRoleList(form.getUser(), form.getSelectedRoles());
+				.setRoleList(userForm.getUser(), userForm.getSelectedRoles());
 		return "redirect:/apps/panel";
 	}
 
