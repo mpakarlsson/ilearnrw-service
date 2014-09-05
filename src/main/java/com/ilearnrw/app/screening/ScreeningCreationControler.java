@@ -7,6 +7,7 @@ import java.util.Arrays;
 import javax.validation.Valid;
 
 import ilearnrw.user.problems.ProblemDefinitionIndex;
+import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.clusters.ProfileClusters;
 import ilearnrw.utils.LanguageCode;
 import ilearnrw.utils.screening.ClusterTestQuestions;
@@ -68,14 +69,14 @@ public class ScreeningCreationControler {
 		
 		ScreeningTest st = new ScreeningTest(pc);
 
-		/*st.addQuestion(new TestQuestion("καλημέρα πως πάει;", new ArrayList<String>(
-			    Arrays.asList("όλα", "καλά", "φίλε"))), 0);
-		st.addQuestion(new TestQuestion("τι άλλα νέα;", new ArrayList<String>(
-			    Arrays.asList("ήρεμα", "μωρέ"))), 0);
-		st.addQuestion(new TestQuestion("θα παίξουν τώρα αυτά ή τσάμπα τα γράφω;", new ArrayList<String>(
-			    Arrays.asList("θα", "δούμε"))), 1);
-		st.addQuestion(new TestQuestion("βάζω και το τρίτο κλάστερ για δοκιμή;", new ArrayList<String>(
-			    Arrays.asList("καλά", "κάνω"))), 2);
+		/*st.addQuestion("καλημέρα πως πάει;", new ArrayList<String>(
+			    Arrays.asList("όλα", "καλά", "φίλε")), 0);
+		st.addQuestion("τι άλλα νέα;", new ArrayList<String>(
+			    Arrays.asList("ήρεμα", "μωρέ")), 0);
+		st.addQuestion("θα παίξουν τώρα αυτά ή τσάμπα τα γράφω;", new ArrayList<String>(
+			    Arrays.asList("θα", "δούμε")), 1);
+		st.addQuestion("βάζω και το τρίτο κλάστερ για δοκιμή;", new ArrayList<String>(
+			    Arrays.asList("καλά", "κάνω")), 2);
 		
 		st.storeTest("data/testing_screening.json");*/
 		
@@ -93,6 +94,8 @@ public class ScreeningCreationControler {
 			model.put("clustersQuestions", null);
 		}
 		model.put("profileClusters", pc);
+		model.put("problemDescriptions", pc);
+
 		model.put("screeningTest", st);
 		for (int i=0; i<st.getQuestions().size(); i++){
 			st.getQuestions().get(i).getClusterNumber();
@@ -111,19 +114,36 @@ public class ScreeningCreationControler {
 		LanguageCode lc = LanguageCode.EN;
 		if (language.equalsIgnoreCase("gr"))
 			lc = LanguageCode.GR;
-		
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
 		
 		st.loadTest("data/testing_screening.json");
-
-		for (int i=0; i<st.getQuestions().size(); i++){
-			st.getQuestions().get(i).getClusterNumber();
-			for (int j=0;j<st.getQuestions().get(i).getClusterQuestions().size(); j++){
-				st.getQuestions().get(i).getClusterQuestions().get(j).getQuestion();
-			}
-		}
-		model.put("screeningTest", new Gson().toJson(st));
+		model.put("profileClusters", pc);
+		model.put("screeningTest", st);
 		return "screening/test_viewer";
+	}
+
+	@RequestMapping(value = "/{userId}/screeningtest", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String takeScreeningTest(@PathVariable Integer userId, 
+			ModelMap model) 
+			throws ProfileProviderException, Exception {
+		UserProfile profile = null;
+		try {
+			profile = profileProvider.getProfile(userId);
+		} catch (ProfileProviderException e) {
+			System.err.println(e.toString());
+		}
+		LanguageCode lc = profile.getLanguage();
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		ProfileClusters pc = new ProfileClusters(pdi);
+		ScreeningTest st = new ScreeningTest();
+		
+		st.loadTest("data/testing_screening.json");
+		model.put("profileClusters", pc);
+		model.put("screeningTest", st);
+		return "screening/test_page";
 	}
 
 	@RequestMapping(headers = { "Accept=application/json" }, value = "/{language}/updatecluster", method = RequestMethod.POST)
@@ -132,7 +152,7 @@ public class ScreeningCreationControler {
 			@RequestParam(value = "cluster", required = false) Integer cluster) {
 		ScreeningTest st = new ScreeningTest();
 		st.loadTest("data/testing_screening.json");
-		st.addQuestion(question, cluster);
+		st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
 		st.storeTest("data/testing_screening.json");
 
 		Gson gson = new Gson();

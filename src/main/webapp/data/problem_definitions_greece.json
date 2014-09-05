@@ -72,7 +72,7 @@
           "p-b"
         ],
         "problemType": "SOUND_SIMILARITY",
-        "humanReadableDescription": "the word must have similar sound with others if the sound X is replaced by Y (when writing 'X-Y')", 
+        "humanReadableDescription": "the word must have similar sound with other greek words when the phoneme k is replaced by p or by t", 
         "cluster": 0,
         "character":""
       },
