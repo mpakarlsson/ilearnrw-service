@@ -1,23 +1,22 @@
 package com.ilearnrw.app.screening;
 
-
-import java.io.Serializable;
-import java.security.Timestamp;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import ilearnrw.user.problems.ProblemDefinitionIndex;
-import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.clusters.ProfileClusters;
 import ilearnrw.utils.LanguageCode;
-import ilearnrw.utils.screening.ClusterTestQuestions;
 import ilearnrw.utils.screening.ScreeningTest;
 import ilearnrw.utils.screening.TestQuestion;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -31,18 +30,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
-import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
-import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
 public class ScreeningCreationControler {
-	private static Logger LOG = Logger.getLogger(DataloggerController.class);
-
 	@Autowired
 	private UserService userService;
 
@@ -55,8 +50,9 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/screening", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
-	public String viewScreeningTestCreatorPage(@RequestParam(value = "cluster", required = false) Integer cluster,
+	@PreAuthorize("hasRole('PERMISSION_ADMIN')")
+	public String viewScreeningTestCreatorPage(@RequestParam(value = "cluster", required = false) Integer cluster, 
+			@RequestParam(value = "fname", required = false) String fname,
 			ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
 		int userId = (Integer)request.getSession().getAttribute("userid");
@@ -73,33 +69,33 @@ public class ScreeningCreationControler {
 		ScreeningTest st = new ScreeningTest(pc);
 
 		/*st.addQuestion("hi, how are you?", new ArrayList<String>(
-			    Arrays.asList("fine", "thanks")), 0);
+			    Arrays.asList("fine", "thanks")), 1);
 		st.addQuestion("what is your name?", new ArrayList<String>(
-			    Arrays.asList("old", "years")), 0);
+			    Arrays.asList("old", "years")), 1);
 		st.addQuestion("second cluster, first question", new ArrayList<String>(
-			    Arrays.asList("yeah", "baby")), 1);
+			    Arrays.asList("yeah", "baby")), 3);
 		st.addQuestion("third cluster here", new ArrayList<String>(
-			    Arrays.asList("go", "third")), 2);
+			    Arrays.asList("go", "third")), 4);
 		
 		st.storeTest("data/EN_testing_screening.json");*/
-		if (user.getLanguage().equals("EN"))
-			st.loadTest("data/EN_testing_screening.json");
-		else
-			st.loadTest("data/GR_testing_screening.json");
+		
+		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
+		if (names.contains(fname))
+			st.loadTest("data/"+fname+".json");
 		
 		model.put("showAll", st.getClusterQuestions(currentCluster) == null);
 		model.put("cluster", currentCluster);
 		if (currentCluster != -1){
 			ArrayList<TestQuestion> tq = st.getClusterQuestions(cluster);
 			String g = new Gson().toJson(tq);
-			System.err.println(g);
 			model.put("clustersQuestions", g);
 		}
 		else {
 			model.put("clustersQuestions", null);
 		}
 		model.put("profileClusters", pc);
-		model.put("problemDescriptions", pc);
+		model.put("filenames", names);
+		model.put("fname", fname);
 
 		model.put("screeningTest", st);
 		return "screening/creator";
@@ -108,7 +104,8 @@ public class ScreeningCreationControler {
 	@RequestMapping(value = "/testviewer", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
-	public String viewScreeningTest(ModelMap model, HttpServletRequest request) 
+	public String viewScreeningTest(ModelMap model, HttpServletRequest request, 
+			@RequestParam(value = "fname", required = true) String fname) 
 			throws ProfileProviderException, Exception {
 		int userId = (Integer)request.getSession().getAttribute("userid");
 		User user = userService.getUser(userId);
@@ -116,10 +113,11 @@ public class ScreeningCreationControler {
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
 
-		if (user.getLanguage().equals("EN"))
-			st.loadTest("data/EN_testing_screening.json");
-		else
-			st.loadTest("data/GR_testing_screening.json");
+		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
+		if (names.contains(fname))
+			st.loadTest("data/"+fname+".json");
+
+		model.put("fname", fname);
 		model.put("profileClusters", pc);
 		model.put("screeningTest", st);
 		return "screening/test_viewer";
@@ -151,26 +149,36 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(headers = { "Accept=application/json" }, value = "/updatecluster", method = RequestMethod.POST)
 	public @ResponseBody
-	String updateClusterQuestions(@Valid @RequestBody TestQuestion question,
-			@RequestParam(value = "cluster", required = false) Integer cluster, 
+	int updateClusterQuestions(@Valid @RequestBody TestQuestion question,
+			@RequestParam(value = "cluster", required = true) Integer cluster, 
+			@RequestParam(value = "fname", required = true) String fname, 
+			@RequestParam(value = "action", required = true) String action, 
+			@RequestParam(value = "id", required = false) Integer id, 
 			HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
 		int teacherId = (Integer)request.getSession().getAttribute("userid");
 		User user = userService.getUser(teacherId);
 		ScreeningTest st = new ScreeningTest();
-		if (user.getLanguage().equals("EN"))
-			st.loadTest("data/EN_testing_screening.json");
-		else
-			st.loadTest("data/GR_testing_screening.json");
-		st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
-		if (user.getLanguage().equals("EN"))
-			st.storeTest("data/EN_testing_screening.json");
-		else
-			st.storeTest("data/GR_testing_screening.json");
-
-		Gson gson = new Gson();
-		String jsonRepresentation = gson.toJson(st.getClusterQuestions(cluster));
-		return jsonRepresentation;
+		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
+		if (names.contains(fname)){
+			st.loadTest("data/"+fname+".json");
+			if (action.equalsIgnoreCase("add")){
+				int respId = st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
+				st.storeTest("data/"+fname+".json");
+				return respId;
+			}
+			else if (action.equalsIgnoreCase("delete")){
+				st.deleteQuestion(cluster, id);
+				st.storeTest("data/"+fname+".json");
+				return id;
+			}
+			else if (action.equalsIgnoreCase("update")){
+				st.editQuestion(cluster, id, question.getQuestion(), question.getRelatedWords());
+				st.storeTest("data/"+fname+".json");
+				return id;
+			}
+		}
+		return -1;
 	}
 
 	@RequestMapping(headers = { "Accept=application/json" }, value = "/setupstudent", method = RequestMethod.POST)
@@ -191,6 +199,33 @@ public class ScreeningCreationControler {
 		//		"USER_SEVERITIES_SET",  "", -1, -1, 
 		//		0.0, "", "EVALUATION_MODE", "");
 		return userId;
+	}
+	
+	private void storeTestNames(String filename, ArrayList<String> names) {
+		Gson gson = new Gson();
+		String jsonRepresentation = gson.toJson(names);
+		try {
+			FileWriter Filewriter = new FileWriter(filename);
+			Filewriter.write(jsonRepresentation);
+			Filewriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private ArrayList<String> loadTestNames(String filename) {
+		Gson gson = new Gson();
+		try {
+			FileReader fileReader = new FileReader(filename);
+			BufferedReader buffered = new BufferedReader(fileReader);
+			String[] obj = gson.fromJson(buffered, String[].class);
+			ArrayList<String> names = new ArrayList<String>();
+			for (String o : obj)
+				names.add(o);
+			return names;
+		} catch (IOException e) {
+			return null;
+		}
 	}
 	
 	//page that displays the list of problem categories

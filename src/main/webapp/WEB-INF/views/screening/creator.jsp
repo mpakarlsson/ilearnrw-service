@@ -20,25 +20,64 @@ ${showAll}
 
 <div id="navcontainer">
 <ul id="navlist">
-<li><a href="${pageContext.request.contextPath}/apps/testviewer">View Full Test</a></li>
+<li><a href="${pageContext.request.contextPath}/apps/screening">Home</a></li>
+<li><a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">View Full Test</a></li>
 <li>Go to a cluster
 <select name="forma"  onchange="location = this.options[this.selectedIndex].value;">
 
  <option value="screening">Select Cluster</option>
 <c:forEach items="${profileClusters.getClustersNumbers()}" var="res" varStatus="inner">
- <option value="screening?cluster=${res}">Cluster ${res}</option>
+ <option value="screening?fname=${fname}&cluster=${res}">Cluster ${res}</option>
 </c:forEach>
 </select>
 </li>
 </ul>
 </div>	
 
-<h3>Cluster ${cluster } </h3>
-<ul>
-<c:forEach items="${profileClusters.getClusterProblems(cluster)}" var="res" varStatus="inner">
-<li> Pr[${1+res.getCategory()}, ${1+res.getIndex()}]: ${res.getProblemDescription().getHumanReadableDescription() }</li>
-</c:forEach>
-</ul>
+<c:choose>
+	<c:when test="${profileClusters.getClusterProblems(cluster) != null}">
+
+		<h2>Test name: ${fname} </h2>
+		<h3>Cluster ${cluster } </h3>
+		<ul>
+		<c:forEach items="${profileClusters.getClusterProblems(cluster)}" var="res" varStatus="inner">
+		<li> Pr[${1+res.getCategory()}, ${1+res.getIndex()}]: ${res.getProblemDescription().getHumanReadableDescription() }</li>
+		</c:forEach>
+		</ul>
+
+    </c:when>
+	<c:when test="${fname != null}">
+	
+		<h2>Test name: ${fname} </h2>
+	    <%Integer current = 0;%>
+		<c:forEach items="${profileClusters.getClustersNumbers()}" var="cluster" varStatus="inner">
+			<h3>Cluster ${cluster } </h3>
+			<ul>
+			<c:forEach items="${screeningTest.getClusterQuestions(cluster)}" var="questions" varStatus="inner">
+			<li> <% current++; out.print(current); %> <strong>Question:</strong> ${questions.getQuestion() } <!-- <br>${questions.getId() }  --><br></li>
+				<!-- <c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
+				${relatedWords}
+				</c:forEach> -->
+			</c:forEach>
+			</ul>
+		</c:forEach>
+
+    </c:when>
+
+	<c:otherwise>
+	
+		<ul>
+		<c:forEach items="${filenames}" var="fname" varStatus="inner">
+		<li> <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">${fname}</a></li></li>
+		</c:forEach>
+		</ul>
+		
+    </c:otherwise>
+   
+    
+</c:choose>
+
+
 
 <div id="questionsListDiv">
 
@@ -49,12 +88,9 @@ ${showAll}
 </div>
 
 <script>
-if ('${showAll}' == 'true'){
-	alert('hmmm');
-}
-else {
-	loadClusterQuestions('${ clustersQuestions}');
-	loadAddQuestionField('${cluster}');
+if ('${showAll}' == 'false'){
+	loadClusterQuestions('\'${fname}\'', '${cluster}', '${ clustersQuestions}');
+	loadAddQuestionField('\'${fname}\'', '${cluster}');
 }
 </script>
 

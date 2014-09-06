@@ -16,6 +16,13 @@
 </head>
 <body>
 
+<div id="navcontainer">
+<ul id="navlist">
+<li><a href="${pageContext.request.contextPath}/apps/screening">Home</a></li>
+<li><a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">Edit Test</a></li>
+</ul>
+</div>	
+
 <div id="testView">
 
 </div>
