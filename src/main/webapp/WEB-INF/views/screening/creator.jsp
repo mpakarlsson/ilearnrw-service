@@ -16,23 +16,25 @@
 </head>
 <body>
 
-${showAll}
-
 <div id="navcontainer">
 <ul id="navlist">
 <li><a href="${pageContext.request.contextPath}/apps/screening">Home</a></li>
-<li><a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">View Full Test</a></li>
-<li>Go to a cluster
-<select name="forma"  onchange="location = this.options[this.selectedIndex].value;">
-
- <option value="screening">Select Cluster</option>
-<c:forEach items="${profileClusters.getClustersNumbers()}" var="res" varStatus="inner">
- <option value="screening?fname=${fname}&cluster=${res}">Cluster ${res}</option>
-</c:forEach>
-</select>
-</li>
+<c:choose>
+	<c:when test="${fname != null}">
+		<li><a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">View Full Test</a></li>
+		<li>Go to a cluster
+		<select name="forma"  onchange="location = this.options[this.selectedIndex].value;">
+		
+		 <option value="screening">Select Cluster</option>
+		<c:forEach items="${profileClusters.getClustersNumbers()}" var="res" varStatus="inner">
+		 <option value="screening?fname=${fname}&cluster=${res}">Cluster ${res}</option>
+		</c:forEach>
+		</select>
+		</li>
+	</c:when>
+</c:choose>
 </ul>
-</div>	
+</div>
 
 <c:choose>
 	<c:when test="${profileClusters.getClusterProblems(cluster) != null}">
@@ -65,10 +67,17 @@ ${showAll}
     </c:when>
 
 	<c:otherwise>
-	
+		<h2>Available Tests</h2>
 		<ul>
 		<c:forEach items="${filenames}" var="fname" varStatus="inner">
-		<li> <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">${fname}</a></li></li>
+			<c:choose>
+				<c:when test="${defaultTest == fname}">
+					<li> <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">${fname}</a> [Default Test] </li>
+   				</c:when>
+   				<c:otherwise>
+					<li> <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">${fname}</a></li>
+   				</c:otherwise>
+   			</c:choose>
 		</c:forEach>
 		</ul>
 		

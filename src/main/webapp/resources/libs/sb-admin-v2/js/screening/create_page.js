@@ -18,8 +18,8 @@ function appendQuestion(fname, cluster, obj) {
 	}
 	if (obj.relatedWords.length>0)
 		str = str+obj.relatedWords[obj.relatedWords.length-1];
-	element.innerHTML = '<h4>Question #'+lastItemPosition+'</h4><textarea id="the_question'+obj.id+'" disabled>'+
-	obj.question+'</textarea><h4>Related Words</h4><textarea id="the_words'+obj.id+'" disabled>'+str+'</textarea>'+
+	element.innerHTML = 'Question #'+lastItemPosition+'<textarea id="the_question'+obj.id+'" class="question_text" disabled>'+
+	obj.question+'</textarea>Related Words<textarea id="the_words'+obj.id+'" class="rel_words_text" disabled>'+str+'</textarea>'+
 	'<button type="button" onclick="deleteQuestion('+fname.toString()+', '+cluster+', '+obj.id+')">Delete</button>'+
 	'<button type="button" onclick="switchButtonState(this, '+fname+', '+cluster+', '+obj.id+')">Edit</button>';
 	document.getElementById('questionsListDiv').appendChild(element);
@@ -43,9 +43,9 @@ function loadAddQuestionField(fname, cluster) {
 	var element = document.createElement('div');
 	element.setAttribute("id", 'addquestion');
 	element.setAttribute('class', 'question_box');
-	element.innerHTML = 'Question: <br><textarea name="vrow" id="newQuestion"></textarea>'+
-	   '<p>Click the button to change the contents of the text area.</p><textarea name="vrow" id="newRelatedWords"></textarea>'+
-	   '<button type="button" onclick="saveQuestion('+fname.toString()+', '+cluster+')">Add</button>';
+	element.innerHTML = 'Question:<textarea name="vrow" id="newQuestion" class="question_text" ></textarea>'+
+	   'Related Words:<textarea name="vrow" id="newRelatedWords" class="rel_words_text" ></textarea>'+
+	   '<button type="button" onclick="saveQuestion('+fname.toString()+', '+cluster+')" class="ph-button ph-btn-blue">Add</button>';
 	document.getElementById('addQuestionsDiv').appendChild(element);
 };
 
@@ -74,8 +74,8 @@ function deleteQuestion(fname, cluster, id) {
 };
 
 function getNewQuestionData() {
-	var q = document.getElementById('newQuestion').value.replace("\n", "\\n");
-	var r = (document.getElementById('newRelatedWords').value.replace("\n", "\\n")).split('#');
+	var q = document.getElementById('newQuestion').value.replace("\n", "\\n").replace("\t", "\\t");
+	var r = (document.getElementById('newRelatedWords').value.replace("\n", "\\n")).replace("\t", "\\t").split('#');
 	var data = {
 			question: q,
 			relatedWords: r,
@@ -85,8 +85,8 @@ function getNewQuestionData() {
 };
 
 function getEditedQuestionData(theId) {
-	var q = document.getElementById('the_question'+theId).value.replace("\n", "\\n");
-	var r = (document.getElementById('the_words'+theId).value.replace("\n", "\\n")).split('#');
+	var q = document.getElementById('the_question'+theId).value.replace("\n", "\\n").replace("\t", "\\t");
+	var r = (document.getElementById('the_words'+theId).value.replace("\n", "\\n")).replace("\t", "\\t").split('#');
 	var data = {
 			question: q,
 			relatedWords: r,

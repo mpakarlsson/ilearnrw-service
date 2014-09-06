@@ -34,6 +34,7 @@ import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
@@ -43,6 +44,9 @@ public class ScreeningCreationControler {
 
 	@Autowired
 	LogEntryService logEntryService;
+
+	@Autowired
+	private TeacherStudentService teacherStudentService;
 	
 	// find css style at src/main/webapp/resources/css/style.css
 	
@@ -50,7 +54,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/screening", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('PERMISSION_ADMIN')")
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
 	public String viewScreeningTestCreatorPage(@RequestParam(value = "cluster", required = false) Integer cluster, 
 			@RequestParam(value = "fname", required = false) String fname,
 			ModelMap model, HttpServletRequest request) 
@@ -67,6 +71,11 @@ public class ScreeningCreationControler {
 		ProfileClusters pc = new ProfileClusters(pdi);
 		
 		ScreeningTest st = new ScreeningTest(pc);
+		
+		DefaultTests dt = new DefaultTests();
+		//dt.setTestName("GR", "GR_testing_screening");
+		//dt.setTestName("EN", "niaw");
+		dt.loadDefault("data/defaults.json");
 
 		/*st.addQuestion("hi, how are you?", new ArrayList<String>(
 			    Arrays.asList("fine", "thanks")), 1);
@@ -78,7 +87,7 @@ public class ScreeningCreationControler {
 			    Arrays.asList("go", "third")), 4);
 		
 		st.storeTest("data/EN_testing_screening.json");*/
-		
+
 		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
 		if (names.contains(fname))
 			st.loadTest("data/"+fname+".json");
@@ -96,6 +105,7 @@ public class ScreeningCreationControler {
 		model.put("profileClusters", pc);
 		model.put("filenames", names);
 		model.put("fname", fname);
+		model.put("defaultTest", dt.getTestName(user.getLanguage()));
 
 		model.put("screeningTest", st);
 		return "screening/creator";
@@ -131,19 +141,22 @@ public class ScreeningCreationControler {
 			throws ProfileProviderException, Exception {
 		int teacherId = (Integer)request.getSession().getAttribute("userid");
 		User teacher = userService.getUser(teacherId);
+		User student = userService.getUser(userId);
 
 		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(teacher.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
-
-		if (teacher.getLanguage().equals("EN"))
-			st.loadTest("data/EN_testing_screening.json");
-		else
-			st.loadTest("data/GR_testing_screening.json");
-		model.put("username", userService.getUser(userId).getUsername());
-		model.put("userId", userId);
-		model.put("profileClusters", pc);
-		model.put("screeningTest", st);
+		
+		if (teacherStudentService.getStudentList(teacher).contains(student)){
+			DefaultTests dt = new DefaultTests();
+			dt.loadDefault("data/defaults.json");
+			String defaultTest = dt.getTestName(teacher.getLanguage());
+			st.loadTest("data/"+defaultTest+".json");
+			model.put("username", student.getUsername());
+			model.put("userId", userId);
+			model.put("profileClusters", pc);
+			model.put("screeningTest", st);
+		}
 		return "screening/test_page";
 	}
 
@@ -227,6 +240,7 @@ public class ScreeningCreationControler {
 			return null;
 		}
 	}
+	
 	
 	//page that displays the list of problem categories
 	//@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
