@@ -69,8 +69,8 @@ public class SelectNextWordController {
 		if (appId == 4){
 			List<GameElement> result = new ArrayList<GameElement>();
 			ProblemWordListLoader pwll = new ProblemWordListLoader();
-			pwll.loadSentences(lc);
-			EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
+			pwll.loadItems(lc);
+			EasyHardList thelist = new EasyHardList(pwll.getItems());
 			for (String w : thelist.getRandom(count, difficultyLevel)){
 				result.add(new GameElement(SentenceLoaderControler.fromString(w)));
 			}
@@ -79,7 +79,7 @@ public class SelectNextWordController {
 		else{
 			List<GameElement> result = new ArrayList<GameElement>();
 			ProblemWordListLoader pwll = new ProblemWordListLoader(lc, i, j);
-			EasyHardList thelist = new EasyHardList(pwll.getSentenceList());
+			EasyHardList thelist = new EasyHardList(pwll.getItems());
 			ArrayList<String> tt = thelist.getRandom(count, difficultyLevel);
 			for (String w : tt) {
 				if (lc==LanguageCode.EN)

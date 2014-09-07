@@ -26,8 +26,8 @@
 
 	<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
 		<div class="word" data-word="${relatedWords}" data-cluster="${cluster}"> 
-			${relatedWords} <input type="checkbox" name="displayed" checked> Displayed
-		 	<input type="checkbox" name="correct"> Correct <br>
+			Displayed <input type="checkbox" name="displayed" checked>
+		 	Correct<input type="checkbox" name="correct"> ${relatedWords}<br>
 		 </div>
 	</c:forEach>
 

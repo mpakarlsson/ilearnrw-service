@@ -1,3 +1,4 @@
+var ilearnurl = 'http://localhost:8080/test/apps';
 function isDisplayed(word) {
 	for (var i = 0; i < word.childNodes.length; i++) {
 	    if (word.childNodes[i].tagName == "INPUT" && word.childNodes[i].name== "displayed"){
@@ -69,7 +70,7 @@ function sendStudentsAnswers(user, userId) {
 		};
 		array.push(log);
 	}
-	httpPost("http://localhost:8080/test/apps/setupstudent?userId="+userId, JSON.stringify(array));
+	httpPost(ilearnurl+"/setupstudent?userId="+userId, JSON.stringify(array));
 };
 
 function httpGet(theUrl){

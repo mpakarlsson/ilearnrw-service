@@ -7,14 +7,24 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Screening Test Creator</title>
-	
-	<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/create_page.js"></script>
+		
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/jquery-1.10.2.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/typeahead.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/chris_typeahead.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/create_page.js"></script>
 	
 <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/screening/screening_style.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">
 
 </head>
 <body>
+
+<div id="testara">
+</div>
+<script>
+suggestWords('testara', 'itsme', '${clusterWords}');
+gogo('itsme');
+</script>
 
 <div id="navcontainer">
 <ul id="navlist">
@@ -67,20 +77,10 @@
     </c:when>
 
 	<c:otherwise>
-		<h2>Available Tests</h2>
-		<ul>
-		<c:forEach items="${filenames}" var="fname" varStatus="inner">
-			<c:choose>
-				<c:when test="${defaultTest == fname}">
-					<li> <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">${fname}</a> [Default Test] </li>
-   				</c:when>
-   				<c:otherwise>
-					<li> <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">${fname}</a></li>
-   				</c:otherwise>
-   			</c:choose>
-		</c:forEach>
-		</ul>
-		
+	<div id="filenamesListDiv"></div>
+		<script>
+			filenamesList('${screeningTestList}');
+		</script>	
     </c:otherwise>
    
     
@@ -98,7 +98,7 @@
 
 <script>
 if ('${showAll}' == 'false'){
-	loadClusterQuestions('\'${fname}\'', '${cluster}', '${ clustersQuestions}');
+	loadClusterParameters('\'${fname}\'', '${cluster}', '${ clustersQuestions}', '${clusterWords}');
 	loadAddQuestionField('\'${fname}\'', '${cluster}');
 }
 </script>

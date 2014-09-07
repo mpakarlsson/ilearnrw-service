@@ -7,10 +7,10 @@ import ilearnrw.languagetools.extras.WordListLoader;
 import ilearnrw.utils.LanguageCode;
 
 public class ProblemWordListLoader {
-	private ArrayList<String> sentenceList;
+	private ArrayList<String> items;
 
 	public ProblemWordListLoader() {
-		sentenceList = null;
+		items = null;
 	}
 
 	public ProblemWordListLoader(LanguageCode lc, int category, int index) {
@@ -23,13 +23,13 @@ public class ProblemWordListLoader {
 			WordListLoader ggl = new WordListLoader();
 			ggl.load(path + "cat" + category + "/words_" + category + "_"
 					+ index + "_" + lan + ".txt");
-			sentenceList = ggl.getWordList();
+			items = ggl.getWordList();
 		} catch (Exception e) {
-			sentenceList = null;
+			items = null;
 		}
 	}
 
-	public void loadSentences(LanguageCode lc) {
+	public void loadItems(LanguageCode lc) {
 		String path = "game_words_GR/";
 		if (lc == LanguageCode.EN) {
 			path = "game_words_EN/";
@@ -37,14 +37,14 @@ public class ProblemWordListLoader {
 		try {
 			SentenceListLoader ggl = new SentenceListLoader();
 			ggl.load(path + "/sentences.txt");
-			sentenceList = ggl.getSentenceList();
+			items = ggl.getSentenceList();
 		} catch (Exception e) {
-			sentenceList = null;
+			items = null;
 		}
 		
 	}
-	public ArrayList<String> getSentenceList() {
-		return sentenceList;
+	public ArrayList<String> getItems() {
+		return items;
 	}
 	
 

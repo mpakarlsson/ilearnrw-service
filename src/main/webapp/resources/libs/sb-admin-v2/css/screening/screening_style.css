@@ -98,3 +98,20 @@ a, a:link, a:active, a:visited, a:hover
   height: 30px;
   margin: 10px;
 }
+
+.typeahead-wrapper {
+	display: block;
+	margin: 50px 0;
+}
+
+.tt-dropdown-menu {
+	background-color: #fff;
+	border: 1px solid #000;
+	overflow-y:scroll;
+	max-height:200px;
+	width:150px;
+}
+
+.tt-suggestion.tt-cursor {
+	background-color: #ccc;
+}

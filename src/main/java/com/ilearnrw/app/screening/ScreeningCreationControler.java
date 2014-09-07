@@ -11,7 +11,9 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import ilearnrw.languagetools.extras.EasyHardList;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
+import ilearnrw.user.profile.clusters.ProblemDescriptionCoordinates;
 import ilearnrw.user.profile.clusters.ProfileClusters;
 import ilearnrw.utils.LanguageCode;
 import ilearnrw.utils.screening.ScreeningTest;
@@ -33,6 +35,7 @@ import com.google.gson.Gson;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
@@ -72,11 +75,6 @@ public class ScreeningCreationControler {
 		
 		ScreeningTest st = new ScreeningTest(pc);
 		
-		DefaultTests dt = new DefaultTests();
-		//dt.setTestName("GR", "GR_testing_screening");
-		//dt.setTestName("EN", "niaw");
-		dt.loadDefault("data/defaults.json");
-
 		/*st.addQuestion("hi, how are you?", new ArrayList<String>(
 			    Arrays.asList("fine", "thanks")), 1);
 		st.addQuestion("what is your name?", new ArrayList<String>(
@@ -88,8 +86,10 @@ public class ScreeningCreationControler {
 		
 		st.storeTest("data/EN_testing_screening.json");*/
 
-		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
-		if (names.contains(fname))
+		ScreeningTestList stl = new ScreeningTestList();
+		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		
+		if (stl.getFilenames().contains(fname))
 			st.loadTest("data/"+fname+".json");
 		
 		model.put("showAll", st.getClusterQuestions(currentCluster) == null);
@@ -98,14 +98,18 @@ public class ScreeningCreationControler {
 			ArrayList<TestQuestion> tq = st.getClusterQuestions(cluster);
 			String g = new Gson().toJson(tq);
 			model.put("clustersQuestions", g);
+			ArrayList<String> t = getClusterWords(user.getLanguage().equalsIgnoreCase("EN")?LanguageCode.EN:LanguageCode.GR, 
+							currentCluster);
+			 g = new Gson().toJson(t);
+			 model.put("clusterWords", g);
 		}
 		else {
 			model.put("clustersQuestions", null);
 		}
 		model.put("profileClusters", pc);
-		model.put("filenames", names);
+		String g = new Gson().toJson(stl);
+		model.put("screeningTestList", g);
 		model.put("fname", fname);
-		model.put("defaultTest", dt.getTestName(user.getLanguage()));
 
 		model.put("screeningTest", st);
 		return "screening/creator";
@@ -123,8 +127,10 @@ public class ScreeningCreationControler {
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
 
-		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
-		if (names.contains(fname))
+		ScreeningTestList stl = new ScreeningTestList();
+		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		
+		if (stl.getFilenames().contains(fname))
 			st.loadTest("data/"+fname+".json");
 
 		model.put("fname", fname);
@@ -148,10 +154,9 @@ public class ScreeningCreationControler {
 		ScreeningTest st = new ScreeningTest();
 		
 		if (teacherStudentService.getStudentList(teacher).contains(student)){
-			DefaultTests dt = new DefaultTests();
-			dt.loadDefault("data/defaults.json");
-			String defaultTest = dt.getTestName(teacher.getLanguage());
-			st.loadTest("data/"+defaultTest+".json");
+			ScreeningTestList stl = new ScreeningTestList();
+			stl.loadScreeningTestList("data/"+teacher.getLanguage()+"_test_list.json");
+			st.loadTest("data/"+stl.getDefaultTest()+".json");
 			model.put("username", student.getUsername());
 			model.put("userId", userId);
 			model.put("profileClusters", pc);
@@ -172,8 +177,9 @@ public class ScreeningCreationControler {
 		int teacherId = (Integer)request.getSession().getAttribute("userid");
 		User user = userService.getUser(teacherId);
 		ScreeningTest st = new ScreeningTest();
-		ArrayList<String> names = loadTestNames("data/"+user.getLanguage()+"_tests.json");
-		if (names.contains(fname)){
+		ScreeningTestList stl = new ScreeningTestList();
+		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		if (stl.getFilenames().contains(fname)){
 			st.loadTest("data/"+fname+".json");
 			if (action.equalsIgnoreCase("add")){
 				int respId = st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
@@ -192,6 +198,33 @@ public class ScreeningCreationControler {
 			}
 		}
 		return -1;
+	}
+
+	@RequestMapping(value = "/updatetests", method = RequestMethod.POST)
+	public @ResponseBody
+	ScreeningTestList updateTests(@RequestParam(value = "action", required = true) String action, 
+			@RequestParam(value = "testName", required = true) String testName, 
+			HttpServletRequest request) 
+			throws ProfileProviderException, Exception {
+		int teacherId = (Integer)request.getSession().getAttribute("userid");
+		User user = userService.getUser(teacherId);
+		ScreeningTestList stl = new ScreeningTestList();
+		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		if (action.equalsIgnoreCase("addTest")){
+			stl.addNewTest(testName);
+			ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
+			ProfileClusters pc = new ProfileClusters(pdi);
+			ScreeningTest st = new ScreeningTest(pc);
+			st.storeTest(testName+".json");
+		}
+		else if (action.equalsIgnoreCase("deleteTest")){
+			stl.deleteTest(testName);
+		}
+		else if (action.equalsIgnoreCase("defaultTest")){
+			stl.setDefaultTest(testName);
+		}
+		stl.storeScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		return stl;
 	}
 
 	@RequestMapping(headers = { "Accept=application/json" }, value = "/setupstudent", method = RequestMethod.POST)
@@ -214,34 +247,23 @@ public class ScreeningCreationControler {
 		return userId;
 	}
 	
-	private void storeTestNames(String filename, ArrayList<String> names) {
-		Gson gson = new Gson();
-		String jsonRepresentation = gson.toJson(names);
-		try {
-			FileWriter Filewriter = new FileWriter(filename);
-			Filewriter.write(jsonRepresentation);
-			Filewriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+	private ArrayList<String> getClusterWords(LanguageCode lc, int cluster){
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+		ProfileClusters pc = new ProfileClusters(pdi);
+		ArrayList<ProblemDescriptionCoordinates> prbs = pc.getClusterProblems(cluster);
+		ProblemWordListLoader pwll;
+		EasyHardList thelist;
+		ArrayList<String> res = new ArrayList<String>();
+		for (ProblemDescriptionCoordinates pr : prbs){
+			pwll = new ProblemWordListLoader(lc, pr.getCategory(), pr.getIndex());
+			thelist = new EasyHardList(pwll.getItems());
+			for (String x : thelist.getEasy()){
+				   if (!res.contains(x))
+				      res.add(x);
+				}
 		}
+		return res;
 	}
-
-	private ArrayList<String> loadTestNames(String filename) {
-		Gson gson = new Gson();
-		try {
-			FileReader fileReader = new FileReader(filename);
-			BufferedReader buffered = new BufferedReader(fileReader);
-			String[] obj = gson.fromJson(buffered, String[].class);
-			ArrayList<String> names = new ArrayList<String>();
-			for (String o : obj)
-				names.add(o);
-			return names;
-		} catch (IOException e) {
-			return null;
-		}
-	}
-	
-	
 	//page that displays the list of problem categories
 	//@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
 	/*@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
