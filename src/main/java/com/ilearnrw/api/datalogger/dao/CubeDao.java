@@ -36,7 +36,7 @@ public interface CubeDao {
 
 	int getLastSessionIdByType(String username, SessionType type);
 
-	int createSession(SessionType type, String value, Timestamp timestamp, String username);
+	int createSession(SessionType type, String value, Timestamp timestamp, String username, String supervisor);
 
 	ListWithCount<Session> getUserSessionsByType(String username, String type, String timestart, String timeend, boolean count);
 
