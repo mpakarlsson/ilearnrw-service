@@ -26,7 +26,7 @@ public class LogEntry implements Serializable {
 
 	public LogEntry(String username, String applicationId, Timestamp timestamp,
 			String tag, String word, int problemCategory, int problemIndex,
-			float duration, String level, String mode, String value) {
+			float duration, String level, String mode, String value, String supervisor) {
 
 		this.username = username;
 		this.applicationId = applicationId;
@@ -39,7 +39,7 @@ public class LogEntry implements Serializable {
 		this.mode = mode;
 		this.value = value;
 		this.timestamp = timestamp;
-
+		this.supervisor = supervisor;
 	}
 
 	/**
@@ -100,6 +100,10 @@ public class LogEntry implements Serializable {
 	@JsonProperty("mode")
 	private String mode;
 
+	@JsonProperty("supervisor")
+	private String supervisor;
+	
+
 	public String getUsername() {
 		return username;
 	}
@@ -151,6 +155,9 @@ public class LogEntry implements Serializable {
 		return mode;
 	}
 
+	public String getSupervisor() {
+		return supervisor;
+	}
 	@Override
 	public String toString() {
 		return "LogEntry [username=" + username + ", tag=" + tag + ", value="

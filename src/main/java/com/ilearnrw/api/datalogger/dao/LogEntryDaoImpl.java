@@ -59,7 +59,7 @@ public class LogEntryDaoImpl implements LogEntryDao {
 		parameters.put("level", entry.getLevel());
 		parameters.put("mode", entry.getMode());
 		parameters.put("value", entry.getValue());
-
+		parameters.put("supervisor", entry.getSupervisor());
 
 		Number newId = insert.executeAndReturnKey(parameters);
 
@@ -236,7 +236,8 @@ public class LogEntryDaoImpl implements LogEntryDao {
 										rs.getFloat("duration"),
 										rs.getString("level"),
 										rs.getString("mode"),
-										rs.getString("value")
+										rs.getString("value"),
+										rs.getString("supervisor")
 										);
 								add(log);
 							}

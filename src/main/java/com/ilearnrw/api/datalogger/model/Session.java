@@ -13,14 +13,16 @@ public class Session implements Serializable {
 	private String name;
 	private Timestamp start;
 	private String username; 
+	private String supervisor; 
 	
-	public Session(int id, char sessionType, String name, Timestamp start, String username) {
+	public Session(int id, char sessionType, String name, Timestamp start, String username, String supervisor) {
 		super();
 		this.id = id;
 		this.sessionType = sessionType;
 		this.name = name;
 		this.start = start;
 		this.username = username;
+		this.setSupervisor(supervisor);
 	}
 	
 	public Session() {
@@ -57,6 +59,14 @@ public class Session implements Serializable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getSupervisor() {
+		return supervisor;
+	}
+
+	public void setSupervisor(String supervisor) {
+		this.supervisor = supervisor;
 	}
 	
 	

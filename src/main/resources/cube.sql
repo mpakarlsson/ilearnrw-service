@@ -33,6 +33,7 @@ CREATE TABLE `sessions` (
   `name` varchar(100) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
+  `supervisor` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci$$
 

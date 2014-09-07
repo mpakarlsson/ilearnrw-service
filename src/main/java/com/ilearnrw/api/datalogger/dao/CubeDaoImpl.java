@@ -199,13 +199,14 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public int createSession(SessionType type, String value,
-			Timestamp timestamp, String username) {
+			Timestamp timestamp, String username, String supervisor) {
 
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
 		parameters.put("sessiontype", SessionType.toChar(type));
 		parameters.put("name", value);
 		parameters.put("start", timestamp);
 		parameters.put("username", username);
+		parameters.put("supervisor", supervisor);
 
 		return insertAndReturnKey("sessions", parameters);
 	}
