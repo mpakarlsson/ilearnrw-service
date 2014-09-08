@@ -19,17 +19,16 @@ function appendQuestion(fname, cluster, obj) {
 	var element = document.createElement('div');
 	element.setAttribute("id", 'question'+obj.id);
 	element.setAttribute('class', 'question_box');
-	var str = '';
-	for (var j=0; j<obj.relatedWords.length-1; j++){
-		str = str+obj.relatedWords[j]+', ';
-	}
-	if (obj.relatedWords.length>0)
-		str = str+obj.relatedWords[obj.relatedWords.length-1];
-	element.innerHTML = 'Question #'+lastItemPosition+'<textarea id="the_question'+obj.id+'" class="question_text" disabled>'+
-	obj.question+'</textarea>Related Words<textarea id="the_words'+obj.id+'" class="rel_words_text" disabled>'+str+'</textarea>'+
-	   '<div id="hereiam'+obj.id+'"></div>'+
-	'<button type="button" onclick="deleteQuestion('+fname.toString()+', '+cluster+', '+obj.id+')">Delete</button>'+
-	'<button type="button" onclick="switchButtonState(this, '+fname+', '+cluster+', '+obj.id+')">Edit</button>';
+	var str = wordPacks(obj.id, obj.relatedWords, '');
+
+	element.innerHTML = 'Question #'+lastItemPosition+
+		'<textarea id="the_question'+obj.id+'" class="question_text" disabled>'+obj.question+'</textarea>'+
+		'Related Words<div id="rel_words_container'+obj.id+'" class="rel_words_div">'+str+'</div>'+
+		'<div id="hereiam'+obj.id+'"></div><table><tr><td>'+
+		'<button type="button" class="typeahead-button" onclick="deleteQuestion('+fname.toString()+', '+cluster+', '+obj.id+')">'+
+		'Delete</button></td><td>'+
+		'<button type="button" class="typeahead-button" onclick="switchButtonState(this, '+fname+', '+cluster+', '+obj.id+')">'+
+		'Edit</button></td></tr></table>';
 	document.getElementById('questionsListDiv').appendChild(element);
 };
 
@@ -38,28 +37,70 @@ function loadAddQuestionField(fname, cluster) {
 	element.setAttribute("id", 'addquestion');
 	element.setAttribute('class', 'question_box');
 	element.innerHTML = 'Question:<textarea name="vrow" id="newQuestion" class="question_text" ></textarea>'+
-	   'Related Words:<textarea name="vrow" id="newRelatedWords" class="rel_words_text" ></textarea>'+
-	   '<div id="hereiam'+'"></div>'+
-	   '<button type="button" onclick="saveQuestion('+fname.toString()+', '+cluster+')" class="ph-button ph-btn-blue">Add</button>';
+		'Related Words<div id="newQuestionRelatedWords" class="rel_words_div"></div>'+
+		'<div id="hereiam"></div>'+
+		'<button type="button" class="typeahead-button" onclick="saveQuestion('+fname.toString()+', '+cluster+')">Add</button>';
 	document.getElementById('addQuestionsDiv').appendChild(element);
-	suggestWords('hereiam', 'itsme', clusterWords);
+	suggestWords('hereiam', 'itsme', clusterWords, 'newQuestionRelatedWords');
 	gogo('itsme');
 };
 
 function switchButtonState(button, fname, cluster, id){
+	var words = readAllSpanTexts('rel_words_container'+id);
 	if (button.textContent == 'Edit'){
+		str = wordPacks(id, words, 'box');
 		document.getElementById('the_question'+id).disabled = false;
-		document.getElementById('the_words'+id).disabled = false;
-		suggestWords('hereiam'+id, 'thisisme', clusterWords);
+		document.getElementById('rel_words_container'+id).innerHTML = str;
+		suggestWords('hereiam'+id, 'thisisme', clusterWords, 'rel_words_container'+id);
 		gogo('thisisme');
 		button.textContent = 'Done';
 	}
 	else{
+		str = wordPacks(id, words, '');
+		document.getElementById('rel_words_container'+id).innerHTML = str;
 		updateQuestion(fname, cluster, id);
 		document.getElementById('the_question'+id).disabled = true;
-		document.getElementById('the_words'+id).disabled = true;
+		document.getElementById('hereiam'+id).innerHTML = '';
 		button.textContent = 'Edit';
 	}
+};
+
+function appendNewWord(id, newWord){
+	var words = readAllSpanTexts(id);
+	words.push(newWord);
+	str = wordPacks(id, words, 'box');
+	document.getElementById(id).innerHTML = str;
+}
+
+function readAllSpanTexts(id){
+	words = [];
+	var div = document.getElementById(id);
+	var spans = div.getElementsByTagName("span");
+	for(var i=0;i<spans.length;i++){
+	  words.push(spans[i].innerHTML);
+	}
+	return words;
+};
+
+function wordPacks(id, words, type){
+	var items = '';
+	if (type == 'box'){
+		for (var j=0; j<words.length; j++){
+			items = items+'<div class="inline-link-1" id = "'+id+'_'+j+'"><span>'+words[j]+'</span>'+
+			'<a href="PleaseEnableJavascript.html" title="Click to delete the word" onclick="removeWord(\''+id+'_'+j+'\');return false;">[x]</a></div>';
+		}
+	}
+	else{
+		for (var j=0; j<words.length; j++){
+			items = items+'<span>'+words[j]+'</span> ';
+		}
+	}
+	return items;
+};
+
+function removeWord(id){
+	var div = document.getElementById(id);
+	div.innerHTML = '';
 };
 
 function filenamesList(json) {
@@ -160,7 +201,8 @@ function getNewQuestionData() {
 
 function getEditedQuestionData(theId) {
 	var q = document.getElementById('the_question'+theId).value.replace("\n", "\\n").replace("\t", "\\t");
-	var r = (document.getElementById('the_words'+theId).value.replace("\n", "\\n")).replace("\t", "\\t").split('#');
+	var r = readAllSpanTexts('rel_words_container'+theId);
+	//var r = (document.getElementById('the_words'+theId).value.replace("\n", "\\n")).replace("\t", "\\t").split(' ');
 	var data = {
 			question: q,
 			relatedWords: r,

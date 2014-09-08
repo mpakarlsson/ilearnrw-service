@@ -19,13 +19,6 @@
 </head>
 <body>
 
-<div id="testara">
-</div>
-<script>
-suggestWords('testara', 'itsme', '${clusterWords}');
-gogo('itsme');
-</script>
-
 <div id="navcontainer">
 <ul id="navlist">
 <li><a href="${pageContext.request.contextPath}/apps/screening">Home</a></li>
