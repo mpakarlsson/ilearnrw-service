@@ -63,11 +63,12 @@ function readAllSpanTexts(id){
 	return curWords;
 };
 
-function randomWordPacks(id, curWords, type){
+function randomWordPacks(id, curWords, startId){
 	var items = '';
 	for (var j=0; j<curWords.length; j++){
-		items = items+'<div class="inline-link-2" id = "'+id+'_'+j+'"><span>'+curWords[j]+'</span>'+
-		'<a href="PleaseEnableJavascript.html" title="Click to delete the word" onclick="removeWord(\''+id+'_'+j+'\');return false;">[x]</a></div>';
+		items = items+'<div class="inline-link-2" id = "'+id+'_'+(j+startId)+'"><span>'+curWords[j]+'</span>'+
+		'<a href="PleaseEnableJavascript.html" title="Click to delete the word" '+
+		'onclick="removeWord(\''+id+'_'+(j+startId)+'\');return false;">[x]</a></div>';
 	}
 	return items;
 } 
@@ -90,9 +91,12 @@ function wordPacks(id, curWords, type){
 
 function appendRandomWordsToTest(id){
 	var curWords = readAllSpanTexts(id);
+	var lastId = 0;
 	var str = '';
-	if (curWords != null)
+	if (curWords != null){
 		str = wordPacks(id, curWords, 'box');
+		lastId = curWords.length;
+	}
 	curWords = [];
 	wordsToPick = words;
 	while (wordsToPick.length>0 && curWords.length<50){
@@ -100,7 +104,7 @@ function appendRandomWordsToTest(id){
 		var t = wordsToPick.splice(randomnumber, 1);
 		curWords.push(t);
 	}
-	str = str+randomWordPacks(id, curWords, 'box');
+	str = str+randomWordPacks(id, curWords, lastId);
 	document.getElementById(id).innerHTML = str;
 };
 

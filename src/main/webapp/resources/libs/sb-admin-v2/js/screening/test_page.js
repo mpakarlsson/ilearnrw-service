@@ -71,6 +71,7 @@ function sendStudentsAnswers(user, userId) {
 		array.push(log);
 	}
 	httpPost(ilearnurl+"/setupstudent?userId="+userId, JSON.stringify(array));
+	alert('Data Sent!');
 };
 
 function httpGet(theUrl){
@@ -86,7 +87,7 @@ function httpPost(theUrl, jsondata){
     var xmlHttp = null;
 
     xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("POST", theUrl, true);
+    xmlHttp.open("POST", theUrl, false);
     xmlHttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
     // send the collected data as JSON

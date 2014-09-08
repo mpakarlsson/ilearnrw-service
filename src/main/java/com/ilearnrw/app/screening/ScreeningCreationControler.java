@@ -81,10 +81,10 @@ public class ScreeningCreationControler {
 		st.storeTest("data/EN_testing_screening.json");*/
 		
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		
 		if (stl.getFilenames().contains(fname))
-			st.loadTest(ScreeningResources.path+fname+".json");
+			st.loadTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
 		
 		model.put("showAll", st.getClusterQuestions(currentCluster) == null);
 		model.put("cluster", currentCluster);
@@ -122,10 +122,10 @@ public class ScreeningCreationControler {
 		ScreeningTest st = new ScreeningTest();
 
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		
 		if (stl.getFilenames().contains(fname))
-			st.loadTest(ScreeningResources.path+fname+".json");
+			st.loadTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
 
 		model.put("fname", fname);
 		model.put("profileClusters", pc);
@@ -149,8 +149,8 @@ public class ScreeningCreationControler {
 		
 		if (teacherStudentService.getStudentList(teacher).contains(student)){
 			ScreeningTestList stl = new ScreeningTestList();
-			stl.loadScreeningTestList(ScreeningResources.path+teacher.getLanguage()+"_test_list.json");
-			st.loadTest(ScreeningResources.path+stl.getDefaultTest()+".json");
+			stl.loadScreeningTestList(ScreeningResources.path+teacher.getLanguage()+"/test_list.json");
+			st.loadTest(ScreeningResources.path+teacher.getLanguage()+"/"+stl.getDefaultTest()+".json");
 			model.put("username", student.getUsername());
 			model.put("userId", userId);
 			model.put("profileClusters", pc);
@@ -172,22 +172,24 @@ public class ScreeningCreationControler {
 		User user = userService.getUser(teacherId);
 		ScreeningTest st = new ScreeningTest();
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		if (stl.getFilenames().contains(fname)){
-			st.loadTest(ScreeningResources.path+fname+".json");
+			st.loadTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
 			if (action.equalsIgnoreCase("add")){
-				int respId = st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
-				st.storeTest(ScreeningResources.path+fname+".json");
+				int respId = st.addQuestion(question.getQuestion(), question.getRelatedWords(), 
+						question.isAttachRelWords(), cluster);
+				st.storeTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
 				return respId;
 			}
 			else if (action.equalsIgnoreCase("delete")){
 				st.deleteQuestion(cluster, id);
-				st.storeTest(ScreeningResources.path+fname+".json");
+				st.storeTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
 				return id;
 			}
 			else if (action.equalsIgnoreCase("update")){
-				st.editQuestion(cluster, id, question.getQuestion(), question.getRelatedWords());
-				st.storeTest(ScreeningResources.path+fname+".json");
+				st.editQuestion(cluster, id, question.getQuestion(), question.getRelatedWords(), 
+						question.isAttachRelWords());
+				st.storeTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
 				return id;
 			}
 		}
@@ -203,13 +205,13 @@ public class ScreeningCreationControler {
 		int teacherId = (Integer)request.getSession().getAttribute("userid");
 		User user = userService.getUser(teacherId);
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		if (action.equalsIgnoreCase("addTest")){
 			stl.addNewTest(testName);
 			ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
 			ProfileClusters pc = new ProfileClusters(pdi);
 			ScreeningTest st = new ScreeningTest(pc);
-			st.storeTest(testName+".json");
+			st.storeTest(ScreeningResources.path+user.getLanguage()+"/"+testName+".json");
 		}
 		else if (action.equalsIgnoreCase("deleteTest")){
 			stl.deleteTest(testName);
@@ -217,7 +219,7 @@ public class ScreeningCreationControler {
 		else if (action.equalsIgnoreCase("defaultTest")){
 			stl.setDefaultTest(testName);
 		}
-		stl.storeScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
+		stl.storeScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		return stl;
 	}
 
@@ -231,8 +233,10 @@ public class ScreeningCreationControler {
 		User user = userService.getUser(userId);
 		int teacherId = (Integer)request.getSession().getAttribute("userid");
 		if (logs != null){
-			for (LogEntry t: logs)
+			for (LogEntry t: logs){
 				logEntryService.insertData(t);
+				System.err.println(t.toString());
+			}
 			//dataloggerController.addLogs(logs);
 		}
 		//LogEntry le = new LogEntry(user.getUsername(), "PROFILE_SETUP", new Timestamp(date.getTime()), 

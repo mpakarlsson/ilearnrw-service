@@ -142,14 +142,23 @@ public class SetupController {
 			greekteacher.setEnabled(true);
 			users.add(greekteacher);
 			
-			User expert = new User();
-			expert.setUsername("expert");
-			expert.setPassword("test");
-			expert.setBirthdate(new Date());
-			expert.setLanguage("EN");
-			expert.setGender("M");
-			expert.setEnabled(true);
-			users.add(expert);
+			User englishexpert = new User();
+			englishexpert.setUsername("expert");
+			englishexpert.setPassword("test");
+			englishexpert.setBirthdate(new Date());
+			englishexpert.setLanguage("EN");
+			englishexpert.setGender("M");
+			englishexpert.setEnabled(true);
+			users.add(englishexpert);
+			
+			User greekexpert = new User();
+			greekexpert.setUsername("expertidis");
+			greekexpert.setPassword("test");
+			greekexpert.setBirthdate(new Date());
+			greekexpert.setLanguage("GR");
+			greekexpert.setGender("M");
+			greekexpert.setEnabled(true);
+			users.add(greekexpert);
 
 			createUsers(users);
 
@@ -178,7 +187,8 @@ public class SetupController {
 			
 			List<Role> expertRole = new ArrayList<Role>();
 			expertRole.add(roleService.getRole("ROLE_EXPERT"));
-			roleService.setRoleList(expert, expertRole);
+			roleService.setRoleList(englishexpert, expertRole);
+			roleService.setRoleList(greekexpert, expertRole);
 			outputLog.add("Added roles for expert");
 
 			permissionService.setPermissionList(roleService
@@ -200,7 +210,8 @@ public class SetupController {
 			
 			teacherStudentService.setStudentList(englishteacher, Arrays.asList(joe_t, sue_t));
 			teacherStudentService.setStudentList(greekteacher, Arrays.asList(maria_b, giorgos_e));
-			expertTeacherService.setTeacherList(expert, Arrays.asList(englishteacher, greekteacher));
+			expertTeacherService.setTeacherList(englishexpert, Arrays.asList(englishteacher));
+			expertTeacherService.setTeacherList(greekexpert, Arrays.asList(greekteacher));
 			
 		} catch (Exception e) {
 			outputLog.add("Exception: " + e.getMessage());

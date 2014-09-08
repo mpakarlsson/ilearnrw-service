@@ -24,7 +24,10 @@ function appendQuestion(fname, cluster, obj) {
 	element.innerHTML = 'Question #'+lastItemPosition+
 		'<textarea id="the_question'+obj.id+'" class="question_text" disabled>'+obj.question+'</textarea>'+
 		'Words to test<div id="rel_words_container'+obj.id+'" class="rel_words_div">'+str+'</div>'+
-		'<div id="hereiam'+obj.id+'"></div><table><tr><td>'+
+		'<input type="checkbox" id="attachWords'+obj.id+'" value="attach" '+
+		(obj.attachRelWords == true?'checked':'')+' disabled> Attach \'words to test\' to the question ['+(obj.attachRelWords == true?'Yes':'No')+']<br>'+
+		'<div id="hereiam'+obj.id+'">'+
+		'</div><table><tr><td>'+
 		'<button type="button" class="typeahead-button" onclick="deleteQuestion('+fname.toString()+', '+cluster+', '+obj.id+')">'+
 		'Delete</button></td><td>'+
 		'<button type="button" class="typeahead-button" onclick="switchButtonState(this, '+fname+', '+cluster+', '+obj.id+')">'+
@@ -38,6 +41,7 @@ function loadAddQuestionField(fname, cluster) {
 	element.setAttribute('class', 'question_box');
 	element.innerHTML = 'Question:<textarea name="vrow" id="newQuestion" class="question_text" ></textarea>'+
 		'Words to test<div id="newQuestionRelatedWords" class="rel_words_div"></div>'+
+		'<input type="checkbox" id="attachWords" value="attach" checked> Attach \'words to test\' to the question<br>'+
 		'<div id="hereiam"></div>'+
 		'<button type="button" class="typeahead-button" onclick="saveQuestion('+fname.toString()+', '+cluster+')">Add</button>';
 	document.getElementById('addQuestionsDiv').appendChild(element);
@@ -50,6 +54,7 @@ function switchButtonState(button, fname, cluster, id){
 	if (button.textContent == 'Edit'){
 		str = wordPacks(id, words, 'box');
 		document.getElementById('the_question'+id).disabled = false;
+		document.getElementById('attachWords'+id).disabled = false;
 		document.getElementById('rel_words_container'+id).innerHTML = str;
 		suggestWords('hereiam'+id, 'thisisme', clusterWords, 'rel_words_container'+id);
 		gogo('thisisme');
@@ -60,6 +65,7 @@ function switchButtonState(button, fname, cluster, id){
 		document.getElementById('rel_words_container'+id).innerHTML = str;
 		updateQuestion(fname, cluster, id);
 		document.getElementById('the_question'+id).disabled = true;
+		document.getElementById('attachWords'+id).disabled = true;
 		document.getElementById('hereiam'+id).innerHTML = '';
 		button.textContent = 'Edit';
 	}
@@ -142,7 +148,7 @@ function saveQuestion(fname, cluster) {
 	data = getNewQuestionData();
 	id = httpPost(ilearnurl+"/updatecluster?fname="+fname+"&cluster="+cluster+"&action=add", JSON.stringify(data));
 	data.id = id;
-	appendQuestion(fname, cluster, data);
+	appendQuestion('\''+fname+'\'', cluster, data);
 	clearAddQuestionField();
 };
 
@@ -165,21 +171,25 @@ function getNewQuestionData() {
 	var q = document.getElementById('newQuestion').value.replace("\n", "\\n").replace("\t", "\\t");
 	//var r = (document.getElementById('newRelatedWords').value.replace("\n", "\\n")).replace("\t", "\\t").split('#');
 	var r = readAllSpanTexts('newQuestionRelatedWords');
+	var a = document.getElementById('attachWords').checked;
 	var data = {
 			question: q,
 			relatedWords: r,
+			attachRelWords: a,
 			id: -1
 	};
 	return data;
 };
 
 function getEditedQuestionData(theId) {
+	alert(document.getElementById('attachWords'+theId).checked);
 	var q = document.getElementById('the_question'+theId).value.replace("\n", "\\n").replace("\t", "\\t");
 	var r = readAllSpanTexts('rel_words_container'+theId);
-	//var r = (document.getElementById('the_words'+theId).value.replace("\n", "\\n")).replace("\t", "\\t").split(' ');
+	var a = document.getElementById('attachWords'+theId).checked;
 	var data = {
 			question: q,
 			relatedWords: r,
+			attachRelWords: a,
 			id: -1
 	};
 	return data;
