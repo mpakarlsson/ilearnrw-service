@@ -567,6 +567,7 @@ public class UserManagerController {
 			users.add(teacher);
 			users.addAll(teacherStudentService.getStudentList(teacher));
 		}
+		users.addAll(teacherStudentService.getUnassignedStudentsList());
 		List<UserRole> userRoles = new ArrayList<UserRole>();
 		for (User user : users)
 		{
