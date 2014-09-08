@@ -31,7 +31,7 @@ function setWords(json){
 	}
 };
 
-function suggestWords(parrentDivId, divId, clusterWords){
+function suggestWords(parrentDivId, divId, clusterWords, target){
 	w = document.getElementById(divId);
 	if (w != null)
 		document.getElementById(divId).parentNode.innerHTML = '';
@@ -41,10 +41,13 @@ function suggestWords(parrentDivId, divId, clusterWords){
 	}
 	var element = document.createElement('div');
 	element.setAttribute("id", divId);
-	str = '<input class="typeahead" type="text" placeholder="Suggestions">';
+
+	str = '<table><tr><td><input id="addWord'+divId+'" class="typeahead" type="text" placeholder="Suggestions">'+
+		'</td><td><button type="button" class="typeahead-button" onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td></tr></table>';
 	element.innerHTML = str;
-	document.getElementById(parrentDivId).innerHTML = '';
-	document.getElementById(parrentDivId).appendChild(element);
+	var parrent = document.getElementById(parrentDivId);
+	parrent.innerHTML = '';
+	parrent.appendChild(element);
 };
 
 function gogo(divId){
@@ -58,4 +61,8 @@ $('#'+divId+' .typeahead').typeahead({
 	  displayKey: 'value',
 	  source: substringMatcher(words)
 	});
+};
+
+function getWord(id){
+	return document.getElementById(id).value;
 };
