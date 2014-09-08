@@ -295,14 +295,14 @@ public class UserManagerController {
 		userService.updateData(userForm.getUser());
 		roleService
 				.setRoleList(userForm.getUser(), userForm.getSelectedRoles());
-		return "redirect:/apps/panel";
+		return "redirect:/apps/users/manage";
 	}
 
 	@RequestMapping(value = "users/{id}/delete", method = RequestMethod.GET)
 	@Transactional
 	public String deleteUser(@PathVariable int id) {
 		userService.deleteData(id);
-		return "redirect:/apps/panel";
+		return "redirect:/apps/users/manage";
 	}
 
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
@@ -342,7 +342,7 @@ public class UserManagerController {
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
-		return "redirect:/apps/panel";
+		return "redirect:/apps/users/manage";
 	}
 
 	/* Roles */
@@ -387,14 +387,14 @@ public class UserManagerController {
 		roleService.updateData(roleForm.getRole());
 		permissionService.setPermissionList(roleForm.getRole(),
 				roleForm.getSelectedPermissions());
-		return "redirect:/apps/panel";
+		return "redirect:/apps/roles/manage";
 	}
 
 	@RequestMapping(value = "roles/{id}/delete", method = RequestMethod.GET)
 	@Transactional
 	public String deleteRole(@PathVariable int id) {
 		roleService.deleteData(id);
-		return "redirect:/apps/panel";
+		return "redirect:/apps/roles/manage";
 	}
 
 	@RequestMapping(value = "roles/new", method = RequestMethod.GET)
@@ -413,7 +413,7 @@ public class UserManagerController {
 		roleService.insertData(role);
 
 		model.put("message", "inserted");
-		return "redirect:/apps/panel";
+		return "redirect:/apps/roles/manage";
 	}
 
 	/* Permissions */
@@ -441,14 +441,14 @@ public class UserManagerController {
 		if (result.hasErrors())
 			return "permissions/form.update";
 		permissionService.updateData(permission);
-		return "redirect:/apps/panel";
+		return "redirect:/apps/permissions/manage";
 	}
 
 	@RequestMapping(value = "permissions/{id}/delete", method = RequestMethod.GET)
 	@Transactional
 	public String deletePermission(@PathVariable int id) {
 		permissionService.deleteData(id);
-		return "redirect:/apps/panel";
+		return "redirect:/apps/permissions/manage";
 	}
 
 	@RequestMapping(value = "permissions/new", method = RequestMethod.GET)
@@ -469,7 +469,7 @@ public class UserManagerController {
 		permissionService.insertData(permission);
 
 		model.put("message", "inserted");
-		return "redirect:/apps/panel";
+		return "redirect:/apps/permissions/manage";
 	}
 
 	/* Teachers */
