@@ -1,6 +1,9 @@
 package com.ilearnrw.app.usermanager.form;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.ilearnrw.common.security.users.model.User;
 
@@ -9,7 +12,9 @@ public class UserNewForm {
 	User user;
 	@Valid
 	Birthdate birthdate;
-	boolean teacher;
+	@Valid
+	@NotEmpty
+	String role;
 	
 	public Birthdate getBirthdate() {
 		return birthdate;
@@ -23,10 +28,10 @@ public class UserNewForm {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	public boolean getTeacher() {
-		return teacher;
+	public String getRole() {
+		return role;
 	}
-	public void setTeacher(boolean isTeacher) {
-		this.teacher = isTeacher;
+	public void setRole(String role) {
+		this.role = role;
 	}
 }

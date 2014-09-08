@@ -66,17 +66,17 @@
 								</div>
 							</spring:bind>
 
-							<spring:bind path="user.birthdate">
+							<spring:bind path="birthdate">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
-									<label class="col-sm-2 control-label" for="birthdate">Birth
-										Date</label>
-									<div class="col-sm-10" id="birthdatepicker">
-										<fieldset id="birthdate" class='birthday-picker'>
-											<div class="col-sm-3">
+									<fieldset id="birthdate" class='birthday-picker'>
+										<label class="col-sm-2 control-label" for="birthdate">Birth
+											Date</label>
+										<div class="col-sm-10" id="birthdatepicker">
+											<div class="col-sm-4">
 												<form:select type="text" id="date" class="form-control"
 													placeholder="day" path="birthdate.date" required="true" />
 											</div>
-											<div class="col-sm-3">
+											<div class="col-sm-4">
 												<form:select type="text" id="month" class="form-control"
 													placeholder="month" path="birthdate.month" required="true" />
 											</div>
@@ -84,10 +84,11 @@
 												<form:select type="text" id="year" class="form-control"
 													placeholder="year" path="birthdate.year" required="true" />
 											</div>
-										</fieldset>
-										<form:errors path="birthdate" class="help-block"
-											for="birthdate" />
-									</div>
+											<form:errors path="birthdate" class="help-block"
+												for="birthdate" />
+
+										</div>
+									</fieldset>
 								</div>
 							</spring:bind>
 
@@ -145,14 +146,36 @@
 								</div>
 							</spring:bind>
 
-							<div class="form-group">
-								<div class="col-sm-offset-2 col-sm-10">
-									<div class="checkbox">
-										<label> <form:checkbox path="teacher" /> Is teacher
-										</label>
+							<spring:bind path="role">
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">Role</label>
+									<div class="col-sm-10">
+										<fieldset>
+											<div class="radio">
+												<label> <form:radiobutton name="role" path="role"
+														value="admin" />Admin
+												</label>
+											</div>
+											<div class="radio">
+												<label> <form:radiobutton name="role" path="role"
+														value="expert" />Expert
+												</label>
+											</div>
+											<div class="radio">
+												<label> <form:radiobutton name="role" path="role"
+														value="teacher" />Teacher
+												</label>
+											</div>
+											<div class="radio">
+												<label> <form:radiobutton name="role" path="role"
+														value="student" />Student
+												</label>
+											</div>
+										</fieldset>
+										<form:errors path="role" class="help-block" for="role" />
 									</div>
 								</div>
-							</div>
+							</spring:bind>
 
 							<button type="submit" class="btn btn-primary">Submit</button>
 						</form:form>

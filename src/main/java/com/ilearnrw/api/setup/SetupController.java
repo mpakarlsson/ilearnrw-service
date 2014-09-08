@@ -22,6 +22,7 @@ import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderExc
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
 import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.ExpertTeacherService;
 import com.ilearnrw.common.security.users.services.PermissionService;
 import com.ilearnrw.common.security.users.services.RoleService;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
@@ -41,6 +42,9 @@ public class SetupController {
 	
 	@Autowired
 	TeacherStudentService teacherStudentService;
+	
+	@Autowired
+	ExpertTeacherService expertTeacherService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -137,6 +141,15 @@ public class SetupController {
 			greekteacher.setGender("F");
 			greekteacher.setEnabled(true);
 			users.add(greekteacher);
+			
+			User expert = new User();
+			expert.setUsername("expert");
+			expert.setPassword("test");
+			expert.setBirthdate(new Date());
+			expert.setLanguage("EN");
+			expert.setGender("M");
+			expert.setEnabled(true);
+			users.add(expert);
 
 			createUsers(users);
 
@@ -161,7 +174,12 @@ public class SetupController {
 			teacherRole.add(roleService.getRole("ROLE_TEACHER"));
 			roleService.setRoleList(englishteacher, teacherRole);
 			roleService.setRoleList(greekteacher, teacherRole);
-			outputLog.add("Added roles for teacher");
+			outputLog.add("Added roles for teachers");
+			
+			List<Role> expertRole = new ArrayList<Role>();
+			expertRole.add(roleService.getRole("ROLE_EXPERT"));
+			roleService.setRoleList(expert, expertRole);
+			outputLog.add("Added roles for expert");
 
 			permissionService.setPermissionList(roleService
 					.getRole("ROLE_ADMIN"), Arrays.asList(
@@ -175,9 +193,14 @@ public class SetupController {
 					.getRole("ROLE_TEACHER"), Arrays.asList(
 					permissionService.getPermission("PERMISSION_DEFAULT"),
 					permissionService.getPermission("PERMISSION_TEACHER")));
+			permissionService.setPermissionList(roleService
+					.getRole("ROLE_EXPERT"), Arrays.asList(
+					permissionService.getPermission("PERMISSION_DEFAULT"),
+					permissionService.getPermission("PERMISSION_EXPERT")));
 			
 			teacherStudentService.setStudentList(englishteacher, Arrays.asList(joe_t, sue_t));
 			teacherStudentService.setStudentList(greekteacher, Arrays.asList(maria_b, giorgos_e));
+			expertTeacherService.setTeacherList(expert, Arrays.asList(englishteacher, greekteacher));
 			
 		} catch (Exception e) {
 			outputLog.add("Exception: " + e.getMessage());
@@ -221,6 +244,10 @@ public class SetupController {
 		perm = new Permission("4");
 		perm.setName("PERMISSION_STUDENT");
 		permissions.add(perm);
+		
+		perm = new Permission("5");
+		perm.setName("PERMISSION_EXPERT");
+		permissions.add(perm);
 
 		for (Permission p : permissions) {
 			Permission existingPermission = permissionService.getPermission(p
@@ -254,6 +281,10 @@ public class SetupController {
 
 		role = new Role();
 		role.setName("ROLE_TEACHER");
+		roles.add(role);
+		
+		role = new Role();
+		role.setName("ROLE_EXPERT");
 		roles.add(role);
 
 		for (Role r : roles) {

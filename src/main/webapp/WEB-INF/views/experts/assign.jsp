@@ -23,24 +23,24 @@
 				<div class="col-lg-12">
 					<h1 class="page-header">
 						Assigned students for
-						<c:out value="${teacherStudentForm.teacher.username}"></c:out>
+						<c:out value="${expertTeacherForm.expert.username}"></c:out>
 					</h1>
 				</div>
 			</div>
 			<form:form action="assign" method="POST"
-				modelAttribute="teacherStudentForm" class="form-horizontal"
+				modelAttribute="expertTeacherForm" class="form-horizontal"
 				role="form">
 				<div class="row">
-					<c:if test="${not empty teacherStudentForm.allStudents}">
+					<c:if test="${not empty expertTeacherForm.allTeachers}">
 						<div class="row">
 							<div class="panel panel-info">
-								<div class="panel-heading">Students</div>
+								<div class="panel-heading">Teachers</div>
 								<div class="panel-body">
 									<fieldset>
-										<label class="col-sm-2 control-label" for="roles">Students</label>
+										<label class="col-sm-2 control-label" for="roles">Teachers</label>
 										<div id="roles" class="col-sm-10">
 											<form:checkboxes element="div class='checkbox'"
-												items="${teacherStudentForm.allStudents}"
+												items="${expertTeacherForm.allTeachers}"
 												path="selectedStudents" itemLabel="username" itemValue="id"></form:checkboxes>
 										</div>
 									</fieldset>

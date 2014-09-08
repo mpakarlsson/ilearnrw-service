@@ -32,7 +32,7 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 	public List<User> getTeacherList() {
 		List<User> teacherList = new ArrayList<User>();
 
-		String sql = "select u.id, u.username from users u, role_members rm, roles r "
+		String sql = "select u.* from users u, role_members rm, roles r "
 				+ "where u.id = rm.members_id and rm.roles_id = r.id and r.name = 'ROLE_TEACHER' ";
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -45,7 +45,7 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 	public List<User> getAllStudentsList() {
 		List<User> studentList = new ArrayList<User>();
 
-		String sql = "select u.id, u.username from users u, role_members rm, roles r "
+		String sql = "select u.* from users u, role_members rm, roles r "
 				+ "where u.id = rm.members_id and rm.roles_id = r.id and r.name = 'ROLE_STUDENT' ";
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -53,12 +53,12 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 				User.class));
 		return studentList;
 	}
-	
+
 	@Override
 	public List<User> getUnassignedStudentsList() {
 		List<User> studentList = new ArrayList<User>();
 
-		String sql = "select u.id, u.username from users u, roles r, role_members rm "
+		String sql = "select u.* from users u, roles r, role_members rm "
 				+ "where u.id = rm.members_id and rm.roles_id = r.id and r.name = 'ROLE_STUDENT' "
 				+ "and u.id not in (select ts.student_id from teachers_students ts)";
 
@@ -72,7 +72,7 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 	public List<User> getStudentList(User teacher) {
 		List<User> studentList = new ArrayList<User>();
 
-		String sql = "select u.id, u.username from users u, teachers_students ts "
+		String sql = "select u.* from users u, teachers_students ts "
 				+ "where u.id = ts.student_id and ts.teacher_id = ?";
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -106,18 +106,28 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 	}
 
 	@Override
+	public void assignStudentToTeacher(User teacher, User student) {
+		String sql = "insert into teachers_students (teacher_id, student_id) values "
+				+ "((select id from users where username=?), "
+				+ "(select id from users where username=?));";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.update(sql, new Object[] { teacher, student });
+	}
+
+	@Override
 	public boolean isUserStudentOfTeacher(String userName, String teacherName) {
 		String sql = "select ts.* from teachers_students ts left join users u on u.id=ts.student_id "
 				+ "left join users t on t.id=ts.teacher_id "
 				+ "where t.username=:teachername and u.username=:username";
 		RowCountCallbackHandler countCallback = new RowCountCallbackHandler();
 
-		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(
+				dataSource);
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("username", userName);
 		parameters.put("teachername", teacherName);
 		jdbcTemplate.query(sql, parameters, countCallback);
-		
+
 		return (countCallback.getRowCount() > 0);
 
 	}

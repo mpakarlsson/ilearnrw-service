@@ -15,6 +15,8 @@ public interface TeacherStudentDao {
 	public List<User> getStudentList(User teacher);
 	
 	public void setStudentList(User teacher, List<User> students);
+	
+	public void assignStudentToTeacher(User teacher, User student);
 
 	public boolean isUserStudentOfTeacher(String userName, String teacherName);
 

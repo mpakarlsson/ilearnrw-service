@@ -29,6 +29,12 @@ CREATE TABLE `teachers_students` (
   PRIMARY KEY (`student_id`)
 );
 
+CREATE TABLE `experts_teachers` (
+  `expert_id` bigint(20) NOT NULL,
+  `teacher_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`teacher_id`)
+);
+
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `appId` VARCHAR(45) NULL,

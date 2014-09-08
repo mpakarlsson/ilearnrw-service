@@ -16,6 +16,8 @@ public interface TeacherStudentService {
 	
 	public void setStudentList(User teacher, List<User> students);
 	
+	public void assignStudentToTeacher(User teacher, User student);
+	
 	public boolean isUserStudentOfTeacher(String userName, String teacherName);
 
 }

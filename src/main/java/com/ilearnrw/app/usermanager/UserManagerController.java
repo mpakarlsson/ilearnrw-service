@@ -38,15 +38,18 @@ import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.app.usermanager.form.Birthdate;
+import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
+import com.ilearnrw.app.usermanager.form.UserRole;
 import com.ilearnrw.app.usermanager.form.UserRolesForm;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
 import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.ExpertTeacherService;
 import com.ilearnrw.common.security.users.services.PermissionService;
 import com.ilearnrw.common.security.users.services.RoleService;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
@@ -72,6 +75,9 @@ public class UserManagerController {
 
 	@Autowired
 	private TeacherStudentService teacherStudentService;
+	
+	@Autowired
+	private ExpertTeacherService expertTeacherService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -143,7 +149,18 @@ public class UserManagerController {
 	
 	@RequestMapping(value = "users/manage")
 	public String manageUsers(ModelMap modelMap) {
-		modelMap.addAttribute("users", userService.getUserList());
+		List<User> users = userService.getUserList();
+		List<UserRole> userRoles = new ArrayList<UserRole>();
+		for (User user : users)
+		{
+			List<Role> roles = roleService.getRoleList(user);
+			if (roles.size() == 1)
+				userRoles.add(new UserRole(user, roles.get(0).getName()));
+			else {
+				userRoles.add(new UserRole(user, "none"));
+			}
+		}
+		modelMap.addAttribute("users", userRoles);
 		return "users/manage";
 	}
 
@@ -307,7 +324,7 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserInsertForm(@Valid @ModelAttribute("userform") UserNewForm form) {
+	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form) {
 		return "users/form.insert";
 	}
 
@@ -316,6 +333,7 @@ public class UserManagerController {
 	public String insertUser(@Valid @ModelAttribute("userform") UserNewForm form,
 			BindingResult result, ModelMap model) throws ProfileProviderException {
 
+		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		User user = form.getUser();
 		Calendar cal = Calendar.getInstance();
 	    cal.set(Calendar.YEAR, form.getBirthdate().getYear());
@@ -338,8 +356,24 @@ public class UserManagerController {
 		if (result.hasErrors())
 			return "users/form.insert";
 		int userId = userService.insertData(user);
-		if (form.getTeacher())
+		if (form.getRole().equals("admin"))
+		{
+			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_ADMIN")));
+		}
+		else if (form.getRole().equals("expert"))
+		{
+			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_EXPERT")));
+		}
+		else if (form.getRole().equals("teacher"))
+		{
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
+			if (roleService.getRoleList(current).contains("ROLE_EXPERT"))
+				expertTeacherService.assignTeacherToExpert(current, user);
+		}
+		else if (form.getRole().equals("student"))
+		{
+			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_STUDENT")));
+		}
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
 		return "redirect:/apps/users/manage";
@@ -505,7 +539,75 @@ public class UserManagerController {
 	
 	@RequestMapping(value = "teachers/manage")
 	public String manageStudents(ModelMap modelMap) {
-		return "teachers/manage";
+		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<User> users = teacherStudentService.getStudentList(current);
+		List<UserRole> userRoles = new ArrayList<UserRole>();
+		for (User user : users)
+		{
+			List<Role> roles = roleService.getRoleList(user);
+			if (roles.size() == 1)
+				userRoles.add(new UserRole(user, roles.get(0).getName()));
+			else {
+				userRoles.add(new UserRole(user, "none"));
+			}
+		}
+		modelMap.addAttribute("users", userRoles);
+		return "users/manage";
+	}
+	
+	/* Experts */
+	
+	@RequestMapping(value = "experts/manage")
+	public String manageTeachers(ModelMap modelMap) {
+		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<User> teachers = expertTeacherService.getTeacherList(current);
+		List<User> users = new ArrayList<User>();
+		for (User teacher : teachers)
+		{
+			users.add(teacher);
+			users.addAll(teacherStudentService.getStudentList(teacher));
+		}
+		List<UserRole> userRoles = new ArrayList<UserRole>();
+		for (User user : users)
+		{
+			List<Role> roles = roleService.getRoleList(user);
+			if (roles.size() == 1)
+				userRoles.add(new UserRole(user, roles.get(0).getName()));
+			else {
+				userRoles.add(new UserRole(user, "none"));
+			}
+		}
+		modelMap.addAttribute("users", userRoles);
+		return "users/manage";
+	}
+	
+	@RequestMapping(value = "experts/{id}/assign", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String viewExpertsAssignForm(@PathVariable int id, ModelMap model) {
+		User expert = userService.getUser(id);
+		ExpertTeacherForm expertTeacherForm = new ExpertTeacherForm();
+		expertTeacherForm.setExpert(expert);
+		List<User> unassignedTeachersList = expertTeacherService
+				.getUnassignedTeachersList();
+		unassignedTeachersList.addAll(expertTeacherService.getTeacherList(expert));
+		expertTeacherForm.setAllTeachers(unassignedTeachersList);
+		expertTeacherForm.setSelectedTeachers(expertTeacherService
+				.getTeacherList(expert));
+		model.put("expertTeacherForm", expertTeacherForm);
+		return "experts/assign";
+	}
+
+	@RequestMapping(value = "experts/{id}/assign", method = RequestMethod.POST)
+	@Transactional
+	public String viewExpertsAssignForm(
+			@PathVariable int id,
+			@ModelAttribute("expertTeacherForm") ExpertTeacherForm expertTeacherForm,
+			BindingResult result, ModelMap model, HttpServletRequest request) {
+		User expert = userService.getUser(id);
+		expertTeacherService.setTeacherList(expert,
+				expertTeacherForm.getSelectedTeachers());
+		request.getSession().setAttribute("teachers", expertTeacherService.getTeacherList(expert));
+		return "redirect:/apps/panel";
 	}
 
 }

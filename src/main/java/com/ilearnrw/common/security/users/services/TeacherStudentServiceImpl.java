@@ -39,6 +39,11 @@ public class TeacherStudentServiceImpl implements TeacherStudentService {
 	public void setStudentList(User teacher, List<User> students) {
 		teacherStudentDao.setStudentList(teacher, students);
 	}
+	
+	@Override
+	public void assignStudentToTeacher(User teacher, User student) {
+		teacherStudentDao.assignStudentToTeacher(teacher, student);
+	}
 
 	@Override
 	public boolean isUserStudentOfTeacher(String userName, String teacherName) {
