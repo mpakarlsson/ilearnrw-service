@@ -100,6 +100,8 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 
 			@Override
 			public int getBatchSize() {
+				if (students == null)
+					return 0;
 				return students.size();
 			}
 		});
@@ -107,11 +109,9 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 
 	@Override
 	public void assignStudentToTeacher(User teacher, User student) {
-		String sql = "insert into teachers_students (teacher_id, student_id) values "
-				+ "((select id from users where username=?), "
-				+ "(select id from users where username=?));";
+		String sql = "insert into teachers_students (teacher_id, student_id) values (?,?);";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.update(sql, new Object[] { teacher, student });
+		jdbcTemplate.update(sql, new Object[] { teacher.getId(), student.getId() });
 	}
 
 	@Override

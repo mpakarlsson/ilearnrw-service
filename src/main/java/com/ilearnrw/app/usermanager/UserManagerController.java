@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -148,7 +149,17 @@ public class UserManagerController {
 	/* Users logs */
 	
 	@RequestMapping(value = "users/manage")
-	public String manageUsers(ModelMap modelMap) {
+	public String manageUsers(ModelMap modelMap, HttpServletRequest request) {
+		if (request.isUserInRole("PERMISSION_ADMIN"))
+			modelMap.addAttribute("users", getUsersManagedByAdmin());
+		else if (request.isUserInRole("PERMISSION_EXPERT"))
+			modelMap.addAttribute("users", getUsersManagedByExpert());
+		else if (request.isUserInRole("PERMISSION_TEACHER"))
+			modelMap.addAttribute("users", getUsersManagedByTeacher());
+		return "users/manage";
+	}
+
+	private List<UserRole> getUsersManagedByAdmin() {
 		List<User> users = userService.getUserList();
 		List<UserRole> userRoles = new ArrayList<UserRole>();
 		for (User user : users)
@@ -160,10 +171,48 @@ public class UserManagerController {
 				userRoles.add(new UserRole(user, "none"));
 			}
 		}
-		modelMap.addAttribute("users", userRoles);
-		return "users/manage";
+		return userRoles;
 	}
-
+	
+	private List<UserRole> getUsersManagedByExpert() {
+		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<User> teachers = expertTeacherService.getTeacherList(current);
+		List<User> users = new ArrayList<User>();
+		for (User teacher : teachers)
+		{
+			users.add(teacher);
+			users.addAll(teacherStudentService.getStudentList(teacher));
+		}
+		users.addAll(teacherStudentService.getUnassignedStudentsList());
+		List<UserRole> userRoles = new ArrayList<UserRole>();
+		for (User user : users)
+		{
+			List<Role> roles = roleService.getRoleList(user);
+			if (roles.size() == 1)
+				userRoles.add(new UserRole(user, roles.get(0).getName()));
+			else {
+				userRoles.add(new UserRole(user, "none"));
+			}
+		}
+		return userRoles;
+	}
+	
+	private List<UserRole> getUsersManagedByTeacher() {
+		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<User> users = teacherStudentService.getStudentList(current);
+		List<UserRole> userRoles = new ArrayList<UserRole>();
+		for (User user : users)
+		{
+			List<Role> roles = roleService.getRoleList(user);
+			if (roles.size() == 1)
+				userRoles.add(new UserRole(user, roles.get(0).getName()));
+			else {
+				userRoles.add(new UserRole(user, "none"));
+			}
+		}
+		return userRoles;
+	}
+	
 	@RequestMapping(value = "users/{id}/logs/page/{page}", method = RequestMethod.GET)
 	public String viewLogs(@PathVariable int id,
 			@PathVariable String page, ModelMap model,
@@ -331,7 +380,7 @@ public class UserManagerController {
 	@RequestMapping(value = "users/new", method = RequestMethod.POST)
 	@Transactional
 	public String insertUser(@Valid @ModelAttribute("userform") UserNewForm form,
-			BindingResult result, ModelMap model) throws ProfileProviderException {
+			BindingResult result, HttpServletRequest request, ModelMap model) throws ProfileProviderException {
 
 		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		User user = form.getUser();
@@ -367,12 +416,14 @@ public class UserManagerController {
 		else if (form.getRole().equals("teacher"))
 		{
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
-			if (roleService.getRoleList(current).contains("ROLE_EXPERT"))
+			if (request.isUserInRole("PERMISSION_EXPERT"))
 				expertTeacherService.assignTeacherToExpert(current, user);
 		}
 		else if (form.getRole().equals("student"))
 		{
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_STUDENT")));
+			if (request.isUserInRole("PERMISSION_TEACHER"))
+				teacherStudentService.assignStudentToTeacher(current, user);
 		}
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 
@@ -534,53 +585,10 @@ public class UserManagerController {
 		teacherStudentService.setStudentList(teacher,
 				teacherStudentForm.getSelectedStudents());
 		request.getSession().setAttribute("students", teacherStudentService.getStudentList(teacher));
-		return "redirect:/apps/panel";
-	}
-	
-	@RequestMapping(value = "teachers/manage")
-	public String manageStudents(ModelMap modelMap) {
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-		List<User> users = teacherStudentService.getStudentList(current);
-		List<UserRole> userRoles = new ArrayList<UserRole>();
-		for (User user : users)
-		{
-			List<Role> roles = roleService.getRoleList(user);
-			if (roles.size() == 1)
-				userRoles.add(new UserRole(user, roles.get(0).getName()));
-			else {
-				userRoles.add(new UserRole(user, "none"));
-			}
-		}
-		modelMap.addAttribute("users", userRoles);
-		return "users/manage";
+		return "redirect:/apps/users/manage";
 	}
 	
 	/* Experts */
-	
-	@RequestMapping(value = "experts/manage")
-	public String manageTeachers(ModelMap modelMap) {
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-		List<User> teachers = expertTeacherService.getTeacherList(current);
-		List<User> users = new ArrayList<User>();
-		for (User teacher : teachers)
-		{
-			users.add(teacher);
-			users.addAll(teacherStudentService.getStudentList(teacher));
-		}
-		users.addAll(teacherStudentService.getUnassignedStudentsList());
-		List<UserRole> userRoles = new ArrayList<UserRole>();
-		for (User user : users)
-		{
-			List<Role> roles = roleService.getRoleList(user);
-			if (roles.size() == 1)
-				userRoles.add(new UserRole(user, roles.get(0).getName()));
-			else {
-				userRoles.add(new UserRole(user, "none"));
-			}
-		}
-		modelMap.addAttribute("users", userRoles);
-		return "users/manage";
-	}
 	
 	@RequestMapping(value = "experts/{id}/assign", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
@@ -608,7 +616,7 @@ public class UserManagerController {
 		expertTeacherService.setTeacherList(expert,
 				expertTeacherForm.getSelectedTeachers());
 		request.getSession().setAttribute("teachers", expertTeacherService.getTeacherList(expert));
-		return "redirect:/apps/panel";
+		return "redirect:/apps/users/manage";
 	}
 
 }

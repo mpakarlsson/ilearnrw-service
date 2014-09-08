@@ -51,7 +51,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/screening", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_EXPERT', 'PERMISSION_TEACHER')")
 	public String viewScreeningTestCreatorPage(@RequestParam(value = "cluster", required = false) Integer cluster, 
 			@RequestParam(value = "fname", required = false) String fname,
 			ModelMap model, HttpServletRequest request) 
@@ -111,7 +111,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/testviewer", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_EXPERT', 'PERMISSION_TEACHER')")
 	public String viewScreeningTest(ModelMap model, HttpServletRequest request, 
 			@RequestParam(value = "fname", required = true) String fname) 
 			throws ProfileProviderException, Exception {
@@ -135,7 +135,7 @@ public class ScreeningCreationControler {
 
 	@RequestMapping(value = "/{userId}/screeningtest", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_TEACHER')")
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_EXPERT', 'PERMISSION_TEACHER')")
 	public String takeScreeningTest(@PathVariable Integer userId, 
 			ModelMap model, HttpServletRequest request) 
 			throws ProfileProviderException, Exception {

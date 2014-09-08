@@ -161,9 +161,9 @@
 								<fieldset>
 									<label class="col-sm-2 control-label" for="roles">Roles</label>
 									<div id="roles" class="col-sm-10">
-										<form:checkboxes element="div class='checkbox'"
+										<form:radiobuttons element="div class='radio'"
 											items="${userform.allRoles}" path="selectedRoles"
-											itemLabel="name" itemValue="id"></form:checkboxes>
+											itemLabel="name" itemValue="id"></form:radiobuttons>
 									</div>
 								</fieldset>
 							</div>
