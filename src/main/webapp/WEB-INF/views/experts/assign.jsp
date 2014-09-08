@@ -22,7 +22,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<h1 class="page-header">
-						Assigned students for
+						Assigned teachers for
 						<c:out value="${expertTeacherForm.expert.username}"></c:out>
 					</h1>
 				</div>
@@ -41,7 +41,7 @@
 										<div id="roles" class="col-sm-10">
 											<form:checkboxes element="div class='checkbox'"
 												items="${expertTeacherForm.allTeachers}"
-												path="selectedStudents" itemLabel="username" itemValue="id"></form:checkboxes>
+												path="selectedTeachers" itemLabel="username" itemValue="id"></form:checkboxes>
 										</div>
 									</fieldset>
 								</div>

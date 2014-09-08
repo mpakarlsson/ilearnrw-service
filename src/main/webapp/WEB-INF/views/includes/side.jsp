@@ -23,7 +23,7 @@
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_EXPERT">
                         <li>
-                            <a href="${pageContext.request.contextPath}/apps/experts/manage"><i class="fa fa-user fa-fw"></i> Manage Teachers and Students</a>
+                            <a href="${pageContext.request.contextPath}/apps/users/manage"><i class="fa fa-user fa-fw"></i> Manage Teachers and Students</a>
                         </li>
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
@@ -33,7 +33,7 @@
                         </sec:authorize>
                         <sec:authorize ifAnyGranted="PERMISSION_TEACHER">
                         <li>
-                            <a href="${pageContext.request.contextPath}/apps/teachers/manage"><i class="fa fa-user fa-fw"></i> Manage Students</a>
+                            <a href="${pageContext.request.contextPath}/apps/users/manage"><i class="fa fa-user fa-fw"></i> Manage Students</a>
                         </li>
                         <li>
                             <a href="${pageContext.request.contextPath}/apps/users/${userid}/stats"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics</a>

@@ -99,6 +99,8 @@ public class ExpertTeacherDaoImpl implements ExpertTeacherDao {
 
 			@Override
 			public int getBatchSize() {
+				if (teachers == null)
+					return 0;
 				return teachers.size();
 			}
 		});
@@ -106,11 +108,9 @@ public class ExpertTeacherDaoImpl implements ExpertTeacherDao {
 	
 	@Override
 	public void assignTeacherToExpert(User expert, User teacher) {
-		String sql = "insert into experts_teachers (expert_id, teacher_id) values "
-				+ "((select id from users where username=?), "
-				+ "(select id from users where username=?));";
+		String sql = "insert into experts_teachers (expert_id, teacher_id) values (?,?);";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.update(sql, new Object[] { expert, teacher });
+		jdbcTemplate.update(sql, new Object[] { expert.getId(), teacher.getId() });
 	}
 
 	@Override
