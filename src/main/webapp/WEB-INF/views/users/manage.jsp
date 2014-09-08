@@ -96,6 +96,13 @@
 															this teacher</a></li>
 													</sec:authorize>
 												</c:when>
+												<c:when test="${o.role eq 'ROLE_STUDENT'}">
+													<sec:authorize ifAnyGranted="PERMISSION_EXPERT,PERMISSION_TEACHER">
+													<li><a
+														href="${pageContext.request.contextPath}/apps/${o.user.id}/screeningtest"><i
+															class="fa fa-location-arrow fa-fw"></i> Screening Test</a></li>
+													</sec:authorize>
+												</c:when>
 											</c:choose>
 											<li><a href="${pageContext.request.contextPath}/apps/users/${o.user.id}/edit"><i
 													class="fa fa-pencil fa-fw"></i> Edit</a></li>

@@ -26,6 +26,11 @@
                             <a href="${pageContext.request.contextPath}/apps/experts/manage"><i class="fa fa-user fa-fw"></i> Manage Teachers and Students</a>
                         </li>
     			        </sec:authorize>
+    			        <sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
+                        <li>
+                            <a href="${pageContext.request.contextPath}/apps/screening"><i class="fa fa-image fa-fw"></i> Screening</a>
+                        </li>
+                        </sec:authorize>
                         <sec:authorize ifAnyGranted="PERMISSION_TEACHER">
                         <li>
                             <a href="${pageContext.request.contextPath}/apps/teachers/manage"><i class="fa fa-user fa-fw"></i> Manage Students</a>
