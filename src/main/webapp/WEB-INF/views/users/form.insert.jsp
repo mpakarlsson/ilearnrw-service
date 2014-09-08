@@ -151,6 +151,7 @@
 									<label class="col-sm-2 control-label">Role</label>
 									<div class="col-sm-10">
 										<fieldset>
+											<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 											<div class="radio">
 												<label> <form:radiobutton name="role" path="role"
 														value="admin" />Admin
@@ -161,11 +162,14 @@
 														value="expert" />Expert
 												</label>
 											</div>
+											</sec:authorize>
+											<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 											<div class="radio">
 												<label> <form:radiobutton name="role" path="role"
 														value="teacher" />Teacher
 												</label>
 											</div>
+											</sec:authorize>
 											<div class="radio">
 												<label> <form:radiobutton name="role" path="role"
 														value="student" />Student

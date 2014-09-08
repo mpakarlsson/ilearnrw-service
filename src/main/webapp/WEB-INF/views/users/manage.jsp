@@ -82,23 +82,27 @@
 										<ul class="dropdown-menu pull-right">
 											<c:choose>
 												<c:when test="${o.role eq 'ROLE_EXPERT'}">
+													<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 													<li><a
 														href="${pageContext.request.contextPath}/apps/teachers/${o.user.id}/assign"><i
 															class="fa fa-briefcase fa-fw"></i> Assign teachers to this expert</a></li>
+													</sec:authorize>
 												</c:when>
 												<c:when test="${o.role eq 'ROLE_TEACHER'}">
+													<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 													<li><a
 														href="${pageContext.request.contextPath}/apps/teachers/${o.user.id}/assign"><i
 															class="fa fa-plus-square fa-fw"></i> Assign students to
 															this teacher</a></li>
-												</c:when>
-												<c:when test="${o.role eq 'ROLE_STUDENT'}">
+													</sec:authorize>
 												</c:when>
 											</c:choose>
 											<li><a href="${pageContext.request.contextPath}/apps/users/${o.user.id}/edit"><i
 													class="fa fa-pencil fa-fw"></i> Edit</a></li>
+											<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 											<li><a href="${pageContext.request.contextPath}/apps/users/${o.user.id}/delete"><i
 													class="fa fa-trash-o fa-fw"></i> Delete</a></li>
+											</sec:authorize>
 											<li><a href="${pageContext.request.contextPath}/apps/users/${o.user.id}/profile"><i
 													class="fa fa-user fa-fw"></i> Profile</a></li>
 											<li><a href="${pageContext.request.contextPath}/apps/users/${o.user.id}/logs/page/1"><i
@@ -111,7 +115,9 @@
 					</tbody>
 				</table>
 			</div>
-			<a class="btn btn-success" href="new"> New User </a>
+			<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT,PERMISSION_TEACHER">
+				<a class="btn btn-success" href="${pageContext.request.contextPath}/apps/users/new"> New User </a>
+			</sec:authorize>
 		</div>
 
 	</div>
