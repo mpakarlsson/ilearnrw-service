@@ -43,11 +43,65 @@ function suggestWords(parrentDivId, divId, clusterWords, target){
 	element.setAttribute("id", divId);
 
 	str = '<table><tr><td><input id="addWord'+divId+'" class="typeahead" type="text" placeholder="Suggestions">'+
-		'</td><td><button type="button" class="typeahead-button" onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td></tr></table>';
+		'</td><td><button type="button" class="typeahead-button" '+
+		'onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td>'+
+		'<td><button type="button" class="typeahead-button" '+
+		'onclick="appendRandomWordsToTest(\''+target+'\')">Add All Words</button></td></tr></table>';
 	element.innerHTML = str;
 	var parrent = document.getElementById(parrentDivId);
 	parrent.innerHTML = '';
 	parrent.appendChild(element);
+};
+
+function readAllSpanTexts(id){
+	curWords = [];
+	var div = document.getElementById(id);
+	var spans = div.getElementsByTagName("span");
+	for(var i=0;i<spans.length;i++){
+		curWords.push(spans[i].innerHTML);
+	}
+	return curWords;
+};
+
+function randomWordPacks(id, curWords, type){
+	var items = '';
+	for (var j=0; j<curWords.length; j++){
+		items = items+'<div class="inline-link-2" id = "'+id+'_'+j+'"><span>'+curWords[j]+'</span>'+
+		'<a href="PleaseEnableJavascript.html" title="Click to delete the word" onclick="removeWord(\''+id+'_'+j+'\');return false;">[x]</a></div>';
+	}
+	return items;
+} 
+
+function wordPacks(id, curWords, type){
+	var items = '';
+	if (type == 'box'){
+		for (var j=0; j<curWords.length; j++){
+			items = items+'<div class="inline-link-1" id = "'+id+'_'+j+'"><span>'+curWords[j]+'</span>'+
+			'<a href="PleaseEnableJavascript.html" title="Click to delete the word" onclick="removeWord(\''+id+'_'+j+'\');return false;">[x]</a></div>';
+		}
+	}
+	else{
+		for (var j=0; j<curWords.length; j++){
+			items = items+'<span>'+curWords[j]+'</span> ';
+		}
+	}
+	return items;
+};
+
+function appendRandomWordsToTest(id){
+	var curWords = readAllSpanTexts(id);
+	var str = '';
+	if (curWords != null)
+		str = wordPacks(id, curWords, 'box');
+	curWords = [];
+	wordsToPick = words;
+	while (wordsToPick.length>0 && curWords.length<50){
+		var randomnumber=Math.floor(Math.random()*(wordsToPick.length));
+		var t = wordsToPick.splice(randomnumber, 1);
+		curWords.push(t);
+	}
+	str = str+randomWordPacks(id, curWords, 'box');
+	document.getElementById(id).innerHTML = str;
 };
 
 function gogo(divId){

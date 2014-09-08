@@ -23,7 +23,7 @@ function appendQuestion(fname, cluster, obj) {
 
 	element.innerHTML = 'Question #'+lastItemPosition+
 		'<textarea id="the_question'+obj.id+'" class="question_text" disabled>'+obj.question+'</textarea>'+
-		'Related Words<div id="rel_words_container'+obj.id+'" class="rel_words_div">'+str+'</div>'+
+		'Words to test<div id="rel_words_container'+obj.id+'" class="rel_words_div">'+str+'</div>'+
 		'<div id="hereiam'+obj.id+'"></div><table><tr><td>'+
 		'<button type="button" class="typeahead-button" onclick="deleteQuestion('+fname.toString()+', '+cluster+', '+obj.id+')">'+
 		'Delete</button></td><td>'+
@@ -37,7 +37,7 @@ function loadAddQuestionField(fname, cluster) {
 	element.setAttribute("id", 'addquestion');
 	element.setAttribute('class', 'question_box');
 	element.innerHTML = 'Question:<textarea name="vrow" id="newQuestion" class="question_text" ></textarea>'+
-		'Related Words<div id="newQuestionRelatedWords" class="rel_words_div"></div>'+
+		'Words to test<div id="newQuestionRelatedWords" class="rel_words_div"></div>'+
 		'<div id="hereiam"></div>'+
 		'<button type="button" class="typeahead-button" onclick="saveQuestion('+fname.toString()+', '+cluster+')">Add</button>';
 	document.getElementById('addQuestionsDiv').appendChild(element);
@@ -70,32 +70,6 @@ function appendNewWord(id, newWord){
 	words.push(newWord);
 	str = wordPacks(id, words, 'box');
 	document.getElementById(id).innerHTML = str;
-}
-
-function readAllSpanTexts(id){
-	words = [];
-	var div = document.getElementById(id);
-	var spans = div.getElementsByTagName("span");
-	for(var i=0;i<spans.length;i++){
-	  words.push(spans[i].innerHTML);
-	}
-	return words;
-};
-
-function wordPacks(id, words, type){
-	var items = '';
-	if (type == 'box'){
-		for (var j=0; j<words.length; j++){
-			items = items+'<div class="inline-link-1" id = "'+id+'_'+j+'"><span>'+words[j]+'</span>'+
-			'<a href="PleaseEnableJavascript.html" title="Click to delete the word" onclick="removeWord(\''+id+'_'+j+'\');return false;">[x]</a></div>';
-		}
-	}
-	else{
-		for (var j=0; j<words.length; j++){
-			items = items+'<span>'+words[j]+'</span> ';
-		}
-	}
-	return items;
 };
 
 function removeWord(id){
@@ -179,18 +153,18 @@ function updateQuestion(fname, cluster, id) {
 };
 
 function deleteQuestion(fname, cluster, id) {
-	data = getNewQuestionData();
-	respId = httpPost(ilearnurl+"/updatecluster?fname="+fname+"&cluster="+cluster+"&action=delete"+"&id="+id, JSON.stringify(data));
+	respId = httpPost(ilearnurl+"/updatecluster?fname="+fname+"&cluster="+cluster+"&action=delete"+"&id="+id, '{}');
 	if (respId == id){
 		var el = document.getElementById('question'+id);
-	el.parentNode.removeChild( el );
+		el.parentNode.removeChild( el );
 	}
 	//document.getElementById("\""+id+"\"").remove();
 };
 
 function getNewQuestionData() {
 	var q = document.getElementById('newQuestion').value.replace("\n", "\\n").replace("\t", "\\t");
-	var r = (document.getElementById('newRelatedWords').value.replace("\n", "\\n")).replace("\t", "\\t").split('#');
+	//var r = (document.getElementById('newRelatedWords').value.replace("\n", "\\n")).replace("\t", "\\t").split('#');
+	var r = readAllSpanTexts('newQuestionRelatedWords');
 	var data = {
 			question: q,
 			relatedWords: r,
@@ -214,8 +188,8 @@ function getEditedQuestionData(theId) {
 function clearAddQuestionField() {
 	var q = document.getElementById('newQuestion');
 	q.value = '';
-	var r = document.getElementById('newRelatedWords');
-	r.value = '';
+	var r = document.getElementById('newQuestionRelatedWords');
+	r.innerHTML = '';
 };
 
 function httpGet(theUrl){

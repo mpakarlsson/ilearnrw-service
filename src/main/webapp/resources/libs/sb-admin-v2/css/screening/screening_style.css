@@ -95,7 +95,6 @@ a, a:link, a:active, a:visited, a:hover
   padding: 0px;
   border:1px solid #11B60F;
   border-left: 4px solid #11B60F;
-  height: 30px;
   margin: 10px;
 }
 
@@ -106,7 +105,6 @@ a, a:link, a:active, a:visited, a:hover
   padding: 0px;
   border:1px solid #11B60F;
   border-left: 4px solid #11B60F;
-  height: 50px;
   margin: 10px;
 }
 
@@ -161,8 +159,8 @@ a, a:link, a:active, a:visited, a:hover
 
 .inline-link-1 {
     display: inline-block;
-    margin: 0.2em 0.2em;
-    padding: 1px;
+    margin: 0.2em;
+    padding: 2px;
     background: #97CAF2;
     border-radius: 2px;
     transition: all 0.3s ease-out; 
@@ -196,5 +194,45 @@ background-color: #FFFF8A;
 }
 
 .inline-link-1 a:active {
+    background-color: #FF704D;
+} 
+
+.inline-link-2 {
+    display: inline-block;
+    margin: 0.2em;
+    padding: 2px;
+    background: #6ADF66;
+    border-radius: 2px;
+    transition: all 0.3s ease-out; 
+    /* Font styles */
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+}
+ 
+.inline-link-2:hover {
+    background: #6A9F00
+}
+ 
+.inline-link-2:active {
+    background: #C4E1F8
+}
+ 
+.inline-link-2:visited {
+    background: #F2BF97
+}
+/*.inline-link-2 a:link {
+background-color: #FFFF8A;
+}*/
+
+.inline-link-2 a:visited {
+    background-color: #FFFF85;
+}
+
+.inline-link-2 a:hover {
+    background-color: #FF704D;
+}
+
+.inline-link-2 a:active {
     background-color: #FF704D;
 } 

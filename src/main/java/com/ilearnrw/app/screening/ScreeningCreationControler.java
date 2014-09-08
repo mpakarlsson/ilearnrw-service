@@ -1,12 +1,6 @@
 package com.ilearnrw.app.screening;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -85,12 +79,12 @@ public class ScreeningCreationControler {
 			    Arrays.asList("go", "third")), 4);
 		
 		st.storeTest("data/EN_testing_screening.json");*/
-
+		
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
 		
 		if (stl.getFilenames().contains(fname))
-			st.loadTest("data/"+fname+".json");
+			st.loadTest(ScreeningResources.path+fname+".json");
 		
 		model.put("showAll", st.getClusterQuestions(currentCluster) == null);
 		model.put("cluster", currentCluster);
@@ -128,10 +122,10 @@ public class ScreeningCreationControler {
 		ScreeningTest st = new ScreeningTest();
 
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
 		
 		if (stl.getFilenames().contains(fname))
-			st.loadTest("data/"+fname+".json");
+			st.loadTest(ScreeningResources.path+fname+".json");
 
 		model.put("fname", fname);
 		model.put("profileClusters", pc);
@@ -155,8 +149,8 @@ public class ScreeningCreationControler {
 		
 		if (teacherStudentService.getStudentList(teacher).contains(student)){
 			ScreeningTestList stl = new ScreeningTestList();
-			stl.loadScreeningTestList("data/"+teacher.getLanguage()+"_test_list.json");
-			st.loadTest("data/"+stl.getDefaultTest()+".json");
+			stl.loadScreeningTestList(ScreeningResources.path+teacher.getLanguage()+"_test_list.json");
+			st.loadTest(ScreeningResources.path+stl.getDefaultTest()+".json");
 			model.put("username", student.getUsername());
 			model.put("userId", userId);
 			model.put("profileClusters", pc);
@@ -178,22 +172,22 @@ public class ScreeningCreationControler {
 		User user = userService.getUser(teacherId);
 		ScreeningTest st = new ScreeningTest();
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
 		if (stl.getFilenames().contains(fname)){
-			st.loadTest("data/"+fname+".json");
+			st.loadTest(ScreeningResources.path+fname+".json");
 			if (action.equalsIgnoreCase("add")){
 				int respId = st.addQuestion(question.getQuestion(), question.getRelatedWords(), cluster);
-				st.storeTest("data/"+fname+".json");
+				st.storeTest(ScreeningResources.path+fname+".json");
 				return respId;
 			}
 			else if (action.equalsIgnoreCase("delete")){
 				st.deleteQuestion(cluster, id);
-				st.storeTest("data/"+fname+".json");
+				st.storeTest(ScreeningResources.path+fname+".json");
 				return id;
 			}
 			else if (action.equalsIgnoreCase("update")){
 				st.editQuestion(cluster, id, question.getQuestion(), question.getRelatedWords());
-				st.storeTest("data/"+fname+".json");
+				st.storeTest(ScreeningResources.path+fname+".json");
 				return id;
 			}
 		}
@@ -209,7 +203,7 @@ public class ScreeningCreationControler {
 		int teacherId = (Integer)request.getSession().getAttribute("userid");
 		User user = userService.getUser(teacherId);
 		ScreeningTestList stl = new ScreeningTestList();
-		stl.loadScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
 		if (action.equalsIgnoreCase("addTest")){
 			stl.addNewTest(testName);
 			ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
@@ -223,7 +217,7 @@ public class ScreeningCreationControler {
 		else if (action.equalsIgnoreCase("defaultTest")){
 			stl.setDefaultTest(testName);
 		}
-		stl.storeScreeningTestList("data/"+user.getLanguage()+"_test_list.json");
+		stl.storeScreeningTestList(ScreeningResources.path+user.getLanguage()+"_test_list.json");
 		return stl;
 	}
 
