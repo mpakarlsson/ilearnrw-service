@@ -1,6 +1,5 @@
 var lastItemPosition = 0;
 var clusterWords = [];
-var ilearnurl = 'http://localhost:8080/test/apps';
 
 function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords) {
 	obj = JSON.parse(jsonQuestions);
@@ -119,53 +118,7 @@ function newFileForm(){
 	document.getElementById("addNewTest").appendChild(newTestForm);
 };
 
-function addNewTest(){
-	name = document.getElementById('newFileName').value.trim();
-	var reg = new RegExp('^[a-zA-Z][a-zA-Z0-9\_]+$');
-	if (reg.test(name)){
-		var res = httpPost(ilearnurl+"/updatetests?testName="+name+"&action=addTest", null);
-		filenamesList(res);
-	}
-};
 
-function setDefaultTest(name){
-	var reg = new RegExp('^[a-zA-Z][a-zA-Z0-9\_]+$');
-	if (reg.test(name)){
-		var res = httpPost(ilearnurl+"/updatetests?testName="+name+"&action=defaultTest", null);
-		filenamesList(res);
-	}
-};
-
-function deleteTest(name){
-	var reg = new RegExp('^[a-zA-Z][a-zA-Z0-9\_]+$');
-	if (reg.test(name)){
-		var res = httpPost(ilearnurl+"/updatetests?testName="+name+"&action=deleteTest", null);
-		filenamesList(res);
-	}
-};
-
-function saveQuestion(fname, cluster) {
-	data = getNewQuestionData();
-	id = httpPost(ilearnurl+"/updatecluster?fname="+fname+"&cluster="+cluster+"&action=add", JSON.stringify(data));
-	data.id = id;
-	appendQuestion('\''+fname+'\'', cluster, data);
-	clearAddQuestionField();
-};
-
-function updateQuestion(fname, cluster, id) {
-	data = getEditedQuestionData(id);
-	id = httpPost(ilearnurl+"/updatecluster?fname="+fname+"&cluster="+cluster+"&id="+id+"&action=update", JSON.stringify(data));
-	data.id = id;
-};
-
-function deleteQuestion(fname, cluster, id) {
-	respId = httpPost(ilearnurl+"/updatecluster?fname="+fname+"&cluster="+cluster+"&action=delete"+"&id="+id, '{}');
-	if (respId == id){
-		var el = document.getElementById('question'+id);
-		el.parentNode.removeChild( el );
-	}
-	//document.getElementById("\""+id+"\"").remove();
-};
 
 function getNewQuestionData() {
 	var q = document.getElementById('newQuestion').value.replace("\n", "\\n").replace("\t", "\\t");
@@ -200,31 +153,4 @@ function clearAddQuestionField() {
 	q.value = '';
 	var r = document.getElementById('newQuestionRelatedWords');
 	r.innerHTML = '';
-};
-
-function httpGet(theUrl){
-    var xmlHttp = null;
-
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false );
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
-};
-
-function httpPost(theUrl, jsondata){
-    var xmlHttp = null;
-
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("POST", theUrl, false);
-    xmlHttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-
-    // send the collected data as JSON
-    xmlHttp.send(jsondata);
-
-    while (xmlHttp.onprogress){}
-    
-    xmlHttp.onloadend = function () {
-        return xmlHttp.responseText;
-    };
-    return xmlHttp.responseText;
 };

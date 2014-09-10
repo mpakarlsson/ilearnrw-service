@@ -18,7 +18,9 @@
 		
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/typeahead.js"></script>
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/chris_typeahead.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/get_post_functions.js"></script>
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/create_page.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/server_requests.js"></script>
 	
 <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/screening/screening_style.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">

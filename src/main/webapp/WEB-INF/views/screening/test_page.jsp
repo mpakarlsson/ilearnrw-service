@@ -15,7 +15,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/get_post_functions.js"></script>
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/test_page.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/server_requests.js"></script>
 
 <title>Screening Test Creator</title>
 
