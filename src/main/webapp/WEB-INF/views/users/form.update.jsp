@@ -15,16 +15,14 @@
 <title>Edit user</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
-<script
-	src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>
+
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#birthdatepicker").birthdaypicker({
-			"placeholder" : false
-		});
-		$("#date").val(<c:out value="${userform.birthdate.date}"/>);
-		$("#month").val(<c:out value="${userform.birthdate.month}"/>);
-		$("#year").val(<c:out value="${userform.birthdate.year}"/>);
+		$("#datepicker").datepicker({
+		      changeMonth: true,
+		      changeYear: true,
+		      dateFormat: "dd.mm.yy"
+		    });
 	});
 </script>
 
@@ -78,20 +76,9 @@
 										Date</label>
 									<div class="col-sm-10" id="birthdatepicker">
 										<fieldset id="birthdate" class='birthday-picker'>
-											<div class="col-sm-3">
-												<form:select type="text" id="date" class="form-control"
-													placeholder="day" path="birthdate.date" required="true" />
-											</div>
-											<div class="col-sm-3">
-												<form:select type="text" id="month" class="form-control"
-													placeholder="month" path="birthdate.month" required="true" />
-											</div>
-											<div class="col-sm-4">
-												<form:select type="text" id="year" class="form-control"
-													placeholder="year" path="birthdate.year" required="true" />
-											</div>
+      										<form:input type="text" id="datepicker" path="user.birthdate"/>
 										</fieldset>
-										<form:errors path="birthdate" class="help-block"
+										<form:errors path="user.birthdate" class="help-block"
 											for="birthdate" />
 									</div>
 								</div>
@@ -111,18 +98,10 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Gender</label>
 									<div class="col-sm-10">
-										<fieldset>
-											<div class="radio">
-												<label> <form:radiobutton name="gender"
-														path="user.gender" value="M" />Male
-												</label>
-											</div>
-											<div class="radio">
-												<label> <form:radiobutton name="gender"
-														path="user.gender" value="F" />Female
-												</label>
-											</div>
-										</fieldset>
+										<form:select path="user.gender">
+										   <form:option value="M" label="Male"/>
+										   <form:option value="F" label="Female"/>
+										</form:select>
 										<form:errors path="user.gender" class="help-block"
 											for="gender" />
 									</div>
@@ -133,18 +112,10 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Language</label>
 									<div class="col-sm-10">
-										<fieldset>
-											<div class="radio">
-												<label> <form:radiobutton name="language"
-														path="user.language" value="EN" />English
-												</label>
-											</div>
-											<div class="radio">
-												<label> <form:radiobutton name="language"
-														path="user.language" value="GR" />Greek
-												</label>
-											</div>
-										</fieldset>
+										<form:select path="user.language">
+										   <form:option value="EN" label="English"/>
+										   <form:option value="GR" label="Greek"/>
+										</form:select>
 										<form:errors path="user.language" class="help-block"
 											for="language" />
 									</div>
@@ -161,9 +132,10 @@
 								<fieldset>
 									<label class="col-sm-2 control-label" for="roles">Roles</label>
 									<div id="roles" class="col-sm-10">
-										<form:radiobuttons element="div class='radio'"
-											items="${userform.allRoles}" path="selectedRoles"
-											itemLabel="name" itemValue="id"></form:radiobuttons>
+										<form:select path="selectedRoles" multiple="false">
+										   <form:options items="${userform.allRoles}" path="selectedRoles"
+													itemLabel="name" itemValue="id"/>
+										</form:select>
 									</div>
 								</fieldset>
 							</div>

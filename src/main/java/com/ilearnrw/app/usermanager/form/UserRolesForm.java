@@ -1,5 +1,6 @@
 package com.ilearnrw.app.usermanager.form;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class UserRolesForm {
 	@Valid
 	User user;
 	@Valid
-	Birthdate birthdate;
+	Date birthdate;
 	List<Role> allRoles;
 	List<Role> selectedRoles;
 
@@ -43,11 +44,11 @@ public class UserRolesForm {
 		this.user = user;
 	}
 	
-	public Birthdate getBirthdate() {
+	public Date getBirthdate() {
 		return birthdate;
 	}
 
-	public void setBirthdate(Birthdate birthdate) {
+	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
 }

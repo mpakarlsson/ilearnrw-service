@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -38,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.app.usermanager.form.Birthdate;
 import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
@@ -311,13 +308,7 @@ public class UserManagerController {
 		List<Role> allRoles = roleService.getRoleList();
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
-		Birthdate birthdate = new Birthdate();
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(user.getBirthdate());
-		birthdate.setDate(calendar.get(Calendar.DAY_OF_MONTH));
-		birthdate.setMonth(calendar.get(Calendar.MONTH));
-		birthdate.setYear(calendar.get(Calendar.YEAR));
-		userForm.setBirthdate(birthdate);
+		userForm.setBirthdate(user.getBirthdate());
 		userForm.setAllRoles(allRoles);
 		userForm.setSelectedRoles(selectedRoles);
 
@@ -333,15 +324,7 @@ public class UserManagerController {
 		User user = userForm.getUser();
 		user.setId(id);
 		userForm.setUser(user);
-		Calendar cal = Calendar.getInstance();
-	    cal.set(Calendar.YEAR, userForm.getBirthdate().getYear());
-	    cal.set(Calendar.MONTH, userForm.getBirthdate().getMonth());
-	    cal.set(Calendar.DAY_OF_MONTH, userForm.getBirthdate().getDate());
-	    Date dateRepresentation = cal.getTime();
-		user.setBirthdate(dateRepresentation);
-		if (result.hasFieldErrors("birthdate.date") || result.hasFieldErrors("birthdate.month") || result.hasFieldErrors("birthdate.year"))
-			result.rejectValue("birthdate", "birthdate.invalid");
-		else if (user.getBirthdate().after(new Date()))
+		if (user.getBirthdate().after(new Date()))
 			result.rejectValue("birthdate", "birthdate.invalid");
 		else {
 			Calendar calendar = Calendar.getInstance();
@@ -384,15 +367,7 @@ public class UserManagerController {
 
 		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		User user = form.getUser();
-		Calendar cal = Calendar.getInstance();
-	    cal.set(Calendar.YEAR, form.getBirthdate().getYear());
-	    cal.set(Calendar.MONTH, form.getBirthdate().getMonth());
-	    cal.set(Calendar.DAY_OF_MONTH, form.getBirthdate().getDate());
-	    Date dateRepresentation = cal.getTime();
-		user.setBirthdate(dateRepresentation);
-		if (result.hasFieldErrors("birthdate.date") || result.hasFieldErrors("birthdate.month") || result.hasFieldErrors("birthdate.year"))
-			result.rejectValue("birthdate", "birthdate.invalid");
-		else if (user.getBirthdate().after(new Date()))
+		if (user.getBirthdate().after(new Date()))
 			result.rejectValue("birthdate", "birthdate.invalid");
 		else {
 			Calendar calendar = Calendar.getInstance();

@@ -6,6 +6,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class User {
 
@@ -23,6 +24,7 @@ public class User {
 	private String gender;
 	
 	@Past
+	@DateTimeFormat(pattern = "dd.MM.yyyy")
 	private Date birthdate;
 	
 	@NotEmpty

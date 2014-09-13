@@ -16,7 +16,11 @@
 		<div class="panel panel-default col-xs-12">
 		<form method="POST" class="form-signin" action="login" role="form">
 			<div class="form-group">
-				<h2 class="form-signin-heading">Sign in</h2>
+            	<img style="float:right" src="${pageContext.request.contextPath}/apps/resources/webapp/images/Logo-crop-border.png"/>
+            </div>
+			<div class="form-group">
+				<h1 class="form-signin-heading">Welcome to iLearnRW Online Management System</h1>
+				<span>Please enter your details below</span>
 			</div>
 			<div class="form-group">
 				<input name="username" type="text" class="form-control"

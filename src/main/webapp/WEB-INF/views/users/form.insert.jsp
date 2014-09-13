@@ -15,11 +15,13 @@
 <title>Add user</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
-<script
-	src="${pageContext.request.contextPath}/apps/resources/webapp/js/bday-picker.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#birthdatepicker").birthdaypicker({});
+		$("#datepicker").datepicker({
+		      changeMonth: true,
+		      changeYear: true,
+		      dateFormat: "dd.mm.yy"
+		    });
 	});
 </script>
 
@@ -68,23 +70,13 @@
 
 							<spring:bind path="birthdate">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
+									
 									<fieldset id="birthdate" class='birthday-picker'>
 										<label class="col-sm-2 control-label" for="birthdate">Birth
 											Date</label>
 										<div class="col-sm-10" id="birthdatepicker">
-											<div class="col-sm-4">
-												<form:select type="text" id="date" class="form-control"
-													placeholder="day" path="birthdate.date" required="true" />
-											</div>
-											<div class="col-sm-4">
-												<form:select type="text" id="month" class="form-control"
-													placeholder="month" path="birthdate.month" required="true" />
-											</div>
-											<div class="col-sm-4">
-												<form:select type="text" id="year" class="form-control"
-													placeholder="year" path="birthdate.year" required="true" />
-											</div>
-											<form:errors path="birthdate" class="help-block"
+											<form:input type="text" id="datepicker" path="user.birthdate"/>
+											<form:errors path="user.birthdate" class="help-block"
 												for="birthdate" />
 
 										</div>
@@ -106,18 +98,10 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Gender</label>
 									<div class="col-sm-10">
-										<fieldset>
-											<div class="radio">
-												<label> <form:radiobutton name="gender"
-														path="user.gender" value="M" />Male
-												</label>
-											</div>
-											<div class="radio">
-												<label> <form:radiobutton name="gender"
-														path="user.gender" value="F" />Female
-												</label>
-											</div>
-										</fieldset>
+										<form:select path="user.gender">
+										   <form:option value="M" label="Male"/>
+										   <form:option value="F" label="Female"/>
+										</form:select>
 										<form:errors path="user.gender" class="help-block"
 											for="gender" />
 									</div>
@@ -128,18 +112,10 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Language</label>
 									<div class="col-sm-10">
-										<fieldset>
-											<div class="radio">
-												<label> <form:radiobutton name="language"
-														path="user.language" value="EN" />English
-												</label>
-											</div>
-											<div class="radio">
-												<label> <form:radiobutton name="language"
-														path="user.language" value="GR" />Greek
-												</label>
-											</div>
-										</fieldset>
+										<form:select path="user.language">
+										   <form:option value="EN" label="English"/>
+										   <form:option value="GR" label="Greek"/>
+										</form:select>
 										<form:errors path="user.language" class="help-block"
 											for="language" />
 									</div>
@@ -150,32 +126,16 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Role</label>
 									<div class="col-sm-10">
-										<fieldset>
+										<form:select path="role" multiple="false">
 											<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
-											<div class="radio">
-												<label> <form:radiobutton name="role" path="role"
-														value="admin" />Admin
-												</label>
-											</div>
-											<div class="radio">
-												<label> <form:radiobutton name="role" path="role"
-														value="expert" />Expert
-												</label>
-											</div>
+											   <form:option value="admin" label="Admin"/>
+											   <form:option value="expert" label="Expert"/>
 											</sec:authorize>
 											<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
-											<div class="radio">
-												<label> <form:radiobutton name="role" path="role"
-														value="teacher" />Teacher
-												</label>
-											</div>
+											   <form:option value="teacher" label="Teacher"/>
 											</sec:authorize>
-											<div class="radio">
-												<label> <form:radiobutton name="role" path="role"
-														value="student" />Student
-												</label>
-											</div>
-										</fieldset>
+										   <form:option value="student" label="student"/>
+										</form:select>
 										<form:errors path="role" class="help-block" for="role" />
 									</div>
 								</div>
