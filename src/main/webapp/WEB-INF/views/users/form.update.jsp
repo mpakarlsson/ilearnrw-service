@@ -23,6 +23,12 @@
 		      changeYear: true,
 		      dateFormat: "dd.mm.yy"
 		    });
+		$("#schoolSelect").change(function() {
+			$("#school").val($(this).val());
+		});
+		$("#classroomSelect").change(function() {
+			$("#classRoom").val($(this).val());
+		});
 	});
 </script>
 
@@ -121,27 +127,48 @@
 									</div>
 								</div>
 							</spring:bind>
+							<spring:bind path="role">
+								<form:hidden path="role"/>
+							</spring:bind>
+							<spring:bind path="studentDetails">
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">School</label>
+									<div class="col-sm-10">
+										<form:input type="text" id="school"
+											class="form-control col-sm-9" placeholder="School"
+											path="studentDetails.school" required="true" />
+										Type a new school or select from an existing one:
+										<select id="schoolSelect">
+											<option value="" label=""></option>
+											<c:forEach items="${schools}" var="s">
+	                        					<option value="${s}" label="${s}"></option>
+	                    					</c:forEach>
+										</select>
+										<form:errors path="studentDetails.school" class="help-block"
+											for="school" />
+									</div>
+								</div>
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">Classroom</label>
+									<div class="col-sm-10">
+										<form:input type="text" id="classRoom"
+											class="form-control col-sm-9" placeholder="Classroom"
+											path="studentDetails.classRoom" required="true" />
+										Type a new class room or select from an existing one:
+										<select id="classroomSelect">
+											<option value="" label=""></option>
+											<c:forEach items="${classRooms}" var="s">
+	                        					<option value="${s}" label="${s}"></option>
+	                    					</c:forEach>
+										</select>
+										<form:errors path="studentDetails.classRoom" class="help-block"
+											for="classRoom" />
+									</div>
+								</div>
+							</spring:bind>
 						</div>
 					</div>
 				</div>
-				<c:if test="${not empty userform.allRoles}">
-					<div class="row">
-						<div class="panel panel-info">
-							<div class="panel-heading">User roles</div>
-							<div class="panel-body">
-								<fieldset>
-									<label class="col-sm-2 control-label" for="roles">Roles</label>
-									<div id="roles" class="col-sm-10">
-										<form:select path="selectedRoles" multiple="false">
-										   <form:options items="${userform.allRoles}" path="selectedRoles"
-													itemLabel="name" itemValue="id"/>
-										</form:select>
-									</div>
-								</fieldset>
-							</div>
-						</div>
-					</div>
-				</c:if>
 				<button type="submit" class="btn btn-primary">Submit</button>
 			</form:form>
 		</div>

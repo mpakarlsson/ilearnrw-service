@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
 
 public class UserNewForm {
@@ -16,6 +17,19 @@ public class UserNewForm {
 	@Valid
 	@NotEmpty
 	String role;
+	
+	StudentDetails studentDetails;
+	
+	
+	public UserNewForm() {
+	}
+
+	public UserNewForm(User user, String role, StudentDetails sd) {
+		super();
+		this.user = user;
+		this.role = role;
+		this.studentDetails = sd;
+	}
 	
 	public User getUser() {
 		return user;
@@ -28,5 +42,11 @@ public class UserNewForm {
 	}
 	public void setRole(String role) {
 		this.role = role;
+	}
+	public StudentDetails getStudentDetails() {
+		return studentDetails;
+	}
+	public void setStudentDetails(StudentDetails studentDetails) {
+		this.studentDetails = studentDetails;
 	}
 }

@@ -35,6 +35,13 @@ CREATE TABLE `experts_teachers` (
   PRIMARY KEY (`teacher_id`)
 );
 
+CREATE  TABLE `student_details` (
+  `student_id` INT NOT NULL ,
+  `school` VARCHAR(45) NULL ,
+  `classroom` VARCHAR(45) NULL ,
+  PRIMARY KEY (`student_id`) );
+
+
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `appId` VARCHAR(45) NULL,

@@ -22,6 +22,12 @@
 		      changeYear: true,
 		      dateFormat: "dd.mm.yy"
 		    });
+		$("#schoolSelect").change(function() {
+			$("#school").val($(this).val());
+		});
+		$("#classroomSelect").change(function() {
+			$("#classRoom").val($(this).val());
+		});
 	});
 </script>
 
@@ -68,7 +74,7 @@
 								</div>
 							</spring:bind>
 
-							<spring:bind path="birthdate">
+							<spring:bind path="user.birthdate">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									
 									<fieldset id="birthdate" class='birthday-picker'>
@@ -134,9 +140,46 @@
 											<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 											   <form:option value="teacher" label="Teacher"/>
 											</sec:authorize>
-										   <form:option value="student" label="student"/>
+										   <form:option value="student" label="Student"/>
 										</form:select>
 										<form:errors path="role" class="help-block" for="role" />
+									</div>
+								</div>
+							</spring:bind>
+
+							<spring:bind path="studentDetails">
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">School</label>
+									<div class="col-sm-10">
+										<form:input type="text" id="school"
+											class="form-control col-sm-9" placeholder="School"
+											path="studentDetails.school" required="true" />
+										Type a new school or select from an existing one:
+										<select id="schoolSelect">
+											<option value="" label=""></option>
+											<c:forEach items="${schools}" var="s">
+	                        					<option value="${s}" label="${s}"></option>
+	                    					</c:forEach>
+										</select>
+										<form:errors path="studentDetails.school" class="help-block"
+											for="school" />
+									</div>
+								</div>
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">Classroom</label>
+									<div class="col-sm-10">
+										<form:input type="text" id="classRoom"
+											class="form-control col-sm-9" placeholder="Classroom"
+											path="studentDetails.classRoom" required="true" />
+										Type a new class room or select from an existing one:
+										<select id="classroomSelect">
+											<option value="" label=""></option>
+											<c:forEach items="${classRooms}" var="s">
+	                        					<option value="${s}" label="${s}"></option>
+	                    					</c:forEach>
+										</select>
+										<form:errors path="studentDetails.classRoom" class="help-block"
+											for="classRoom" />
 									</div>
 								</div>
 							</spring:bind>

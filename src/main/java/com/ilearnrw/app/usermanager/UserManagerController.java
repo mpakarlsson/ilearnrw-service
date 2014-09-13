@@ -40,16 +40,16 @@ import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
-import com.ilearnrw.app.usermanager.form.UserRole;
-import com.ilearnrw.app.usermanager.form.UserRolesForm;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.ExpertTeacherService;
 import com.ilearnrw.common.security.users.services.PermissionService;
 import com.ilearnrw.common.security.users.services.RoleService;
+import com.ilearnrw.common.security.users.services.StudentDetailsService;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 
@@ -76,6 +76,9 @@ public class UserManagerController {
 	
 	@Autowired
 	private ExpertTeacherService expertTeacherService;
+
+	@Autowired
+	private StudentDetailsService studentDetailsService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -156,22 +159,23 @@ public class UserManagerController {
 		return "users/manage";
 	}
 
-	private List<UserRole> getUsersManagedByAdmin() {
+	private List<UserNewForm> getUsersManagedByAdmin() {
 		List<User> users = userService.getUserList();
-		List<UserRole> userRoles = new ArrayList<UserRole>();
+		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
 		for (User user : users)
 		{
 			List<Role> roles = roleService.getRoleList(user);
+			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
 			if (roles.size() == 1)
-				userRoles.add(new UserRole(user, roles.get(0).getName()));
+				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
-				userRoles.add(new UserRole(user, "none"));
+				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
 	
-	private List<UserRole> getUsersManagedByExpert() {
+	private List<UserNewForm> getUsersManagedByExpert() {
 		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		List<User> teachers = expertTeacherService.getTeacherList(current);
 		List<User> users = new ArrayList<User>();
@@ -181,30 +185,32 @@ public class UserManagerController {
 			users.addAll(teacherStudentService.getStudentList(teacher));
 		}
 		users.addAll(teacherStudentService.getUnassignedStudentsList());
-		List<UserRole> userRoles = new ArrayList<UserRole>();
+		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
 		for (User user : users)
 		{
 			List<Role> roles = roleService.getRoleList(user);
+			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
 			if (roles.size() == 1)
-				userRoles.add(new UserRole(user, roles.get(0).getName()));
+				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
-				userRoles.add(new UserRole(user, "none"));
+				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
 	
-	private List<UserRole> getUsersManagedByTeacher() {
+	private List<UserNewForm> getUsersManagedByTeacher() {
 		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		List<User> users = teacherStudentService.getStudentList(current);
-		List<UserRole> userRoles = new ArrayList<UserRole>();
+		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
 		for (User user : users)
 		{
 			List<Role> roles = roleService.getRoleList(user);
+			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
 			if (roles.size() == 1)
-				userRoles.add(new UserRole(user, roles.get(0).getName()));
+				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
-				userRoles.add(new UserRole(user, "none"));
+				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
@@ -302,24 +308,25 @@ public class UserManagerController {
 	@RequestMapping(value = "/users/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewUserUpdateForm(@PathVariable int id, ModelMap model) {
-		UserRolesForm userForm = new UserRolesForm();
+		UserNewForm userForm = new UserNewForm();
 		User user = userService.getUser(id);
 		user.setPassword("");
-		List<Role> allRoles = roleService.getRoleList();
+
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
-		userForm.setBirthdate(user.getBirthdate());
-		userForm.setAllRoles(allRoles);
-		userForm.setSelectedRoles(selectedRoles);
+		userForm.setRole(selectedRoles.get(0).getName());
+		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user.getId()));
 
 		model.put("userform", userForm);
+		model.put("schools", studentDetailsService.getSchools());
+		model.put("classRooms", studentDetailsService.getClassRooms());
 		return "users/form.update";
 	}
 
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
 	@Transactional
 	public String updateUser(@PathVariable int id,
-			@Valid @ModelAttribute("userform") UserRolesForm userForm,
+			@Valid @ModelAttribute("userform") UserNewForm userForm,
 			BindingResult result, ModelMap model) {
 		User user = userForm.getUser();
 		user.setId(id);
@@ -332,18 +339,14 @@ public class UserManagerController {
 			if (user.getBirthdate().before(calendar.getTime()))
 				result.rejectValue("birthdate", "birthdate.invalid");
 		}
-		if (result.hasErrors())
-			return "users/form.insert";
-		
 		if (result.hasErrors()) {
-			List<Role> allRoles = roleService.getRoleList();
-			userForm.setAllRoles(allRoles);
 			return "users/form.update";
 		}
 
 		userService.updateData(userForm.getUser());
-		roleService
-				.setRoleList(userForm.getUser(), userForm.getSelectedRoles());
+		StudentDetails sd = userForm.getStudentDetails();
+		sd.setStudentId(user.getId());
+		studentDetailsService.updateData(userForm.getStudentDetails());
 		return "redirect:/apps/users/manage";
 	}
 
@@ -356,7 +359,9 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form) {
+	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form, ModelMap model) {
+		model.put("schools", studentDetailsService.getSchools());
+		model.put("classRooms", studentDetailsService.getClassRooms());
 		return "users/form.insert";
 	}
 
@@ -399,8 +404,12 @@ public class UserManagerController {
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_STUDENT")));
 			if (request.isUserInRole("PERMISSION_TEACHER"))
 				teacherStudentService.assignStudentToTeacher(current, user);
+				StudentDetails sd = form.getStudentDetails();
+				sd.setStudentId(user.getId());
+				studentDetailsService.insertData(sd);
 		}
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
+		
 
 		return "redirect:/apps/users/manage";
 	}

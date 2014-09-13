@@ -41,7 +41,13 @@
 						<tr>
 							<th>Username</th>
 							<th>Status</th>
-							<th></th>
+							<th>Role</th>
+							<th>Lang.</th>
+							<th>Gender</th>
+							<th>School</th>
+							<th>Class</th>
+							<th>Teacher</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -75,6 +81,12 @@
 										<td><span class="label label-danger"> Inactive</span></td>
 									</c:otherwise>
 								</c:choose>
+								<td>${o.role}</td>
+								<td>${o.user.language}</td>
+								<td>${o.user.gender}</td>
+								<td>${o.studentDetails.school}</td>
+								<td>${o.studentDetails.classRoom}</td>
+								<td></td>
 								<td>
 									<div class="btn-group">
 										<a class="btn btn-default btn-xs dropdown-toggle"
