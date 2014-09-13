@@ -1,6 +1,7 @@
 package com.ilearnrw.common.security.users.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -63,6 +64,11 @@ public class RoleServiceImpl implements RoleService {
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public Map<String, String> getUsersWithRole(String role) {
+		return roleDao.getUsersWithRole(role);
 	}
 
 }

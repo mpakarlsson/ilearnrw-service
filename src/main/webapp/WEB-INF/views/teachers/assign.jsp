@@ -49,7 +49,13 @@
 						</div>
 					</c:if>
 				</div>
-				<button type="submit" class="btn btn-primary">Submit</button>
+				<button type="submit" class="btn btn-primary">Save assignments</button>
+			<sec:authorize
+				ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
+				<a class="btn btn-success"
+					href="${pageContext.request.contextPath}/apps/users/new"> New
+					User </a>
+			</sec:authorize>
 			</form:form>
 		</div>
 	</div>

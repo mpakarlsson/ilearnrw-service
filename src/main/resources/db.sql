@@ -36,9 +36,10 @@ CREATE TABLE `experts_teachers` (
 );
 
 CREATE  TABLE `student_details` (
-  `student_id` INT NOT NULL ,
+  `student_id` bigint(20) NOT NULL ,
   `school` VARCHAR(45) NULL ,
   `classroom` VARCHAR(45) NULL ,
+  `teacher_id` bigint(20) NOT NULL ,
   PRIMARY KEY (`student_id`) );
 
 

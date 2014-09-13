@@ -86,7 +86,10 @@
 								<td>${o.user.gender}</td>
 								<td>${o.studentDetails.school}</td>
 								<td>${o.studentDetails.classRoom}</td>
-								<td></td>
+								<td>
+								<c:set var="foundTeacherAsString">${o.studentDetails.teacherId}</c:set>
+								${teachersList[foundTeacherAsString]}
+								</td>
 								<td>
 									<div class="btn-group">
 										<a class="btn btn-default btn-xs dropdown-toggle"
@@ -144,7 +147,7 @@
 				</table>
 			</div>
 			<sec:authorize
-				ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT,PERMISSION_TEACHER">
+				ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 				<a class="btn btn-success"
 					href="${pageContext.request.contextPath}/apps/users/new"> New
 					User </a>

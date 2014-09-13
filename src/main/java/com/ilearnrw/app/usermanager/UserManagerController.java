@@ -149,13 +149,14 @@ public class UserManagerController {
 	/* Users logs */
 	
 	@RequestMapping(value = "users/manage")
-	public String manageUsers(ModelMap modelMap, HttpServletRequest request) {
+	public String manageUsers(ModelMap modelMap, HttpServletRequest request, ModelMap model) {
 		if (request.isUserInRole("PERMISSION_ADMIN"))
 			modelMap.addAttribute("users", getUsersManagedByAdmin());
 		else if (request.isUserInRole("PERMISSION_EXPERT"))
 			modelMap.addAttribute("users", getUsersManagedByExpert());
 		else if (request.isUserInRole("PERMISSION_TEACHER"))
 			modelMap.addAttribute("users", getUsersManagedByTeacher());
+		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 		return "users/manage";
 	}
 
@@ -320,6 +321,8 @@ public class UserManagerController {
 		model.put("userform", userForm);
 		model.put("schools", studentDetailsService.getSchools());
 		model.put("classRooms", studentDetailsService.getClassRooms());
+		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
+
 		return "users/form.update";
 	}
 
@@ -362,6 +365,7 @@ public class UserManagerController {
 	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form, ModelMap model) {
 		model.put("schools", studentDetailsService.getSchools());
 		model.put("classRooms", studentDetailsService.getClassRooms());
+		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 		return "users/form.insert";
 	}
 

@@ -28,6 +28,15 @@
 		$("#classroomSelect").change(function() {
 			$("#classRoom").val($(this).val());
 		});
+		$("#roleSelect").change(function() {
+			if ($("#roleSelect").val() === "student") {
+				$("#studentDetails").show();
+			}
+			else {
+				$("#studentDetails").hide();
+			}
+		
+		});
 	});
 </script>
 
@@ -132,7 +141,7 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Role</label>
 									<div class="col-sm-10">
-										<form:select path="role" multiple="false">
+										<form:select id="roleSelect" path="role" multiple="false">
 											<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 											   <form:option value="admin" label="Admin"/>
 											   <form:option value="expert" label="Expert"/>
@@ -148,6 +157,7 @@
 							</spring:bind>
 
 							<spring:bind path="studentDetails">
+								<div id="studentDetails" style="display:none">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">School</label>
 									<div class="col-sm-10">
@@ -181,6 +191,18 @@
 										<form:errors path="studentDetails.classRoom" class="help-block"
 											for="classRoom" />
 									</div>
+								</div>
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">Teacher</label>
+									<div class="col-sm-10">
+										<form:select id="teacherSelect" path="studentDetails.teacherId" >
+											<form:option value="" label=""/>
+											<form:options items="${teachersList}"/>
+										</form:select>
+										<form:errors path="studentDetails.teacherId" class="help-block"
+											for="teacherSelect" />
+									</div>
+								</div>
 								</div>
 							</spring:bind>
 

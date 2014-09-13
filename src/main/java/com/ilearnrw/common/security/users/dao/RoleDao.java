@@ -1,6 +1,7 @@
 package com.ilearnrw.common.security.users.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ilearnrw.common.security.users.model.Role;
 import com.ilearnrw.common.security.users.model.User;
@@ -22,4 +23,6 @@ public interface RoleDao {
 	public void setRoleList(User user, List<Role> roles);
 
 	public Role getRole(String roleName);
+
+	public Map<String, String> getUsersWithRole(String role);
 }

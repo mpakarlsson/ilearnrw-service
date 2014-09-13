@@ -3,7 +3,9 @@ package com.ilearnrw.common.security.users.dao;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -100,6 +102,22 @@ public class RoleDaoImpl implements RoleDao {
 				return roles.size();
 			}
 		});
+	}
+
+	@Override
+	public Map<String, String> getUsersWithRole(String role) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+			"select u.id, u.username from " + 
+			"users u " +  
+			"left join role_members rm on u.id=rm.members_id " +
+			"left join roles r on rm.roles_id=r.id " +
+			"where r.name='" + role + "'");
+		Map<String, String> result = new HashMap<String, String>();
+		for(Map<String, Object> row : rows) {
+			result.put(row.get("id").toString(), (String)row.get("username"));
+		}
+		return result;
 	}
 
 }

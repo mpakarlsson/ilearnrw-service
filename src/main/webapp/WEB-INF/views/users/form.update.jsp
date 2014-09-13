@@ -164,6 +164,17 @@
 										<form:errors path="studentDetails.classRoom" class="help-block"
 											for="classRoom" />
 									</div>
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label">Teacher</label>
+										<div class="col-sm-10">
+											<form:select id="teacherSelect" path="studentDetails.teacherId" >
+												<form:option value="" label=""/>
+												<form:options items="${teachersList}"/>
+											</form:select>
+											<form:errors path="studentDetails.teacherId" class="help-block"
+												for="teacherSelect" />
+										</div>
+									</div>
 								</div>
 							</spring:bind>
 						</div>

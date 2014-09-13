@@ -10,6 +10,8 @@ public class StudentDetails {
 
 	@Size(min = 2, max = 45)
 	private String classRoom;
+	
+	private Integer teacherId;
 
 	public Integer getStudentId() {
 		return studentId;
@@ -33,6 +35,14 @@ public class StudentDetails {
 
 	public void setClassRoom(String classRoom) {
 		this.classRoom = classRoom;
+	}
+
+	public Integer getTeacherId() {
+		return teacherId;
+	}
+
+	public void setTeacherId(Integer teacherId) {
+		this.teacherId = teacherId;
 	}	
 	
 }

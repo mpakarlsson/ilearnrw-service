@@ -61,6 +61,7 @@ public class StudentDetailsDaoImpl implements StudentDetailsDao {
 		parameters.put("student_id", sd.getStudentId());
 		parameters.put("school", sd.getSchool());
 		parameters.put("classroom", sd.getClassRoom());
+		parameters.put("teacher_id", sd.getTeacherId());
 
 		insert.execute(parameters);
 
@@ -71,8 +72,8 @@ public class StudentDetailsDaoImpl implements StudentDetailsDao {
 	public void updateData(StudentDetails sd) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.update(
-				"update student_details set school=?, classroom=? where student_id=?",
-				sd.getSchool(), sd.getClassRoom(), sd.getStudentId());
+				"update student_details set school=?, classroom=?, teacher_id=? where student_id=?",
+				sd.getSchool(), sd.getClassRoom(), sd.getTeacherId(), sd.getStudentId());
 
 	}
 
