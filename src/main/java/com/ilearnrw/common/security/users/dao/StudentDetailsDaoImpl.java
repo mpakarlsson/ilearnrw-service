@@ -71,10 +71,12 @@ public class StudentDetailsDaoImpl implements StudentDetailsDao {
 	@Override
 	public void updateData(StudentDetails sd) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		template.update(
+		int rows = template.update(
 				"update student_details set school=?, classroom=?, teacher_id=? where student_id=?",
 				sd.getSchool(), sd.getClassRoom(), sd.getTeacherId(), sd.getStudentId());
-
+		if (rows == 0) {
+			insertData(sd);
+		}
 	}
 
 	@Override

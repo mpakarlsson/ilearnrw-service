@@ -28,12 +28,23 @@
 		$("#classroomSelect").change(function() {
 			$("#classRoom").val($(this).val());
 		});
+		if ($("#roleSelect").val() !== "student") {
+			$("#studentDetails").hide();
+			$("#studentDetails :input").prop('disabled', true);
+		}
+		else{
+			$("#studentDetails").show();
+			$("#studentDetails :input").prop('disabled', false);
+		}
+
 		$("#roleSelect").change(function() {
-			if ($("#roleSelect").val() === "student") {
+			if ($(this).val() === "student") {
 				$("#studentDetails").show();
+				$("#studentDetails :input").prop('disabled', false);
 			}
 			else {
 				$("#studentDetails").hide();
+				$("#studentDetails :input").prop('disabled', true);
 			}
 		
 		});
@@ -157,7 +168,7 @@
 							</spring:bind>
 
 							<spring:bind path="studentDetails">
-								<div id="studentDetails" style="display:none">
+								<div id="studentDetails">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">School</label>
 									<div class="col-sm-10">

@@ -29,6 +29,16 @@
 		$("#classroomSelect").change(function() {
 			$("#classRoom").val($(this).val());
 		});
+		
+		if ("${userform.role}" !== "ROLE_STUDENT") {
+			$("#studentDetails").hide();
+			$("#studentDetails :input").prop('disabled', true);
+		}
+		else{
+			$("#studentDetails").show();
+			$("#studentDetails :input").prop('disabled', false);
+		}
+
 	});
 </script>
 
@@ -131,6 +141,7 @@
 								<form:hidden path="role"/>
 							</spring:bind>
 							<spring:bind path="studentDetails">
+							<div id="studentDetails">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">School</label>
 									<div class="col-sm-10">
@@ -175,6 +186,7 @@
 												for="teacherSelect" />
 										</div>
 									</div>
+								</div>
 								</div>
 							</spring:bind>
 						</div>

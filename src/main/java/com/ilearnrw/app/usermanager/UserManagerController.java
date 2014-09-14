@@ -362,21 +362,26 @@ public class UserManagerController {
 		user.setId(id);
 		userForm.setUser(user);
 		if (user.getBirthdate().after(new Date()))
-			result.rejectValue("birthdate", "birthdate.invalid");
+			result.rejectValue("user.birthdate", "birthdate.invalid");
 		else {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.YEAR, -100);
 			if (user.getBirthdate().before(calendar.getTime()))
-				result.rejectValue("birthdate", "birthdate.invalid");
+				result.rejectValue("user.birthdate", "birthdate.invalid");
 		}
 		if (result.hasErrors()) {
+			model.put("schools", studentDetailsService.getSchools());
+			model.put("classRooms", studentDetailsService.getClassRooms());
+			model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 			return "users/form.update";
 		}
 
 		userService.updateData(userForm.getUser());
-		StudentDetails sd = userForm.getStudentDetails();
-		sd.setStudentId(user.getId());
-		studentDetailsService.updateData(userForm.getStudentDetails());
+		if (userForm.getRole().compareTo("ROLE_STUDENT") == 0) {
+			StudentDetails sd = userForm.getStudentDetails();
+			sd.setStudentId(user.getId());
+			studentDetailsService.updateData(userForm.getStudentDetails());
+		}
 		return "redirect:/apps/users/manage";
 	}
 
@@ -404,17 +409,21 @@ public class UserManagerController {
 		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		User user = form.getUser();
 		if (user.getBirthdate().after(new Date()))
-			result.rejectValue("birthdate", "birthdate.invalid");
+			result.rejectValue("user.birthdate", "birthdate.invalid");
 		else {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.YEAR, -100);
 			if (user.getBirthdate().before(calendar.getTime()))
-				result.rejectValue("birthdate", "birthdate.invalid");
+				result.rejectValue("user.birthdate", "birthdate.invalid");
 		}
 		if (userService.getUserByUsername(user.getUsername()) != null)
 			result.rejectValue("user.username", "user.username.exists");
-		if (result.hasErrors())
+		if (result.hasErrors()) {
+			model.put("schools", studentDetailsService.getSchools());
+			model.put("classRooms", studentDetailsService.getClassRooms());
+			model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 			return "users/form.insert";
+		}
 		int userId = userService.insertData(user);
 		if (form.getRole().equals("admin"))
 		{
