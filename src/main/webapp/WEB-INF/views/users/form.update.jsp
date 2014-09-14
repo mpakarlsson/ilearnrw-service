@@ -19,22 +19,21 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#datepicker").datepicker({
-		      changeMonth: true,
-		      changeYear: true,
-		      dateFormat: "dd.mm.yy"
-		    });
+			changeMonth : true,
+			changeYear : true,
+			dateFormat : "dd.mm.yy"
+		});
 		$("#schoolSelect").change(function() {
 			$("#school").val($(this).val());
 		});
 		$("#classroomSelect").change(function() {
 			$("#classRoom").val($(this).val());
 		});
-		
+
 		if ("${userform.role}" !== "ROLE_STUDENT") {
 			$("#studentDetails").hide();
 			$("#studentDetails :input").prop('disabled', true);
-		}
-		else{
+		} else {
 			$("#studentDetails").show();
 			$("#studentDetails :input").prop('disabled', false);
 		}
@@ -49,7 +48,28 @@
 		<jsp:include page="../includes/navigation.jsp"></jsp:include>
 		<div id="page-wrapper">
 			<div class="row">
-				<div class="col-lg-12">
+				<div class="col-lg-2">
+					<c:choose>
+						<c:when test="${userform.role == 'ROLE_ADMIN'}">
+							<img
+								src="${pageContext.request.contextPath}/apps/resources/webapp/images/admin_head.png" />
+						</c:when>
+						<c:when test="${userform.role == 'ROLE_EXPERT'}">
+							<img
+								src="${pageContext.request.contextPath}/apps/resources/webapp/images/expert_head.png" />
+						</c:when>
+						<c:when test="${userform.role == 'ROLE_TEACHER'}">
+							<img
+								src="${pageContext.request.contextPath}/apps/resources/webapp/images/teacher_head.png" />
+						</c:when>
+						<c:otherwise>
+							<img
+								src="${pageContext.request.contextPath}/apps/resources/webapp/images/student_head.png" />
+						</c:otherwise>
+
+					</c:choose>
+				</div>
+				<div class="col-lg-10">
 					<h1 class="page-header">Edit user</h1>
 				</div>
 			</div>
@@ -92,7 +112,7 @@
 										Date</label>
 									<div class="col-sm-10" id="birthdatepicker">
 										<fieldset id="birthdate" class='birthday-picker'>
-      										<form:input type="text" id="datepicker" path="user.birthdate"/>
+											<form:input type="text" id="datepicker" path="user.birthdate" />
 										</fieldset>
 										<form:errors path="user.birthdate" class="help-block"
 											for="birthdate" />
@@ -115,8 +135,8 @@
 									<label class="col-sm-2 control-label">Gender</label>
 									<div class="col-sm-10">
 										<form:select path="user.gender">
-										   <form:option value="M" label="Male"/>
-										   <form:option value="F" label="Female"/>
+											<form:option value="M" label="Male" />
+											<form:option value="F" label="Female" />
 										</form:select>
 										<form:errors path="user.gender" class="help-block"
 											for="gender" />
@@ -129,8 +149,8 @@
 									<label class="col-sm-2 control-label">Language</label>
 									<div class="col-sm-10">
 										<form:select path="user.language">
-										   <form:option value="EN" label="English"/>
-										   <form:option value="GR" label="Greek"/>
+											<form:option value="EN" label="English" />
+											<form:option value="GR" label="Greek" />
 										</form:select>
 										<form:errors path="user.language" class="help-block"
 											for="language" />
@@ -138,55 +158,56 @@
 								</div>
 							</spring:bind>
 							<spring:bind path="role">
-								<form:hidden path="role"/>
+								<form:hidden path="role" />
 							</spring:bind>
 							<spring:bind path="studentDetails">
-							<div id="studentDetails">
-								<div class="form-group ${status.error ? 'has-error' : ''}">
-									<label class="col-sm-2 control-label">School</label>
-									<div class="col-sm-10">
-										<form:input type="text" id="school"
-											class="form-control col-sm-9" placeholder="School"
-											path="studentDetails.school" required="true" />
-										Type a new school or select from an existing one:
-										<select id="schoolSelect">
-											<option value="" label=""></option>
-											<c:forEach items="${schools}" var="s">
-	                        					<option value="${s}" label="${s}"></option>
-	                    					</c:forEach>
-										</select>
-										<form:errors path="studentDetails.school" class="help-block"
-											for="school" />
-									</div>
-								</div>
-								<div class="form-group ${status.error ? 'has-error' : ''}">
-									<label class="col-sm-2 control-label">Classroom</label>
-									<div class="col-sm-10">
-										<form:input type="text" id="classRoom"
-											class="form-control col-sm-9" placeholder="Classroom"
-											path="studentDetails.classRoom" required="true" />
-										Type a new class room or select from an existing one:
-										<select id="classroomSelect">
-											<option value="" label=""></option>
-											<c:forEach items="${classRooms}" var="s">
-	                        					<option value="${s}" label="${s}"></option>
-	                    					</c:forEach>
-										</select>
-										<form:errors path="studentDetails.classRoom" class="help-block"
-											for="classRoom" />
-									</div>
+								<div id="studentDetails">
 									<div class="form-group ${status.error ? 'has-error' : ''}">
-										<label class="col-sm-2 control-label">Teacher</label>
+										<label class="col-sm-2 control-label">School</label>
 										<div class="col-sm-10">
-											<form:select id="teacherSelect" path="studentDetails.teacherId" >
-												<form:option value="" label=""/>
-												<form:options items="${teachersList}"/>
-											</form:select>
-											<form:errors path="studentDetails.teacherId" class="help-block"
-												for="teacherSelect" />
+											<form:input type="text" id="school"
+												class="form-control col-sm-9" placeholder="School"
+												path="studentDetails.school" required="true" />
+											Type a new school or select from an existing one: <select
+												id="schoolSelect">
+												<option value="" label=""></option>
+												<c:forEach items="${schools}" var="s">
+													<option value="${s}" label="${s}"></option>
+												</c:forEach>
+											</select>
+											<form:errors path="studentDetails.school" class="help-block"
+												for="school" />
 										</div>
 									</div>
-								</div>
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label">Classroom</label>
+										<div class="col-sm-10">
+											<form:input type="text" id="classRoom"
+												class="form-control col-sm-9" placeholder="Classroom"
+												path="studentDetails.classRoom" required="true" />
+											Type a new class room or select from an existing one: <select
+												id="classroomSelect">
+												<option value="" label=""></option>
+												<c:forEach items="${classRooms}" var="s">
+													<option value="${s}" label="${s}"></option>
+												</c:forEach>
+											</select>
+											<form:errors path="studentDetails.classRoom"
+												class="help-block" for="classRoom" />
+										</div>
+										<div class="form-group ${status.error ? 'has-error' : ''}">
+											<label class="col-sm-2 control-label">Teacher</label>
+											<div class="col-sm-10">
+												<form:select id="teacherSelect"
+													path="studentDetails.teacherId">
+													<form:option value="" label="" />
+													<form:options items="${teachersList}" />
+												</form:select>
+												<form:errors path="studentDetails.teacherId"
+													class="help-block" for="teacherSelect" />
+											</div>
+										</div>
+									</div>
 								</div>
 							</spring:bind>
 						</div>

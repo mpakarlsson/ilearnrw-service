@@ -38,6 +38,7 @@
 		}
 
 		$("#roleSelect").change(function() {
+			$("#headImage").attr('src', '${pageContext.request.contextPath}/apps/resources/webapp/images/'+$(this).val()+'_head.png');
 			if ($(this).val() === "student") {
 				$("#studentDetails").show();
 				$("#studentDetails :input").prop('disabled', false);
@@ -58,7 +59,11 @@
 		<jsp:include page="../includes/navigation.jsp"></jsp:include>
 		<div id="page-wrapper">
 			<div class="row">
-				<div class="col-lg-12">
+				<div class="col-lg-2">
+					<img id="headImage"
+						src="${pageContext.request.contextPath}/apps/resources/webapp/images/admin_head.png" />
+				</div>
+				<div class="col-lg-10">
 					<h1 class="page-header">New user</h1>
 				</div>
 			</div>
