@@ -45,14 +45,15 @@
 </style>
 <script>
 	$(function() {
-		$('#profileTypeSelect').change(function() {
-			if ($(this).val() == 'independent') {
-				$("#independent-profile").show();
-				$("#supervised-profile").hide();
-			} else {
-				$("#independent-profile").hide();
-				$("#supervised-profile").show();
-			}
+		$('#independentMenu').click(function() {
+			$("#independent-profile").show();
+			$("#supervised-profile").hide();
+			
+		});
+		$('#supervisedMenu').click(function() {
+			$("#independent-profile").hide();
+			$("#supervised-profile").show();
+			
 		});
 		$(".progressbar").each(
 				function(i) {
@@ -79,10 +80,10 @@
 			$("#dialog").data("category", $(this).data("category"));
 			$("#dialog #dialog-save").click(function() {
 				$.get('profile/set', {
-						'level' : $("#dialog #dialog-value-level").val(),
-						'type' : $("#dialog").data("type"),
-						'category' : $("#dialog").data("category"),
-						'index' : $("#dialog").data("index")
+					'level' : $("#dialog #dialog-value-level").val(),
+					'type' : $("#dialog").data("type"),
+					'category' : $("#dialog").data("category"),
+					'index' : $("#dialog").data("index")
 				}, function(data) {
 					$("#dialog").dialog("close");
 				});
@@ -122,12 +123,20 @@
 
 		<div id="page-wrapper">
 			<div class="row">
-				<div class="col-lg-12">
-					<h1 class="page-header">Student profile: ${student.username}</h1>
-					<select id="profileTypeSelect" style="float: right">
-						<option value="independent" label="Independent"></option>
-						<option value="supervised" label="With teacher"></option>
-					</select>
+				<div class="col-lg-10">
+					<h1 class="">Student profile: ${student.username}</h1>
+				</div>
+				<div class="col-lg-2">
+					<ul class="nav navbar-nav">
+						<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+								type <span class="caret"></span>
+						</a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#" id="independentMenu">Independent</a></li>
+								<li><a href="#" id="supervisedMenu">With teacher</a></li>
+							</ul></li>
+					</ul>
 				</div>
 			</div>
 
@@ -159,9 +168,9 @@
 									varStatus="statusCol">
 									<div class="col-xs-10 col-md-2 problemdescription"
 										data-problem="${profile.userProblems.problems.problems[statusRow.index][statusCol.index]}"
-										data-category="${statusRow.index }" 
-										data-index="${statusCol.index }" 
-										data-level="${col }" data-type="independent">
+										data-category="${statusRow.index }"
+										data-index="${statusCol.index }" data-level="${col }"
+										data-type="independent">
 
 										<c:choose>
 											<c:when test="${col < 3}">
@@ -212,9 +221,8 @@
 									varStatus="statusCol">
 									<div class="col-xs-10 col-md-2 problemdescription"
 										data-problem="${profile.userProblems.problems.problems[statusRow.index][statusCol.index]}"
-										data-category="${statusRow.index }" 
-										data-index="${statusCol.index }" 
-										data-level="${col }" 
+										data-category="${statusRow.index }"
+										data-index="${statusCol.index }" data-level="${col }"
 										data-type="supervised">
 
 										<c:choose>
