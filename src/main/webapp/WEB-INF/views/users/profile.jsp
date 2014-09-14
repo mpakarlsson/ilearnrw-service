@@ -244,7 +244,7 @@
 					<div class="panel-heading">Preferences</div>
 					<div class="panel-body">
 						<form:form
-							action="${pageContext.servletContext.contextPath}/apps/users/${username}/profile"
+							action="${pageContext.servletContext.contextPath}/apps/users/${student.id}/profile"
 							method="POST" modelAttribute="profile" class="form-horizontal">
 
 							<form:hidden path="userProblems.userSeverities.length" />

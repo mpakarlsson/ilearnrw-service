@@ -310,9 +310,12 @@ public class UserManagerController {
 	@RequestMapping(value = "users/{id}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
-			@PathVariable int id) throws ProfileProviderException {
-		profileProvider.updateProfile(id, profile);
-		return "redirect:/apps/panel";
+			@PathVariable int id, HttpServletRequest request) throws ProfileProviderException {
+		UserProfile oldProfile = profileProvider.getProfile(id);
+		oldProfile.getUserProblems().setTrickyWords(profile.getUserProblems().getTrickyWords());
+		oldProfile.getPreferences().setFontSize(profile.getPreferences().getFontSize());
+		profileProvider.updateProfile(id, oldProfile);
+		return "redirect:/apps/users/"+id+"/profile";
 	}
 
 	@RequestMapping(value = "users", method = RequestMethod.POST)
