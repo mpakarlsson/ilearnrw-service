@@ -160,6 +160,14 @@ public class UserManagerController {
 		return "users/manage";
 	}
 
+	@RequestMapping(value = "users/students")
+	public String manageStudents(ModelMap modelMap, HttpServletRequest request, ModelMap model) {
+		if (request.isUserInRole("PERMISSION_TEACHER")) {
+			modelMap.addAttribute("students", getUsersManagedByTeacher());
+		}
+		return "users/students";
+	}
+
 	private List<UserNewForm> getUsersManagedByAdmin() {
 		List<User> users = userService.getUserList();
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
@@ -280,6 +288,8 @@ public class UserManagerController {
 
 		model.put("userId", id);
 		model.put("profile", profile);
+		model.put("student", userService.getUser(id));
+		model.put("studentDetails", studentDetailsService.getStudentDetails(id));
 		return "users/profile";
 	}
 
