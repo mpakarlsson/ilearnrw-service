@@ -73,6 +73,25 @@
 					<div class="panel-body">
 						<form:form action="new" method="POST" modelAttribute="userform"
 							class="form-horizontal" role="form">
+							<spring:bind path="role">
+								<div class="form-group ${status.error ? 'has-error' : ''}">
+									<label class="col-sm-2 control-label">Role</label>
+									<div class="col-sm-10">
+										<form:select id="roleSelect" path="role" multiple="false">
+											<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
+											   <form:option value="admin" label="Admin"/>
+											   <form:option value="expert" label="Expert"/>
+											</sec:authorize>
+											<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
+											   <form:option value="teacher" label="Teacher"/>
+											</sec:authorize>
+										   <form:option value="student" label="Student"/>
+										</form:select>
+										<form:errors path="role" class="help-block" for="role" />
+									</div>
+								</div>
+							</spring:bind>
+
 							<spring:bind path="user.username">
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label" for="username">Username</label>
@@ -149,25 +168,6 @@
 										</form:select>
 										<form:errors path="user.language" class="help-block"
 											for="language" />
-									</div>
-								</div>
-							</spring:bind>
-
-							<spring:bind path="role">
-								<div class="form-group ${status.error ? 'has-error' : ''}">
-									<label class="col-sm-2 control-label">Role</label>
-									<div class="col-sm-10">
-										<form:select id="roleSelect" path="role" multiple="false">
-											<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
-											   <form:option value="admin" label="Admin"/>
-											   <form:option value="expert" label="Expert"/>
-											</sec:authorize>
-											<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
-											   <form:option value="teacher" label="Teacher"/>
-											</sec:authorize>
-										   <form:option value="student" label="Student"/>
-										</form:select>
-										<form:errors path="role" class="help-block" for="role" />
 									</div>
 								</div>
 							</spring:bind>
