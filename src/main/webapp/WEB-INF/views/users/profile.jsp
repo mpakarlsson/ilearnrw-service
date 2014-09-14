@@ -74,6 +74,19 @@
 			var text = $(this).data("problem");
 			$("#dialog #dialog-value-level").val($(this).data("level"));
 			$("#dialog #dialog-description").html(text);
+			$("#dialog").data("type", $(this).data("type"));
+			$("#dialog").data("index", $(this).data("index"));
+			$("#dialog").data("category", $(this).data("category"));
+			$("#dialog #dialog-save").click(function() {
+				$.get('profile/set', {
+						'level' : $("#dialog #dialog-value-level").val(),
+						'type' : $("#dialog").data("type"),
+						'category' : $("#dialog").data("category"),
+						'index' : $("#dialog").data("index")
+				}, function(data) {
+					$("#dialog").dialog("close");
+				});
+			});
 			$("#dialog").dialog();
 
 		});
@@ -85,10 +98,10 @@
 <body>
 	<div id="dialog" style="display: none">
 		<div class="row">
-			<div id="dialog-description" class="col-md-12"></div>
+			<div id="dialog-description" class="col-md-12 well"></div>
 		</div>
 		<div class="row">
-			<div id="dialog-value" class="col-md-12">
+			<div id="dialog-value" class="col-md-12 well">
 				Current skill level: <select id="dialog-value-level">
 					<option value="0" label="Not an issue" />
 					<option value="2" label="Needs work" />
@@ -99,7 +112,7 @@
 		</div>
 		<div class="row">
 			<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
-				<button type="submit" class="btn btn-primary" onclick="alert('not implemented')">Save</button>
+				<button type="submit" class="btn btn-primary" id="dialog-save">Save</button>
 			</sec:authorize>
 		</div>
 	</div>
@@ -146,7 +159,9 @@
 									varStatus="statusCol">
 									<div class="col-xs-10 col-md-2 problemdescription"
 										data-problem="${profile.userProblems.problems.problems[statusRow.index][statusCol.index]}"
-										data-level="${col }">
+										data-category="${statusRow.index }" 
+										data-index="${statusCol.index }" 
+										data-level="${col }" data-type="independent">
 
 										<c:choose>
 											<c:when test="${col < 3}">
@@ -197,7 +212,10 @@
 									varStatus="statusCol">
 									<div class="col-xs-10 col-md-2 problemdescription"
 										data-problem="${profile.userProblems.problems.problems[statusRow.index][statusCol.index]}"
-										data-level="${col }">
+										data-category="${statusRow.index }" 
+										data-index="${statusCol.index }" 
+										data-level="${col }" 
+										data-type="supervised">
 
 										<c:choose>
 											<c:when test="${col < 3}">

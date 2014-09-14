@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
@@ -291,6 +292,19 @@ public class UserManagerController {
 		model.put("student", userService.getUser(id));
 		model.put("studentDetails", studentDetailsService.getStudentDetails(id));
 		return "users/profile";
+	}
+
+	@RequestMapping(value = "users/{id}/profile/set", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	@ResponseBody
+	public String updateProfileEntry(@RequestParam("level") Integer level,
+			@RequestParam("type") String type,
+			@RequestParam("category") Integer category,
+			@RequestParam("index") Integer index,
+			@PathVariable int id) throws ProfileProviderException {
+		profileProvider.updateProfileEntry(id, category, index, level);
+		//profileProvider.updateProfile(id, profile);
+		return "OK";
 	}
 
 	@RequestMapping(value = "users/{id}/profile", method = RequestMethod.POST)
