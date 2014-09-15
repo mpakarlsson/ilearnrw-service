@@ -182,9 +182,9 @@
 											path="studentDetails.school" required="true" />
 										Type a new school or select from an existing one:
 										<select id="schoolSelect">
-											<option value="" label=""></option>
+											<option value=""></option>
 											<c:forEach items="${schools}" var="s">
-	                        					<option value="${s}" label="${s}"></option>
+	                        					<option value="${s}">${s}</option>
 	                    					</c:forEach>
 										</select>
 										<form:errors path="studentDetails.school" class="help-block"
@@ -201,7 +201,7 @@
 										<select id="classroomSelect">
 											<option value="" label=""></option>
 											<c:forEach items="${classRooms}" var="s">
-	                        					<option value="${s}" label="${s}"></option>
+	                        					<option value="${s}">${s}</option>
 	                    					</c:forEach>
 										</select>
 										<form:errors path="studentDetails.classRoom" class="help-block"
