@@ -3,6 +3,7 @@ package com.ilearnrw.app.usermanager;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,6 +30,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +43,8 @@ import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
+import com.ilearnrw.app.usermanager.jquery.model.DataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.SkillDetails;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
 import com.ilearnrw.common.security.users.model.Permission;
@@ -421,7 +425,7 @@ public class UserManagerController {
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
 			model.put("classRooms", studentDetailsService.getClassRooms());
-			model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
+			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.insert";
 		}
 		int userId = userService.insertData(user);
@@ -641,6 +645,108 @@ public class UserManagerController {
 				expertTeacherForm.getSelectedTeachers());
 		request.getSession().setAttribute("teachers", expertTeacherService.getTeacherList(expert));
 		return "redirect:/apps/users/manage";
+	}
+	
+	@RequestMapping(value = "reports/overview", method = RequestMethod.GET)
+	@Transactional
+	public String reportsOverview(
+			ModelMap model) {
+		model.put("title", "Overview");
+		return "reports/reports";
+	}
+	
+	@RequestMapping(value = "reports/skill", method = RequestMethod.GET)
+	@Transactional
+	public String reportsSkills(
+			ModelMap model) {
+		model.put("title", "Skill breakdown");
+		return "reports/reports";
+	}
+	
+	@RequestMapping(value = "reports/activity", method = RequestMethod.GET)
+	@Transactional
+	public String reportsActivities(
+			ModelMap model) {
+		model.put("title", "Activity breakdown");
+		return "reports/reports";
+	}
+	
+	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
+	@Transactional
+	public @ResponseBody List<String> getSchools() {
+		List<String> schools = studentDetailsService.getSchools();
+		schools.add(0, "All schools");
+		return schools;
+	}
+	
+	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody List<String> getClassRooms(@RequestBody String school) {
+		//TODO: properly implement this
+		List<String> classrooms = studentDetailsService.getClassRooms();
+		classrooms.add(0, "All classrooms");
+		return classrooms; 
+	}
+	
+	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody List<String> getStudents(@RequestBody String classRoom) {
+		//TODO: properly implement this
+		List<User> students = teacherStudentService.getAllStudentsList();
+		List<String> studentNames = new ArrayList<String>();
+		studentNames.add("All students");
+		for (User user : students)
+			studentNames.add(user.getUsername());
+		return studentNames;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/skill/breakdown", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody List<DataPoint> getSkillBreakdown(@RequestBody String student) {
+		//TODO: properly implement this
+		List<DataPoint> skillBreakdown = new ArrayList<DataPoint>();
+		DataPoint dataPoint = new DataPoint();
+
+		dataPoint.setLabel("Syllable division");
+		dataPoint.setData(40);
+		skillBreakdown.add(dataPoint);
+		
+		dataPoint = new DataPoint();
+		dataPoint.setLabel("Suffixes");
+		dataPoint.setData(30);
+		skillBreakdown.add(dataPoint);
+
+		dataPoint = new DataPoint();
+		dataPoint.setLabel("Prefixes");
+		dataPoint.setData(25);
+		skillBreakdown.add(dataPoint);
+
+		dataPoint = new DataPoint();
+		dataPoint.setLabel("Vowel sounds");
+		dataPoint.setData(17);
+		skillBreakdown.add(dataPoint);
+
+		return skillBreakdown;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/skill/details", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody SkillDetails getSkillDetails(@RequestBody String skill) {
+		//TODO: properly implement this
+		SkillDetails details = new SkillDetails();
+		details.setTimeSpent("25 minutes");
+		int correctAnswers = 10, incorrectAnswers = 5;
+		DecimalFormat decimalFormat = new DecimalFormat("#.#%");
+		float successRate;
+		try {
+			successRate = (float)correctAnswers / (correctAnswers + incorrectAnswers);
+		} catch (Exception e) {
+			successRate = 0;
+		}
+		details.setSuccessRate(decimalFormat.format(successRate));
+		details.setCorrectAnswers(correctAnswers);
+		details.setIncorrectAnswers(incorrectAnswers);
+		return details;
 	}
 
 }

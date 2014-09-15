@@ -28,17 +28,30 @@
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
                         <li>
-                            <a href="${pageContext.request.contextPath}/apps/screening"><i class="fa fa-image fa-fw"></i> Screening</a>
+                            <a href="${pageContext.request.contextPath}/apps/screening"><i class="fa fa-picture-o fa-fw"></i> Screening</a>
                         </li>
                         </sec:authorize>
                         <sec:authorize ifAnyGranted="PERMISSION_TEACHER">
                         <li>
-                            <a href="${pageContext.request.contextPath}/apps/users/students"><i class="fa fa-user fa-fw"></i> Manage Students</a>
-                        </li>
-                        <li>
-                            <a href="${pageContext.request.contextPath}/apps/users/${userid}/stats"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics</a>
+                            <a href="${pageContext.request.contextPath}/apps/users/students"><i class="fa fa-user fa-fw"></i> View Students</a>
                         </li>
     			        </sec:authorize>
+    			        <sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT,PERMISSION_TEACHER">
+                        <li class="active">
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> View reports<span class="fa arrow"></span></a>
+                            <ul style="height: auto;" class="nav nav-second-level collapse in">
+                                <li>
+                                    <a href="${pageContext.request.contextPath}/apps/reports/overview">Overview</a>
+                                </li>
+                                <li>
+                                    <a href="${pageContext.request.contextPath}/apps/reports/skill">Skill breakdown</a>
+                                </li>
+                                <li>
+                                    <a href="${pageContext.request.contextPath}/apps/reports/activity">Activity breakdown</a>
+                                </li>
+                            </ul>
+                        </li>
+                        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_STUDENT">
                         <li>
                             <a href="tables.html"><i class="fa fa-table fa-fw"></i> Personal</a>
@@ -61,4 +74,3 @@
                 <!-- /.sidebar-collapse -->
             </div>
             <!-- /.navbar-static-side -->
-        </nav>
