@@ -104,10 +104,10 @@
 		<div class="row">
 			<div id="dialog-value" class="col-md-12 well">
 				Current skill level: <select id="dialog-value-level">
-					<option value="0" label="Not an issue" />
-					<option value="2" label="Needs work" />
-					<option value="3" label="Almost fine" />
-					<option value="4" label="Completed" />
+					<option value="0">Not an issue</option>
+					<option value="2">Needs work</option>
+					<option value="3">Almost fine</option>
+					<option value="4">Completed</option>
 				</select>
 			</div>
 		</div>
