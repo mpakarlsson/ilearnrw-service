@@ -7,33 +7,31 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Edit roles</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
+<jsp:include page="../includes/includes.jsp"></jsp:include>
 </head>
 <body>
-<div class="form-container">
-	<form:form action="${pageContext.servletContext.contextPath}/apps/roles/${roleform.role.id}/edit" method="POST" modelAttribute="roleform">
-		<fieldset>
-			<legend>
-				Role details
-			</legend>
-			<span>
-				<label >Role name</label>
-				<form:input path="role.name" />
-				<form:errors path="role.name" class="error"/>
-			</span>
-		</fieldset>
-		<fieldset>
-			<legend>
-				Role permissions
-			</legend>
-			<c:if test="${not empty roleform.allPermissions}">
-				<form:checkboxes items="${roleform.allPermissions}" path="selectedPermissions" itemLabel="name" itemValue="id"></form:checkboxes>
-			</c:if>
-		</fieldset>
-		<span class="buttonrow">
-			<input type="submit" value="Submit"/>
-		</span>
-	</form:form>
-</div>
+	<div id="wrapper">
+		<jsp:include page="../includes/navigation.jsp"></jsp:include>
+		<div id="page-wrapper">
+			<form:form
+				action="${pageContext.servletContext.contextPath}/apps/roles/${roleform.role.id}/edit"
+				method="POST" modelAttribute="roleform">
+				<div class="form-group">
+					<span> <label class="control-label">Role name</label> <form:input
+							class="form-control" path="role.name" /> <form:errors
+							path="role.name" class="error" />
+					</span>
+				</div>
+				<div class="form-group">
+					<c:if test="${not empty roleform.allPermissions}">
+						<form:checkboxes items="${roleform.allPermissions}"
+							path="selectedPermissions" itemLabel="name" itemValue="id"></form:checkboxes>
+
+					</c:if>
+				</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form:form>
+		</div>
+	</div>
 </body>
 </html>

@@ -6,25 +6,24 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Edit permission</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/apps/resources/css/style.css"></link>
+<jsp:include page="../includes/includes.jsp"></jsp:include>
 </head>
 <body>
-<div class="form-container">
-	<form:form action="${pageContext.servletContext.contextPath}/apps/permissions/${permission.id}/edit" method="POST" modelAttribute="permission">
-		<fieldset>
-			<legend>
-				Permission details
-			</legend>
-			<span>
-				<label >Permission name</label>
-				<form:input path="name" />
-				<form:errors path="name" class="error"/>
-			</span>
-		</fieldset>
-		<span class="buttonrow">
-			<input type="submit" value="Submit"/>
-		</span>
-	</form:form>
-</div>
+	<div class="wrapper">
+		<jsp:include page="../includes/navigation.jsp"></jsp:include>
+		<div id="page-wrapper">
+			<form:form
+				action="${pageContext.servletContext.contextPath}/apps/permissions/${permission.id}/edit"
+				method="POST" modelAttribute="permission">
+				<div class="form-group">
+					<span> <label class="control-label">Permission name</label> <form:input
+							path="name" class="form-control"/> 
+							<form:errors path="name" class="error" />
+					</span>
+				</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form:form>
+		</div>
+	</div>
 </body>
 </html>
