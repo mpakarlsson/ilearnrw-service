@@ -34,16 +34,11 @@
 		injected. -->
 	<http create-session="stateless" use-expressions="true"
 		entry-point-ref="authenticationEntryPoint">
-		<intercept-url pattern="/user/auth" access="permitAll"
-			requires-channel="http" />
-		<intercept-url pattern="/user/newtokens" access="permitAll"
-			requires-channel="http" />
-		<intercept-url pattern="/user/details/*" access="permitAll"
-			requires-channel="http" />
-		<intercept-url pattern="/profile/problemDefinitions" access="permitAll"
-			requires-channel="http" />
-		<intercept-url pattern="/logs/**" access="permitAll"
-			requires-channel="http" />
+		<intercept-url pattern="/user/auth" access="permitAll"/>
+		<intercept-url pattern="/user/newtokens" access="permitAll"/>
+		<intercept-url pattern="/user/details/*" access="permitAll"/>
+		<intercept-url pattern="/profile/problemDefinitions" access="permitAll"/>
+		<intercept-url pattern="/logs/**" access="permitAll"/>
 
 		<intercept-url pattern="/profile/generateSql" access="permitAll" />
 		<intercept-url pattern="/setup" access="permitAll" />
