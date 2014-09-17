@@ -103,7 +103,7 @@
 		</div>
 		<div class="row">
 			<div id="dialog-value" class="col-md-12 well">
-				Current skill level: <select id="dialog-value-level">
+				Current skill level: <select id="dialog-value-level" disabled>
 					<option value="0">Not an issue</option>
 					<option value="2">Needs work</option>
 					<option value="3">Almost fine</option>
@@ -111,11 +111,13 @@
 				</select>
 			</div>
 		</div>
+		<%-- we should not allow direct altering of profile entries
 		<div class="row">
 			<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 				<button type="submit" class="btn btn-primary" id="dialog-save">Save</button>
 			</sec:authorize>
 		</div>
+		 --%>
 	</div>
 	<div id="wrapper">
 
