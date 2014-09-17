@@ -53,6 +53,32 @@ function suggestWords(parrentDivId, divId, clusterWords, target){
 	parrent.appendChild(element);
 };
 
+function gogo(divId){
+$('#'+divId+' .typeahead').typeahead({
+	  hint: true,
+	  highlight: true,
+	  minLength: 1
+	},
+	{
+	  name: 'words',
+	  displayKey: 'value',
+	  source: substringMatcher(words)
+	});
+};
+
+function textSugestions(divId, className, texts){
+	$('#'+divId+' .'+className).typeahead({
+		hint: true,
+		highlight: true,
+		minLength: 1
+	},
+	{
+		name: 'words',
+		displayKey: 'value',
+		source: substringMatcher(texts)
+	});
+};
+
 function readAllSpanTexts(id){
 	curWords = [];
 	var div = document.getElementById(id);
@@ -106,19 +132,6 @@ function appendRandomWordsToTest(id){
 	}
 	str = str+randomWordPacks(id, curWords, lastId);
 	document.getElementById(id).innerHTML = str;
-};
-
-function gogo(divId){
-$('#'+divId+' .typeahead').typeahead({
-	  hint: true,
-	  highlight: true,
-	  minLength: 1
-	},
-	{
-	  name: 'words',
-	  displayKey: 'value',
-	  source: substringMatcher(words)
-	});
 };
 
 function getWord(id){

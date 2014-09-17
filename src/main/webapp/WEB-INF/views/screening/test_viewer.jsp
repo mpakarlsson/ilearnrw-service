@@ -14,25 +14,21 @@
 <body>
 <div style="width:595px;">
 
-<!-- 
-<c:forEach items="${profileClusters.getClustersNumbers()}" var="cluster" varStatus="inner">
-	<h3>Cluster ${cluster } </h3> -->
-	<ol>
-	<%Integer current = 0; %>
-	<c:forEach items="${screeningTest.getClusterQuestions(cluster)}" var="questions" varStatus="inner">
-	<li> <strong>${questions.getQuestion() } </strong><!-- <br>${questions.getId() }  --><br></li>
+	<c:forEach items="${screeningTest.getSortedQuestionsListByType()}" var="questions" varStatus="inner">
+	<strong>${questions.getQuestion() } </strong><br>
 		<c:choose>
-			<c:when test="${questions.isAttachRelWords()}">
+			<c:when test="${questions.isAttachRelWords() && questions.getRelatedWords().size()>1}">
 				<c:forEach items="${questions.getRelatedWords()}" end="${questions.getRelatedWords().size()-2}" var="relatedWords" varStatus="inner">
 						${relatedWords}, 
 				</c:forEach>
 				${questions.getRelatedWords().get(questions.getRelatedWords().size()-1)}
 			</c:when>
+			<c:otherwise>
+				${questions.getRelatedWords().get(0)}
+			</c:otherwise>
 		</c:choose>
+		<br>
 	</c:forEach>
-	</ol>
-	
-<!-- </c:forEach> -->
 
 </div>
 

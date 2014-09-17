@@ -18,16 +18,25 @@
 
 
 .question_box{
-    background-color: #F8F8F8;
     width: 600px;
     padding: 5px;
-    border: 5px solid navy;
     margin: 15px;
     border-radius: 15px;
     box-shadow: 10px 10px 5px #888888;
+    
+	background: #feffff; /* Old browsers */
+	background: -moz-radial-gradient(center, ellipse cover,  #feffff 0%, #dceff7 97%, #a0d8ef 100%); /* FF3.6+ */
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#feffff), color-stop(97%,#dceff7), color-stop(100%,#a0d8ef)); /* Chrome,Safari4+ */
+	background: -webkit-radial-gradient(center, ellipse cover,  #feffff 0%,#dceff7 97%,#a0d8ef 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-radial-gradient(center, ellipse cover,  #feffff 0%,#dceff7 97%,#a0d8ef 100%); /* Opera 12+ */
+	background: -ms-radial-gradient(center, ellipse cover,  #feffff 0%,#dceff7 97%,#a0d8ef 100%); /* IE10+ */
+	background: radial-gradient(ellipse at center,  #feffff 0%,#dceff7 97%,#a0d8ef 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feffff', endColorstr='#a0d8ef',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
 }
 
 .question_box .question_text{
+  background-color: #F8F8F8;
   resize: none;
   outline: none;
   width: 90%;
@@ -49,6 +58,7 @@
 }
 
 .question_box .rel_words_div{
+  background-color: #F8F8F8;
   resize: none;
   outline: none;
   width: 90%;
@@ -86,7 +96,7 @@
 	border: 1px solid #000;
 	overflow-y:scroll;
 	max-height:200px;
-	width:150px;
+	width:250px;
 }
 
 .tt-suggestion.tt-cursor {

@@ -1,12 +1,14 @@
 package com.ilearnrw.app.screening;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import ilearnrw.languagetools.extras.EasyHardList;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
+import ilearnrw.user.profile.clusters.ClusterInfo;
 import ilearnrw.user.profile.clusters.ProblemDescriptionCoordinates;
 import ilearnrw.user.profile.clusters.ProfileClusters;
 import ilearnrw.utils.LanguageCode;
@@ -92,13 +94,20 @@ public class ScreeningCreationControler {
 			ArrayList<TestQuestion> tq = st.getClusterQuestions(cluster);
 			String g = new Gson().toJson(tq);
 			model.put("clustersQuestions", g);
-			ArrayList<String> t = getClusterWords(user.getLanguage().equalsIgnoreCase("EN")?LanguageCode.EN:LanguageCode.GR, 
-							currentCluster);
-			 g = new Gson().toJson(t);
-			 model.put("clusterWords", g);
+			ArrayList<String> t = getClusterWords(pdi, currentCluster);
+			g = new Gson().toJson(t);
+			model.put("clusterWords", g);
+			model.put("clusterCategories", getClusterRelatedCategoriesAsString(pdi, cluster));
+			g = new Gson().toJson(getActiveQuestions(st));
+			model.put("activeQuestions", g);
 		}
 		else {
 			model.put("clustersQuestions", null);
+			HashMap<Integer, String> clustersCategoriesMap = new HashMap<Integer, String>();
+			for (Integer cn : pc.getClustersNumbers()){
+				clustersCategoriesMap.put(cn, getClusterRelatedCategoriesAsString(pdi, cn));
+			}
+			model.put("clustersCategoriesMap", clustersCategoriesMap);
 		}
 		model.put("profileClusters", pc);
 		String g = new Gson().toJson(stl);
@@ -245,15 +254,14 @@ public class ScreeningCreationControler {
 		return userId;
 	}
 	
-	private ArrayList<String> getClusterWords(LanguageCode lc, int cluster){
-		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(lc);
+	private ArrayList<String> getClusterWords(ProblemDefinitionIndex pdi, int cluster){
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ArrayList<ProblemDescriptionCoordinates> prbs = pc.getClusterProblems(cluster);
 		ProblemWordListLoader pwll;
 		EasyHardList thelist;
 		ArrayList<String> res = new ArrayList<String>();
 		for (ProblemDescriptionCoordinates pr : prbs){
-			pwll = new ProblemWordListLoader(lc, pr.getCategory(), pr.getIndex());
+			pwll = new ProblemWordListLoader(pdi.getLanguage(), pr.getCategory(), pr.getIndex());
 			thelist = new EasyHardList(pwll.getItems());
 			for (String x : thelist.getEasy()){
 				   if (!res.contains(x))
@@ -261,6 +269,38 @@ public class ScreeningCreationControler {
 				}
 		}
 		return res;
+	}
+	
+	private String getClusterRelatedCategoriesAsString(ProblemDefinitionIndex pdi, int cluster){
+		ProfileClusters pc = new ProfileClusters(pdi);
+		ArrayList<Integer> visited = new ArrayList<Integer>();
+		String result = "";
+		for (ProblemDescriptionCoordinates pdc : pc.getClusterProblems(cluster)){
+			if (!visited.contains(pdc.getCategory())){
+				if (result.length()>0)
+					result = result+", "+pdi.getProblemDefinition(pdc.getCategory()).getUri();
+				else
+					result = pdi.getProblemDefinition(pdc.getCategory()).getUri();
+				visited.add(pdc.getCategory());
+			}
+		}
+		return result;
+	}
+	
+	private ArrayList<String> getActiveQuestions(ScreeningTest st){
+		ArrayList<String> result = new ArrayList<String>();
+		for (TestQuestion tq : st.getQuestionsList()){
+			if (tq.isAttachRelWords() && !listContainsStringIgnoreCase(result, tq.getQuestion()))
+				result.add(tq.getQuestion());
+		}
+		return result;
+	}
+	
+	private boolean listContainsStringIgnoreCase(ArrayList<String> texts, String newText){
+		for (String text : texts)
+			if (text.equalsIgnoreCase(newText))
+				return true;
+		return false;
 	}
 	//page that displays the list of problem categories
 	//@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)

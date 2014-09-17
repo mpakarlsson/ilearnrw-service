@@ -21,8 +21,10 @@
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/get_post_functions.js"></script>
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/create_page.js"></script>
 <script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/server_requests.js"></script>
+<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/screening/jquery.selectric.js"></script>
 	
 <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/screening/screening_style.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/screening/selectric.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">
 
 </head>
@@ -72,7 +74,7 @@
 
 							<c:choose>
 								<c:when test="${profileClusters.getClusterProblems(cluster) != null}">
-									<h3>Cluster ${cluster } </h3>
+									<h3>Cluster ${cluster } (${clusterCategories })</h3>
 									<ul>
 									<c:forEach items="${profileClusters.getClusterProblems(cluster)}" var="res" varStatus="inner">
 									<li> Pr[${1+res.getCategory()}, ${1+res.getIndex()}]: ${res.getProblemDescription().getHumanReadableDescription() }</li>
@@ -85,7 +87,7 @@
 									<h2>Test name: ${fname} </h2>
 								    <%Integer current = 0;%>
 									<c:forEach items="${profileClusters.getClustersNumbers()}" var="cluster" varStatus="inner">
-										<h3>Cluster ${cluster } </h3>
+										<h3>Cluster ${cluster } (${clustersCategoriesMap.get(cluster) }) </h3>
 										<ul>
 										<c:forEach items="${screeningTest.getClusterQuestions(cluster)}" var="questions" varStatus="inner">
 										<li> <% current++; out.print(current); %> <strong>Question:</strong> ${questions.getQuestion() } <!-- <br>${questions.getId() }  --><br></li>
@@ -116,7 +118,7 @@
 
 							<script>
 							if ('${showAll}' == 'false'){
-								loadClusterParameters('\'${fname}\'', '${cluster}', '${ clustersQuestions}', '${clusterWords}');
+								loadClusterParameters('\'${fname}\'', '${cluster}', '${ clustersQuestions}', '${clusterWords}', '${activeQuestions}');
 								loadAddQuestionField('\'${fname}\'', '${cluster}');
 							}
 							</script>

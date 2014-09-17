@@ -1,7 +1,8 @@
 var lastItemPosition = 0;
 var clusterWords = [];
+var activeQuestions = [];
 
-function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords) {
+function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords, jsonActiveQuestions) {
 	obj = JSON.parse(jsonQuestions);
 	for (var i=0; i<obj.length; i++){
 		appendQuestion(fname, cluster, obj[i]);
@@ -11,7 +12,21 @@ function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords) {
 	for (var i=0; i<obj2.length; i++){
 		clusterWords.push(obj2[i]);
 	}
+	activeQuestions = [];
+	obj3 = JSON.parse(jsonActiveQuestions);
+	for (var i=0; i<obj3.length; i++){
+		activeQuestions.push(obj3[i]);
+	}
 };
+
+function getSelectorWithQuestions(target){
+	var qs = '';
+	for (var i=0; i<activeQuestions.length; i++){
+		qs = qs + '<option value="'+activeQuestions[i]+'">'+activeQuestions[i]+'</option>';
+	}
+	return '<select name="forma"  onchange="test(\''+target+'\', this.options[this.selectedIndex].value);" class="styled" >'+
+	'<option value="">Sugestions</option>'+qs+'</select>';
+}
 
 function appendQuestion(fname, cluster, obj) {
 	lastItemPosition++;
@@ -20,7 +35,7 @@ function appendQuestion(fname, cluster, obj) {
 	element.setAttribute('class', 'question_box');
 	var str = wordPacks(obj.id, obj.relatedWords, '');
 
-	element.innerHTML = 'Question #'+lastItemPosition+
+	element.innerHTML = 'Question #'+lastItemPosition+'<div id="selector'+obj.id+'"></div>'+
 		'<textarea id="the_question'+obj.id+'" class="question_text" disabled>'+obj.question+'</textarea>'+
 		'Words to test<div id="rel_words_container'+obj.id+'" class="rel_words_div">'+str+'</div>'+
 		'<input type="checkbox" id="attachWords'+obj.id+'" value="attach" '+
@@ -38,35 +53,60 @@ function loadAddQuestionField(fname, cluster) {
 	var element = document.createElement('div');
 	element.setAttribute("id", 'addquestion');
 	element.setAttribute('class', 'question_box');
-	element.innerHTML = 'Question:<textarea name="vrow" id="newQuestion" class="question_text" ></textarea>'+
-		'Words to test<div id="newQuestionRelatedWords" class="rel_words_div"></div>'+
+	element.innerHTML = 'Question: '+getSelectorWithQuestions("newQuestion")+
+		'<textarea name="vrow" id="newQuestion" class="question_text" style="background:#FFFFFF"></textarea><br>'+
+		'Words to test<div id="newQuestionRelatedWords" class="rel_words_div" style="background:#FFFFFF"></div>'+
 		'<input type="checkbox" id="attachWords" value="attach" checked> Attach \'words to test\' to the question<br>'+
 		'<div id="hereiam"></div>'+
 		'<button type="button" class="typeahead-button" onclick="saveQuestion('+fname.toString()+', '+cluster+')">Add</button>';
 	document.getElementById('addQuestionsDiv').appendChild(element);
 	suggestWords('hereiam', 'itsme', clusterWords, 'newQuestionRelatedWords');
 	gogo('itsme');
+	
+	$(function(){
+		$('.styled').selectric();
+		$('select').on('selectric-before-init');
+
+	});
 };
+
+function test(id, text) {
+	if (text !='')
+		document.getElementById(id).value = text;
+}
 
 function switchButtonState(button, fname, cluster, id){
 	var words = readAllSpanTexts('rel_words_container'+id);
 	if (button.textContent == 'Edit'){
 		str = wordPacks(id, words, 'box');
 		document.getElementById('the_question'+id).disabled = false;
+		document.getElementById('the_question'+id).style.backgroundColor = "#FFFFFF";
 		document.getElementById('attachWords'+id).disabled = false;
 		document.getElementById('rel_words_container'+id).innerHTML = str;
+		document.getElementById('rel_words_container'+id).style.backgroundColor = "#FFFFFF";
+		document.getElementById('selector'+id).innerHTML = getSelectorWithQuestions('the_question'+id);
 		suggestWords('hereiam'+id, 'thisisme', clusterWords, 'rel_words_container'+id);
 		gogo('thisisme');
 		button.textContent = 'Done';
+		
+		$(function(){
+			$('.styled').selectric();
+			$('select').on('selectric-before-init');
+
+		});
 	}
 	else{
 		str = wordPacks(id, words, '');
 		document.getElementById('rel_words_container'+id).innerHTML = str;
-		updateQuestion(fname, cluster, id);
-		document.getElementById('the_question'+id).disabled = true;
-		document.getElementById('attachWords'+id).disabled = true;
-		document.getElementById('hereiam'+id).innerHTML = '';
-		button.textContent = 'Edit';
+		document.getElementById('selector'+id).innerHTML = '';
+		if (updateQuestion(fname, cluster, id)){
+			document.getElementById('rel_words_container'+id).style.backgroundColor = "#F8F8F8";
+			document.getElementById('the_question'+id).disabled = true;
+			document.getElementById('the_question'+id).style.backgroundColor = "#F8F8F8";
+			document.getElementById('attachWords'+id).disabled = true;
+			document.getElementById('hereiam'+id).innerHTML = '';
+			button.textContent = 'Edit';
+		}
 	}
 };
 
@@ -86,18 +126,17 @@ function filenamesList(json) {
 	obj = JSON.parse(json);
 	var files = obj.filenames;
 	var defaultTest = obj.defaultTest;
-	var basepath = ilearnurl+"/screening";
 	var element = document.createElement('div');
 	element.setAttribute("id", 'activeFiles');
 	//element.setAttribute('class', 'question_box');
 	var str = '<h2>Available Tests</h2><form action="">';
 	str = str +'<input type="radio" name="test" value="'+defaultTest+'" checked> '+
-		'<a href="'+basepath+'?fname='+defaultTest+'"><strong>'+defaultTest+'</strong></a> [Default Test] <br>';
+		'<a href="screening?fname='+defaultTest+'"><strong>'+defaultTest+'</strong></a> [Default Test] <br>';
 	for (var i=0; i<files.length; i++){
 		files[i] = files[i].trim();
 		if (defaultTest != files[i]){
 			str = str +'<input type="radio" name="test" value="'+files[i]+'" onclick="setDefaultTest(\''+files[i]+'\');return false;"> '+
-				'<a href="'+basepath+'?fname='+files[i]+'">'+files[i]+'</a> '+
+				'<a href="screening?fname='+files[i]+'">'+files[i]+'</a> '+
 				'<a href="PleaseEnableJavascript.html" onclick="deleteTest(\''+files[i]+'\');return false;">Delete</a><br>';
 		}
 	}
@@ -135,7 +174,6 @@ function getNewQuestionData() {
 };
 
 function getEditedQuestionData(theId) {
-	alert(document.getElementById('attachWords'+theId).checked);
 	var q = document.getElementById('the_question'+theId).value.replace("\n", "\\n").replace("\t", "\\t");
 	var r = readAllSpanTexts('rel_words_container'+theId);
 	var a = document.getElementById('attachWords'+theId).checked;
