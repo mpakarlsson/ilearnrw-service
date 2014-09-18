@@ -19,11 +19,12 @@
 
 		$('#usertable thead th').each( function () {
 	        var title = $('#usertable thead th').eq( $(this).index() ).text();
-	        $(this).append( '<div class=""><input type="text" style="width:100%" placeholder="Search '+title+'" /></div>' );
+	        $(this).append( '<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller" placeholder="Search '+title+'" /></div>' );
 	    } );
 
 		var table = $("#usertable").DataTable({
-			'paging': false
+			'paging': false,
+			'searching': false
 		});
 		
 

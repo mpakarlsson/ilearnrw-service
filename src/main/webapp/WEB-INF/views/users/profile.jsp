@@ -33,27 +33,43 @@
 	text-align: center;
 }
 
-.problemdescription .problemstatus-bad {
+.problemdescription .problemstatus-binary-0 {
+	background: #0F0;
+	height: 2px;
+}
+.problemdescription .problemstatus-binary-1 {
+	background: #F00;
+	height: 2px;
+}
+.problemdescription .problemstatus-zeroToThree-0 {
+	background: #0F0;
+	height: 2px;
+}
+.problemdescription .problemstatus-zeroToThree-1 {
+	background: #FF0;
+	height: 2px;
+}
+.problemdescription .problemstatus-zeroToThree-2 {
+	background: #F70;
+	height: 2px;
+}
+.problemdescription .problemstatus-zeroToThree-3 {
 	background: #F00;
 	height: 2px;
 }
 
-.problemdescription .problemstatus-ok {
-	background: #0F0;
-	height: 2px;
-}
 </style>
 <script>
 	$(function() {
 		$('#independentMenu').click(function() {
 			$("#independent-profile").show();
 			$("#supervised-profile").hide();
-			
+
 		});
 		$('#supervisedMenu').click(function() {
 			$("#independent-profile").hide();
 			$("#supervised-profile").show();
-			
+
 		});
 		$(".progressbar").each(
 				function(i) {
@@ -73,11 +89,18 @@
 				});
 		$(".problemdescription").click(function() {
 			var text = $(this).data("problem");
-			$("#dialog #dialog-value-level").val($(this).data("level"));
+			
+			$("#dialog #dialog-value-level-zeroToThree").hide();
+			$("#dialog #dialog-value-level-binary").hide();
+			$("#dialog #dialog-value-level-"+$(this).data("severitytype"))
+				.val($(this).data("level"))
+				.show();
+			
 			$("#dialog #dialog-description").html(text);
 			$("#dialog").data("type", $(this).data("type"));
 			$("#dialog").data("index", $(this).data("index"));
 			$("#dialog").data("category", $(this).data("category"));
+			/*
 			$("#dialog #dialog-save").click(function() {
 				$.get('profile/set', {
 					'level' : $("#dialog #dialog-value-level").val(),
@@ -88,6 +111,7 @@
 					$("#dialog").dialog("close");
 				});
 			});
+			*/
 			$("#dialog").dialog();
 
 		});
@@ -103,11 +127,15 @@
 		</div>
 		<div class="row">
 			<div id="dialog-value" class="col-md-12 well">
-				Current skill level: <select id="dialog-value-level" disabled>
-					<option value="0">Not an issue</option>
+				Current skill level: <select id="dialog-value-level-zeroToThree" disabled>
+					<option value="0">Completed</option>
+					<option value="1">Almost fine</option>
 					<option value="2">Needs work</option>
-					<option value="3">Almost fine</option>
-					<option value="4">Completed</option>
+					<option value="3">Needs more work</option>
+				</select>
+				<select id="dialog-value-level-binary" disabled>
+					<option value="0">Completed</option>
+					<option value="1">Needs work</option>
 				</select>
 			</div>
 		</div>
@@ -130,9 +158,9 @@
 				</div>
 				<div class="col-lg-2">
 					<ul class="nav navbar-nav">
-						<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
-								type <span class="caret"></span>
+						<li class="dropdown"><a class="dropdown-toggle"
+							data-toggle="dropdown" href="#">Profile type <span
+								class="caret"></span>
 						</a>
 							<ul class="dropdown-menu" role="menu">
 								<li><a href="#" id="independentMenu">Independent</a></li>
@@ -155,6 +183,7 @@
 									<div class="progressbar"
 										data-position="${(profile.userProblems.userSeverities.systemIndices[statusRow.index] / fn:length(profile.userProblems.userSeverities.severities[statusRow.index])) * 100}"
 										data-index="${statusRow.index}" data-type="independent"
+										data-severitytype="${row.severityType }"
 										id="progressbar${statusRow.index}">
 										<div class="progress-label">${profile.userProblems.userSeverities.systemIndices[statusRow.index]}
 											out of
@@ -172,16 +201,10 @@
 										data-problem="${profile.userProblems.problems.problems[statusRow.index][statusCol.index]}"
 										data-category="${statusRow.index }"
 										data-index="${statusCol.index }" data-level="${col }"
+										data-severitytype="${row.severityType }"
 										data-type="independent">
 
-										<c:choose>
-											<c:when test="${col < 3}">
-												<div class="problemstatus-bad"></div>
-											</c:when>
-											<c:otherwise>
-												<div class="problemstatus-ok"></div>
-											</c:otherwise>
-										</c:choose>
+										<div class="problemstatus-${row.severityType }-${col}"></div>
 										<div class="problemdescription-text">
 											<c:forEach var="desc"
 												items="${profile.userProblems.problems.problems[statusRow.index][statusCol.index].descriptions}"
@@ -208,6 +231,7 @@
 									<div class="progressbar"
 										data-position="${(profile.userProblems.userSeverities.teacherIndices[statusRow.index] / fn:length(profile.userProblems.userSeverities.severities[statusRow.index])) * 100}"
 										data-index="${statusRow.index}" data-type="supervised"
+										data-severitytype="${row.severityType }"
 										id="progressbar${statusRow.index}">
 										<div class="progress-label">${profile.userProblems.userSeverities.teacherIndices[statusRow.index]}
 											out of
@@ -225,16 +249,10 @@
 										data-problem="${profile.userProblems.problems.problems[statusRow.index][statusCol.index]}"
 										data-category="${statusRow.index }"
 										data-index="${statusCol.index }" data-level="${col }"
+										data-severitytype="${row.severityType }"
 										data-type="supervised">
 
-										<c:choose>
-											<c:when test="${col < 3}">
-												<div class="problemstatus-bad"></div>
-											</c:when>
-											<c:otherwise>
-												<div class="problemstatus-ok"></div>
-											</c:otherwise>
-										</c:choose>
+										<div class="problemstatus-${row.severityType }-${col}"></div>
 										<div class="problemdescription-text">
 											<c:forEach var="desc"
 												items="${profile.userProblems.problems.problems[statusRow.index][statusCol.index].descriptions}"
