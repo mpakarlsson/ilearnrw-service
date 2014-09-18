@@ -17,4 +17,6 @@ public interface UserDao {
 	public void deleteData(int id);
 
 	public User getUserByUsername(String username);
+	
+	public void setPassword(int userId, String password);
 }

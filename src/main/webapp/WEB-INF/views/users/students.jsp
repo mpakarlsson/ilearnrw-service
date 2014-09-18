@@ -11,7 +11,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Manage students</title>
+<title>List of Students</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 <script>
@@ -29,7 +29,7 @@
 		<div id="page-wrapper">
 			<div class="row">
 				<div class="col-lg-12">
-					<h1 class="page-header">Manage students</h1>
+					<h1 class="page-header">List of Students</h1>
 				</div>
 			</div>
 			<div class="row col-xs-12">
