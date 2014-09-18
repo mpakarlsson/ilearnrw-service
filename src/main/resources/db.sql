@@ -67,7 +67,7 @@ CREATE TABLE `classrooms` (
   UNIQUE KEY `id_school_UNIQUE` (`school_id`,`name`)
 );
 
-CREATE TABLE `ilearnrw`.`student_classrooms` (
+CREATE TABLE `student_classrooms` (
   `student_id` BIGINT NOT NULL,
   `classroom_id` BIGINT NULL,
   PRIMARY KEY (`student_id`));
