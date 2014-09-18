@@ -16,7 +16,28 @@
 <script>
 	$(function() {
 		$('.fa').tooltip();
-		$("#usertable").dataTable();
+		
+		$('#usertable thead th').each( function () {
+	        var title = $('#usertable thead th').eq( $(this).index() ).text();
+	        $(this).append( '<div class=""><input type="text" style="width:100%" placeholder="Search '+title+'" /></div>' );
+	    } );
+		
+		var table = $("#usertable").DataTable({
+			'paging': false
+		});
+		
+	
+		// Apply the search
+
+		$('#usertable thead th input').each(function(idx) {
+			$(this).on('keyup change', function() {
+				table
+                .column( idx )
+                .search( this.value )
+                .draw();
+			});
+		});
+
 	});
 </script>
 </head>

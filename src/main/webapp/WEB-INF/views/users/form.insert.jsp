@@ -4,8 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.text.SimpleDateFormat"%>
 <!DOCTYPE html>
 <html>
 
@@ -136,21 +136,22 @@
 								</div>
 							</spring:bind>
 							<spring:bind path="user.birthdate">
-									<div id="birthdayDiv"
-										class="form-group ${status.error ? 'has-error' : ''}">
+								<div id="birthdayDiv"
+									class="form-group ${status.error ? 'has-error' : ''}">
 
-										<fieldset id="birthdate" class='birthday-picker'>
-											<label class="col-sm-2 control-label" for="birthdate">Birth
-												Date</label>
-											<div class="col-sm-10" id="birthdatepicker">
-												<form:input type="text" id="datepicker"
-													path="user.birthdate" value='<%=(new SimpleDateFormat("dd.MM.yyyy")).format(new Date())%>'/>
-												<form:errors path="user.birthdate" class="help-block"
-													for="birthdate" />
+									<fieldset id="birthdate" class='birthday-picker'>
+										<label class="col-sm-2 control-label" for="birthdate">Birth
+											Date</label>
+										<div class="col-sm-10" id="birthdatepicker">
+											<form:input type="text" id="datepicker" path="user.birthdate"
+												value='<%=(new SimpleDateFormat("dd.MM.yyyy"))
+							.format(new Date())%>' />
+											<form:errors path="user.birthdate" class="help-block"
+												for="birthdate" />
 
-											</div>
-										</fieldset>
-									</div>
+										</div>
+									</fieldset>
+								</div>
 							</spring:bind>
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
@@ -191,13 +192,13 @@
 							</spring:bind>
 
 							<div id="studentDetails">
-								
+
 								<spring:bind path="studentDetails">
 
 									<div class="form-group ${status.error ? 'has-error' : ''}">
 										<label class="col-sm-2 control-label">School</label>
 										<div class="col-sm-10">
-											Type a new school or select from an existing one: <select
+											Select a school or type in a new one: <select
 												id="schoolSelect" class="form-control">
 												<option value=""></option>
 												<c:forEach items="${schools}" var="s">
@@ -205,7 +206,7 @@
 												</c:forEach>
 											</select>
 											<form:input type="text" id="school"
-												class="form-control col-sm-9" placeholder="School"
+												class="form-control col-sm-9" placeholder="New school"
 												path="studentDetails.school" required="true" />
 											<form:errors path="studentDetails.school" class="help-block"
 												for="school" />
@@ -214,13 +215,17 @@
 									<div class="form-group ${status.error ? 'has-error' : ''}">
 										<label class="col-sm-2 control-label">Classroom</label>
 										<div class="col-sm-10">
-											Type a new class room or select from an existing one: <select
+											Select a class or type in a new one: <select
 												id="classroomSelect" class="form-control">
 												<option value="" label=""></option>
 												<c:forEach items="${classRooms}" var="s">
 													<option value="${s}">${s}</option>
 												</c:forEach>
 											</select>
+											<form:input type="text" id="classRoom"
+												class="form-control col-sm-9" placeholder="New classroom"
+												path="studentDetails.classRoom" required="true" />
+											
 											<form:errors path="studentDetails.classRoom"
 												class="help-block" for="classRoom" />
 										</div>
@@ -234,6 +239,7 @@
 												<form:options items="${teachersList}" itemLabel="username"
 													itemValue="id" />
 											</form:select>
+											
 											<form:errors path="studentDetails.teacherId"
 												class="help-block" for="teacherSelect" />
 										</div>

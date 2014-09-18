@@ -152,7 +152,7 @@
 									<div class="form-group ${status.error ? 'has-error' : ''}">
 										<label class="col-sm-2 control-label">School</label>
 										<div class="col-sm-10">
-											Type a new school or select from an existing one: <select
+											Select a school or type in a new one: <select
 												id="schoolSelect" class="form-control">
 												<option value=""></option>
 												<c:forEach items="${schools}" var="s">
@@ -160,7 +160,7 @@
 												</c:forEach>
 											</select>
 											<form:input type="text" id="school"
-												class="form-control col-sm-9" placeholder="School"
+												class="form-control col-sm-9" placeholder="new School"
 												path="studentDetails.school" required="true" />
 											<form:errors path="studentDetails.school" class="help-block"
 												for="school" />
@@ -169,7 +169,7 @@
 									<div class="form-group ${status.error ? 'has-error' : ''}">
 										<label class="col-sm-2 control-label">Classroom</label>
 										<div class="col-sm-10">
-											Type a new class room or select from an existing one: <select
+											Select a class or type in a new one: <select
 												id="classroomSelect" class="form-control">
 												<option value=""></option>
 												<c:forEach items="${classRooms}" var="s">
@@ -177,7 +177,7 @@
 												</c:forEach>
 											</select>
 											<form:input type="text" id="classRoom"
-												class="form-control col-sm-9" placeholder="Classroom"
+												class="form-control col-sm-9" placeholder="New classroom"
 												path="studentDetails.classRoom" required="true" />
 											<form:errors path="studentDetails.classRoom"
 												class="help-block" for="classRoom" />
