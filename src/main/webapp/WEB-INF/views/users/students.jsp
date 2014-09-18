@@ -2,7 +2,7 @@
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 
@@ -16,6 +16,9 @@
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 <script>
 	$(function() {
+
+		$("#usertable").dataTable();
+		
 	});
 </script>
 </head>
@@ -33,31 +36,38 @@
 				</div>
 			</div>
 			<div class="row col-xs-12">
-				<table class="table table-striped table-bordered table-condensed">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Birthdate</th>
-							<th>Gender</th>
-							<th>Classroom</th>
-							<th>Profile</th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach items="${students}" var="o">
-							<tr class="list-users">
-								<td>${o.user.username}</td>
-								<td><fmt:formatDate value="${o.user.birthdate}"
-										var="formattedDate" type="date" pattern="dd.MM.yyyy" />
-									${formattedDate}</td>
-								<td>${o.user.gender}</td>
-								<td>${o.studentDetails.classRoom}</td>
-								<td><a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/apps/users/${o.user.id}/profile">Profile</a>
-								</td>
-							</tr>
-						</c:forEach>
-					</tbody>
-				</table>
+				<div class="panel panel-default">
+					<div class="panel-heading">These are your assigned students</div>
+					<div class="panel-body">
+						<table id="usertable"
+							class="table table-striped table-bordered table-condensed table-hover">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Birthdate</th>
+									<th>Gender</th>
+									<th>Classroom</th>
+									<th>Profile</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach items="${students}" var="o">
+									<tr class="list-users">
+										<td>${o.user.username}</td>
+										<td><fmt:formatDate value="${o.user.birthdate}"
+												var="formattedDate" type="date" pattern="dd.MM.yyyy" />
+											${formattedDate}</td>
+										<td>${o.user.gender}</td>
+										<td>${o.studentDetails.classRoom}</td>
+										<td><a class="btn btn-default btn-xs"
+											href="${pageContext.request.contextPath}/apps/users/${o.user.id}/profile">Profile</a>
+										</td>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 
