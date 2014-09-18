@@ -137,7 +137,7 @@ public class CubeDaoImpl implements CubeDao {
 			Problem problem = new JdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(
 							"select * from problems where `category`=? and `idx`=? and `language`=? limit 0,1",
-							new Object[] { problemCategory, problemIndex, languageCode },
+							new Object[] { problemCategory, problemIndex, languageCode.getCode() },
 							new BeanPropertyRowMapper<Problem>(Problem.class));
 			return problem.getId();
 		} catch (Exception ex) {
