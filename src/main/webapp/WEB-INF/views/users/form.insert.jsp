@@ -184,7 +184,7 @@
 										<select id="schoolSelect">
 											<option value=""></option>
 											<c:forEach items="${schools}" var="s">
-	                        					<option value="${s}">${s}</option>
+	                        					<option value="${s.name}">${s.name}</option>
 	                    					</c:forEach>
 										</select>
 										<form:errors path="studentDetails.school" class="help-block"
@@ -201,7 +201,7 @@
 										<select id="classroomSelect">
 											<option value="" label=""></option>
 											<c:forEach items="${classRooms}" var="s">
-	                        					<option value="${s}">${s}</option>
+	                        					<option value="${s.name}">${s.name}</option>
 	                    					</c:forEach>
 										</select>
 										<form:errors path="studentDetails.classRoom" class="help-block"

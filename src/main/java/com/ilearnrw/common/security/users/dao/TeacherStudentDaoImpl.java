@@ -1,6 +1,7 @@
 package com.ilearnrw.common.security.users.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,14 +12,16 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.User;
 
 @Repository
@@ -109,9 +112,11 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 
 	@Override
 	public void assignStudentToTeacher(User teacher, User student) {
-		String sql = "insert into teachers_students (teacher_id, student_id) values (?,?);";
+		String sql = "insert into teachers_students (teacher_id, student_id) values (?,?) "
+				+ "on duplicate key update teacher_id = VALUES(teacher_id);";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.update(sql, new Object[] { teacher.getId(), student.getId() });
+		jdbcTemplate.update(sql,
+				new Object[] { teacher.getId(), student.getId() });
 	}
 
 	@Override
@@ -129,7 +134,31 @@ public class TeacherStudentDaoImpl implements TeacherStudentDao {
 		jdbcTemplate.query(sql, parameters, countCallback);
 
 		return (countCallback.getRowCount() > 0);
+	}
 
+	@Override
+	public User getTeacherOfStudent(User student) {
+		try {
+			return new JdbcTemplate(dataSource)
+					.queryForObject("select t.id, t.username "
+							+ "from users t join teachers_students ts on ts.teacher_id = t.id "
+							+ "where ts.student_id = ?",
+							new Object[] { student.getId() },
+							new RowMapper<User>() {
+								@Override
+								public User mapRow(ResultSet arg0, int arg1)
+										throws SQLException {
+									User user = new User();
+									user.setId(arg0.getInt("id"));
+									user.setUsername(arg0.getString("username"));
+									return user;
+								}
+							});
+		} catch (EmptyResultDataAccessException e) {
+			User unassigned = new User();
+			unassigned.setUsername("Unassigned");
+			return unassigned;
+		}
 	}
 
 }

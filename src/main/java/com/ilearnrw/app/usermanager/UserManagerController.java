@@ -47,8 +47,10 @@ import com.ilearnrw.app.usermanager.jquery.model.DataPoint;
 import com.ilearnrw.app.usermanager.jquery.model.SkillDetails;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.Classroom;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.ExpertTeacherService;
@@ -179,7 +181,7 @@ public class UserManagerController {
 		for (User user : users)
 		{
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
 				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
@@ -203,7 +205,7 @@ public class UserManagerController {
 		for (User user : users)
 		{
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
 				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
@@ -220,7 +222,7 @@ public class UserManagerController {
 		for (User user : users)
 		{
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
 				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
@@ -290,11 +292,13 @@ public class UserManagerController {
 		if (profile == null) {
 			throw new Exception("No profile available.");
 		}
-
+		
+		User user = new User();
+		user.setId(id);
 		model.put("userId", id);
 		model.put("profile", profile);
 		model.put("student", userService.getUser(id));
-		model.put("studentDetails", studentDetailsService.getStudentDetails(id));
+		model.put("studentDetails", studentDetailsService.getStudentDetails(user));
 		return "users/profile";
 	}
 
@@ -347,11 +351,12 @@ public class UserManagerController {
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
 		userForm.setRole(selectedRoles.get(0).getName());
-		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user.getId()));
+		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user));
 
 		model.put("userform", userForm);
 		model.put("schools", studentDetailsService.getSchools());
-		model.put("classRooms", studentDetailsService.getClassRooms());
+		//TODO: this has to go as ajax
+		//model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 
 		return "users/form.update";
@@ -375,7 +380,8 @@ public class UserManagerController {
 		}
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			model.put("classRooms", studentDetailsService.getClassRooms());
+			//TODO: also, this
+			//model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 			return "users/form.update";
 		}
@@ -400,7 +406,8 @@ public class UserManagerController {
 	@Transactional(readOnly = true)
 	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form, ModelMap model) {
 		model.put("schools", studentDetailsService.getSchools());
-		model.put("classRooms", studentDetailsService.getClassRooms());
+		//TODO: and this
+		//model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
 		return "users/form.insert";
 	}
@@ -424,7 +431,8 @@ public class UserManagerController {
 			result.rejectValue("user.username", "user.username.exists");
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			model.put("classRooms", studentDetailsService.getClassRooms());
+			//TODO: and this
+			//model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.insert";
 		}
@@ -673,31 +681,35 @@ public class UserManagerController {
 	
 	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
 	@Transactional
-	public @ResponseBody List<String> getSchools() {
-		List<String> schools = studentDetailsService.getSchools();
-		schools.add(0, "All schools");
+	public @ResponseBody List<School> getSchools() {
+		List<School> schools = studentDetailsService.getSchools();
+		School all = new School();
+		all.setId(-1);
+		all.setName("All schools");
+		schools.add(0, all);
 		return schools;
 	}
 	
 	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<String> getClassRooms(@RequestBody String school) {
-		//TODO: properly implement this
-		List<String> classrooms = studentDetailsService.getClassRooms();
-		classrooms.add(0, "All classrooms");
-		return classrooms; 
+	public @ResponseBody List<Classroom> getClassRooms(@RequestBody School school) {
+		List<Classroom> classrooms = studentDetailsService.getClassRooms(school);
+		Classroom all = new Classroom();
+		all.setId(-1);
+		all.setName("All classrooms");
+		classrooms.add(0, all);
+		return classrooms;
 	}
 	
 	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<String> getStudents(@RequestBody String classRoom) {
-		//TODO: properly implement this
-		List<User> students = teacherStudentService.getAllStudentsList();
-		List<String> studentNames = new ArrayList<String>();
-		studentNames.add("All students");
-		for (User user : students)
-			studentNames.add(user.getUsername());
-		return studentNames;
+	public @ResponseBody List<User> getStudents(@RequestBody Classroom classroom) {
+		List<User> students = studentDetailsService.getStudentsFromClassRoom(classroom);
+		User all = new User();
+		all.setId(-1);
+		all.setUsername("All students");
+		students.add(0, all);
+		return students;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/breakdown", method = RequestMethod.POST)

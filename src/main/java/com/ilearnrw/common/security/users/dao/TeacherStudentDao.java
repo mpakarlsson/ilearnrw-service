@@ -20,4 +20,6 @@ public interface TeacherStudentDao {
 
 	public boolean isUserStudentOfTeacher(String userName, String teacherName);
 
+	public User getTeacherOfStudent(User student);
+
 }
