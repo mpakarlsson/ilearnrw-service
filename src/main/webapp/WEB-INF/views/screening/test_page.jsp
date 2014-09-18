@@ -60,27 +60,25 @@
 						</div>
 						<div class="panel-body">
 
-							<c:forEach items="${profileClusters.getClustersNumbers()}"
-								var="cluster" varStatus="inner">
-								<h3>Cluster ${cluster }</h3>
-								<ol>
-									<c:forEach
-										items="${screeningTest.getClusterQuestions(cluster)}"
-										var="questions" varStatus="inner">
-										<li>${questions.getQuestion() }</li>
 
-										<c:forEach items="${questions.getRelatedWords()}"
-											var="relatedWords" varStatus="inner">
-											<div class="word" data-word="${relatedWords}"
-												data-cluster="${cluster}" style="padding: 3px; height: 30px; background-color:${inner.index % 2 == 0 ? '#F8F8F8' : '#FFFFFF '};">
-												<strong>${relatedWords} </strong> Displayed <input
-															type="checkbox" name="displayed" checked> Correct 
-															<input type="checkbox" name="correct"><br>
-											</div>
-										</c:forEach>
-
+							<c:forEach items="${screeningTest.getSortedQuestionsListByType()}" var="questions" varStatus="outer">
+							
+								<c:choose>
+									<c:when test="${outer.index<=0 || !screeningTest.getSortedQuestionsListByType().get(outer.index-1).getQuestion().equalsIgnoreCase(questions.getQuestion())}">
+									<hr><h4> ${questions.getQuestion() }</h4>
+									</c:when>
+								</c:choose>
+									<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
+										<div class="word" data-word="${relatedWords}"
+											data-cluster="${questions.getParentCluster()}" style="padding: 3px;background-color:${inner.index % 2 == 0 ? '#F8F8F8' : '#ebebeb '};">
+											<strong style="text-decoration: underline;">${relatedWords} </strong><hr style="margin: 5px 0 5px 0;"> <form>
+											<input type="radio" name="ans" value="WORD_SUCCESS" style="margin-left:10px">Correct
+											<input type="radio" name="ans" value="WORD_FAILED" style="margin-left:10px">Incorrect
+											<input type="radio" name="ans" value="WORD_NOT_ANSWERED" style="margin-left:10px">Not Answered
+											<input type="radio" name="ans" value="WORD_NOT_SEEN" style="margin-left:10px" checked>Not Seen
+											</form>
+										</div>
 									</c:forEach>
-								</ol>
 							</c:forEach>
 
 							<button onclick="sendStudentsAnswers('${username}', '${userid}')">Submit

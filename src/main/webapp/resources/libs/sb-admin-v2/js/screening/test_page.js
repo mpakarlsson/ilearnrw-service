@@ -1,25 +1,13 @@
-function isDisplayed(word) {
+function getAnswer(word) {
 	for (var i = 0; i < word.childNodes.length; i++) {
-	    if (word.childNodes[i].tagName == "INPUT" && word.childNodes[i].name== "displayed"){
-	    	if (word.childNodes[i].checked)
-	    		return 1;
-	    	else
-	    		return 0;
+		if (word.childNodes[i].tagName == "FORM"){
+			for (var j = 0; j < word.childNodes[i].childNodes.length; j++) {
+				if (word.childNodes[i].childNodes[j].tagName == "INPUT" && word.childNodes[i].childNodes[j].checked){
+					return word.childNodes[i].childNodes[j].value;
+				}
+			}
 	    }
 	}
-	//-1 if the div does not contain check button
-	return -1;
-};
-
-function isCorrect(word) {
-	for (var i = 0; i < word.childNodes.length; i++) {
-	    if (word.childNodes[i].tagName == "INPUT" && word.childNodes[i].name== "correct"){
-	    	if (word.childNodes[i].checked)
-	    		return 1;
-	    	else
-	    		return 0;
-	    }
-	}
-	//-1 if the div does not contain check button
-	return -1;
+	//null if the div does not contain check button
+	return null;
 };
