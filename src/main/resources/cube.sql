@@ -62,3 +62,18 @@ CREATE TABLE `applications` (
 
 delimiter ; $$
 
+CREATE VIEW `facts_expanded` AS
+select f.*,
+	u.username, u.gender, u.birthyear, u.language,
+	a.name as app_name, a.app_id,
+	p.category, p.idx, p.language as p_language, p.description,
+	aps.name as aps_name, aps.start as aps_start, aps.end as aps_end,
+	lrs.name as lrs_name, lrs.start as lrs_start, lrs.end as lrs_end,
+	rds.name as rds_name, rds.start as rds_start, rds.end as rds_end
+from facts f
+left join users u on u.id = f.user_ref
+left join applications a on a.id = f.app_ref
+left join problems p on p.id = f.problem_ref
+left join sessions aps on aps.id = f.app_session_ref and aps.sessiontype = 'A'
+left join sessions lrs on lrs.id = f.learn_session_ref and lrs.sessiontype = 'L'
+left join sessions rds on rds.id = f.app_round_session_ref and rds.sessiontype = 'R';
