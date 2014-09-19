@@ -41,6 +41,8 @@ public interface CubeDao {
 	ListWithCount<Session> getUserSessionsByType(String username, String type, String timestart, String timeend, boolean count);
 
 	Session getSessionById(int id);
+	
+	void endSession(int sessionId);
 
 	ListWithCount<WordCount> getWordsForUser(int userId, String status,
 			String timestart, String timeend, boolean count);

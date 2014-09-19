@@ -210,6 +210,11 @@ public class CubeDaoImpl implements CubeDao {
 
 		return insertAndReturnKey("sessions", parameters);
 	}
+	
+	@Override
+	public void endSession(int sessionId) {
+		new JdbcTemplate(dataLoggerCubeDataSource).update("update sessions set end = ? where id = ?", sessionId);
+	}
 
 	@Override
 	public ListWithCount<Session> getUserSessionsByType(String username,
