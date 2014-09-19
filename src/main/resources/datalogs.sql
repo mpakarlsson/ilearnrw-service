@@ -1,6 +1,7 @@
 CREATE TABLE `logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) DEFAULT NULL,
+  `supervisor` varchar(100) DEFAULT NULL,
   `applicationId` varchar(20) DEFAULT NULL,
   `tag` varchar(100) DEFAULT NULL,
   `word` varchar(100) DEFAULT NULL,

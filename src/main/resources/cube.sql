@@ -32,6 +32,7 @@ CREATE TABLE `sessions` (
   `sessiontype` char(1) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
+  `end` timestamp NULL DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
   `supervisor` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
