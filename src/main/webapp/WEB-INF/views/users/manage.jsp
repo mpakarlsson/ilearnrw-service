@@ -121,6 +121,7 @@
 													class="caret"></span></a>
 												<ul class="dropdown-menu pull-right">
 													<c:choose>
+													<%--
 														<c:when test="${o.role eq 'ROLE_EXPERT'}">
 															<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 																<li><a
@@ -129,6 +130,7 @@
 																		this expert</a></li>
 															</sec:authorize>
 														</c:when>
+														 
 														<c:when test="${o.role eq 'ROLE_TEACHER'}">
 															<sec:authorize
 																ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
@@ -138,6 +140,7 @@
 																		to this teacher</a></li>
 															</sec:authorize>
 														</c:when>
+														--%>
 														<c:when test="${o.role eq 'ROLE_STUDENT'}">
 															<sec:authorize
 																ifAnyGranted="PERMISSION_EXPERT,PERMISSION_TEACHER">
