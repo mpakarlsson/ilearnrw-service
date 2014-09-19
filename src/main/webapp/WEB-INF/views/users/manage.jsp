@@ -16,26 +16,47 @@
 <script>
 	$(function() {
 		$('.fa').tooltip();
-		
-		$('#usertable thead th').each( function () {
-	        var title = $('#usertable thead th').eq( $(this).index() ).text();
-	        $(this).append( '<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller" placeholder="Search '+title+'" /></div>' );
-	    } );
-		
+
+		$('#usertable thead th')
+				.each(
+						function() {
+							var title = $('#usertable thead th').eq(
+									$(this).index()).text();
+							$(this)
+									.append(
+											'<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller" placeholder="Search '
+													+ title + '" /></div>');
+						});
+
 		var table = $("#usertable").DataTable({
-			'paging': false,
-			'searching': false
+			'paging' : false,
+			'searching' : false
 		});
-		
-	
+
 		// Apply the search
 
 		$('#usertable thead th input').each(function(idx) {
 			$(this).on('keyup change', function() {
-				table
-                .column( idx )
-                .search( this.value )
-                .draw();
+				table.column(idx).search(this.value).draw();
+			});
+		});
+
+		$(".deleteLink").click(function(e) {
+			e.preventDefault();
+			var targetUrl = $(this).attr("href");
+			$("#dialog-confirm").dialog({
+				resizable : false,
+				height : 140,
+				modal : true,
+				buttons : {
+					"Delete item" : function() {
+						window.location.href = targetUrl;
+						$(this).dialog("close");
+					},
+					Cancel : function() {
+						$(this).dialog("close");
+					}
+				}
 			});
 		});
 
@@ -58,8 +79,8 @@
 			<div class="row col-xs-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">Hover over the icons to see the
-				user's role. Teachers can be assigned students in the actions menu.
-				Experts can be assigned teachers also in the actions menu.</div>
+						user's role. Teachers can be assigned students in the actions
+						menu. Experts can be assigned teachers also in the actions menu.</div>
 					<div class="panel-body">
 						<table id="usertable"
 							class="table table-striped table-bordered table-condensed table-hover">
@@ -121,7 +142,7 @@
 													class="caret"></span></a>
 												<ul class="dropdown-menu pull-right">
 													<c:choose>
-													<%--
+														<%--
 														<c:when test="${o.role eq 'ROLE_EXPERT'}">
 															<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 																<li><a
@@ -158,9 +179,9 @@
 															class="fa fa-pencil fa-fw"></i> Edit</a></li>
 													<sec:authorize
 														ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
-														<li><a
+														<li><a class="deleteLink"
 															href="${pageContext.request.contextPath}/apps/users/${o.user.id}/delete"><i
-																class="fa fa-trash-o fa-fw"></i> Delete</a></li>
+																class="fa fa-trash-o fa-fw "></i> Delete</a></li>
 													</sec:authorize>
 													<li><a
 														href="${pageContext.request.contextPath}/apps/users/${o.user.id}/logs/page/1"><i
@@ -183,5 +204,10 @@
 		</div>
 
 	</div>
-
+	<div id="dialog-confirm" title="Delete?">
+		<p>
+			<span class="ui-icon ui-icon-alert"
+				style="float: left; margin: 0 7px 20px 0;"></span>Delete this item?
+		</p>
+	</div>
 </body>
