@@ -35,7 +35,11 @@ import com.ilearnrw.common.security.RefreshTokenData;
 import com.ilearnrw.common.security.RestToken;
 import com.ilearnrw.common.security.TokenUtils;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.Classroom;
+import com.ilearnrw.common.security.users.model.School;
+import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.StudentDetailsService;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 
@@ -50,6 +54,9 @@ public class AuthController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private StudentDetailsService studentDetailsService;
 
 	@Autowired
 	private TeacherStudentService teacherStudentService;
@@ -192,9 +199,23 @@ public class AuthController {
 
 	@RequestMapping(value = "/user/details/{username}", method = RequestMethod.GET)
 	public @ResponseBody
-	User userDetailsById(@PathVariable String username) {
+	User userDetailsByUsername(@PathVariable String username) {
 		User user = userService.getUserByUsername(username);
 		return user;
+	}
+	
+	@RequestMapping(value = "/user/details/{username}/school", method = RequestMethod.GET)
+	public @ResponseBody
+	School getUserSchool(@PathVariable String username) {
+		User user = userService.getUserByUsername(username);
+		return studentDetailsService.getStudentSchool(user);
+	}
+	
+	@RequestMapping(value = "/user/details/{username}/classroom", method = RequestMethod.GET)
+	public @ResponseBody
+	Classroom getUserClassroom(@PathVariable String username) {
+		User user = userService.getUserByUsername(username);
+		return studentDetailsService.getStudentClassroom(user);
 	}
 
 	@RequestMapping(value = "/user/roles", method = RequestMethod.GET)

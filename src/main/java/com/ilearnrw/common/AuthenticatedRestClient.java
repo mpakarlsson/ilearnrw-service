@@ -1,6 +1,7 @@
 package com.ilearnrw.common;
 
 import ilearnrw.user.problems.ProblemDefinitionIndex;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,8 @@ import org.springframework.web.util.UriTemplate;
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.datalogger.services.CubeServiceImpl;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.Classroom;
+import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.User;
 
 @Component
@@ -48,6 +51,8 @@ public class AuthenticatedRestClient {
 
 	private String rolesUri = "user/roles?token={token}";
 	private String userDetailsUri = "user/details/{username}";
+	private String userClassroomUri = "user/details/{username}/classroom";
+	private String userSchoolUri = "user/details/{username}/school";
 	private String authUri = "user/auth?username={username}&pass={pass}";
 	private String logsUri = "logs/{username}?page={page}";
 	private String problemDefinitionsUri = "profile/problemDefinitions?userId={userId}";
@@ -115,9 +120,17 @@ public class AuthenticatedRestClient {
 	public Tokens getTokens(String username, String pass) {
 		return get(getAuthUri(), Tokens.class, username, pass);
 	}
-
+	
 	public String getUserDetailsUri() {
 		return authBaseUri + userDetailsUri;
+	}
+	
+	public String getUserClassroomUri() {
+		return authBaseUri + userClassroomUri;
+	}
+	
+	public String getUserSchoolUri() {
+		return authBaseUri + userSchoolUri;
 	}
 
 	public String getRolesUri() {
@@ -142,6 +155,14 @@ public class AuthenticatedRestClient {
 
 	public User getUserDetails(String username) {
 		return get(getUserDetailsUri(), User.class, username);
+	}
+	
+	public Classroom getUserClassroom(String username) {
+		return get(getUserClassroomUri(), Classroom.class, username);
+	}
+	
+	public School getUserSchool(String username) {
+		return get(getUserSchoolUri(), School.class, username);
 	}
 
 	public List<String> getRoles(String token) {

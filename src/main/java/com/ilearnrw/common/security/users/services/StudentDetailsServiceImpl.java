@@ -80,4 +80,14 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
 	public List<User> getStudentsFromClassRoom(Classroom classroom) {
 		return schoolDao.getStudentsFromClassRoom(classroom);
 	}
+	
+	@Override
+	public Classroom getStudentClassroom(User student) {
+		return schoolDao.getStudentClassroom(student);
+	}
+	
+	@Override
+	public School getStudentSchool(User student) {
+		return schoolDao.getClassroomSchool(schoolDao.getStudentClassroom(student));
+	}
 }

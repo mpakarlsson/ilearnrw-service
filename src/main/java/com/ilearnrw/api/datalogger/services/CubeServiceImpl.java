@@ -28,6 +28,8 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
+import com.ilearnrw.common.security.users.model.Classroom;
+import com.ilearnrw.common.security.users.model.School;
 
 @Service
 public class CubeServiceImpl implements CubeService {
@@ -145,7 +147,9 @@ public class CubeServiceImpl implements CubeService {
 		int id = cubeDao.getUserIdByName(username);
 		if (id == -1) {
 			User user = getUserDetailsFromRemoteService(username);
-			id = cubeDao.createUser(username, user.getGender(), user.getBirthyear(), user.getLanguage());
+			Classroom classroom = authenticatedRestClient.getUserClassroom(username);
+			School school = authenticatedRestClient.getUserSchool(username);
+			id = cubeDao.createUser(username, user.getGender(), user.getBirthyear(), user.getLanguage(), classroom.getName(), school.getName());
 		}
 		return id;
 	}

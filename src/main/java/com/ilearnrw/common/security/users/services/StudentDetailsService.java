@@ -22,4 +22,8 @@ public interface StudentDetailsService {
 
 	public List<User> getStudentsFromClassRoom(Classroom classroom);
 
+	public Classroom getStudentClassroom(User student);
+
+	public School getStudentSchool(User student);
+
 }

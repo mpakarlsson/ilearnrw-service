@@ -116,13 +116,15 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public int createUser(String username, String gender, int birthyear,
-			String language) {
+			String language, String classroom, String school) {
 
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
 		parameters.put("username", username);
 		parameters.put("gender", gender);
 		parameters.put("birthyear", birthyear);
 		parameters.put("language", language);
+		parameters.put("classroom", classroom);
+		parameters.put("school", school);
 
 		return insertAndReturnKey("users", parameters);
 	}
