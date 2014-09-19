@@ -46,11 +46,12 @@ CREATE TABLE `users` (
   `gender` char(1) DEFAULT NULL,
   `birthyear` smallint(6) DEFAULT NULL,
   `language` char(2) DEFAULT NULL,
+  `classroom` varchar(45) DEFAULT NULL,
+  `school` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
 ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci$$
-
 
 delimiter $$
 
@@ -65,7 +66,7 @@ delimiter ; $$
 
 CREATE VIEW `facts_expanded` AS
 select f.*,
-	u.username, u.gender, u.birthyear, u.language,
+	u.username, u.gender, u.birthyear, u.language, u.school, u.classroom,
 	a.name as app_name, a.app_id,
 	p.category, p.idx, p.language as p_language, p.description,
 	aps.name as aps_name, aps.start as aps_start, aps.end as aps_end,
