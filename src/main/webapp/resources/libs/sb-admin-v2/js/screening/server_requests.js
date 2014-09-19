@@ -74,20 +74,15 @@ function sendStudentsAnswers(user, userId) {
 	var elements = document.getElementsByClassName("word");
 	for(var i = 0; i < elements.length; i++) {
 		var current = elements[i];
-		var ok = isCorrect(current);
-		if (isDisplayed(current) != 1 || ok == -1){
+		var ans = getAnswer(current);
+		if (ans == null){
 			continue;
 		}
-		var data = {
-				word: current.dataset.word,
-				cluster: current.dataset.cluster,
-				correct: (ok == 1)
-		};
 		
 		var log = {
 				username: user,
 				applicationId: "PROFILE_SETUP",
-				tag: "WORD_DISPLAYED",
+				tag: ans,
 				word: current.dataset.word,
 				problem_category: -1,
 				problem_index: -1,
@@ -99,10 +94,13 @@ function sendStudentsAnswers(user, userId) {
 		};
 		array.push(log);
 		
+		if (ans == "WORD_NOT_SEEN")
+			continue;
+		
 		var log = {
 				username: user,
 				applicationId: "PROFILE_SETUP",
-				tag: (ok == 1)?"WORD_SUCCESS":"WORD_FAILED",
+				tag: "WORD_DISPLAYED",
 				word: current.dataset.word,
 				problem_category: -1,
 				problem_index: -1,

@@ -357,7 +357,7 @@ public class UserManagerController {
 		model.put("schools", studentDetailsService.getSchools());
 		//TODO: this has to go as ajax
 		//model.put("classRooms", studentDetailsService.getClassRooms());
-		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
+		model.put("teachersList", teacherStudentService.getTeacherList());
 
 		return "users/form.update";
 	}
@@ -382,7 +382,7 @@ public class UserManagerController {
 			model.put("schools", studentDetailsService.getSchools());
 			//TODO: also, this
 			//model.put("classRooms", studentDetailsService.getClassRooms());
-			model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
+			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.update";
 		}
 
@@ -408,7 +408,7 @@ public class UserManagerController {
 		model.put("schools", studentDetailsService.getSchools());
 		//TODO: and this
 		//model.put("classRooms", studentDetailsService.getClassRooms());
-		model.put("teachersList", roleService.getUsersWithRole("ROLE_TEACHER"));
+		model.put("teachersList", teacherStudentService.getTeacherList());
 		return "users/form.insert";
 	}
 
@@ -448,17 +448,18 @@ public class UserManagerController {
 		else if (form.getRole().equals("teacher"))
 		{
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
-			if (request.isUserInRole("PERMISSION_EXPERT"))
+			if (request.isUserInRole("ROLE_EXPERT")) //TODO: check if this is ok (was PERMISSION_EXPERT)
 				expertTeacherService.assignTeacherToExpert(current, user);
 		}
 		else if (form.getRole().equals("student"))
 		{
 			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_STUDENT")));
-			if (request.isUserInRole("PERMISSION_TEACHER"))
-				teacherStudentService.assignStudentToTeacher(current, user);
-				StudentDetails sd = form.getStudentDetails();
-				sd.setStudentId(user.getId());
-				studentDetailsService.insertData(sd);
+			StudentDetails sd = form.getStudentDetails();
+			sd.setStudentId(user.getId());
+			studentDetailsService.insertData(sd);
+			User teacher = userService.getUser(sd.getTeacherId());
+			teacherStudentService.assignStudentToTeacher(teacher, user);
+				
 		}
 		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
 		

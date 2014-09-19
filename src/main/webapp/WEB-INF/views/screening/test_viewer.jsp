@@ -15,7 +15,12 @@
 <div style="width:595px;">
 
 	<c:forEach items="${screeningTest.getSortedQuestionsListByType()}" var="questions" varStatus="inner">
-	<strong>${questions.getQuestion() } </strong><br>
+	
+		<c:choose>
+			<c:when test="${inner.index<=0 || !screeningTest.getSortedQuestionsListByType().get(inner.index-1).getQuestion().equalsIgnoreCase(questions.getQuestion())}">
+			<strong> ${questions.getQuestion() }</strong><br>
+			</c:when>
+		</c:choose>
 		<c:choose>
 			<c:when test="${questions.isAttachRelWords() && questions.getRelatedWords().size()>1}">
 				<c:forEach items="${questions.getRelatedWords()}" end="${questions.getRelatedWords().size()-2}" var="relatedWords" varStatus="inner">

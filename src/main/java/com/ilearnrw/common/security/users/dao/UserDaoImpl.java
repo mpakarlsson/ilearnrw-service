@@ -72,8 +72,17 @@ public class UserDaoImpl implements UserDao {
 	public void updateData(User user) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.update(
-				"update users set username=?, password=?, enabled=?, birthdate=?, gender=?, language=? where id=?",
-				user.getUsername(), passwordEncoder.encode(user.getPassword()), user.isEnabled(), user.getBirthdate(), user.getGender(), user.getLanguage(), user.getId());
+				"update users set username=?, enabled=?, birthdate=?, gender=?, language=? where id=?",
+				user.getUsername(), user.isEnabled(), user.getBirthdate(), user.getGender(), user.getLanguage(), user.getId());
+
+	}
+
+	@Override
+	public void setPassword(int userId, String password) {
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		template.update(
+				"update users set password=? where id=?",
+				passwordEncoder.encode(password), userId);
 
 	}
 

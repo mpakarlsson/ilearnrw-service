@@ -28,6 +28,10 @@ public class SystemTags {
 	@Fact
 	public static final String WORD_FAILED = "WORD_FAILED";
 	@Fact
+	public static final String WORD_NOT_ANSWERED = "WORD_NOT_ANSWERED";
+	@Fact
+	public static final String WORD_NOT_SEEN = "WORD_NOT_SEEN";
+	@Fact
 	public static final String PROFILE_UPDATE = "PROFILE_UPDATE";
 	@Fact
 	public static final String USER_SEVERITIES_SET= "USER_SEVERITIES_SET";

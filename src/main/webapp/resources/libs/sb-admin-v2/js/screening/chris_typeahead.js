@@ -125,7 +125,7 @@ function appendRandomWordsToTest(id){
 	}
 	curWords = [];
 	wordsToPick = words;
-	while (wordsToPick.length>0 && curWords.length<50){
+	while (wordsToPick.length>0 && curWords.length<20){
 		var randomnumber=Math.floor(Math.random()*(wordsToPick.length));
 		var t = wordsToPick.splice(randomnumber, 1);
 		curWords.push(t);

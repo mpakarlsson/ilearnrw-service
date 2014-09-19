@@ -33,9 +33,11 @@
 		if ("${userform.role}" !== "ROLE_STUDENT") {
 			$("#studentDetails").hide();
 			$("#studentDetails :input").prop('disabled', true);
+			$("#birthdayDiv").hide();
 		} else {
 			$("#studentDetails").show();
 			$("#studentDetails :input").prop('disabled', false);
+			$("#birthdayDiv").show();
 		}
 
 	});
@@ -91,31 +93,16 @@
 									</div>
 								</div>
 							</spring:bind>
-
-							<spring:bind path="user.password">
-								<div class="form-group ${status.error ? 'has-error' : ''}">
-									<label class="col-sm-2 control-label" for="password">New
-										password</label>
-									<div class="col-sm-10">
-										<form:input type="text" id="password"
-											class="form-control col-sm-9" placeholder="Password"
-											path="user.password" required="true" />
-										<form:errors path="user.password" class="help-block"
-											for="password" />
-									</div>
-								</div>
-							</spring:bind>
-
 							<spring:bind path="user.birthdate">
-								<div class="form-group ${status.error ? 'has-error' : ''}">
-									<label class="col-sm-2 control-label" for="birthdate">Birth
-										Date</label>
-									<div class="col-sm-10" id="birthdatepicker">
-										<fieldset id="birthdate" class='birthday-picker'>
+								<div id="birthdayDiv">
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label" for="birthdate">Birth
+											Date</label>
+										<div class="col-sm-10" id="birthdatepicker">
 											<form:input type="text" id="datepicker" path="user.birthdate" />
-										</fieldset>
-										<form:errors path="user.birthdate" class="help-block"
-											for="birthdate" />
+											<form:errors path="user.birthdate" class="help-block"
+												for="birthdate" />
+										</div>
 									</div>
 								</div>
 							</spring:bind>
@@ -134,7 +121,7 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Gender</label>
 									<div class="col-sm-10">
-										<form:select path="user.gender">
+										<form:select path="user.gender" class="form-control">
 											<form:option value="M" label="Male" />
 											<form:option value="F" label="Female" />
 										</form:select>
@@ -148,7 +135,7 @@
 								<div class="form-group ${status.error ? 'has-error' : ''}">
 									<label class="col-sm-2 control-label">Language</label>
 									<div class="col-sm-10">
-										<form:select path="user.language">
+										<form:select path="user.language" class="form-control">
 											<form:option value="EN" label="English" />
 											<form:option value="GR" label="Greek" />
 										</form:select>
@@ -165,16 +152,16 @@
 									<div class="form-group ${status.error ? 'has-error' : ''}">
 										<label class="col-sm-2 control-label">School</label>
 										<div class="col-sm-10">
-											<form:input type="text" id="school"
-												class="form-control col-sm-9" placeholder="School"
-												path="studentDetails.school" required="true" />
-											Type a new school or select from an existing one: <select
-												id="schoolSelect">
-												<option value="" ></option>
+											Select a school or type in a new one: <select
+												id="schoolSelect" class="form-control">
+												<option value=""></option>
 												<c:forEach items="${schools}" var="s">
 													<option value="${s.name}">${s.name}</option>
 												</c:forEach>
 											</select>
+											<form:input type="text" id="school"
+												class="form-control col-sm-9" placeholder="new School"
+												path="studentDetails.school" required="true" />
 											<form:errors path="studentDetails.school" class="help-block"
 												for="school" />
 										</div>
@@ -182,38 +169,40 @@
 									<div class="form-group ${status.error ? 'has-error' : ''}">
 										<label class="col-sm-2 control-label">Classroom</label>
 										<div class="col-sm-10">
-											<form:input type="text" id="classRoom"
-												class="form-control col-sm-9" placeholder="Classroom"
-												path="studentDetails.classRoom" required="true" />
-											Type a new class room or select from an existing one: <select
-												id="classroomSelect">
+											Select a class or type in a new one: <select
+												id="classroomSelect" class="form-control">
 												<option value=""></option>
 												<c:forEach items="${classRooms}" var="s">
 													<option value="${s.name}">${s.name}</option>
 												</c:forEach>
 											</select>
+											<form:input type="text" id="classRoom"
+												class="form-control col-sm-9" placeholder="New classroom"
+												path="studentDetails.classRoom" required="true" />
 											<form:errors path="studentDetails.classRoom"
 												class="help-block" for="classRoom" />
 										</div>
-										<div class="form-group ${status.error ? 'has-error' : ''}">
-											<label class="col-sm-2 control-label">Teacher</label>
-											<div class="col-sm-10">
-												<form:select id="teacherSelect"
-													path="studentDetails.teacherId">
-													<form:option value="" label="" />
-													<form:options items="${teachersList}" />
-												</form:select>
-												<form:errors path="studentDetails.teacherId"
-													class="help-block" for="teacherSelect" />
-											</div>
+									</div>
+									<div class="form-group ${status.error ? 'has-error' : ''}">
+										<label class="col-sm-2 control-label">Teacher</label>
+										<div class="col-sm-10">
+											<form:select id="teacherSelect"
+												path="studentDetails.teacherId" class="form-control">
+												<form:option value="" label="" />
+												<form:options items="${teachersList}" itemLabel="username"
+													itemValue="id" />
+											</form:select>
+											<form:errors path="studentDetails.teacherId"
+												class="help-block" for="teacherSelect" />
 										</div>
 									</div>
+
 								</div>
 							</spring:bind>
 						</div>
 					</div>
 				</div>
-				<button type="submit" class="btn btn-primary">Submit</button>
+				<button type="submit" class="btn btn-primary">Save</button>
 			</form:form>
 		</div>
 	</div>

@@ -1,5 +1,6 @@
 package com.ilearnrw.app.screening;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,6 +9,7 @@ import javax.validation.Valid;
 
 import ilearnrw.languagetools.extras.EasyHardList;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
+import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.clusters.ClusterInfo;
 import ilearnrw.user.profile.clusters.ProblemDescriptionCoordinates;
 import ilearnrw.user.profile.clusters.ProfileClusters;
@@ -28,8 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
+import com.ilearnrw.api.datalogger.DataloggerController;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
+import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 import com.ilearnrw.common.security.users.model.User;
@@ -42,7 +46,13 @@ public class ScreeningCreationControler {
 	private UserService userService;
 
 	@Autowired
-	LogEntryService logEntryService;
+	private LogEntryService logEntryService;
+
+	@Autowired
+	private IProfileProvider profileProvider;
+
+	//@Autowired
+	//DataloggerController dataloggerController;
 
 	@Autowired
 	private TeacherStudentService teacherStudentService;
@@ -90,9 +100,15 @@ public class ScreeningCreationControler {
 		
 		model.put("showAll", st.getClusterQuestions(currentCluster) == null);
 		model.put("cluster", currentCluster);
+		model.put("profileClusters", pc);
+		String g = new Gson().toJson(stl);
+		model.put("screeningTestList", g);
+		model.put("fname", fname);
+
+		model.put("screeningTest", st);
 		if (currentCluster != -1){
 			ArrayList<TestQuestion> tq = st.getClusterQuestions(cluster);
-			String g = new Gson().toJson(tq);
+			g = new Gson().toJson(tq);
 			model.put("clustersQuestions", g);
 			ArrayList<String> t = getClusterWords(pdi, currentCluster);
 			g = new Gson().toJson(t);
@@ -109,12 +125,6 @@ public class ScreeningCreationControler {
 			}
 			model.put("clustersCategoriesMap", clustersCategoriesMap);
 		}
-		model.put("profileClusters", pc);
-		String g = new Gson().toJson(stl);
-		model.put("screeningTestList", g);
-		model.put("fname", fname);
-
-		model.put("screeningTest", st);
 		return "screening/creator";
 	}
 
@@ -156,7 +166,7 @@ public class ScreeningCreationControler {
 		ProfileClusters pc = new ProfileClusters(pdi);
 		ScreeningTest st = new ScreeningTest();
 		
-		if (teacherStudentService.getStudentList(teacher).contains(student)){
+		//if (teacherStudentService.getStudentList(teacher).contains(student)){
 			ScreeningTestList stl = new ScreeningTestList();
 			stl.loadScreeningTestList(ScreeningResources.path+teacher.getLanguage()+"/test_list.json");
 			st.loadTest(ScreeningResources.path+teacher.getLanguage()+"/"+stl.getDefaultTest()+".json");
@@ -164,7 +174,7 @@ public class ScreeningCreationControler {
 			model.put("userId", userId);
 			model.put("profileClusters", pc);
 			model.put("screeningTest", st);
-		}
+		//}
 		return "screening/test_page";
 	}
 
@@ -232,25 +242,70 @@ public class ScreeningCreationControler {
 		return stl;
 	}
 
-	@RequestMapping(headers = { "Accept=application/json" }, value = "/setupstudent", method = RequestMethod.POST)
+	@RequestMapping(headers = { "Accept=application/json" }, value = "/{userId}/setupstudent", method = RequestMethod.POST)
 	public @ResponseBody
 	int setupStudent(@Valid @RequestBody ArrayList<LogEntry> logs,
-			@RequestParam(value = "userId", required = true) Integer userId, 
+			@PathVariable Integer userId, 
 			HttpServletRequest request) 
 			throws ProfileProviderException, Exception {
 		java.util.Date date= new java.util.Date();
 		User user = userService.getUser(userId);
-		int teacherId = (Integer)request.getSession().getAttribute("userid");
+		int supervisorId = (Integer)request.getSession().getAttribute("userid");
+		User supervisor = userService.getUser(supervisorId);
+		
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
+		ProfileClusters pc = new ProfileClusters(pdi);
+		ArrayList<ClusterStats> stats = new ArrayList<ClusterStats>();
+		
+		for (int cl : pc.getClustersNumbers()){
+			stats.add(new ClusterStats(cl));
+		}
+		
 		if (logs != null){
 			for (LogEntry t: logs){
 				logEntryService.insertData(t);
-				System.err.println(t.toString());
+				//cluster number is : t.getValue();
+
+				ClusterStats cstats = getStatsObject(stats, Integer.parseInt(t.getValue()));
+				if (cstats == null)
+					continue;
+					
+				if (t.getTag().equals("WORD_SUCCESS")){
+					cstats.highScore++;
+					cstats.userScore++;
+				}
+				else if (t.getTag().equals("WORD_FAILED") || t.getTag().equals("WORD_NOT_ANSWERED")){
+					cstats.highScore++;
+				}
 			}
 			//dataloggerController.addLogs(logs);
+			UserProfile profile = profileProvider.getProfile(userId);
+			for (ClusterInfo ci : pc.getClusters()){
+				ClusterStats cstats = getStatsObject(stats, ci.getClusterNumber());
+				if (cstats == null)
+					continue;
+				
+				int severity = 3;
+				if (cstats.highScore>2 && cstats.getRate()==1)
+					severity = 1;
+				else if (cstats.highScore>2 && cstats.getRate()>0.5)
+					severity = 2;
+				System.err.println(ci.getClusterNumber()+"  --  "+cstats.highScore+" ,, "+cstats.userScore);
+				if (cstats.highScore<2)
+					continue;
+				for (ProblemDescriptionCoordinates pdc : ci.getRelatedProblems()){
+					if (profile.getUserProblems().getProblemDefinition(pdc.getCategory()).getSeverityType().equals("binary"))
+						profile.getUserProblems().setUserSeverity(pdc.getCategory(), pdc.getIndex(), severity == 1?0:1);
+					else 
+						profile.getUserProblems().setUserSeverity(pdc.getCategory(), pdc.getIndex(), severity);
+				}
+				LogEntry le = new LogEntry(user.getUsername(), "PROFILE_SETUP", new Timestamp(date.getTime()), 
+						"USER_SEVERITIES_SET",  "", -1, -1, 
+						0, "cluster "+ci.getClusterNumber(), "EVALUATION_MODE", ""+severity, supervisor.getUsername());
+				logEntryService.insertData(le);
+			}
+			profileProvider.updateProfile(userId, profile);
 		}
-		//LogEntry le = new LogEntry(user.getUsername(), "PROFILE_SETUP", new Timestamp(date.getTime()), 
-		//		"USER_SEVERITIES_SET",  "", -1, -1, 
-		//		0.0, "", "EVALUATION_MODE", "");
 		return userId;
 	}
 	
@@ -302,6 +357,28 @@ public class ScreeningCreationControler {
 				return true;
 		return false;
 	}
+
+	private class ClusterStats{
+		int cluster, highScore, userScore;
+		public ClusterStats(int cluster){
+			this.cluster = cluster;
+			this.highScore = 0;
+			this.userScore = 0;
+		}
+		double getRate(){
+			return (double)userScore/highScore;
+		}
+	}
+	
+	private ClusterStats getStatsObject(ArrayList<ClusterStats> stats, int cluster){
+		int idx = 0;
+		while (idx<stats.size() && stats.get(idx).cluster != cluster)
+			idx++;
+		if (idx >= stats.size())
+			return null;
+		return stats.get(idx);
+	}
+	
 	//page that displays the list of problem categories
 	//@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
 	/*@RequestMapping(value = "/users/{userId}/initprofile", method = RequestMethod.GET)
