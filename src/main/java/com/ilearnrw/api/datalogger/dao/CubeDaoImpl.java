@@ -575,10 +575,10 @@ public class CubeDaoImpl implements CubeDao {
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select count(distinct app_name) as numberOfActivities, "
-					+ "sum(timeSpent) as timeSpent, "
-					+ "sum(success) as correctAnswers, "
-					+ "sum(failed) as incorrectAnswers, "
-					+ "sum(total) as totalAnswers, "
+					+ "coalesce(sum(timeSpent),0) as timeSpent, "
+					+ "coalesce(sum(success),0) as correctAnswers, "
+					+ "coalesce(sum(failed),0) as incorrectAnswers, "
+					+ "coalesce(sum(total),0) as totalAnswers, "
 					+ "format_success_rate(sum(success), sum(total)) as successRate "
 					+ "from "
 					+ "    (select app_name, aps_duration as timeSpent, "
