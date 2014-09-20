@@ -78,7 +78,7 @@ public class UserManagerController {
 
 	@Autowired
 	private TeacherStudentService teacherStudentService;
-	
+
 	@Autowired
 	private ExpertTeacherService expertTeacherService;
 
@@ -95,7 +95,7 @@ public class UserManagerController {
 	public String panel(ModelMap modelMap) {
 		return "main/panel";
 	}
-	
+
 	@RequestMapping(value = "users/{id}/stats", method = RequestMethod.GET)
 	public String stats(ModelMap modelMap) {
 		return "statistics/stats";
@@ -142,7 +142,8 @@ public class UserManagerController {
 			request.getSession().setAttribute("username", username);
 			User user = userService.getUserByUsername(username);
 			request.getSession().setAttribute("userid", user.getId());
-			request.getSession().setAttribute("students", teacherStudentService.getStudentList(user));
+			request.getSession().setAttribute("students",
+					teacherStudentService.getStudentList(user));
 
 		} catch (Exception e) {
 			model.addAttribute("error", e.getMessage());
@@ -152,9 +153,10 @@ public class UserManagerController {
 	}
 
 	/* Users logs */
-	
+
 	@RequestMapping(value = "users/manage")
-	public String manageUsers(ModelMap modelMap, HttpServletRequest request, ModelMap model) {
+	public String manageUsers(ModelMap modelMap, HttpServletRequest request,
+			ModelMap model) {
 		if (request.isUserInRole("PERMISSION_ADMIN"))
 			modelMap.addAttribute("users", getUsersManagedByAdmin());
 		else if (request.isUserInRole("PERMISSION_EXPERT"))
@@ -166,7 +168,8 @@ public class UserManagerController {
 	}
 
 	@RequestMapping(value = "users/students")
-	public String manageStudents(ModelMap modelMap, HttpServletRequest request, ModelMap model) {
+	public String manageStudents(ModelMap modelMap, HttpServletRequest request,
+			ModelMap model) {
 		if (request.isUserInRole("PERMISSION_TEACHER")) {
 			modelMap.addAttribute("students", getUsersManagedByTeacher());
 		}
@@ -176,64 +179,67 @@ public class UserManagerController {
 	private List<UserNewForm> getUsersManagedByAdmin() {
 		List<User> users = userService.getUserList();
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
-		for (User user : users)
-		{
+		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user
+					.getId());
 			if (roles.size() == 1)
-				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
+				userRoles
+						.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
 				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
-	
+
 	private List<UserNewForm> getUsersManagedByExpert() {
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
 		List<User> teachers = expertTeacherService.getTeacherList(current);
 		List<User> users = new ArrayList<User>();
-		for (User teacher : teachers)
-		{
+		for (User teacher : teachers) {
 			users.add(teacher);
 			users.addAll(teacherStudentService.getStudentList(teacher));
 		}
 		users.addAll(teacherStudentService.getUnassignedStudentsList());
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
-		for (User user : users)
-		{
+		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user
+					.getId());
 			if (roles.size() == 1)
-				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
+				userRoles
+						.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
 				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
-	
+
 	private List<UserNewForm> getUsersManagedByTeacher() {
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
 		List<User> users = teacherStudentService.getStudentList(current);
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
-		for (User user : users)
-		{
+		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user
+					.getId());
 			if (roles.size() == 1)
-				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
+				userRoles
+						.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
 				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
-	
+
 	@RequestMapping(value = "users/{id}/logs/page/{page}", method = RequestMethod.GET)
-	public String viewLogs(@PathVariable int id,
-			@PathVariable String page, ModelMap model,
-			HttpServletRequest request) {
+	public String viewLogs(@PathVariable int id, @PathVariable String page,
+			ModelMap model, HttpServletRequest request) {
 
 		Map<String, String> args = new HashMap<String, String>();
 		User user = userService.getUser(id);
@@ -304,22 +310,25 @@ public class UserManagerController {
 	public String updateProfileEntry(@RequestParam("level") Integer level,
 			@RequestParam("type") String type,
 			@RequestParam("category") Integer category,
-			@RequestParam("index") Integer index,
-			@PathVariable int id) throws ProfileProviderException {
+			@RequestParam("index") Integer index, @PathVariable int id)
+			throws ProfileProviderException {
 		profileProvider.updateProfileEntry(id, category, index, level);
-		//profileProvider.updateProfile(id, profile);
+		// profileProvider.updateProfile(id, profile);
 		return "OK";
 	}
 
 	@RequestMapping(value = "users/{id}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
-			@PathVariable int id, HttpServletRequest request) throws ProfileProviderException {
+			@PathVariable int id, HttpServletRequest request)
+			throws ProfileProviderException {
 		UserProfile oldProfile = profileProvider.getProfile(id);
-		oldProfile.getUserProblems().setTrickyWords(profile.getUserProblems().getTrickyWords());
-		oldProfile.getPreferences().setFontSize(profile.getPreferences().getFontSize());
+		oldProfile.getUserProblems().setTrickyWords(
+				profile.getUserProblems().getTrickyWords());
+		oldProfile.getPreferences().setFontSize(
+				profile.getPreferences().getFontSize());
 		profileProvider.updateProfile(id, oldProfile);
-		return "redirect:/apps/users/"+id+"/profile";
+		return "redirect:/apps/users/" + id + "/profile";
 	}
 
 	@RequestMapping(value = "users", method = RequestMethod.POST)
@@ -347,7 +356,8 @@ public class UserManagerController {
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
 		userForm.setRole(selectedRoles.get(0).getName());
-		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user.getId()));
+		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user
+				.getId()));
 
 		model.put("userform", userForm);
 		model.put("schools", studentDetailsService.getSchools());
@@ -355,6 +365,19 @@ public class UserManagerController {
 		model.put("teachersList", teacherStudentService.getTeacherList());
 
 		return "users/form.update";
+	}
+
+	@RequestMapping(value = "users/{id}/changepassword", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody String changePassword(@PathVariable int id, @RequestParam("password") String password,
+			HttpServletRequest request) {
+
+		try {
+			userService.setPassword(id, password);
+		} catch (Exception e) {
+			return "FAILURE";
+		}
+		return "OK";
 	}
 
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
@@ -398,7 +421,8 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form, ModelMap model) {
+	public String viewUserInsertForm(
+			@ModelAttribute("userform") UserNewForm form, ModelMap model) {
 		model.put("schools", studentDetailsService.getSchools());
 		model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
@@ -407,10 +431,13 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/new", method = RequestMethod.POST)
 	@Transactional
-	public String insertUser(@Valid @ModelAttribute("userform") UserNewForm form,
-			BindingResult result, HttpServletRequest request, ModelMap model) throws ProfileProviderException {
+	public String insertUser(
+			@Valid @ModelAttribute("userform") UserNewForm form,
+			BindingResult result, HttpServletRequest request, ModelMap model)
+			throws ProfileProviderException {
 
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
 		User user = form.getUser();
 		if (user.getBirthdate().after(new Date()))
 			result.rejectValue("user.birthdate", "birthdate.invalid");
@@ -429,32 +456,29 @@ public class UserManagerController {
 			return "users/form.insert";
 		}
 		int userId = userService.insertData(user);
-		if (form.getRole().equals("admin"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_ADMIN")));
-		}
-		else if (form.getRole().equals("expert"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_EXPERT")));
-		}
-		else if (form.getRole().equals("teacher"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
+		if (form.getRole().equals("admin")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_ADMIN")));
+		} else if (form.getRole().equals("expert")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_EXPERT")));
+		} else if (form.getRole().equals("teacher")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_TEACHER")));
 			if (request.isUserInRole("ROLE_EXPERT"))
 				expertTeacherService.assignTeacherToExpert(current, user);
-		}
-		else if (form.getRole().equals("student"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_STUDENT")));
+		} else if (form.getRole().equals("student")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_STUDENT")));
 			StudentDetails sd = form.getStudentDetails();
 			sd.setStudentId(user.getId());
 			studentDetailsService.insertData(sd);
 			User teacher = userService.getUser(sd.getTeacherId());
 			teacherStudentService.assignStudentToTeacher(teacher, user);
-				
+
 		}
-		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
-		
+		profileProvider.createProfile(userId,
+				LanguageCode.fromString(user.getLanguage()));
 
 		return "redirect:/apps/users/manage";
 	}
@@ -466,7 +490,7 @@ public class UserManagerController {
 		modelMap.addAttribute("roles", roleService.getRoleList());
 		return "roles/manage";
 	}
-	
+
 	@RequestMapping(value = "/roles/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewRoleUpdateForm(@PathVariable int id, ModelMap model) {
@@ -531,10 +555,11 @@ public class UserManagerController {
 	}
 
 	/* Permissions */
-	
+
 	@RequestMapping(value = "permissions/manage")
 	public String managePermissions(ModelMap modelMap) {
-		modelMap.addAttribute("permissions", permissionService.getPermissionList());
+		modelMap.addAttribute("permissions",
+				permissionService.getPermissionList());
 		return "permissions/manage";
 	}
 
@@ -596,7 +621,8 @@ public class UserManagerController {
 		teacherStudentForm.setTeacher(teacher);
 		List<User> unassignedStudentsList = teacherStudentService
 				.getUnassignedStudentsList();
-		unassignedStudentsList.addAll(teacherStudentService.getStudentList(teacher));
+		unassignedStudentsList.addAll(teacherStudentService
+				.getStudentList(teacher));
 		teacherStudentForm.setAllStudents(unassignedStudentsList);
 		teacherStudentForm.setSelectedStudents(teacherStudentService
 				.getStudentList(teacher));
@@ -613,12 +639,13 @@ public class UserManagerController {
 		User teacher = userService.getUser(id);
 		teacherStudentService.setStudentList(teacher,
 				teacherStudentForm.getSelectedStudents());
-		request.getSession().setAttribute("students", teacherStudentService.getStudentList(teacher));
+		request.getSession().setAttribute("students",
+				teacherStudentService.getStudentList(teacher));
 		return "redirect:/apps/users/manage";
 	}
-	
+
 	/* Experts */
-	
+
 	@RequestMapping(value = "experts/{id}/assign", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewExpertsAssignForm(@PathVariable int id, ModelMap model) {
@@ -627,7 +654,8 @@ public class UserManagerController {
 		expertTeacherForm.setExpert(expert);
 		List<User> unassignedTeachersList = expertTeacherService
 				.getUnassignedTeachersList();
-		unassignedTeachersList.addAll(expertTeacherService.getTeacherList(expert));
+		unassignedTeachersList.addAll(expertTeacherService
+				.getTeacherList(expert));
 		expertTeacherForm.setAllTeachers(unassignedTeachersList);
 		expertTeacherForm.setSelectedTeachers(expertTeacherService
 				.getTeacherList(expert));
@@ -644,55 +672,56 @@ public class UserManagerController {
 		User expert = userService.getUser(id);
 		expertTeacherService.setTeacherList(expert,
 				expertTeacherForm.getSelectedTeachers());
-		request.getSession().setAttribute("teachers", expertTeacherService.getTeacherList(expert));
+		request.getSession().setAttribute("teachers",
+				expertTeacherService.getTeacherList(expert));
 		return "redirect:/apps/users/manage";
 	}
-	
+
 	@RequestMapping(value = "reports/overview", method = RequestMethod.GET)
 	@Transactional
-	public String reportsOverview(
-			ModelMap model) {
+	public String reportsOverview(ModelMap model) {
 		model.put("title", "Overview");
 		return "reports/reports";
 	}
-	
+
 	@RequestMapping(value = "reports/skill", method = RequestMethod.GET)
 	@Transactional
-	public String reportsSkills(
-			ModelMap model) {
+	public String reportsSkills(ModelMap model) {
 		model.put("title", "Skill breakdown");
 		return "reports/reports";
 	}
-	
+
 	@RequestMapping(value = "reports/activity", method = RequestMethod.GET)
 	@Transactional
-	public String reportsActivities(
-			ModelMap model) {
+	public String reportsActivities(ModelMap model) {
 		model.put("title", "Activity breakdown");
 		return "reports/reports";
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
 	@Transactional
-	public @ResponseBody List<String> getSchools() {
+	public @ResponseBody
+	List<String> getSchools() {
 		List<String> schools = studentDetailsService.getSchools();
 		schools.add(0, "All schools");
 		return schools;
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<String> getClassRooms(@RequestBody String school) {
-		//TODO: properly implement this
+	public @ResponseBody
+	List<String> getClassRooms(@RequestBody String school) {
+		// TODO: properly implement this
 		List<String> classrooms = studentDetailsService.getClassRooms();
 		classrooms.add(0, "All classrooms");
-		return classrooms; 
+		return classrooms;
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<String> getStudents(@RequestBody String classRoom) {
-		//TODO: properly implement this
+	public @ResponseBody
+	List<String> getStudents(@RequestBody String classRoom) {
+		// TODO: properly implement this
 		List<User> students = teacherStudentService.getAllStudentsList();
 		List<String> studentNames = new ArrayList<String>();
 		studentNames.add("All students");
@@ -703,15 +732,16 @@ public class UserManagerController {
 
 	@RequestMapping(value = "jquery/admin/plot/skill/breakdown", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<DataPoint> getSkillBreakdown(@RequestBody String student) {
-		//TODO: properly implement this
+	public @ResponseBody
+	List<DataPoint> getSkillBreakdown(@RequestBody String student) {
+		// TODO: properly implement this
 		List<DataPoint> skillBreakdown = new ArrayList<DataPoint>();
 		DataPoint dataPoint = new DataPoint();
 
 		dataPoint.setLabel("Syllable division");
 		dataPoint.setData(40);
 		skillBreakdown.add(dataPoint);
-		
+
 		dataPoint = new DataPoint();
 		dataPoint.setLabel("Suffixes");
 		dataPoint.setData(30);
@@ -732,15 +762,17 @@ public class UserManagerController {
 
 	@RequestMapping(value = "jquery/admin/plot/skill/details", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody SkillDetails getSkillDetails(@RequestBody String skill) {
-		//TODO: properly implement this
+	public @ResponseBody
+	SkillDetails getSkillDetails(@RequestBody String skill) {
+		// TODO: properly implement this
 		SkillDetails details = new SkillDetails();
 		details.setTimeSpent("25 minutes");
 		int correctAnswers = 10, incorrectAnswers = 5;
 		DecimalFormat decimalFormat = new DecimalFormat("#.#%");
 		float successRate;
 		try {
-			successRate = (float)correctAnswers / (correctAnswers + incorrectAnswers);
+			successRate = (float) correctAnswers
+					/ (correctAnswers + incorrectAnswers);
 		} catch (Exception e) {
 			successRate = 0;
 		}

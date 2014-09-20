@@ -17,30 +17,83 @@
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		$("#datepicker").datepicker({
-			changeMonth : true,
-			changeYear : true,
-			dateFormat : "dd.mm.yy"
-		});
-		$("#schoolSelect").change(function() {
-			$("#school").val($(this).val());
-		});
-		$("#classroomSelect").change(function() {
-			$("#classRoom").val($(this).val());
-		});
+	$(document)
+			.ready(
+					function() {
+						$("#datepicker").datepicker({
+							changeMonth : true,
+							changeYear : true,
+							dateFormat : "dd.mm.yy"
+						});
+						$("#schoolSelect").change(function() {
+							$("#school").val($(this).val());
+						});
+						$("#classroomSelect").change(function() {
+							$("#classRoom").val($(this).val());
+						});
 
-		if ("${userform.role}" !== "ROLE_STUDENT") {
-			$("#studentDetails").hide();
-			$("#studentDetails :input").prop('disabled', true);
-			$("#birthdayDiv").hide();
-		} else {
-			$("#studentDetails").show();
-			$("#studentDetails :input").prop('disabled', false);
-			$("#birthdayDiv").show();
-		}
+						if ("${userform.role}" !== "ROLE_STUDENT") {
+							$("#studentDetails").hide();
+							$("#studentDetails :input").prop('disabled', true);
+							$("#birthdayDiv").hide();
+						} else {
+							$("#studentDetails").show();
+							$("#studentDetails :input").prop('disabled', false);
+							$("#birthdayDiv").show();
+						}
 
-	});
+						$("#btn-changepassword")
+								.click(
+										function() {
+											$("#dialog-changepassword")
+													.dialog(
+															{
+																width : 400,
+																modal : true,
+																buttons : {
+																	"Change" : function() {
+																		$
+																				.ajax(
+																						{
+																							url : "${pageContext.request.contextPath}/apps/users/${userform.user.id}/changepassword",
+																							type : 'POST',
+																							data : {
+																								password : $(
+																										"#newpassword")
+																										.val()
+																							}
+
+																						})
+																				.always(
+																						function(
+																								data) {
+																							$(
+																									'#changepasswordstatus')
+																									.html(
+																											data);
+																							$(
+																									'#changepasswordstatus')
+																									.removeClass(
+																											"hide");
+																							$(
+																									"#newpassword")
+																									.val(
+																											"");
+																						});
+																		$(this)
+																				.dialog(
+																						"close");
+																	},
+																	Cancel : function() {
+																		$(this)
+																				.dialog(
+																						"close");
+																	}
+																}
+															});
+										});
+
+					});
 </script>
 
 </head>
@@ -202,9 +255,26 @@
 						</div>
 					</div>
 				</div>
-				<button type="submit" class="btn btn-primary">Save</button>
+				<div class="row">
+					<div class="col-md-4">
+						<button type="submit" class="btn btn-primary">Save</button>
+						<button type="button" id="btn-changepassword"
+							class="btn btn-default">Change password</button>
+					</div>
+					<div class="col-md-8">
+						<div class="alert alert-info hide" id="changepasswordstatus"></div>
+					</div>
+				</div>
 			</form:form>
 		</div>
 	</div>
+	<div id="dialog-changepassword" title="Change password">
+		<div class="form-group">
+			<label>Enter a new password</label> <input id="newpassword"
+				type="password" class="form-control" placeholder="New password"></input>
+
+		</div>
+	</div>
+
 </body>
 </html>
