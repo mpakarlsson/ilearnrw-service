@@ -75,7 +75,7 @@ public interface CubeDao {
 			String status, String timestart, String timeend, boolean count);
 	
 	BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
-			StudentFilter studentFilter, int category);
+			StudentFilter studentFilter, int category, int language);
 	
 	BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
 			StudentFilter studentFilter, String activityName);

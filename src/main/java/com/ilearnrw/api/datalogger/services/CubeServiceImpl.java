@@ -272,8 +272,8 @@ public class CubeServiceImpl implements CubeService {
 
 	@Override
 	public BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
-			StudentFilter studentFilter, int category) {
-		return cubeDao.getSkillBreakdownResult(dateFilter, studentFilter, category);
+			StudentFilter studentFilter, int category, int language) {
+		return cubeDao.getSkillBreakdownResult(dateFilter, studentFilter, category, language);
 	}
 
 	@Override

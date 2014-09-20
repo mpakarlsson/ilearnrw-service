@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -503,59 +504,110 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
-			StudentFilter studentFilter, int category) {
-		String studentFilterString = getStudentFilterString(studentFilter);
-		String sql = "select "
-				+ "sum(duration) as timeSpent, "
-				+ "sum(word_success) as correctAnswers, "
-				+ "sum(word_failed) as incorrectAnswers, "
-				+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
-				+ "from facts_expanded " + "where (rds_start between ? and ?) "
-				+ studentFilterString + "and category = ? "
-				+ "group by category;";
-		return new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
-				sql,
-				new Object[] { dateFilter.getStartDate(),
-						dateFilter.getEndDate(), studentFilter.getName(),
-						category }, BreakdownResult.class);
+			StudentFilter studentFilter, int category, int language) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			parameterMap.put("language", language);
+			parameterMap.put("category", category);
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap);
+			String dateFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String sql = "select "
+					+ "sum(duration) as timeSpent, "
+					+ "sum(word_success) as correctAnswers, "
+					+ "sum(word_failed) as incorrectAnswers, "
+					+ "sum(word_success_or_failed) as totalAnswers, "
+					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
+					+ "from facts_expanded "
+					+ "where p_language = :language and "
+					+ "category = :category and " + studentFilterString
+					+ "and " + dateFilterString + "group by category;";
+			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(sql, parameterMap,
+							new BeanPropertyRowMapper<BreakdownResult>(
+									BreakdownResult.class));
+		} catch (EmptyResultDataAccessException e) {
+			return new BreakdownResult();
+		}
 	}
-	
+
 	@Override
 	public BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
 			StudentFilter studentFilter, String activityName) {
-		String studentFilterString = getStudentFilterString(studentFilter);
-		String sql = "select "
-				+ "sum(aps_duration) as timeSpent, "
-				+ "sum(word_success) as correctAnswers, "
-				+ "sum(word_failed) as incorrectAnswers, "
-				+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
-				+ "from facts_expanded " + "where (rds_start between ? and ?) "
-				+ studentFilterString + "and app_name = ? "
-				+ "group by app_name;";
-		return new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
-				sql,
-				new Object[] { dateFilter.getStartDate(),
-						dateFilter.getEndDate(), studentFilter.getName(),
-						activityName }, BreakdownResult.class);
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			parameterMap.put("app_name", activityName);
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap);
+			String dateFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String sql = "select "
+					+ "sum(aps_duration) as timeSpent, "
+					+ "sum(word_success) as correctAnswers, "
+					+ "sum(word_failed) as incorrectAnswers, "
+					+ "sum(word_success_or_failed) as totalAnswers, "
+					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
+					+ "from facts_expanded " + "where " + dateFilterString
+					+ "and " + studentFilterString
+					+ "and app_name = :app_name " + "group by app_name;";
+			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(sql, parameterMap,
+							new BeanPropertyRowMapper<BreakdownResult>(
+									BreakdownResult.class));
+		} catch (EmptyResultDataAccessException e) {
+			return new BreakdownResult();
+		}
 	}
 
-	private String getStudentFilterString(StudentFilter studentFilter)
-	{
+	private String getDateFilterString(DateFilter dateFilter,
+			Map<String, Object> parameterMap, String fieldName) {
+		String dateFilterString;
+		switch (dateFilter.getType()) {
+		case TODAY:
+			dateFilterString = "( DATE(" + fieldName + ") = CURDATE()) ";
+			break;
+		case WEEK:
+			dateFilterString = "( DATE(" + fieldName
+					+ ") between CURDATE() - INTERVAL 1 WEEK and CURDATE()) ";
+			break;
+		case MONTH:
+			dateFilterString = "( DATE(" + fieldName
+					+ ") between CURDATE() - INTERVAL 1 MONTH and CURDATE()) ";
+			break;
+		case CUSTOM:
+			dateFilterString = "( DATE(" + fieldName
+					+ ") between DATE(:start) and DATE(:end)) ";
+			parameterMap.put("start", dateFilter.getStartDate());
+			parameterMap.put("end", dateFilter.getEndDate());
+			break;
+		case ALL:
+		default:
+			dateFilterString = "true ";
+			break;
+		}
+		return dateFilterString;
+	}
+
+	private String getStudentFilterString(StudentFilter studentFilter,
+			Map<String, Object> parameterMap) {
 		String studentFilterString;
 		switch (studentFilter.getType()) {
 		case CLASSROOM:
-			studentFilterString = "and classroom = ? ";
+			studentFilterString = "classroom = :name ";
+			parameterMap.put("name", studentFilter.getName());
 			break;
 		case SCHOOL:
-			studentFilterString = "and school = ? ";
+			studentFilterString = "school = :name ";
+			parameterMap.put("name", studentFilter.getName());
 			break;
 		case STUDENT:
-			studentFilterString = "and username = ? ";
+			studentFilterString = "username = :name ";
+			parameterMap.put("name", studentFilter.getName());
+			break;
 		case ALL:
 		default:
-			// always true
-			studentFilterString = "and (true or ?) ";// :)
-			break;
+			studentFilterString = "true ";
 		}
 		return studentFilterString;
 	}

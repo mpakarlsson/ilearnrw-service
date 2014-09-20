@@ -37,13 +37,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
+import com.ilearnrw.api.datalogger.model.Problem;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter.DateFilterType;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter.StudentFilterType;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.info.model.Application;
+import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
-import com.ilearnrw.app.usermanager.jquery.model.DataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.ApplicationBreakdownRequest;
+import com.ilearnrw.app.usermanager.jquery.model.ApplicationDataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.BreakdownFilter;
+import com.ilearnrw.app.usermanager.jquery.model.SkillDataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.SkillBreakdownRequest;
 import com.ilearnrw.app.usermanager.jquery.model.SkillDetails;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
@@ -86,6 +99,12 @@ public class UserManagerController {
 
 	@Autowired
 	private StudentDetailsService studentDetailsService;
+	
+	@Autowired
+	private CubeService cubeService;
+	
+	@Autowired
+	private InfoService infoService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -661,6 +680,7 @@ public class UserManagerController {
 	public String reportsOverview(
 			ModelMap model) {
 		model.put("title", "Overview");
+		model.put("js", "overview.js");
 		return "reports/reports";
 	}
 	
@@ -669,6 +689,7 @@ public class UserManagerController {
 	public String reportsSkills(
 			ModelMap model) {
 		model.put("title", "Skill breakdown");
+		model.put("js", "skill.js");
 		return "reports/reports";
 	}
 	
@@ -677,6 +698,7 @@ public class UserManagerController {
 	public String reportsActivities(
 			ModelMap model) {
 		model.put("title", "Activity breakdown");
+		model.put("js", "activity.js");
 		return "reports/reports";
 	}
 	
@@ -694,72 +716,164 @@ public class UserManagerController {
 	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
 	@Transactional
 	public @ResponseBody List<Classroom> getClassRooms(@RequestBody School school) {
-		List<Classroom> classrooms = studentDetailsService.getClassRooms(school);
+		List<Classroom> classrooms = new ArrayList<Classroom>();
 		Classroom all = new Classroom();
 		all.setId(-1);
 		all.setName("All classrooms");
-		classrooms.add(0, all);
+		classrooms.add(all);
+		if (school.getId() != -1)
+			classrooms.addAll(studentDetailsService.getClassRooms(school));
 		return classrooms;
 	}
 	
 	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
 	@Transactional
 	public @ResponseBody List<User> getStudents(@RequestBody Classroom classroom) {
-		List<User> students = studentDetailsService.getStudentsFromClassRoom(classroom);
+		List<User> students = new ArrayList<User>();
 		User all = new User();
 		all.setId(-1);
 		all.setUsername("All students");
 		students.add(0, all);
+		if (classroom.getId() != -1)
+			students.addAll(studentDetailsService.getStudentsFromClassRoom(classroom));
 		return students;
+	}
+
+	private DateFilter getDateFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
+	{
+		DateFilter dateFilter = new DateFilter();
+		switch (breakdownFilter.getDateType()) {
+		case 0:
+			dateFilter.setType(DateFilterType.ALL);
+			break;
+		case 1:
+			dateFilter.setType(DateFilterType.TODAY);
+			break;
+		case 2:
+			dateFilter.setType(DateFilterType.WEEK);
+			break;
+		case 3:
+			dateFilter.setType(DateFilterType.MONTH);
+			break;
+		case 4:
+			dateFilter.setType(DateFilterType.CUSTOM);
+			dateFilter.setStartDate(breakdownFilter.getStartDate());
+			dateFilter.setEndDate(breakdownFilter.getEndDate());
+			break;
+		default:
+			break;
+		}
+		return dateFilter;
+	}
+	
+	private StudentFilter getStudentFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
+	{
+		StudentFilter studentFilter = new StudentFilter();
+		if (breakdownFilter.getSchool().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.ALL);
+			studentFilter.setName(null);
+		}
+		else if (breakdownFilter.getClassroom().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.SCHOOL);
+			studentFilter.setName(breakdownFilter.getSchool().getName());
+		}
+		else if (breakdownFilter.getStudent().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.CLASSROOM);
+			studentFilter.setName(breakdownFilter.getClassroom().getName());
+		}
+		else
+		{
+			studentFilter.setType(StudentFilterType.STUDENT);
+			studentFilter.setName(breakdownFilter.getStudent().getUsername());
+		}
+		return studentFilter;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/breakdown", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<DataPoint> getSkillBreakdown(@RequestBody String student) {
-		//TODO: properly implement this
-		List<DataPoint> skillBreakdown = new ArrayList<DataPoint>();
-		DataPoint dataPoint = new DataPoint();
-
-		dataPoint.setLabel("Syllable division");
-		dataPoint.setData(40);
-		skillBreakdown.add(dataPoint);
-		
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Suffixes");
-		dataPoint.setData(30);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Prefixes");
-		dataPoint.setData(25);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Vowel sounds");
-		dataPoint.setData(17);
-		skillBreakdown.add(dataPoint);
-
+	public @ResponseBody
+	List<SkillDataPoint> getSkillBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
+		List<com.ilearnrw.api.info.model.Problem> problems = infoService
+				.getProblems(current.getLanguage());
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<SkillDataPoint> skillBreakdown = new ArrayList<SkillDataPoint>();
+		SkillDataPoint dataPoint;
+		int problemCategoryCounter = 1;
+		int languageCode = LanguageCode.fromString(current.getLanguage())
+				.getCode();
+		for (com.ilearnrw.api.info.model.Problem problem : problems) {
+			dataPoint = new SkillDataPoint();
+			dataPoint.setLabel(problem.getTitle());
+			dataPoint.setId(problemCategoryCounter);
+			dataPoint.setLanguage(languageCode);
+			BreakdownResult breakdownResult = cubeService
+					.getSkillBreakdownResult(dateFilter, studentFilter,
+							problemCategoryCounter, languageCode);
+			dataPoint.setData(breakdownResult.getTotalAnswers());
+			if (dataPoint.getData() > 0)
+				skillBreakdown.add(dataPoint);
+			problemCategoryCounter++;
+		}
 		return skillBreakdown;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/details", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody SkillDetails getSkillDetails(@RequestBody String skill) {
-		//TODO: properly implement this
-		SkillDetails details = new SkillDetails();
-		details.setTimeSpent("25 minutes");
-		int correctAnswers = 10, incorrectAnswers = 5;
-		DecimalFormat decimalFormat = new DecimalFormat("#.#%");
-		float successRate;
-		try {
-			successRate = (float)correctAnswers / (correctAnswers + incorrectAnswers);
-		} catch (Exception e) {
-			successRate = 0;
+	public @ResponseBody
+	BreakdownResult getSkillDetails(
+			@RequestBody SkillBreakdownRequest skillBreakdownRequest) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(skillBreakdownRequest
+				.getFilter());
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(skillBreakdownRequest
+				.getFilter());
+		BreakdownResult breakdownResult = cubeService.getSkillBreakdownResult(
+				dateFilter, studentFilter, skillBreakdownRequest.getDataPoint()
+						.getId(), skillBreakdownRequest.getDataPoint()
+						.getLanguage());
+		return breakdownResult;
+	}
+	
+	@RequestMapping(value = "jquery/admin/plot/activity/breakdown", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	List<ApplicationDataPoint> getActivityBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		List<Application> applications = infoService.getApps();
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<ApplicationDataPoint> applicationBreakdown = new ArrayList<ApplicationDataPoint>();
+		ApplicationDataPoint dataPoint;
+		for (Application application : applications) {
+			dataPoint = new ApplicationDataPoint();
+			dataPoint.setLabel(application.getName());
+			BreakdownResult breakdownResult = cubeService
+					.getActivityBreakdownResult(dateFilter, studentFilter, application.getName());
+			dataPoint.setData(breakdownResult.getTotalAnswers());
+			if (dataPoint.getData() > 0)
+				applicationBreakdown.add(dataPoint);
 		}
-		details.setSuccessRate(decimalFormat.format(successRate));
-		details.setCorrectAnswers(correctAnswers);
-		details.setIncorrectAnswers(incorrectAnswers);
-		return details;
+		return applicationBreakdown;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/activity/details", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	BreakdownResult getApplicationDetails(
+			@RequestBody ApplicationBreakdownRequest applicationBreakdownRequest) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(applicationBreakdownRequest
+				.getFilter());
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(applicationBreakdownRequest
+				.getFilter());
+		BreakdownResult breakdownResult = cubeService.getActivityBreakdownResult(
+				dateFilter, studentFilter, applicationBreakdownRequest.getDataPoint().getLabel());
+		return breakdownResult;
 	}
 
 }

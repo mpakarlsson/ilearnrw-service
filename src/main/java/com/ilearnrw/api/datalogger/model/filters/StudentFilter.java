@@ -1,18 +1,18 @@
 package com.ilearnrw.api.datalogger.model.filters;
 
 public class StudentFilter {
-	public enum Type {
+	public enum StudentFilterType {
 		ALL, SCHOOL, CLASSROOM, STUDENT;
 	}
 
-	Type type;
+	StudentFilterType type;
 	String name;
 
-	public Type getType() {
+	public StudentFilterType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(StudentFilterType type) {
 		this.type = type;
 	}
 
