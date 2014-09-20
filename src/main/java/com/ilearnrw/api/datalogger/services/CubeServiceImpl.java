@@ -25,6 +25,9 @@ import com.ilearnrw.api.datalogger.model.SystemTags;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
@@ -265,6 +268,18 @@ public class CubeServiceImpl implements CubeService {
 	public ListWithCount<Map<String, Object>> getWordsForApplication(int id,
 			String status, String timestart, String timeend, boolean count) {
 		return cubeDao.getWordsForApplication(id, status, timestart, timeend, count);
+	}
+
+	@Override
+	public BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, int category) {
+		return cubeDao.getSkillBreakdownResult(dateFilter, studentFilter, category);
+	}
+
+	@Override
+	public BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, String activityName) {
+		return cubeDao.getActivityBreakdownResult(dateFilter, studentFilter, activityName);
 	}
 
 }

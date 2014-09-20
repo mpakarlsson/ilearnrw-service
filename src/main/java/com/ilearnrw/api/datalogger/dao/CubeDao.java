@@ -12,6 +12,9 @@ import com.ilearnrw.api.datalogger.model.Session;
 import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 
 public interface CubeDao {
 
@@ -70,5 +73,10 @@ public interface CubeDao {
 
 	ListWithCount<Map<String, Object>> getWordsForApplication(int id,
 			String status, String timestart, String timeend, boolean count);
-
+	
+	BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, int category);
+	
+	BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, String activityName);
 }

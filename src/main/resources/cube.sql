@@ -89,3 +89,5 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `format_success_rate`(word_success IN
 BEGIN
 RETURN ifnull(concat(round(word_success / total * 100, 2),"%"),"-");
 END;
+
+

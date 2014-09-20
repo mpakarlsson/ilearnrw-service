@@ -29,6 +29,9 @@ import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 
 @Repository
 public class CubeDaoImpl implements CubeDao {
@@ -496,6 +499,65 @@ public class CubeDaoImpl implements CubeDao {
 		paramMap.put("end", TimeUtils.maxIfNull(timeend));
 
 		return execute(sql, count, paramMap);
+	}
+
+	@Override
+	public BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, int category) {
+		String studentFilterString = getStudentFilterString(studentFilter);
+		String sql = "select "
+				+ "sum(duration) as timeSpent, "
+				+ "sum(word_success) as correctAnswers, "
+				+ "sum(word_failed) as incorrectAnswers, "
+				+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
+				+ "from facts_expanded " + "where (rds_start between ? and ?) "
+				+ studentFilterString + "and category = ? "
+				+ "group by category;";
+		return new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
+				sql,
+				new Object[] { dateFilter.getStartDate(),
+						dateFilter.getEndDate(), studentFilter.getName(),
+						category }, BreakdownResult.class);
+	}
+	
+	@Override
+	public BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, String activityName) {
+		String studentFilterString = getStudentFilterString(studentFilter);
+		String sql = "select "
+				+ "sum(aps_duration) as timeSpent, "
+				+ "sum(word_success) as correctAnswers, "
+				+ "sum(word_failed) as incorrectAnswers, "
+				+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
+				+ "from facts_expanded " + "where (rds_start between ? and ?) "
+				+ studentFilterString + "and app_name = ? "
+				+ "group by app_name;";
+		return new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
+				sql,
+				new Object[] { dateFilter.getStartDate(),
+						dateFilter.getEndDate(), studentFilter.getName(),
+						activityName }, BreakdownResult.class);
+	}
+
+	private String getStudentFilterString(StudentFilter studentFilter)
+	{
+		String studentFilterString;
+		switch (studentFilter.getType()) {
+		case CLASSROOM:
+			studentFilterString = "and classroom = ? ";
+			break;
+		case SCHOOL:
+			studentFilterString = "and school = ? ";
+			break;
+		case STUDENT:
+			studentFilterString = "and username = ? ";
+		case ALL:
+		default:
+			// always true
+			studentFilterString = "and (true or ?) ";// :)
+			break;
+		}
+		return studentFilterString;
 	}
 
 }
