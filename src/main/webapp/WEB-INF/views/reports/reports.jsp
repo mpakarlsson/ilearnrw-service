@@ -81,7 +81,7 @@ function url(link)
 			    </div>
 			</div>
 			<div class="row">
-			    <div class="panel panel-default">
+			    <div id="flot-panel" class="panel panel-default">
 			        <div class="panel-heading"><c:out value="${title}"></c:out></div>
 			        <div class="panel-body">
 			        	<div class = "row">
@@ -124,6 +124,44 @@ function url(link)
 								    <label class="col-sm-2 control-label">No. of incorrect answers</label>
 								    <div class="col-sm-10 ">
 								        <input type="text" class="col-sm-10 form-control" id="flot-skill-incorrectAnswers" disabled></input>
+								    </div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+			    <div id="overview-panel" class="panel panel-default" style="display:none">
+			        <div class="panel-heading"><c:out value="${title}"></c:out></div>
+			        <div class="panel-body">
+			        	<div class = "row">
+							<div id="flot-pie-chart"></div>
+						</div>
+						<div class="row">
+							<div>
+								<div class="form-group row">
+								    <label class="col-sm-4 control-label" for="overview-skills"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/book.png">Skills worked on</label>
+								    <div class="col-sm-8 ">
+								        <div id="overview-skills" class="col-sm-10"><ul></ul></div>
+								    </div>
+								</div>
+					        	<div class="form-group row">
+								    <label class="col-sm-4 control-label" for="overview-time-spent"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/clock.png">Time spent</label>
+								    <div class="col-sm-8 ">
+								        <input type="text"  class="col-sm-10 form-control" id="overview-time-spent" disabled></input>
+								    </div>
+								</div>
+					        	<div class="form-group row">
+								    <label class="col-sm-4 control-label" for="overview-number-of-activities"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/game.png">Number of activities</label>
+								    <div class="col-sm-8 ">
+								        <input type="text"  class="col-sm-10 form-control" id="overview-number-of-activities" disabled></input>
+								    </div>
+								</div>
+								<div class="form-group row">
+								    <label class="col-sm-4 control-label" for="overview-success-rate"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/tick.png">Success rate</label>
+								    <div class="col-sm-8 ">
+								        <input type="text" class="col-sm-10 form-control" id="overview-success-rate" disabled></input>
 								    </div>
 								</div>
 							</div>

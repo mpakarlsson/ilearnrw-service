@@ -15,6 +15,7 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 
 public interface CubeService {
 
@@ -59,5 +60,8 @@ public interface CubeService {
 	
 	BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
 			StudentFilter studentFilter, String activityName);
+	
+	OverviewBreakdownResult getOverviewBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter);
 
 }

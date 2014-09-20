@@ -2,6 +2,8 @@ package com.ilearnrw.api.datalogger.dao;
 
 import ilearnrw.utils.LanguageCode;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -11,12 +13,14 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.mockito.internal.matchers.And;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -33,6 +37,7 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 
 @Repository
 public class CubeDaoImpl implements CubeDao {
@@ -557,6 +562,58 @@ public class CubeDaoImpl implements CubeDao {
 									BreakdownResult.class));
 		} catch (EmptyResultDataAccessException e) {
 			return new BreakdownResult();
+		}
+	}
+
+	@Override
+	public OverviewBreakdownResult getOverviewBreakdownResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap);
+			String dateFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String sql = "select count(distinct app_name) as numberOfActivities, "
+					+ "sum(timeSpent) as timeSpent, "
+					+ "sum(success) as correctAnswers, "
+					+ "sum(failed) as incorrectAnswers, "
+					+ "sum(total) as totalAnswers, "
+					+ "format_success_rate(sum(success), sum(total)) as successRate "
+					+ "from "
+					+ "    (select app_name, aps_duration as timeSpent, "
+					+ "    sum(word_success) as success, "
+					+ "    sum(word_failed) as failed, "
+					+ "    sum(word_success_or_failed) as total "
+					+ "    from facts_expanded "
+					+ "    where "
+					+ dateFilterString
+					+ "    and "
+					+ studentFilterString
+					+ "    group by app_name "
+					+ "    having total > 0) as overview_breakdown;";
+
+			String sql_category = "select distinct category as categories "
+					+ "from facts_expanded "
+					+ "where word_success_or_failed > 0 and category != 0 and "
+					+ dateFilterString + " and " + studentFilterString;
+			List<String> skillsWorkedOn = new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).query(sql_category, parameterMap,
+					new RowMapper<String>() {
+						@Override
+						public String mapRow(ResultSet rs, int rowNum)
+								throws SQLException {
+							return rs.getString(1);
+						}
+					});
+			OverviewBreakdownResult result = new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).queryForObject(sql, parameterMap,
+					new BeanPropertyRowMapper<OverviewBreakdownResult>(
+							OverviewBreakdownResult.class));
+			result.setSkillsWorkedOn(skillsWorkedOn);
+			return result;
+		} catch (EmptyResultDataAccessException e) {
+			return new OverviewBreakdownResult();
 		}
 	}
 

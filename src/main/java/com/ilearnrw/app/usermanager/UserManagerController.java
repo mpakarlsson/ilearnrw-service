@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scala.language;
+
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.datalogger.model.Problem;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
@@ -43,6 +45,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter.DateFilterType;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter.StudentFilterType;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
@@ -874,6 +877,25 @@ public class UserManagerController {
 		BreakdownResult breakdownResult = cubeService.getActivityBreakdownResult(
 				dateFilter, studentFilter, applicationBreakdownRequest.getDataPoint().getLabel());
 		return breakdownResult;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/overview", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	OverviewBreakdownResult getOverviewBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		OverviewBreakdownResult overviewBreakdownResult = cubeService
+				.getOverviewBreakdownResult(dateFilter, studentFilter);
+		List<String> skills = new ArrayList<String>();
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
+		List<com.ilearnrw.api.info.model.Problem> getProblems = infoService.getProblems(current.getLanguage());
+		for (String id : overviewBreakdownResult.getSkillsWorkedOn())
+			skills.add("<li>" + getProblems.get(Integer.parseInt(id)).getTitle() + "</li>");
+		overviewBreakdownResult.setSkillsWorkedOn(skills);
+		return overviewBreakdownResult;
 	}
 
 }

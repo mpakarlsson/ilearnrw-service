@@ -75,42 +75,61 @@ $(function() {
 		populate(data, "#schools");
 	});
 	
-	$("#students,#date").change(function()
-			{
-				var filter = getBreakdownFilter();
-				$.postJSON(breakdownUrl, JSON.stringify(filter), function(data) {
-					plotData = data;
-					if (data.length > 0)
-					{
-						$("#flot-pie-chart").show();
-						$("#flot-unavailable").hide();
-						refreshPlot(data);
-					}
-					else
-					{
-						$("#flot-unavailable").show();
-						$("#flot-pie-chart").hide();
-					}
-			    });
-			});
-	function pieClick(event, pos, obj)
+	if (isOverview)
 	{
-		if (!obj)
-	        return;
-		$.postJSON(detailsUrl, 
-				JSON.stringify({ filter:getBreakdownFilter(), dataPoint:plotData[obj.seriesIndex]}),
-				function(data){
-			$("#flot-skill-timeSpent").val(data.timeSpent);
-			$("#flot-skill-successRate").val(data.successRate);
-			$("#flot-skill-correctAnswers").val(data.correctAnswers);
-			$("#flot-skill-incorrectAnswers").val(data.incorrectAnswers);
-			$("#flot-skill").show();
-		});
-		$("#flot-click-title").html(obj.series.label);
-		$("#flot-click-panel").show();
-		$('html,body').animate({
-	        scrollTop: $("#flot-click-panel").offset().top},
-	        'slow');
+		$("#flot-panel").hide();
+		$("#overview-panel").show();
 	}
-    $("#flot-pie-chart").bind("plotclick", pieClick);
+	
+	$("#students,#date").change(function()
+	{
+		var filter = getBreakdownFilter();
+		$.postJSON(breakdownUrl, JSON.stringify(filter), function(data) {
+			if (!isOverview)
+			{
+				plotData = data;
+				if (data.length > 0)
+				{
+					$("#flot-pie-chart").show();
+					$("#flot-unavailable").hide();
+					refreshPlot(data);
+				}
+				else
+				{
+					$("#flot-unavailable").show();
+					$("#flot-pie-chart").hide();
+				}
+			}
+			else
+			{
+				$("#overview-skills ul").html(data.skillsWorkedOn);
+				$("#overview-time-spent").val(data.timeSpent);
+				$("#overview-number-of-activities").val(data.numberOfActivities);
+				$("#overview-success-rate").val(data.successRate);
+			}
+	    });
+	});
+	if (!isOverview)
+	{
+		function pieClick(event, pos, obj)
+		{
+			if (!obj)
+		        return;
+			$.postJSON(detailsUrl, 
+					JSON.stringify({ filter:getBreakdownFilter(), dataPoint:plotData[obj.seriesIndex]}),
+					function(data){
+				$("#flot-skill-timeSpent").val(data.timeSpent);
+				$("#flot-skill-successRate").val(data.successRate);
+				$("#flot-skill-correctAnswers").val(data.correctAnswers);
+				$("#flot-skill-incorrectAnswers").val(data.incorrectAnswers);
+				$("#flot-skill").show();
+			});
+			$("#flot-click-title").html(obj.series.label);
+			$("#flot-click-panel").show();
+			$('html,body').animate({
+		        scrollTop: $("#flot-click-panel").offset().top},
+		        'slow');
+		}
+	    $("#flot-pie-chart").bind("plotclick", pieClick);
+	}
 });
