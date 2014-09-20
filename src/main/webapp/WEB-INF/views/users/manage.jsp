@@ -23,9 +23,9 @@
 							var title = $('#usertable thead th').eq(
 									$(this).index()).text();
 							$(this)
-									.append(
-											'<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller" placeholder="Search '
-													+ title + '" /></div>');
+									.html(
+											'<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller;margin-bottom:5px;border:1px solid lightgray" placeholder="Search '
+													+ title + '" /></div>'+title+'');
 						});
 
 		var table = $("#usertable").DataTable({
