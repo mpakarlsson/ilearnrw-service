@@ -36,7 +36,7 @@
 		entry-point-ref="authenticationEntryPoint">
 		<intercept-url pattern="/user/auth" access="permitAll"/>
 		<intercept-url pattern="/user/newtokens" access="permitAll"/>
-		<intercept-url pattern="/user/details/*" access="permitAll"/>
+		<intercept-url pattern="/user/details/**" access="permitAll"/>
 		<intercept-url pattern="/profile/problemDefinitions" access="permitAll"/>
 		<intercept-url pattern="/logs/**" access="permitAll"/>
 

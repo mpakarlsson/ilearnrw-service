@@ -70,7 +70,7 @@ public class SchoolDaoImpl implements SchoolDao {
 	public Classroom getClassroom(String name) {
 		try {
 			return new JdbcTemplate(dataSource).queryForObject(
-					"select id, school_id, name from schools where name = ?",
+					"select id, school_id, name from classrooms where name = ?",
 					new Object[] { name }, new BeanPropertyRowMapper<Classroom>(
 							Classroom.class));
 		} catch (Exception e) {
@@ -97,7 +97,7 @@ public class SchoolDaoImpl implements SchoolDao {
 	@Override
 	public List<Classroom> getClassroomsBySchool(School school) {
 		return new JdbcTemplate(dataSource).query(
-				"select classroom_id, classroom_name "
+				"select classroom_id as id, classroom_name as name, " + school.getId() + " as school_id "
 						+ "from schools_classrooms where school_id=?",
 				new Object[] { school.getId() },
 				new BeanPropertyRowMapper<Classroom>(Classroom.class));

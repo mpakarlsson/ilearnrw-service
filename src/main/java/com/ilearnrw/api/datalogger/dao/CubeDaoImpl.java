@@ -223,8 +223,8 @@ public class CubeDaoImpl implements CubeDao {
 	}
 	
 	@Override
-	public void endSession(int sessionId) {
-		new JdbcTemplate(dataLoggerCubeDataSource).update("update sessions set end = ? where id = ?", sessionId);
+	public void endSession(int sessionId, Timestamp timestamp) {
+		new JdbcTemplate(dataLoggerCubeDataSource).update("update sessions set end = ? where id = ?", timestamp, sessionId);
 	}
 
 	@Override

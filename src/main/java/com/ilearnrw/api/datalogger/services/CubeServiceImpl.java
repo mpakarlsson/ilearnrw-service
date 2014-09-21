@@ -69,24 +69,27 @@ public class CubeServiceImpl implements CubeService {
 			learnSessionId = createSession(SessionType.LEARN, entry.getValue(),
 					entry.getTimestamp(), entry.getUsername(), entry.getSupervisor());
 		}
-		if (entry.getTag().equals(SystemTags.LEARN_SESSION_END))
-			endSession(learnSessionId);
+		if (entry.getTag().equals(SystemTags.LEARN_SESSION_END)) {
+			endSession(learnSessionId, entry.getTimestamp());
+		}
 
 		int appSessionId = getLastSessionIdByType(entry.getUsername(), SessionType.APPLICATION);
 		if (entry.getTag().compareTo(SystemTags.APP_SESSION_START) == 0) {
 			appSessionId = createSession(SessionType.APPLICATION,
 					entry.getValue(), entry.getTimestamp(), entry.getUsername(), entry.getSupervisor());
 		}
-		if (entry.getTag().equals(SystemTags.APP_SESSION_END))
-			endSession(appSessionId);
+		if (entry.getTag().equals(SystemTags.APP_SESSION_END)) {
+			endSession(appSessionId, entry.getTimestamp());
+		}
 
 		int appRoundSessionId = getLastSessionIdByType(entry.getUsername(), SessionType.ROUND);
 		if (entry.getTag().compareTo(SystemTags.APP_ROUND_SESSION_START) == 0) {
 			appRoundSessionId = createSession(SessionType.ROUND,
 					entry.getValue(), entry.getTimestamp(), entry.getUsername(), entry.getSupervisor());
 		}
-		if (entry.getTag().equals(SystemTags.APP_ROUND_SESSION_END))
-			endSession(appRoundSessionId);
+		if (entry.getTag().equals(SystemTags.APP_ROUND_SESSION_END)) {
+			endSession(appRoundSessionId, entry.getTimestamp());
+		}
 
 		if (isFact(entry)) {
 			LOG.debug(String
@@ -125,8 +128,8 @@ public class CubeServiceImpl implements CubeService {
 		return cubeDao.createSession(type, value, timestamp, username, supervisor);
 	}
 
-	private void endSession(int sessionId) {
-		cubeDao.endSession(sessionId);
+	private void endSession(int sessionId, Timestamp timestamp) {
+		cubeDao.endSession(sessionId, timestamp);
 	}
 
 	private int findOrCreateProblem(int problemCategory, int problemIndex, String username) {
