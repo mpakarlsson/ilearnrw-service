@@ -35,14 +35,6 @@ CREATE TABLE `experts_teachers` (
   PRIMARY KEY (`teacher_id`)
 );
 
-CREATE  TABLE `student_details` (
-  `student_id` bigint(20) NOT NULL ,
-  `school` VARCHAR(45) NULL ,
-  `classroom` VARCHAR(45) NULL ,
-  `teacher_id` bigint(20) NOT NULL ,
-  PRIMARY KEY (`student_id`) );
-
-
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `appId` VARCHAR(45) NULL,
@@ -52,6 +44,46 @@ CREATE TABLE `applications` (
   `sentence` BIT NULL,
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `schools` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+);
+
+CREATE TABLE `classrooms` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `school_id` bigint(20) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_school_UNIQUE` (`school_id`,`name`)
+);
+
+CREATE TABLE `student_classrooms` (
+  `student_id` BIGINT NOT NULL,
+  `classroom_id` BIGINT NULL,
+  PRIMARY KEY (`student_id`));
+  
+
+CREATE VIEW `schools_classrooms` AS 
+SELECT `s`.`id` AS `school_id`,`s`.`name` AS `school_name`,`c`.`id` AS `classroom_id`,`c`.`name` AS `classroom_name` 
+FROM (`schools` `s` join `classrooms` `c`) 
+WHERE (`s`.`id` = `c`.`school_id`);
+
+CREATE VIEW `students` AS
+SELECT u.id, u.username AS name
+FROM users u, role_members rm, roles r
+WHERE u.id = rm.members_id AND rm.roles_id = r.id AND r.name = "ROLE_STUDENT";
+
+CREATE VIEW `student_details` AS
+SELECT s.id AS student_id, sch.name AS school, c.name AS classroom, ts.teacher_id
+FROM students s 
+LEFT JOIN student_classrooms sc ON s.id = sc.student_id
+LEFT JOIN teachers_students ts ON s.id = ts.student_id
+JOIN classrooms c ON sc.classroom_id = c.id
+JOIN schools sch ON sch.id = c.school_id;
+
 
 SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';
 

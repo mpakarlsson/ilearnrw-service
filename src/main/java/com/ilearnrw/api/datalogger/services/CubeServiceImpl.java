@@ -25,9 +25,15 @@ import com.ilearnrw.api.datalogger.model.SystemTags;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
+import com.ilearnrw.common.security.users.model.Classroom;
+import com.ilearnrw.common.security.users.model.School;
 
 @Service
 public class CubeServiceImpl implements CubeService {
@@ -63,17 +69,26 @@ public class CubeServiceImpl implements CubeService {
 			learnSessionId = createSession(SessionType.LEARN, entry.getValue(),
 					entry.getTimestamp(), entry.getUsername(), entry.getSupervisor());
 		}
+		if (entry.getTag().equals(SystemTags.LEARN_SESSION_END)) {
+			endSession(learnSessionId, entry.getTimestamp());
+		}
 
 		int appSessionId = getLastSessionIdByType(entry.getUsername(), SessionType.APPLICATION);
 		if (entry.getTag().compareTo(SystemTags.APP_SESSION_START) == 0) {
 			appSessionId = createSession(SessionType.APPLICATION,
 					entry.getValue(), entry.getTimestamp(), entry.getUsername(), entry.getSupervisor());
 		}
+		if (entry.getTag().equals(SystemTags.APP_SESSION_END)) {
+			endSession(appSessionId, entry.getTimestamp());
+		}
 
 		int appRoundSessionId = getLastSessionIdByType(entry.getUsername(), SessionType.ROUND);
 		if (entry.getTag().compareTo(SystemTags.APP_ROUND_SESSION_START) == 0) {
 			appRoundSessionId = createSession(SessionType.ROUND,
 					entry.getValue(), entry.getTimestamp(), entry.getUsername(), entry.getSupervisor());
+		}
+		if (entry.getTag().equals(SystemTags.APP_ROUND_SESSION_END)) {
+			endSession(appRoundSessionId, entry.getTimestamp());
 		}
 
 		if (isFact(entry)) {
@@ -113,6 +128,10 @@ public class CubeServiceImpl implements CubeService {
 		return cubeDao.createSession(type, value, timestamp, username, supervisor);
 	}
 
+	private void endSession(int sessionId, Timestamp timestamp) {
+		cubeDao.endSession(sessionId, timestamp);
+	}
+
 	private int findOrCreateProblem(int problemCategory, int problemIndex, String username) {
 		com.ilearnrw.common.security.users.model.User user = authenticatedRestClient.getUserDetails(username);
 		if (user == null) {
@@ -135,7 +154,9 @@ public class CubeServiceImpl implements CubeService {
 		int id = cubeDao.getUserIdByName(username);
 		if (id == -1) {
 			User user = getUserDetailsFromRemoteService(username);
-			id = cubeDao.createUser(username, user.getGender(), user.getBirthyear(), user.getLanguage());
+			Classroom classroom = authenticatedRestClient.getUserClassroom(username);
+			School school = authenticatedRestClient.getUserSchool(username);
+			id = cubeDao.createUser(username, user.getGender(), user.getBirthyear(), user.getLanguage(), classroom.getName(), school.getName());
 		}
 		return id;
 	}
@@ -251,6 +272,24 @@ public class CubeServiceImpl implements CubeService {
 	public ListWithCount<Map<String, Object>> getWordsForApplication(int id,
 			String status, String timestart, String timeend, boolean count) {
 		return cubeDao.getWordsForApplication(id, status, timestart, timeend, count);
+	}
+
+	@Override
+	public BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, int category, int language) {
+		return cubeDao.getSkillBreakdownResult(dateFilter, studentFilter, category, language);
+	}
+
+	@Override
+	public BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, String activityName) {
+		return cubeDao.getActivityBreakdownResult(dateFilter, studentFilter, activityName);
+	}
+
+	@Override
+	public OverviewBreakdownResult getOverviewBreakdownResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		return cubeDao.getOverviewBreakdownResult(dateFilter, studentFilter);
 	}
 
 }

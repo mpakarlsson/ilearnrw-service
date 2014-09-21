@@ -2,11 +2,13 @@ package com.ilearnrw.common.security.users.services;
 
 import java.util.List;
 
+import com.ilearnrw.common.security.users.model.Classroom;
+import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
 
 public interface StudentDetailsService {
-	public StudentDetails getStudentDetails(int id);
+	public StudentDetails getStudentDetails(User student);
 
 	public int insertData(StudentDetails user);
 
@@ -14,8 +16,14 @@ public interface StudentDetailsService {
 
 	public void deleteData(int id);
 
-	public List<String> getSchools();
+	public List<Classroom> getClassRooms(School school);
 
-	public List<String> getClassRooms();
+	public List<School> getSchools();
+
+	public List<User> getStudentsFromClassRoom(Classroom classroom);
+
+	public Classroom getStudentClassroom(User student);
+
+	public School getStudentSchool(User student);
 
 }

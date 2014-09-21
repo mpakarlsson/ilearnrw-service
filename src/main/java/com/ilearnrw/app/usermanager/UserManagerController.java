@@ -36,19 +36,37 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scala.language;
+
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
+import com.ilearnrw.api.datalogger.model.Problem;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter.DateFilterType;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter.StudentFilterType;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.info.model.Application;
+import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
-import com.ilearnrw.app.usermanager.jquery.model.DataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.ApplicationBreakdownRequest;
+import com.ilearnrw.app.usermanager.jquery.model.ApplicationDataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.BreakdownFilter;
+import com.ilearnrw.app.usermanager.jquery.model.SkillDataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.SkillBreakdownRequest;
 import com.ilearnrw.app.usermanager.jquery.model.SkillDetails;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.Classroom;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.ExpertTeacherService;
@@ -84,6 +102,12 @@ public class UserManagerController {
 
 	@Autowired
 	private StudentDetailsService studentDetailsService;
+	
+	@Autowired
+	private CubeService cubeService;
+	
+	@Autowired
+	private InfoService infoService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -181,8 +205,7 @@ public class UserManagerController {
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
 		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user
-					.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
 				userRoles
 						.add(new UserNewForm(user, roles.get(0).getName(), sd));
@@ -206,8 +229,7 @@ public class UserManagerController {
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
 		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user
-					.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
 				userRoles
 						.add(new UserNewForm(user, roles.get(0).getName(), sd));
@@ -225,8 +247,7 @@ public class UserManagerController {
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
 		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user
-					.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
 				userRoles
 						.add(new UserNewForm(user, roles.get(0).getName(), sd));
@@ -296,11 +317,13 @@ public class UserManagerController {
 		if (profile == null) {
 			throw new Exception("No profile available.");
 		}
-
+		
+		User user = new User();
+		user.setId(id);
 		model.put("userId", id);
 		model.put("profile", profile);
 		model.put("student", userService.getUser(id));
-		model.put("studentDetails", studentDetailsService.getStudentDetails(id));
+		model.put("studentDetails", studentDetailsService.getStudentDetails(user));
 		return "users/profile";
 	}
 
@@ -356,12 +379,12 @@ public class UserManagerController {
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
 		userForm.setRole(selectedRoles.get(0).getName());
-		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user
-				.getId()));
+		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user));
 
 		model.put("userform", userForm);
 		model.put("schools", studentDetailsService.getSchools());
-		model.put("classRooms", studentDetailsService.getClassRooms());
+		//TODO: this has to go as ajax
+		//model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
 
 		return "users/form.update";
@@ -398,7 +421,8 @@ public class UserManagerController {
 		}
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			model.put("classRooms", studentDetailsService.getClassRooms());
+			//TODO: also, this
+			//model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.update";
 		}
@@ -424,7 +448,8 @@ public class UserManagerController {
 	public String viewUserInsertForm(
 			@ModelAttribute("userform") UserNewForm form, ModelMap model) {
 		model.put("schools", studentDetailsService.getSchools());
-		model.put("classRooms", studentDetailsService.getClassRooms());
+		//TODO: and this
+		//model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
 		return "users/form.insert";
 	}
@@ -451,7 +476,8 @@ public class UserManagerController {
 			result.rejectValue("user.username", "user.username.exists");
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			model.put("classRooms", studentDetailsService.getClassRooms());
+			//TODO: and this
+			//model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.insert";
 		}
@@ -465,7 +491,7 @@ public class UserManagerController {
 		} else if (form.getRole().equals("teacher")) {
 			roleService.setRoleList(user,
 					Arrays.asList(roleService.getRole("ROLE_TEACHER")));
-			if (request.isUserInRole("ROLE_EXPERT"))
+			if (request.isUserInRole("ROLE_EXPERT")) //TODO: check if this is ok (was PERMISSION_EXPERT)
 				expertTeacherService.assignTeacherToExpert(current, user);
 		} else if (form.getRole().equals("student")) {
 			roleService.setRoleList(user,
@@ -681,6 +707,7 @@ public class UserManagerController {
 	@Transactional
 	public String reportsOverview(ModelMap model) {
 		model.put("title", "Overview");
+		model.put("js", "overview.js");
 		return "reports/reports";
 	}
 
@@ -688,6 +715,7 @@ public class UserManagerController {
 	@Transactional
 	public String reportsSkills(ModelMap model) {
 		model.put("title", "Skill breakdown");
+		model.put("js", "skill.js");
 		return "reports/reports";
 	}
 
@@ -695,91 +723,201 @@ public class UserManagerController {
 	@Transactional
 	public String reportsActivities(ModelMap model) {
 		model.put("title", "Activity breakdown");
+		model.put("js", "activity.js");
 		return "reports/reports";
 	}
 
 	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
 	@Transactional
-	public @ResponseBody
-	List<String> getSchools() {
-		List<String> schools = studentDetailsService.getSchools();
-		schools.add(0, "All schools");
+	public @ResponseBody List<School> getSchools() {
+		List<School> schools = studentDetailsService.getSchools();
+		School all = new School();
+		all.setId(-1);
+		all.setName("All schools");
+		schools.add(0, all);
 		return schools;
 	}
 
 	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody
-	List<String> getClassRooms(@RequestBody String school) {
-		// TODO: properly implement this
-		List<String> classrooms = studentDetailsService.getClassRooms();
-		classrooms.add(0, "All classrooms");
+	public @ResponseBody List<Classroom> getClassRooms(@RequestBody School school) {
+		List<Classroom> classrooms = new ArrayList<Classroom>();
+		Classroom all = new Classroom();
+		all.setId(-1);
+		all.setName("All classrooms");
+		classrooms.add(all);
+		if (school.getId() != -1)
+			classrooms.addAll(studentDetailsService.getClassRooms(school));
 		return classrooms;
 	}
 
 	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody
-	List<String> getStudents(@RequestBody String classRoom) {
-		// TODO: properly implement this
-		List<User> students = teacherStudentService.getAllStudentsList();
-		List<String> studentNames = new ArrayList<String>();
-		studentNames.add("All students");
-		for (User user : students)
-			studentNames.add(user.getUsername());
-		return studentNames;
+	public @ResponseBody List<User> getStudents(@RequestBody Classroom classroom) {
+		List<User> students = new ArrayList<User>();
+		User all = new User();
+		all.setId(-1);
+		all.setUsername("All students");
+		students.add(0, all);
+		if (classroom.getId() != -1)
+			students.addAll(studentDetailsService.getStudentsFromClassRoom(classroom));
+		return students;
+	}
+
+	private DateFilter getDateFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
+	{
+		DateFilter dateFilter = new DateFilter();
+		switch (breakdownFilter.getDateType()) {
+		case 0:
+			dateFilter.setType(DateFilterType.ALL);
+			break;
+		case 1:
+			dateFilter.setType(DateFilterType.TODAY);
+			break;
+		case 2:
+			dateFilter.setType(DateFilterType.WEEK);
+			break;
+		case 3:
+			dateFilter.setType(DateFilterType.MONTH);
+			break;
+		case 4:
+			dateFilter.setType(DateFilterType.CUSTOM);
+			dateFilter.setStartDate(breakdownFilter.getStartDate());
+			dateFilter.setEndDate(breakdownFilter.getEndDate());
+			break;
+		default:
+			break;
+		}
+		return dateFilter;
+	}
+	
+	private StudentFilter getStudentFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
+	{
+		StudentFilter studentFilter = new StudentFilter();
+		if (breakdownFilter.getSchool().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.ALL);
+			studentFilter.setName(null);
+		}
+		else if (breakdownFilter.getClassroom().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.SCHOOL);
+			studentFilter.setName(breakdownFilter.getSchool().getName());
+		}
+		else if (breakdownFilter.getStudent().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.CLASSROOM);
+			studentFilter.setName(breakdownFilter.getClassroom().getName());
+		}
+		else
+		{
+			studentFilter.setType(StudentFilterType.STUDENT);
+			studentFilter.setName(breakdownFilter.getStudent().getUsername());
+		}
+		return studentFilter;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/breakdown", method = RequestMethod.POST)
 	@Transactional
 	public @ResponseBody
-	List<DataPoint> getSkillBreakdown(@RequestBody String student) {
-		// TODO: properly implement this
-		List<DataPoint> skillBreakdown = new ArrayList<DataPoint>();
-		DataPoint dataPoint = new DataPoint();
-
-		dataPoint.setLabel("Syllable division");
-		dataPoint.setData(40);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Suffixes");
-		dataPoint.setData(30);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Prefixes");
-		dataPoint.setData(25);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Vowel sounds");
-		dataPoint.setData(17);
-		skillBreakdown.add(dataPoint);
-
+	List<SkillDataPoint> getSkillBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
+		List<com.ilearnrw.api.info.model.Problem> problems = infoService
+				.getProblems(current.getLanguage());
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<SkillDataPoint> skillBreakdown = new ArrayList<SkillDataPoint>();
+		SkillDataPoint dataPoint;
+		int problemCategoryCounter = 1;
+		int languageCode = LanguageCode.fromString(current.getLanguage())
+				.getCode();
+		for (com.ilearnrw.api.info.model.Problem problem : problems) {
+			dataPoint = new SkillDataPoint();
+			dataPoint.setLabel(problem.getTitle());
+			dataPoint.setId(problemCategoryCounter);
+			dataPoint.setLanguage(languageCode);
+			BreakdownResult breakdownResult = cubeService
+					.getSkillBreakdownResult(dateFilter, studentFilter,
+							problemCategoryCounter, languageCode);
+			dataPoint.setData(breakdownResult.getTotalAnswers());
+			if (dataPoint.getData() > 0)
+				skillBreakdown.add(dataPoint);
+			problemCategoryCounter++;
+		}
 		return skillBreakdown;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/details", method = RequestMethod.POST)
 	@Transactional
 	public @ResponseBody
-	SkillDetails getSkillDetails(@RequestBody String skill) {
-		// TODO: properly implement this
-		SkillDetails details = new SkillDetails();
-		details.setTimeSpent("25 minutes");
-		int correctAnswers = 10, incorrectAnswers = 5;
-		DecimalFormat decimalFormat = new DecimalFormat("#.#%");
-		float successRate;
-		try {
-			successRate = (float) correctAnswers
-					/ (correctAnswers + incorrectAnswers);
-		} catch (Exception e) {
-			successRate = 0;
+	BreakdownResult getSkillDetails(
+			@RequestBody SkillBreakdownRequest skillBreakdownRequest) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(skillBreakdownRequest
+				.getFilter());
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(skillBreakdownRequest
+				.getFilter());
+		BreakdownResult breakdownResult = cubeService.getSkillBreakdownResult(
+				dateFilter, studentFilter, skillBreakdownRequest.getDataPoint()
+						.getId(), skillBreakdownRequest.getDataPoint()
+						.getLanguage());
+		return breakdownResult;
+	}
+	
+	@RequestMapping(value = "jquery/admin/plot/activity/breakdown", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	List<ApplicationDataPoint> getActivityBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		List<Application> applications = infoService.getApps();
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<ApplicationDataPoint> applicationBreakdown = new ArrayList<ApplicationDataPoint>();
+		ApplicationDataPoint dataPoint;
+		for (Application application : applications) {
+			dataPoint = new ApplicationDataPoint();
+			dataPoint.setLabel(application.getName());
+			BreakdownResult breakdownResult = cubeService
+					.getActivityBreakdownResult(dateFilter, studentFilter, application.getName());
+			dataPoint.setData(breakdownResult.getTotalAnswers());
+			if (dataPoint.getData() > 0)
+				applicationBreakdown.add(dataPoint);
 		}
-		details.setSuccessRate(decimalFormat.format(successRate));
-		details.setCorrectAnswers(correctAnswers);
-		details.setIncorrectAnswers(incorrectAnswers);
-		return details;
+		return applicationBreakdown;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/activity/details", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	BreakdownResult getApplicationDetails(
+			@RequestBody ApplicationBreakdownRequest applicationBreakdownRequest) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(applicationBreakdownRequest
+				.getFilter());
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(applicationBreakdownRequest
+				.getFilter());
+		BreakdownResult breakdownResult = cubeService.getActivityBreakdownResult(
+				dateFilter, studentFilter, applicationBreakdownRequest.getDataPoint().getLabel());
+		return breakdownResult;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/overview", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	OverviewBreakdownResult getOverviewBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		OverviewBreakdownResult overviewBreakdownResult = cubeService
+				.getOverviewBreakdownResult(dateFilter, studentFilter);
+		List<String> skills = new ArrayList<String>();
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
+		List<com.ilearnrw.api.info.model.Problem> getProblems = infoService.getProblems(current.getLanguage());
+		for (String id : overviewBreakdownResult.getSkillsWorkedOn())
+			skills.add("<li>" + getProblems.get(Integer.parseInt(id)).getTitle() + "</li>");
+		overviewBreakdownResult.setSkillsWorkedOn(skills);
+		return overviewBreakdownResult;
 	}
 
 }
