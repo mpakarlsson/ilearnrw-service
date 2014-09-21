@@ -86,7 +86,6 @@ public class SelectNextWordController {
 					result.add(new GameElement(false, new EnglishWord(w), i, j));
 				else
 					result.add(new GameElement(false, new GreekWord(w), i, j));
-				System.err.println(w);
 			}
 			return result;
 		}

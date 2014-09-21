@@ -46,7 +46,7 @@ function suggestWords(parrentDivId, divId, clusterWords, target){
 		'</td><td><button type="button" class="typeahead-button" '+
 		'onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td>'+
 		'<td><button type="button" class="typeahead-button" '+
-		'onclick="appendRandomWordsToTest(\''+target+'\')">Add All Words</button></td></tr></table>';
+		'onclick="appendRandomWordsToTest(\''+target+'\')">Add 20 Words</button></td></tr></table>';
 	element.innerHTML = str;
 	var parrent = document.getElementById(parrentDivId);
 	parrent.innerHTML = '';
