@@ -2,6 +2,8 @@ package com.ilearnrw.api.datalogger.dao;
 
 import ilearnrw.utils.LanguageCode;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -11,11 +13,14 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.mockito.internal.matchers.And;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -29,6 +34,10 @@ import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.User;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 
 @Repository
 public class CubeDaoImpl implements CubeDao {
@@ -116,13 +125,15 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public int createUser(String username, String gender, int birthyear,
-			String language) {
+			String language, String classroom, String school) {
 
 		Map<String, Object> parameters = new HashMap<String, Object>(2);
 		parameters.put("username", username);
 		parameters.put("gender", gender);
 		parameters.put("birthyear", birthyear);
 		parameters.put("language", language);
+		parameters.put("classroom", classroom);
+		parameters.put("school", school);
 
 		return insertAndReturnKey("users", parameters);
 	}
@@ -209,6 +220,11 @@ public class CubeDaoImpl implements CubeDao {
 		parameters.put("supervisor", supervisor);
 
 		return insertAndReturnKey("sessions", parameters);
+	}
+	
+	@Override
+	public void endSession(int sessionId, Timestamp timestamp) {
+		new JdbcTemplate(dataLoggerCubeDataSource).update("update sessions set end = ? where id = ?", timestamp, sessionId);
 	}
 
 	@Override
@@ -489,6 +505,168 @@ public class CubeDaoImpl implements CubeDao {
 		paramMap.put("end", TimeUtils.maxIfNull(timeend));
 
 		return execute(sql, count, paramMap);
+	}
+
+	@Override
+	public BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, int category, int language) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			parameterMap.put("language", language);
+			parameterMap.put("category", category);
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap);
+			String dateFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String sql = "select "
+					+ "sum(duration) as timeSpent, "
+					+ "sum(word_success) as correctAnswers, "
+					+ "sum(word_failed) as incorrectAnswers, "
+					+ "sum(word_success_or_failed) as totalAnswers, "
+					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
+					+ "from facts_expanded "
+					+ "where p_language = :language and "
+					+ "category = :category and " + studentFilterString
+					+ "and " + dateFilterString + "group by category;";
+			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(sql, parameterMap,
+							new BeanPropertyRowMapper<BreakdownResult>(
+									BreakdownResult.class));
+		} catch (EmptyResultDataAccessException e) {
+			return new BreakdownResult();
+		}
+	}
+
+	@Override
+	public BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, String activityName) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			parameterMap.put("app_name", activityName);
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap);
+			String dateFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String sql = "select "
+					+ "sum(aps_duration) as timeSpent, "
+					+ "sum(word_success) as correctAnswers, "
+					+ "sum(word_failed) as incorrectAnswers, "
+					+ "sum(word_success_or_failed) as totalAnswers, "
+					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate "
+					+ "from facts_expanded " + "where " + dateFilterString
+					+ "and " + studentFilterString
+					+ "and app_name = :app_name " + "group by app_name;";
+			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(sql, parameterMap,
+							new BeanPropertyRowMapper<BreakdownResult>(
+									BreakdownResult.class));
+		} catch (EmptyResultDataAccessException e) {
+			return new BreakdownResult();
+		}
+	}
+
+	@Override
+	public OverviewBreakdownResult getOverviewBreakdownResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap);
+			String dateFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String sql = "select count(distinct app_name) as numberOfActivities, "
+					+ "coalesce(sum(timeSpent),0) as timeSpent, "
+					+ "coalesce(sum(success),0) as correctAnswers, "
+					+ "coalesce(sum(failed),0) as incorrectAnswers, "
+					+ "coalesce(sum(total),0) as totalAnswers, "
+					+ "format_success_rate(sum(success), sum(total)) as successRate "
+					+ "from "
+					+ "    (select app_name, aps_duration as timeSpent, "
+					+ "    sum(word_success) as success, "
+					+ "    sum(word_failed) as failed, "
+					+ "    sum(word_success_or_failed) as total "
+					+ "    from facts_expanded "
+					+ "    where "
+					+ dateFilterString
+					+ "    and "
+					+ studentFilterString
+					+ "    group by app_name "
+					+ "    having total > 0) as overview_breakdown;";
+
+			String sql_category = "select distinct category as categories "
+					+ "from facts_expanded "
+					+ "where word_success_or_failed > 0 and category != 0 and "
+					+ dateFilterString + " and " + studentFilterString;
+			List<String> skillsWorkedOn = new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).query(sql_category, parameterMap,
+					new RowMapper<String>() {
+						@Override
+						public String mapRow(ResultSet rs, int rowNum)
+								throws SQLException {
+							return rs.getString(1);
+						}
+					});
+			OverviewBreakdownResult result = new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).queryForObject(sql, parameterMap,
+					new BeanPropertyRowMapper<OverviewBreakdownResult>(
+							OverviewBreakdownResult.class));
+			result.setSkillsWorkedOn(skillsWorkedOn);
+			return result;
+		} catch (EmptyResultDataAccessException e) {
+			return new OverviewBreakdownResult();
+		}
+	}
+
+	private String getDateFilterString(DateFilter dateFilter,
+			Map<String, Object> parameterMap, String fieldName) {
+		String dateFilterString;
+		switch (dateFilter.getType()) {
+		case TODAY:
+			dateFilterString = "( DATE(" + fieldName + ") = CURDATE()) ";
+			break;
+		case WEEK:
+			dateFilterString = "( DATE(" + fieldName
+					+ ") between CURDATE() - INTERVAL 1 WEEK and CURDATE()) ";
+			break;
+		case MONTH:
+			dateFilterString = "( DATE(" + fieldName
+					+ ") between CURDATE() - INTERVAL 1 MONTH and CURDATE()) ";
+			break;
+		case CUSTOM:
+			dateFilterString = "( DATE(" + fieldName
+					+ ") between DATE(:start) and DATE(:end)) ";
+			parameterMap.put("start", dateFilter.getStartDate());
+			parameterMap.put("end", dateFilter.getEndDate());
+			break;
+		case ALL:
+		default:
+			dateFilterString = "true ";
+			break;
+		}
+		return dateFilterString;
+	}
+
+	private String getStudentFilterString(StudentFilter studentFilter,
+			Map<String, Object> parameterMap) {
+		String studentFilterString;
+		switch (studentFilter.getType()) {
+		case CLASSROOM:
+			studentFilterString = "classroom = :name ";
+			parameterMap.put("name", studentFilter.getName());
+			break;
+		case SCHOOL:
+			studentFilterString = "school = :name ";
+			parameterMap.put("name", studentFilter.getName());
+			break;
+		case STUDENT:
+			studentFilterString = "username = :name ";
+			parameterMap.put("name", studentFilter.getName());
+			break;
+		case ALL:
+		default:
+			studentFilterString = "true ";
+		}
+		return studentFilterString;
 	}
 
 }

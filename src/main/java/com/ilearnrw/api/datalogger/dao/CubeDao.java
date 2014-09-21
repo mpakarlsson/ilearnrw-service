@@ -12,6 +12,10 @@ import com.ilearnrw.api.datalogger.model.Session;
 import com.ilearnrw.api.datalogger.model.SessionType;
 import com.ilearnrw.api.datalogger.model.WordCount;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 
 public interface CubeDao {
 
@@ -24,7 +28,7 @@ public interface CubeDao {
 
 	int getUserIdByName(String username);
 
-	int createUser(String username, String gender, int birthyear, String language);
+	int createUser(String username, String gender, int birthyear, String language, String classroom, String school);
 
 	int getProblemByCategoryIndexAndLanguage(int problemCategory, int problemIndex, LanguageCode languageCode);
 
@@ -41,6 +45,8 @@ public interface CubeDao {
 	ListWithCount<Session> getUserSessionsByType(String username, String type, String timestart, String timeend, boolean count);
 
 	Session getSessionById(int id);
+	
+	void endSession(int sessionId, Timestamp timestamp);
 
 	ListWithCount<WordCount> getWordsForUser(int userId, String status,
 			String timestart, String timeend, boolean count);
@@ -68,5 +74,13 @@ public interface CubeDao {
 
 	ListWithCount<Map<String, Object>> getWordsForApplication(int id,
 			String status, String timestart, String timeend, boolean count);
+	
+	BreakdownResult getSkillBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, int category, int language);
+	
+	BreakdownResult getActivityBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter, String activityName);
 
+	OverviewBreakdownResult getOverviewBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter);
 }

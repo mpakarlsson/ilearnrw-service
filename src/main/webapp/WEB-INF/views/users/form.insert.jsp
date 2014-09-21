@@ -192,7 +192,6 @@
 							</spring:bind>
 
 							<div id="studentDetails">
-
 								<spring:bind path="studentDetails">
 
 									<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -202,7 +201,7 @@
 												id="schoolSelect" class="form-control">
 												<option value=""></option>
 												<c:forEach items="${schools}" var="s">
-													<option value="${s}">${s}</option>
+													<option value="${s.name}">${s.name}</option>
 												</c:forEach>
 											</select>
 											<form:input type="text" id="school"
@@ -219,7 +218,7 @@
 												id="classroomSelect" class="form-control">
 												<option value="" label=""></option>
 												<c:forEach items="${classRooms}" var="s">
-													<option value="${s}">${s}</option>
+													<option value="${s.name}">${s.name}</option>
 												</c:forEach>
 											</select>
 											<form:input type="text" id="classRoom"

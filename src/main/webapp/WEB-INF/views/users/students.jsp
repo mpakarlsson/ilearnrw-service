@@ -17,28 +17,30 @@
 <script>
 	$(function() {
 
-		$('#usertable thead th').each( function () {
-	        var title = $('#usertable thead th').eq( $(this).index() ).text();
-	        $(this).append( '<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller" placeholder="Search '+title+'" /></div>' );
-	    } );
+		$('#usertable thead th')
+				.each(
+						function() {
+							var title = $('#usertable thead th').eq(
+									$(this).index()).text();
+							$(this)
+									.html(
+											'<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller;margin-bottom:5px;border:1px solid lightgray" placeholder="Search '
+													+ title + '" /></div>'+title+'');
+						});
 
 		var table = $("#usertable").DataTable({
-			'paging': false,
-			'searching': false
+			'paging' : false,
+			'searching' : false
 		});
-		
 
 		// Apply the search
 
 		$('#usertable thead th input').each(function(idx) {
 			$(this).on('keyup change', function() {
-				table
-                .column( idx )
-                .search( this.value )
-                .draw();
+				table.column(idx).search(this.value).draw();
 			});
 		});
-		
+
 	});
 </script>
 </head>
@@ -66,6 +68,7 @@
 									<th>Name</th>
 									<th>Birthdate</th>
 									<th>Gender</th>
+									<th>School</th>
 									<th>Classroom</th>
 									<th>Profile</th>
 								</tr>
@@ -78,6 +81,7 @@
 												var="formattedDate" type="date" pattern="dd.MM.yyyy" />
 											${formattedDate}</td>
 										<td>${o.user.gender}</td>
+										<td>${o.studentDetails.school}</td>
 										<td>${o.studentDetails.classRoom}</td>
 										<td><a class="btn btn-default btn-xs"
 											href="${pageContext.request.contextPath}/apps/users/${o.user.id}/profile">Profile</a>

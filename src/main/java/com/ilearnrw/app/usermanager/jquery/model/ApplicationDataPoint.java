@@ -1,9 +1,9 @@
 package com.ilearnrw.app.usermanager.jquery.model;
 
-public class DataPoint {
+public class ApplicationDataPoint {
 	String label;
 	int data;
-	
+
 	public String getLabel() {
 		return label;
 	}
@@ -19,4 +19,5 @@ public class DataPoint {
 	public void setData(int data) {
 		this.data = data;
 	}
+
 }

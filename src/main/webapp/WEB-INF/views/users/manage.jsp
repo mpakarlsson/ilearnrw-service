@@ -23,9 +23,11 @@
 							var title = $('#usertable thead th').eq(
 									$(this).index()).text();
 							$(this)
-									.append(
-											'<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller" placeholder="Search '
-													+ title + '" /></div>');
+									.html(
+											'<div class=""><input type="text" style="width:100%;font-weight:normal;font-size:smaller;margin-bottom:5px;border:1px solid lightgray" placeholder="Search '
+													+ title
+													+ '" /></div>'
+													+ title + '');
 						});
 
 		var table = $("#usertable").DataTable({
@@ -46,7 +48,8 @@
 			var targetUrl = $(this).attr("href");
 			$("#dialog-confirm").dialog({
 				resizable : false,
-				height : 140,
+				height : 200,
+				width : 500,
 				modal : true,
 				buttons : {
 					"Delete item" : function() {
@@ -87,7 +90,7 @@
 							<thead>
 								<tr>
 									<th>Username</th>
-									<th>Status</th>
+									<th style="width: 60px">Status</th>
 									<th>Role</th>
 									<th>Lang.</th>
 									<th>Gender</th>
@@ -207,7 +210,8 @@
 	<div id="dialog-confirm" title="Delete?">
 		<p>
 			<span class="ui-icon ui-icon-alert"
-				style="float: left; margin: 0 7px 20px 0;"></span>Delete this item?
+				style="float: left; margin: 0 7px 20px 0;"></span>Are you sure you
+			want to delete this item?
 		</p>
 	</div>
 </body>

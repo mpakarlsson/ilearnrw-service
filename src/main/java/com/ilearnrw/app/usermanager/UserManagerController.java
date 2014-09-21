@@ -36,19 +36,37 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scala.language;
+
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
+import com.ilearnrw.api.datalogger.model.Problem;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
+import com.ilearnrw.api.datalogger.model.filters.DateFilter.DateFilterType;
+import com.ilearnrw.api.datalogger.model.filters.StudentFilter.StudentFilterType;
+import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.info.model.Application;
+import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.app.usermanager.form.ExpertTeacherForm;
 import com.ilearnrw.app.usermanager.form.RolePermissionsForm;
 import com.ilearnrw.app.usermanager.form.TeacherStudentForm;
 import com.ilearnrw.app.usermanager.form.UserNewForm;
-import com.ilearnrw.app.usermanager.jquery.model.DataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.ApplicationBreakdownRequest;
+import com.ilearnrw.app.usermanager.jquery.model.ApplicationDataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.BreakdownFilter;
+import com.ilearnrw.app.usermanager.jquery.model.SkillDataPoint;
+import com.ilearnrw.app.usermanager.jquery.model.SkillBreakdownRequest;
 import com.ilearnrw.app.usermanager.jquery.model.SkillDetails;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
+import com.ilearnrw.common.security.users.model.Classroom;
 import com.ilearnrw.common.security.users.model.Permission;
 import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.StudentDetails;
 import com.ilearnrw.common.security.users.model.User;
 import com.ilearnrw.common.security.users.services.ExpertTeacherService;
@@ -78,12 +96,18 @@ public class UserManagerController {
 
 	@Autowired
 	private TeacherStudentService teacherStudentService;
-	
+
 	@Autowired
 	private ExpertTeacherService expertTeacherService;
 
 	@Autowired
 	private StudentDetailsService studentDetailsService;
+	
+	@Autowired
+	private CubeService cubeService;
+	
+	@Autowired
+	private InfoService infoService;
 
 	@Autowired
 	IProfileProvider profileProvider;
@@ -95,7 +119,7 @@ public class UserManagerController {
 	public String panel(ModelMap modelMap) {
 		return "main/panel";
 	}
-	
+
 	@RequestMapping(value = "users/{id}/stats", method = RequestMethod.GET)
 	public String stats(ModelMap modelMap) {
 		return "statistics/stats";
@@ -142,7 +166,8 @@ public class UserManagerController {
 			request.getSession().setAttribute("username", username);
 			User user = userService.getUserByUsername(username);
 			request.getSession().setAttribute("userid", user.getId());
-			request.getSession().setAttribute("students", teacherStudentService.getStudentList(user));
+			request.getSession().setAttribute("students",
+					teacherStudentService.getStudentList(user));
 
 		} catch (Exception e) {
 			model.addAttribute("error", e.getMessage());
@@ -152,9 +177,10 @@ public class UserManagerController {
 	}
 
 	/* Users logs */
-	
+
 	@RequestMapping(value = "users/manage")
-	public String manageUsers(ModelMap modelMap, HttpServletRequest request, ModelMap model) {
+	public String manageUsers(ModelMap modelMap, HttpServletRequest request,
+			ModelMap model) {
 		if (request.isUserInRole("PERMISSION_ADMIN"))
 			modelMap.addAttribute("users", getUsersManagedByAdmin());
 		else if (request.isUserInRole("PERMISSION_EXPERT"))
@@ -166,7 +192,8 @@ public class UserManagerController {
 	}
 
 	@RequestMapping(value = "users/students")
-	public String manageStudents(ModelMap modelMap, HttpServletRequest request, ModelMap model) {
+	public String manageStudents(ModelMap modelMap, HttpServletRequest request,
+			ModelMap model) {
 		if (request.isUserInRole("PERMISSION_TEACHER")) {
 			modelMap.addAttribute("students", getUsersManagedByTeacher());
 		}
@@ -176,64 +203,64 @@ public class UserManagerController {
 	private List<UserNewForm> getUsersManagedByAdmin() {
 		List<User> users = userService.getUserList();
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
-		for (User user : users)
-		{
+		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
-				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
+				userRoles
+						.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
 				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
-	
+
 	private List<UserNewForm> getUsersManagedByExpert() {
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
 		List<User> teachers = expertTeacherService.getTeacherList(current);
 		List<User> users = new ArrayList<User>();
-		for (User teacher : teachers)
-		{
+		for (User teacher : teachers) {
 			users.add(teacher);
 			users.addAll(teacherStudentService.getStudentList(teacher));
 		}
 		users.addAll(teacherStudentService.getUnassignedStudentsList());
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
-		for (User user : users)
-		{
+		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
-				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
+				userRoles
+						.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
 				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
-	
+
 	private List<UserNewForm> getUsersManagedByTeacher() {
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
 		List<User> users = teacherStudentService.getStudentList(current);
 		List<UserNewForm> userRoles = new ArrayList<UserNewForm>();
-		for (User user : users)
-		{
+		for (User user : users) {
 			List<Role> roles = roleService.getRoleList(user);
-			StudentDetails sd = studentDetailsService.getStudentDetails(user.getId());
+			StudentDetails sd = studentDetailsService.getStudentDetails(user);
 			if (roles.size() == 1)
-				userRoles.add(new UserNewForm(user, roles.get(0).getName(), sd));
+				userRoles
+						.add(new UserNewForm(user, roles.get(0).getName(), sd));
 			else {
 				userRoles.add(new UserNewForm(user, "none", sd));
 			}
 		}
 		return userRoles;
 	}
-	
+
 	@RequestMapping(value = "users/{id}/logs/page/{page}", method = RequestMethod.GET)
-	public String viewLogs(@PathVariable int id,
-			@PathVariable String page, ModelMap model,
-			HttpServletRequest request) {
+	public String viewLogs(@PathVariable int id, @PathVariable String page,
+			ModelMap model, HttpServletRequest request) {
 
 		Map<String, String> args = new HashMap<String, String>();
 		User user = userService.getUser(id);
@@ -290,11 +317,13 @@ public class UserManagerController {
 		if (profile == null) {
 			throw new Exception("No profile available.");
 		}
-
+		
+		User user = new User();
+		user.setId(id);
 		model.put("userId", id);
 		model.put("profile", profile);
 		model.put("student", userService.getUser(id));
-		model.put("studentDetails", studentDetailsService.getStudentDetails(id));
+		model.put("studentDetails", studentDetailsService.getStudentDetails(user));
 		return "users/profile";
 	}
 
@@ -304,22 +333,25 @@ public class UserManagerController {
 	public String updateProfileEntry(@RequestParam("level") Integer level,
 			@RequestParam("type") String type,
 			@RequestParam("category") Integer category,
-			@RequestParam("index") Integer index,
-			@PathVariable int id) throws ProfileProviderException {
+			@RequestParam("index") Integer index, @PathVariable int id)
+			throws ProfileProviderException {
 		profileProvider.updateProfileEntry(id, category, index, level);
-		//profileProvider.updateProfile(id, profile);
+		// profileProvider.updateProfile(id, profile);
 		return "OK";
 	}
 
 	@RequestMapping(value = "users/{id}/profile", method = RequestMethod.POST)
 	@Transactional(readOnly = true)
 	public String updateProfile(@ModelAttribute("profile") UserProfile profile,
-			@PathVariable int id, HttpServletRequest request) throws ProfileProviderException {
+			@PathVariable int id, HttpServletRequest request)
+			throws ProfileProviderException {
 		UserProfile oldProfile = profileProvider.getProfile(id);
-		oldProfile.getUserProblems().setTrickyWords(profile.getUserProblems().getTrickyWords());
-		oldProfile.getPreferences().setFontSize(profile.getPreferences().getFontSize());
+		oldProfile.getUserProblems().setTrickyWords(
+				profile.getUserProblems().getTrickyWords());
+		oldProfile.getPreferences().setFontSize(
+				profile.getPreferences().getFontSize());
 		profileProvider.updateProfile(id, oldProfile);
-		return "redirect:/apps/users/"+id+"/profile";
+		return "redirect:/apps/users/" + id + "/profile";
 	}
 
 	@RequestMapping(value = "users", method = RequestMethod.POST)
@@ -347,14 +379,28 @@ public class UserManagerController {
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
 		userForm.setRole(selectedRoles.get(0).getName());
-		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user.getId()));
+		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user));
 
 		model.put("userform", userForm);
 		model.put("schools", studentDetailsService.getSchools());
-		model.put("classRooms", studentDetailsService.getClassRooms());
+		//TODO: this has to go as ajax
+		//model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
 
 		return "users/form.update";
+	}
+
+	@RequestMapping(value = "users/{id}/changepassword", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody String changePassword(@PathVariable int id, @RequestParam("password") String password,
+			HttpServletRequest request) {
+
+		try {
+			userService.setPassword(id, password);
+		} catch (Exception e) {
+			return "FAILURE";
+		}
+		return "OK";
 	}
 
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
@@ -375,7 +421,8 @@ public class UserManagerController {
 		}
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			model.put("classRooms", studentDetailsService.getClassRooms());
+			//TODO: also, this
+			//model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.update";
 		}
@@ -398,19 +445,24 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserInsertForm(@ModelAttribute("userform") UserNewForm form, ModelMap model) {
+	public String viewUserInsertForm(
+			@ModelAttribute("userform") UserNewForm form, ModelMap model) {
 		model.put("schools", studentDetailsService.getSchools());
-		model.put("classRooms", studentDetailsService.getClassRooms());
+		//TODO: and this
+		//model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
 		return "users/form.insert";
 	}
 
 	@RequestMapping(value = "users/new", method = RequestMethod.POST)
 	@Transactional
-	public String insertUser(@Valid @ModelAttribute("userform") UserNewForm form,
-			BindingResult result, HttpServletRequest request, ModelMap model) throws ProfileProviderException {
+	public String insertUser(
+			@Valid @ModelAttribute("userform") UserNewForm form,
+			BindingResult result, HttpServletRequest request, ModelMap model)
+			throws ProfileProviderException {
 
-		User current = userService.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
 		User user = form.getUser();
 		if (user.getBirthdate().after(new Date()))
 			result.rejectValue("user.birthdate", "birthdate.invalid");
@@ -424,37 +476,35 @@ public class UserManagerController {
 			result.rejectValue("user.username", "user.username.exists");
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			model.put("classRooms", studentDetailsService.getClassRooms());
+			//TODO: and this
+			//model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.insert";
 		}
 		int userId = userService.insertData(user);
-		if (form.getRole().equals("admin"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_ADMIN")));
-		}
-		else if (form.getRole().equals("expert"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_EXPERT")));
-		}
-		else if (form.getRole().equals("teacher"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_TEACHER")));
-			if (request.isUserInRole("ROLE_EXPERT"))
+		if (form.getRole().equals("admin")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_ADMIN")));
+		} else if (form.getRole().equals("expert")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_EXPERT")));
+		} else if (form.getRole().equals("teacher")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_TEACHER")));
+			if (request.isUserInRole("ROLE_EXPERT")) //TODO: check if this is ok (was PERMISSION_EXPERT)
 				expertTeacherService.assignTeacherToExpert(current, user);
-		}
-		else if (form.getRole().equals("student"))
-		{
-			roleService.setRoleList(user, Arrays.asList(roleService.getRole("ROLE_STUDENT")));
+		} else if (form.getRole().equals("student")) {
+			roleService.setRoleList(user,
+					Arrays.asList(roleService.getRole("ROLE_STUDENT")));
 			StudentDetails sd = form.getStudentDetails();
 			sd.setStudentId(user.getId());
 			studentDetailsService.insertData(sd);
 			User teacher = userService.getUser(sd.getTeacherId());
 			teacherStudentService.assignStudentToTeacher(teacher, user);
-				
+
 		}
-		profileProvider.createProfile(userId, LanguageCode.fromString(user.getLanguage()));
-		
+		profileProvider.createProfile(userId,
+				LanguageCode.fromString(user.getLanguage()));
 
 		return "redirect:/apps/users/manage";
 	}
@@ -466,7 +516,7 @@ public class UserManagerController {
 		modelMap.addAttribute("roles", roleService.getRoleList());
 		return "roles/manage";
 	}
-	
+
 	@RequestMapping(value = "/roles/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewRoleUpdateForm(@PathVariable int id, ModelMap model) {
@@ -531,10 +581,11 @@ public class UserManagerController {
 	}
 
 	/* Permissions */
-	
+
 	@RequestMapping(value = "permissions/manage")
 	public String managePermissions(ModelMap modelMap) {
-		modelMap.addAttribute("permissions", permissionService.getPermissionList());
+		modelMap.addAttribute("permissions",
+				permissionService.getPermissionList());
 		return "permissions/manage";
 	}
 
@@ -596,7 +647,8 @@ public class UserManagerController {
 		teacherStudentForm.setTeacher(teacher);
 		List<User> unassignedStudentsList = teacherStudentService
 				.getUnassignedStudentsList();
-		unassignedStudentsList.addAll(teacherStudentService.getStudentList(teacher));
+		unassignedStudentsList.addAll(teacherStudentService
+				.getStudentList(teacher));
 		teacherStudentForm.setAllStudents(unassignedStudentsList);
 		teacherStudentForm.setSelectedStudents(teacherStudentService
 				.getStudentList(teacher));
@@ -613,12 +665,13 @@ public class UserManagerController {
 		User teacher = userService.getUser(id);
 		teacherStudentService.setStudentList(teacher,
 				teacherStudentForm.getSelectedStudents());
-		request.getSession().setAttribute("students", teacherStudentService.getStudentList(teacher));
+		request.getSession().setAttribute("students",
+				teacherStudentService.getStudentList(teacher));
 		return "redirect:/apps/users/manage";
 	}
-	
+
 	/* Experts */
-	
+
 	@RequestMapping(value = "experts/{id}/assign", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewExpertsAssignForm(@PathVariable int id, ModelMap model) {
@@ -627,7 +680,8 @@ public class UserManagerController {
 		expertTeacherForm.setExpert(expert);
 		List<User> unassignedTeachersList = expertTeacherService
 				.getUnassignedTeachersList();
-		unassignedTeachersList.addAll(expertTeacherService.getTeacherList(expert));
+		unassignedTeachersList.addAll(expertTeacherService
+				.getTeacherList(expert));
 		expertTeacherForm.setAllTeachers(unassignedTeachersList);
 		expertTeacherForm.setSelectedTeachers(expertTeacherService
 				.getTeacherList(expert));
@@ -644,110 +698,226 @@ public class UserManagerController {
 		User expert = userService.getUser(id);
 		expertTeacherService.setTeacherList(expert,
 				expertTeacherForm.getSelectedTeachers());
-		request.getSession().setAttribute("teachers", expertTeacherService.getTeacherList(expert));
+		request.getSession().setAttribute("teachers",
+				expertTeacherService.getTeacherList(expert));
 		return "redirect:/apps/users/manage";
 	}
-	
+
 	@RequestMapping(value = "reports/overview", method = RequestMethod.GET)
 	@Transactional
-	public String reportsOverview(
-			ModelMap model) {
+	public String reportsOverview(ModelMap model) {
 		model.put("title", "Overview");
+		model.put("js", "overview.js");
 		return "reports/reports";
 	}
-	
+
 	@RequestMapping(value = "reports/skill", method = RequestMethod.GET)
 	@Transactional
-	public String reportsSkills(
-			ModelMap model) {
+	public String reportsSkills(ModelMap model) {
 		model.put("title", "Skill breakdown");
+		model.put("js", "skill.js");
 		return "reports/reports";
 	}
-	
+
 	@RequestMapping(value = "reports/activity", method = RequestMethod.GET)
 	@Transactional
-	public String reportsActivities(
-			ModelMap model) {
+	public String reportsActivities(ModelMap model) {
 		model.put("title", "Activity breakdown");
+		model.put("js", "activity.js");
 		return "reports/reports";
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
 	@Transactional
-	public @ResponseBody List<String> getSchools() {
-		List<String> schools = studentDetailsService.getSchools();
-		schools.add(0, "All schools");
+	public @ResponseBody List<School> getSchools() {
+		List<School> schools = studentDetailsService.getSchools();
+		School all = new School();
+		all.setId(-1);
+		all.setName("All schools");
+		schools.add(0, all);
 		return schools;
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<String> getClassRooms(@RequestBody String school) {
-		//TODO: properly implement this
-		List<String> classrooms = studentDetailsService.getClassRooms();
-		classrooms.add(0, "All classrooms");
-		return classrooms; 
+	public @ResponseBody List<Classroom> getClassRooms(@RequestBody School school) {
+		List<Classroom> classrooms = new ArrayList<Classroom>();
+		Classroom all = new Classroom();
+		all.setId(-1);
+		all.setName("All classrooms");
+		classrooms.add(all);
+		if (school.getId() != -1)
+			classrooms.addAll(studentDetailsService.getClassRooms(school));
+		return classrooms;
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<String> getStudents(@RequestBody String classRoom) {
-		//TODO: properly implement this
-		List<User> students = teacherStudentService.getAllStudentsList();
-		List<String> studentNames = new ArrayList<String>();
-		studentNames.add("All students");
-		for (User user : students)
-			studentNames.add(user.getUsername());
-		return studentNames;
+	public @ResponseBody List<User> getStudents(@RequestBody Classroom classroom) {
+		List<User> students = new ArrayList<User>();
+		User all = new User();
+		all.setId(-1);
+		all.setUsername("All students");
+		students.add(0, all);
+		if (classroom.getId() != -1)
+			students.addAll(studentDetailsService.getStudentsFromClassRoom(classroom));
+		return students;
+	}
+
+	private DateFilter getDateFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
+	{
+		DateFilter dateFilter = new DateFilter();
+		switch (breakdownFilter.getDateType()) {
+		case 0:
+			dateFilter.setType(DateFilterType.ALL);
+			break;
+		case 1:
+			dateFilter.setType(DateFilterType.TODAY);
+			break;
+		case 2:
+			dateFilter.setType(DateFilterType.WEEK);
+			break;
+		case 3:
+			dateFilter.setType(DateFilterType.MONTH);
+			break;
+		case 4:
+			dateFilter.setType(DateFilterType.CUSTOM);
+			dateFilter.setStartDate(breakdownFilter.getStartDate());
+			dateFilter.setEndDate(breakdownFilter.getEndDate());
+			break;
+		default:
+			break;
+		}
+		return dateFilter;
+	}
+	
+	private StudentFilter getStudentFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
+	{
+		StudentFilter studentFilter = new StudentFilter();
+		if (breakdownFilter.getSchool().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.ALL);
+			studentFilter.setName(null);
+		}
+		else if (breakdownFilter.getClassroom().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.SCHOOL);
+			studentFilter.setName(breakdownFilter.getSchool().getName());
+		}
+		else if (breakdownFilter.getStudent().getId() == -1)
+		{
+			studentFilter.setType(StudentFilterType.CLASSROOM);
+			studentFilter.setName(breakdownFilter.getClassroom().getName());
+		}
+		else
+		{
+			studentFilter.setType(StudentFilterType.STUDENT);
+			studentFilter.setName(breakdownFilter.getStudent().getUsername());
+		}
+		return studentFilter;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/breakdown", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<DataPoint> getSkillBreakdown(@RequestBody String student) {
-		//TODO: properly implement this
-		List<DataPoint> skillBreakdown = new ArrayList<DataPoint>();
-		DataPoint dataPoint = new DataPoint();
-
-		dataPoint.setLabel("Syllable division");
-		dataPoint.setData(40);
-		skillBreakdown.add(dataPoint);
-		
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Suffixes");
-		dataPoint.setData(30);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Prefixes");
-		dataPoint.setData(25);
-		skillBreakdown.add(dataPoint);
-
-		dataPoint = new DataPoint();
-		dataPoint.setLabel("Vowel sounds");
-		dataPoint.setData(17);
-		skillBreakdown.add(dataPoint);
-
+	public @ResponseBody
+	List<SkillDataPoint> getSkillBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
+		List<com.ilearnrw.api.info.model.Problem> problems = infoService
+				.getProblems(current.getLanguage());
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<SkillDataPoint> skillBreakdown = new ArrayList<SkillDataPoint>();
+		SkillDataPoint dataPoint;
+		int problemCategoryCounter = 1;
+		int languageCode = LanguageCode.fromString(current.getLanguage())
+				.getCode();
+		for (com.ilearnrw.api.info.model.Problem problem : problems) {
+			dataPoint = new SkillDataPoint();
+			dataPoint.setLabel(problem.getTitle());
+			dataPoint.setId(problemCategoryCounter);
+			dataPoint.setLanguage(languageCode);
+			BreakdownResult breakdownResult = cubeService
+					.getSkillBreakdownResult(dateFilter, studentFilter,
+							problemCategoryCounter, languageCode);
+			dataPoint.setData(breakdownResult.getTotalAnswers());
+			if (dataPoint.getData() > 0)
+				skillBreakdown.add(dataPoint);
+			problemCategoryCounter++;
+		}
 		return skillBreakdown;
 	}
 
 	@RequestMapping(value = "jquery/admin/plot/skill/details", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody SkillDetails getSkillDetails(@RequestBody String skill) {
-		//TODO: properly implement this
-		SkillDetails details = new SkillDetails();
-		details.setTimeSpent("25 minutes");
-		int correctAnswers = 10, incorrectAnswers = 5;
-		DecimalFormat decimalFormat = new DecimalFormat("#.#%");
-		float successRate;
-		try {
-			successRate = (float)correctAnswers / (correctAnswers + incorrectAnswers);
-		} catch (Exception e) {
-			successRate = 0;
+	public @ResponseBody
+	BreakdownResult getSkillDetails(
+			@RequestBody SkillBreakdownRequest skillBreakdownRequest) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(skillBreakdownRequest
+				.getFilter());
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(skillBreakdownRequest
+				.getFilter());
+		BreakdownResult breakdownResult = cubeService.getSkillBreakdownResult(
+				dateFilter, studentFilter, skillBreakdownRequest.getDataPoint()
+						.getId(), skillBreakdownRequest.getDataPoint()
+						.getLanguage());
+		return breakdownResult;
+	}
+	
+	@RequestMapping(value = "jquery/admin/plot/activity/breakdown", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	List<ApplicationDataPoint> getActivityBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		List<Application> applications = infoService.getApps();
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<ApplicationDataPoint> applicationBreakdown = new ArrayList<ApplicationDataPoint>();
+		ApplicationDataPoint dataPoint;
+		for (Application application : applications) {
+			dataPoint = new ApplicationDataPoint();
+			dataPoint.setLabel(application.getName());
+			BreakdownResult breakdownResult = cubeService
+					.getActivityBreakdownResult(dateFilter, studentFilter, application.getName());
+			dataPoint.setData(breakdownResult.getTotalAnswers());
+			if (dataPoint.getData() > 0)
+				applicationBreakdown.add(dataPoint);
 		}
-		details.setSuccessRate(decimalFormat.format(successRate));
-		details.setCorrectAnswers(correctAnswers);
-		details.setIncorrectAnswers(incorrectAnswers);
-		return details;
+		return applicationBreakdown;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/activity/details", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	BreakdownResult getApplicationDetails(
+			@RequestBody ApplicationBreakdownRequest applicationBreakdownRequest) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(applicationBreakdownRequest
+				.getFilter());
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(applicationBreakdownRequest
+				.getFilter());
+		BreakdownResult breakdownResult = cubeService.getActivityBreakdownResult(
+				dateFilter, studentFilter, applicationBreakdownRequest.getDataPoint().getLabel());
+		return breakdownResult;
+	}
+
+	@RequestMapping(value = "jquery/admin/plot/overview", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	OverviewBreakdownResult getOverviewBreakdown(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		OverviewBreakdownResult overviewBreakdownResult = cubeService
+				.getOverviewBreakdownResult(dateFilter, studentFilter);
+		List<String> skills = new ArrayList<String>();
+		User current = userService.getUserByUsername(SecurityContextHolder
+				.getContext().getAuthentication().getName());
+		List<com.ilearnrw.api.info.model.Problem> getProblems = infoService.getProblems(current.getLanguage());
+		for (String id : overviewBreakdownResult.getSkillsWorkedOn())
+			skills.add("<li>" + getProblems.get(Integer.parseInt(id)).getTitle() + "</li>");
+		overviewBreakdownResult.setSkillsWorkedOn(skills);
+		return overviewBreakdownResult;
 	}
 
 }

@@ -37,27 +37,31 @@
 	background: #0F0;
 	height: 2px;
 }
+
 .problemdescription .problemstatus-binary-1 {
 	background: #F00;
 	height: 2px;
 }
+
 .problemdescription .problemstatus-zeroToThree-0 {
 	background: #0F0;
 	height: 2px;
 }
+
 .problemdescription .problemstatus-zeroToThree-1 {
 	background: #FF0;
 	height: 2px;
 }
+
 .problemdescription .problemstatus-zeroToThree-2 {
 	background: #F70;
 	height: 2px;
 }
+
 .problemdescription .problemstatus-zeroToThree-3 {
 	background: #F00;
 	height: 2px;
 }
-
 </style>
 <script>
 	$(function() {
@@ -87,53 +91,57 @@
 										.toggle();
 							});
 				});
-		$(".problemdescription").click(function() {
-			var text = $(this).data("problem");
-			
-			$("#dialog #dialog-value-level-zeroToThree").hide();
-			$("#dialog #dialog-value-level-binary").hide();
-			$("#dialog #dialog-value-level-"+$(this).data("severitytype"))
-				.val($(this).data("level"))
-				.show();
-			
-			$("#dialog #dialog-description").html(text);
-			$("#dialog").data("type", $(this).data("type"));
-			$("#dialog").data("index", $(this).data("index"));
-			$("#dialog").data("category", $(this).data("category"));
-			/*
-			$("#dialog #dialog-save").click(function() {
-				$.get('profile/set', {
-					'level' : $("#dialog #dialog-value-level").val(),
-					'type' : $("#dialog").data("type"),
-					'category' : $("#dialog").data("category"),
-					'index' : $("#dialog").data("index")
-				}, function(data) {
-					$("#dialog").dialog("close");
-				});
-			});
-			*/
-			$("#dialog").dialog();
+		$(".problemdescription").click(
+				function() {
+					var text = $(this).data("problem");
 
-		});
+					$("#dialog #dialog-value-level-zeroToThree").hide();
+					$("#dialog #dialog-value-level-binary").hide();
+					$(
+							"#dialog #dialog-value-level-"
+									+ $(this).data("severitytype")).val(
+							$(this).data("level")).show();
+
+					$("#dialog #dialog-description").html(text);
+					$("#dialog").data("type", $(this).data("type"));
+					$("#dialog").data("index", $(this).data("index"));
+					$("#dialog").data("category", $(this).data("category"));
+					<%--
+					$("#dialog #dialog-save").click(function() {
+						$.get('profile/set', {
+							'level' : $("#dialog #dialog-value-level").val(),
+							'type' : $("#dialog").data("type"),
+							'category' : $("#dialog").data("category"),
+							'index' : $("#dialog").data("index")
+						}, function(data) {
+							$("#dialog").dialog("close");
+						});
+					});
+					 --%>
+					$("#dialog").dialog({
+						width : 600
+					});
+
+				});
 
 	});
 </script>
 
 </head>
 <body>
-	<div id="dialog" style="display: none">
+	<div id="dialog" style="display: none" title="Problem details">
 		<div class="row">
 			<div id="dialog-description" class="col-md-12 well"></div>
 		</div>
 		<div class="row">
 			<div id="dialog-value" class="col-md-12 well">
-				Current skill level: <select id="dialog-value-level-zeroToThree" disabled>
+				Current skill level: <select id="dialog-value-level-zeroToThree"
+					disabled>
 					<option value="0">Completed</option>
 					<option value="1">Almost fine</option>
 					<option value="2">Needs work</option>
 					<option value="3">Needs more work</option>
-				</select>
-				<select id="dialog-value-level-binary" disabled>
+				</select> <select id="dialog-value-level-binary" disabled>
 					<option value="0">Completed</option>
 					<option value="1">Needs work</option>
 				</select>
@@ -290,7 +298,7 @@
 							</div>
 							<form:hidden path="language" />
 
-							<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
+							<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT,PERMISSION_TEACHER">
 								<button type="submit" class="btn btn-primary">Save</button>
 							</sec:authorize>
 						</form:form>
