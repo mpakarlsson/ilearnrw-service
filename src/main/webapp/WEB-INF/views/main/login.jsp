@@ -13,28 +13,30 @@
 				${error}
 			</div>
 		</c:if>
-		<div class="panel panel-default col-xs-12">
-		<form method="POST" class="form-signin" action="login" role="form">
-			<div class="form-group">
-            	<img style="float:right" src="${pageContext.request.contextPath}/apps/resources/webapp/images/Logo-crop-border.png"/>
-            </div>
-			<div class="form-group">
-				<h1 class="form-signin-heading">Welcome to iLearnRW Online Management System</h1>
-				<span>Please enter your details below</span>
-			</div>
-			<div class="form-group">
-				<input name="username" type="text" class="form-control"
-					placeholder="Username">
-			</div>
-			<div class="form-group">
-				<input name="pass" type="password" class="form-control"
-					placeholder="Password">
-			</div>
-			<div class="form-group">
-				<button class="btn btn-large btn-primary" type="submit">Sign
-					in</button>
-			</div>
-		</form>
+		<div class="panel panel-default">
+			<form method="POST" class="form-signin" action="login">
+				<div class="panel-heading">
+					<img style="float: right"
+						src="${pageContext.request.contextPath}/apps/resources/webapp/images/Logo-crop-border.png" />
+					<h1 class="form-signin-heading">Welcome to iLearnRW Online
+						Management System</h1>
+					<span>Please enter your details below</span>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<input name="username" type="text" class="form-control"
+							placeholder="Username">
+					</div>
+					<div class="form-group">
+						<input name="pass" type="password" class="form-control"
+							placeholder="Password">
+					</div>
+					<div class="form-group">
+						<button class="btn btn-large btn-primary" type="submit">Sign
+							in</button>
+					</div>
+				</div>
+			</form>
 		</div>
 	</div>
 </body>
