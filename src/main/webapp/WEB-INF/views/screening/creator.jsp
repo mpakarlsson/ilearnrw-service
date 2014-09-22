@@ -60,7 +60,7 @@
                             <a href="${pageContext.request.contextPath}/apps/testviewer?fname=${fname}" target="_blank">View Printable Test</a>
                      		 | 
 							<span>Go to a cluster
-							<select name="forma"  onchange="location = this.options[this.selectedIndex].value;">
+							<select name="forma" onchange="location = this.options[this.selectedIndex].value;">
 							<option value="screening">Select Cluster</option>
 							<c:forEach items="${profileClusters.getClustersNumbers()}" var="res" varStatus="inner">
 							 <option value="screening?fname=${fname}&cluster=${res}">Cluster ${res}</option>
@@ -118,7 +118,7 @@
 
 							<script>
 							if ('${showAll}' == 'false'){
-								loadClusterParameters('\'${fname}\'', '${cluster}', '${ clustersQuestions}', '${clusterWords}', '${activeQuestions}');
+								loadClusterParameters('\'${fname}\'', '${cluster}', '${ clustersQuestions}', '${clusterWords}', '${wordsInsideCategory}', '${activeQuestions}');
 								loadAddQuestionField('\'${fname}\'', '${cluster}');
 							}
 							</script>

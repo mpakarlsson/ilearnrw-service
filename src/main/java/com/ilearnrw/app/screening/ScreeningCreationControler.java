@@ -7,7 +7,14 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import ilearnrw.languagetools.LanguageAnalyzerAPI;
+import ilearnrw.languagetools.english.EnglishLanguageAnalyzer;
 import ilearnrw.languagetools.extras.EasyHardList;
+import ilearnrw.languagetools.greek.GreekDictionary;
+import ilearnrw.languagetools.greek.GreekLanguageAnalyzer;
+import ilearnrw.textclassification.Word;
+import ilearnrw.textclassification.english.EnglishWord;
+import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.user.profile.clusters.ClusterInfo;
@@ -110,9 +117,21 @@ public class ScreeningCreationControler {
 			ArrayList<TestQuestion> tq = st.getClusterQuestions(cluster);
 			g = new Gson().toJson(tq);
 			model.put("clustersQuestions", g);
-			ArrayList<String> t = getClusterWords(pdi, currentCluster);
+			ArrayList<WordsInsideCategory> full;
+			if (pdi.getLanguage() == LanguageCode.GR)
+				full = getGreekClusterWords(currentCluster);
+			else
+				full = getEnglishClusterWords(currentCluster);
+			ArrayList<String> t = new ArrayList<String>();
+			for (WordsInsideCategory list : full){
+				for (String ws : list.getWords())
+					if (!t.contains(ws))
+						t.add(ws);
+			}
 			g = new Gson().toJson(t);
 			model.put("clusterWords", g);
+			g = new Gson().toJson(full);
+			model.put("wordsInsideCategory", g);
 			model.put("clusterCategories", getClusterRelatedCategoriesAsString(pdi, cluster));
 			g = new Gson().toJson(getActiveQuestions(st));
 			model.put("activeQuestions", g);
@@ -309,19 +328,57 @@ public class ScreeningCreationControler {
 		return userId;
 	}
 	
-	private ArrayList<String> getClusterWords(ProblemDefinitionIndex pdi, int cluster){
-		ProfileClusters pc = new ProfileClusters(pdi);
+	private ArrayList<WordsInsideCategory> getEnglishClusterWords(int cluster){
+		ProfileClusters pc = new ProfileClusters(new ProblemDefinitionIndex(LanguageCode.EN));
+		LanguageAnalyzerAPI lan = EnglishLanguageAnalyzer.getInstance();
 		ArrayList<ProblemDescriptionCoordinates> prbs = pc.getClusterProblems(cluster);
 		ProblemWordListLoader pwll;
 		EasyHardList thelist;
-		ArrayList<String> res = new ArrayList<String>();
+		ArrayList<WordsInsideCategory> res = new ArrayList<WordsInsideCategory>();
+		int target = 40;
 		for (ProblemDescriptionCoordinates pr : prbs){
-			pwll = new ProblemWordListLoader(pdi.getLanguage(), pr.getCategory(), pr.getIndex());
+			WordsInsideCategory wic = new WordsInsideCategory(pr.getCategory(), pr.getIndex());
+			pwll = new ProblemWordListLoader(LanguageCode.EN, pr.getCategory(), pr.getIndex());
+			thelist = new EasyHardList(pwll.getItems());
+			boolean letsDoIt = true;
+			int freq[] = {100000, 50000, 20000, 0};
+			int i = 0;
+			while (letsDoIt && i<freq.length){
+				for (String x : thelist.getEasy()){
+					if (res.contains(x) || x.contains("\'"))
+						continue;
+					lan.setWord(new EnglishWord(x));
+					if(lan.getWord().getFrequency()>freq[i]){
+						wic.addWord(x);
+					}
+					if (wic.getWords().size() >= target){
+						letsDoIt = false;
+						break;
+					}
+				}
+				i++;
+			}
+			res.add(wic);
+		}
+		return res;
+	}
+	
+	private ArrayList<WordsInsideCategory> getGreekClusterWords(int cluster){
+		ProfileClusters pc = new ProfileClusters(new ProblemDefinitionIndex(LanguageCode.GR));
+		ArrayList<ProblemDescriptionCoordinates> prbs = pc.getClusterProblems(cluster);
+		ProblemWordListLoader pwll;
+		EasyHardList thelist;
+		ArrayList<WordsInsideCategory> res = new ArrayList<WordsInsideCategory>();
+		for (ProblemDescriptionCoordinates pr : prbs){
+			WordsInsideCategory wic = new WordsInsideCategory(pr.getCategory(), pr.getIndex());
+			pwll = new ProblemWordListLoader(LanguageCode.GR, pr.getCategory(), pr.getIndex());
 			thelist = new EasyHardList(pwll.getItems());
 			for (String x : thelist.getEasy()){
-				   if (!res.contains(x))
-				      res.add(x);
+				if (!res.contains(x) && !x.contains("\'")){
+					wic.addWord(x);
 				}
+			}
+			res.add(wic);
 		}
 		return res;
 	}

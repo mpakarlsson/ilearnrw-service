@@ -1,8 +1,9 @@
 var lastItemPosition = 0;
 var clusterWords = [];
+var wordsInsideCategory = [];
 var activeQuestions = [];
 
-function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords, jsonActiveQuestions) {
+function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords, jsonWordsInsideCategory, jsonActiveQuestions) {
 	obj = JSON.parse(jsonQuestions);
 	for (var i=0; i<obj.length; i++){
 		appendQuestion(fname, cluster, obj[i]);
@@ -16,6 +17,11 @@ function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords, jsonAct
 	obj3 = JSON.parse(jsonActiveQuestions);
 	for (var i=0; i<obj3.length; i++){
 		activeQuestions.push(obj3[i]);
+	}
+	wordsInsideCategory = [];
+	obj4 = JSON.parse(jsonWordsInsideCategory);
+	for (var i=0; i<obj4.length; i++){
+		wordsInsideCategory.push(obj4[i]);
 	}
 };
 
@@ -137,7 +143,7 @@ function filenamesList(json) {
 		if (defaultTest != files[i]){
 			str = str +'<input type="radio" name="test" value="'+files[i]+'" onclick="setDefaultTest(\''+files[i]+'\');return false;"> '+
 				'<a href="screening?fname='+files[i]+'">'+files[i]+'</a> '+
-				'<a href="PleaseEnableJavascript.html" onclick="deleteTest(\''+files[i]+'\');return false;">Delete</a><br>';
+				'<a href="PleaseEnableJavascript.html" onclick="confirmDeleteTest(\''+files[i]+'\');return false;" style="color:red;">Delete</a><br>';
 		}
 	}
 	str = str+'<div id = "addNewTest">';
@@ -148,6 +154,12 @@ function filenamesList(json) {
 	document.getElementById('filenamesListDiv').innerHTML = '';
 	document.getElementById('filenamesListDiv').appendChild(element);
 };
+
+function confirmDeleteTest(name) {
+    if (confirm('Are you sure you want to delete \''+name+'\'?') == true) {
+    	deleteTest(name);
+    }
+}
 
 function newFileForm(){
 	var newTestForm = document.createElement('form');

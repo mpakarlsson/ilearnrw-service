@@ -44,13 +44,21 @@ function suggestWords(parrentDivId, divId, clusterWords, target){
 
 	str = '<table><tr><td><input id="addWord'+divId+'" class="typeahead" type="text" placeholder="Suggestions">'+
 		'</td><td><button type="button" class="typeahead-button" '+
-		'onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td>'+
+		'onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td></tr>'+
+		'<td>'+getSelectorWithClusters()+'</td>'+
 		'<td><button type="button" class="typeahead-button" '+
-		'onclick="appendRandomWordsToTest(\''+target+'\')">Add 20 Words</button></td></tr></table>';
+		'onclick="appendRandomWordsToTest(\''+target+'\')">Add More Words</button></td></tr></table>';
 	element.innerHTML = str;
 	var parrent = document.getElementById(parrentDivId);
 	parrent.innerHTML = '';
 	parrent.appendChild(element);
+};
+
+function getSelectorWithClusters(){
+	var qs = '<option value="Add All">Add 30 Random words</option>';
+	qs = qs+'<option value="Add All">Add 40 Random words</option>';
+	return '<select name="forma" class="styled" >'+
+	'<option value="">Add 20 random words</option>'+qs+'</select>';
 };
 
 function gogo(divId){
