@@ -1,9 +1,10 @@
 var lastItemPosition = 0;
 var clusterWords = [];
 var wordsInsideCategory = [];
+var clusterDescriptions = [];
 var activeQuestions = [];
 
-function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords, jsonWordsInsideCategory, jsonActiveQuestions) {
+function loadClusterParameters(fname, cluster, jsonClusterDescriptions, jsonQuestions, jsonWords, jsonWordsInsideCategory, jsonActiveQuestions) {
 	obj = JSON.parse(jsonQuestions);
 	for (var i=0; i<obj.length; i++){
 		appendQuestion(fname, cluster, obj[i]);
@@ -23,6 +24,11 @@ function loadClusterParameters(fname, cluster, jsonQuestions, jsonWords, jsonWor
 	for (var i=0; i<obj4.length; i++){
 		wordsInsideCategory.push(obj4[i]);
 	}
+	clusterDescriptions = [];
+	obj5 = JSON.parse(jsonClusterDescriptions);
+	for (var i=0; i<obj5.length; i++){
+		clusterDescriptions.push(obj5[i]);
+	}
 };
 
 function getSelectorWithQuestions(target){
@@ -30,8 +36,8 @@ function getSelectorWithQuestions(target){
 	for (var i=0; i<activeQuestions.length; i++){
 		qs = qs + '<option value="'+activeQuestions[i]+'">'+activeQuestions[i]+'</option>';
 	}
-	return '<select name="forma"  onchange="test(\''+target+'\', this.options[this.selectedIndex].value);" class="styled" >'+
-	'<option value="">Sugestions</option>'+qs+'</select>';
+	return '<select name="forma"  onchange="fillWithText(\''+target+'\', this.options[this.selectedIndex].value);" class="styled" >'+
+	'<option value="">Previous Questions</option>'+qs+'</select>';
 }
 
 function appendQuestion(fname, cluster, obj) {
@@ -66,7 +72,7 @@ function loadAddQuestionField(fname, cluster) {
 		'<div id="hereiam"></div>'+
 		'<button type="button" class="typeahead-button" onclick="saveQuestion('+fname.toString()+', '+cluster+')">Add</button>';
 	document.getElementById('addQuestionsDiv').appendChild(element);
-	suggestWords('hereiam', 'itsme', clusterWords, 'newQuestionRelatedWords');
+	suggestWords('hereiam', 'itsme', clusterWords, wordsInsideCategory, clusterDescriptions, 'newQuestionRelatedWords');
 	gogo('itsme');
 	
 	$(function(){
@@ -76,7 +82,7 @@ function loadAddQuestionField(fname, cluster) {
 	});
 };
 
-function test(id, text) {
+function fillWithText(id, text) {
 	if (text !='')
 		document.getElementById(id).value = text;
 }
@@ -91,7 +97,7 @@ function switchButtonState(button, fname, cluster, id){
 		document.getElementById('rel_words_container'+id).innerHTML = str;
 		document.getElementById('rel_words_container'+id).style.backgroundColor = "#FFFFFF";
 		document.getElementById('selector'+id).innerHTML = getSelectorWithQuestions('the_question'+id);
-		suggestWords('hereiam'+id, 'thisisme', clusterWords, 'rel_words_container'+id);
+		suggestWords('hereiam'+id, 'thisisme', clusterWords, wordsInsideCategory, clusterDescriptions, 'rel_words_container'+id);
 		gogo('thisisme');
 		button.textContent = 'Done';
 		

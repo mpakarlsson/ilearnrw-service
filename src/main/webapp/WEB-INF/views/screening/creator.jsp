@@ -118,7 +118,7 @@
 
 							<script>
 							if ('${showAll}' == 'false'){
-								loadClusterParameters('\'${fname}\'', '${cluster}', '${ clustersQuestions}', '${clusterWords}', '${wordsInsideCategory}', '${activeQuestions}');
+								loadClusterParameters('\'${fname}\'', '${cluster}', '${clusterDescriptions}', '${clustersQuestions}', '${clusterWords}', '${wordsInsideCategory}', '${activeQuestions}');
 								loadAddQuestionField('\'${fname}\'', '${cluster}');
 							}
 							</script>

@@ -1,4 +1,6 @@
 var words = [];
+var categoryWords = [];
+var curCategory, curIndex;
 var substringMatcher = function(strs) {
   return function findMatches(q, cb) {
     var matches, substrRegex;
@@ -31,7 +33,7 @@ function setWords(json){
 	}
 };
 
-function suggestWords(parrentDivId, divId, clusterWords, target){
+function suggestWords(parrentDivId, divId, clusterWords, wordsInsideCategory, clusterDescriptions, target){
 	w = document.getElementById(divId);
 	if (w != null)
 		document.getElementById(divId).parentNode.innerHTML = '';
@@ -39,26 +41,46 @@ function suggestWords(parrentDivId, divId, clusterWords, target){
 	for (var i=0; i<clusterWords.length; i++){
 		words.push(clusterWords[i]);
 	}
+	categoryWords = [];
+	for (var i=0; i<wordsInsideCategory.length; i++){
+		categoryWords.push(wordsInsideCategory[i]);
+	}
 	var element = document.createElement('div');
 	element.setAttribute("id", divId);
 
-	str = '<table><tr><td><input id="addWord'+divId+'" class="typeahead" type="text" placeholder="Suggestions">'+
+	str = '<table style="border-collapse: separate; border-spacing: 5px; }"><tr><td><input id="addWord'+divId+'" class="typeahead" type="text" placeholder="Suggestions">'+
 		'</td><td><button type="button" class="typeahead-button" '+
 		'onclick="appendNewWord(\''+target+'\', getWord(\'addWord'+divId+'\'))">Add Word</button></td></tr>'+
-		'<td>'+getSelectorWithClusters()+'</td>'+
+		'<td>'+getSelectorWithClusters(clusterDescriptions)+'</td>'+
 		'<td><button type="button" class="typeahead-button" '+
-		'onclick="appendRandomWordsToTest(\''+target+'\')">Add More Words</button></td></tr></table>';
+		'onclick="appendRandomWordsToTest(\''+target+'\')">Add More Words</button></td></tr></table><br>';
 	element.innerHTML = str;
 	var parrent = document.getElementById(parrentDivId);
 	parrent.innerHTML = '';
 	parrent.appendChild(element);
 };
 
-function getSelectorWithClusters(){
-	var qs = '<option value="Add All">Add 30 Random words</option>';
-	qs = qs+'<option value="Add All">Add 40 Random words</option>';
-	return '<select name="forma" class="styled" >'+
-	'<option value="">Add 20 random words</option>'+qs+'</select>';
+function getSelectorWithClusters(descriptions){
+	var qs = '';
+	for (var i=0; i<descriptions.length; i++){
+		qs = qs+'<option value="'+descriptions[i].category+'#'+descriptions[i].index+'">'+
+		'Pr['+(1+descriptions[i].category)+', '+(1+descriptions[i].index)+'] '+
+		descriptions[i].problemDescription.humanReadableDescription+'</option>';
+	}
+	return '<select name="clusterform" onchange="changeCatIdx(this.options[this.selectedIndex].value);" class="styled" >'+
+	'<option value="0">Randomly from cluster</option>'+qs+'</select>';
+};
+
+function changeCatIdx(val){
+	p = val.split("#");
+	if (p.length == 2){
+		curCategory = parseInt(p[0]);
+		curIndex = parseInt(p[1]);
+	}
+	else{
+		curCategory = -1;
+		curIndex = -1;
+	}
 };
 
 function gogo(divId){
@@ -131,8 +153,20 @@ function appendRandomWordsToTest(id){
 		str = wordPacks(id, curWords, 'box');
 		lastId = curWords.length;
 	}
+	wordsToPick = [];
+	var found = false;
+	if (curCategory != -1 && curIndex != -1){
+		for (var i=0; i<categoryWords.length; i++){
+			if (categoryWords[i].category == curCategory && categoryWords[i].index == curIndex){
+				wordsToPick = categoryWords[i].words;
+				found = true;
+				break;
+			}
+		}
+	}
+	if (!found)
+		wordsToPick = words;
 	curWords = [];
-	wordsToPick = words;
 	while (wordsToPick.length>0 && curWords.length<20){
 		var randomnumber=Math.floor(Math.random()*(wordsToPick.length));
 		var t = wordsToPick.splice(randomnumber, 1);
