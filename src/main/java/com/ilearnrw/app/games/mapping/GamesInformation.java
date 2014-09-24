@@ -6,11 +6,18 @@ import java.util.ArrayList;
 
 public class GamesInformation {
 	public static GamesInformation mapping = new GamesInformation();
-	private static String englishProbs[] = { "Phon-Graph", 
+	/*private static String englishProbs[] = { "Phon-Graph", 
 			"Vowel Sounds", "Letter Patterns", "Syllable Division",
 			"Suffixing", "Prefixing", "Confusing Letter Shapes", 
 			//"Letter Names", "Sight Words",
-			};
+			};*/
+	private static String englishProbs[] = { "Consonants", 
+		"Vowels", "Blends and Letter Patterns", "Syllables",
+		"Suffixes", "Prefixes", "Confusing letters", 
+		//"Letter Names", "Sight Words",
+		};	
+	
+	
 	private static String greekProbs[] = { "Syllable Division",
 			"Phonemes:Consonants", "Phonemes:Vowels", "Suffixing:Derivational",
 			"Suffixing:Inflectional/Grammatical", "Prefixing",
@@ -28,18 +35,18 @@ public class GamesInformation {
 			"SOCIAL_NETWORK", "LOGGING_SCREEN", "PROFILE_SETUP" };
 
 	private static boolean appsProbsCorrespondanceEN[][] = {
-		// gp
-		{ true, true, false, true, false, true, false, true, false, false, false, false, false },
-		// vow soun
-		{ true, true, false, true, false, true, true, false, false, false, false, false, false },
-		// lett/wor
-		{ true, true, true, true, false, true, false, false, false, false, false, false, false },
-		// syl div
-		{ false, false, true, true, false, true, true, true, true, false, false, false, false },
-		// suf
-		{ true, true, true, true, true, false, true, true, true, false, false, false, false },
-		// pref
-		{ true, true, true, true, true, false, true, true, true, false, false, false, false },
+		// Consonants
+		{ true, 	true, 	false, true, false, true, false, true, false, false, false, false, false },
+		// Vowels
+		{ true, 	true, 	false, true, false, true, true, false, false, false, false, false, false },
+		// Blends and letter patterns
+		{ true, 	true, 	false, true, false, true, false, false, false, false, false, false, false },
+		// Syllables
+		{ false, 	false, 	true, true, false, true, true, true, true, false, false, false, false },
+		// suffixes
+		{ true, 	true, 	false, true, true, false, true, true, true, false, false, false, false },
+		// Prefixes
+		{ true, 	true, 	false, true, true, false, true, true, true, false, false, false, false },
 	// lett names
 	// { true, true, false, true, false, false, false, false, false, false,
 	// false, false, false },
@@ -47,7 +54,7 @@ public class GamesInformation {
 	// { true, true, false, false, false, true, false, true, false, false,
 	// false, false, false },
 		// conf lett
-		{ true, true, false, true, true, true, true, true, false, false, false, false, false }
+		{ false, 	true, 	false, true, true, true, true, true, false, false, false, false, false }
 	};
 
 	private static boolean appsProbsCorrespondanceGR[][] = {
