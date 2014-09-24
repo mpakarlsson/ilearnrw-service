@@ -330,7 +330,7 @@ public class ScreeningCreationControler {
 		return userId;
 	}
 	
-	private ArrayList<WordsInsideCategory> getEnglishClusterWords(int cluster){
+	/*private ArrayList<WordsInsideCategory> getEnglishClusterWords(int cluster){
 		ProfileClusters pc = new ProfileClusters(new ProblemDefinitionIndex(LanguageCode.EN));
 		LanguageAnalyzerAPI lan = EnglishLanguageAnalyzer.getInstance();
 		ArrayList<ProblemDescriptionCoordinates> prbs = pc.getClusterProblems(cluster);
@@ -359,6 +359,30 @@ public class ScreeningCreationControler {
 					}
 				}
 				i++;
+			}
+			res.add(wic);
+		}
+		return res;
+	}*/
+	
+	private ArrayList<WordsInsideCategory> getEnglishClusterWords(int cluster){
+		ProfileClusters pc = new ProfileClusters(new ProblemDefinitionIndex(LanguageCode.EN));
+		ArrayList<ProblemDescriptionCoordinates> prbs = pc.getClusterProblems(cluster);
+		ProblemWordListLoader pwll;
+		EasyHardList thelist;
+		int target = 40;
+		ArrayList<WordsInsideCategory> res = new ArrayList<WordsInsideCategory>();
+		for (ProblemDescriptionCoordinates pr : prbs){
+			WordsInsideCategory wic = new WordsInsideCategory(pr.getCategory(), pr.getIndex());
+			pwll = new ProblemWordListLoader(LanguageCode.EN, pr.getCategory(), pr.getIndex());
+			thelist = new EasyHardList(pwll.getItems());
+			for (String x : thelist.getEasy()){
+				if (!res.contains(x) && !x.contains("\'")){
+					wic.addWord(x);
+				}
+				if (wic.getWords().size() >= target){
+					break;
+				}
 			}
 			res.add(wic);
 		}
