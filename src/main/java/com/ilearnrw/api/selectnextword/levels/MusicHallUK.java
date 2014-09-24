@@ -27,69 +27,49 @@ public class MusicHallUK implements GameLevel {
 		
 
 		List<GameElement> result = new ArrayList<GameElement>();
+		Random rand = new Random();
 		
+		ArrayList<String> sentences = new ArrayList<String>();
+		ArrayList<String> answer = new ArrayList<String>();
+
 		if(LanguageAreasUK.values()[languageArea]==LanguageAreasUK.SYLLABLES){//Syllables
 			
 			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, languageArea, difficulty).getItems();
 			EasyHardList list = new EasyHardList(words);
 			
-			ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
+			ArrayList<String> targetWords = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
 			
-			Random rand = new Random();
-
-			
-			ArrayList<String> sentences = new ArrayList<String>();
-			ArrayList<String> answer = new ArrayList<String>();
 			
 			for(String word : targetWords){
 				
 				EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
 				
-				int syllable = rand.nextInt(ew.getNumberOfSyllables());
+				if (ew.getNumberOfSyllables()>1){
 				
-				String sentence = "";
+					int syllable = rand.nextInt(ew.getNumberOfSyllables());
+				
+					String sentence = "";
 
 				
-				for(int i=0;i<ew.getNumberOfSyllables();i++){
-					if (i==syllable){
-						sentence += "{"+ew.getSyllables()[i]+"}";
-						answer.add(ew.getSyllables()[i]);
-					}else{
+					for(int i=0;i<ew.getNumberOfSyllables();i++){
+						if (i==syllable){
+							sentence += "{"+ew.getSyllables()[i]+"}";
+							answer.add(ew.getSyllables()[i]);
+						}else{
+							sentence += ew.getSyllables()[i];
 						
-						sentence += ew.getSyllables()[i];
-						
-					}
+						}
 					
+					}
+				
+					sentences.add(sentence);
+					
+					if (sentences.size()==parameters.batchSize)
+						break;
 				}
-				
-				sentences.add(sentence);
-				
 								
 			}
 			
-			for (int i=0;i<sentences.size();i++){
-				
-				ArrayList<String> fillerWords = new ArrayList<String>();
-				fillerWords.add(answer.get(i));
-				
-				for(int j=0;j<answer.size();j++){
-					
-					if( !fillerWords.contains(answer.get(j))){
-						
-						fillerWords.add(answer.get(j));
-						
-						if(fillerWords.size()==(parameters.accuracy+1))
-							break;
-					}
-					
-				}
-				
-				
-				result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
-				
-			}
-			
-
 			
 		}else{
 			
@@ -98,13 +78,10 @@ public class MusicHallUK implements GameLevel {
 			
 			ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
 			
-			Random rand = new Random();
 
 			
-			ArrayList<String> sentences = new ArrayList<String>();
-			ArrayList<String> answer = new ArrayList<String>();
-			
 			for(String word : targetWords){
+				
 				
 				EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
 				AnnotatedWord aw = new AnnotatedWord(ew,languageArea,difficulty);
@@ -115,17 +92,14 @@ public class MusicHallUK implements GameLevel {
 								  ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd())+"}"+
 								  ew.getWord().substring(correctAnswer.getMatched().get(0).getEnd()));
 				
-				answer.add(correctAnswer.getMatched().get(0).getMatchedPart() );
+				answer.add(ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
 						
 				
 				
 			}
 			
-			
-			if(parameters.fillerType==FillerType.CLUSTER)
-			
-			{
-				
+		}
+		if(parameters.fillerType==FillerType.CLUSTER){
 
 				ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
 
@@ -139,16 +113,35 @@ public class MusicHallUK implements GameLevel {
 							candidates.add(ii);
 				}
 				
-				for(int i=0;i<parameters.accuracy;i++){
+				if(candidates.size()==0){
+					for(int ii = 0; ii< difficulty;ii++){
+						candidates.add(ii);
+					}					
+					
+				}
+				
+				if(candidates.size()==0){
+					for(int ii =difficulty+1; ii< definitions.getRowLength(languageArea);ii++){
+						candidates.add(ii);
+					}					
+					
+				}
+				
+				for(int i=0;i<parameters.batchSize;i++){
 					
 					int randomDifficulty = candidates.get(rand.nextInt(candidates.size()));
 					
 					ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems();
 					EasyHardList otherList = new EasyHardList(otherWords);
-					String wordFromOtherDifficulty = otherList.getRandom(1, parameters.wordLevel).get(0);
+					
+					ArrayList<String> moreWords = otherList.getRandom(1, parameters.wordLevel);
+					if(moreWords.size()==0)
+						continue;
+					
+					String wordFromOtherDifficulty = moreWords.get(0);
 					
 					EnglishWord ew =  new EnglishWord(wordFromOtherDifficulty.split("\'")[0]);
-					AnnotatedWord aw = new AnnotatedWord(ew,languageArea,difficulty);
+					AnnotatedWord aw = new AnnotatedWord(ew,languageArea,randomDifficulty);
 					
 					WordProblemInfo correctAnswer = aw.getWordProblems().get(0);
 					
@@ -156,38 +149,45 @@ public class MusicHallUK implements GameLevel {
 									  ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd())+"}"+
 									  ew.getWord().substring(correctAnswer.getMatched().get(0).getEnd()));
 					
-					answer.add(correctAnswer.getMatched().get(0).getMatchedPart() );
+					answer.add(ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()) );
 
 				}
 			}
+	
+	for (int i=0;i<sentences.size();i++){
+		
+		ArrayList<String> fillerWords = new ArrayList<String>();
+		fillerWords.add(answer.get(i));
+		
+		for(int j=0;j<answer.size();j++){
 			
-			
-			
-			for (int i=0;i<sentences.size();i++){
+			if( !fillerWords.contains(answer.get(j))){
 				
-				ArrayList<String> fillerWords = new ArrayList<String>();
-				fillerWords.add(answer.get(i));
+				fillerWords.add(answer.get(j));
 				
-				for(int j=0;j<answer.size();j++){
-					
-					if( !fillerWords.contains(answer.get(j))){
-						
-						fillerWords.add(answer.get(j));
-						
-						if(fillerWords.size()==(parameters.accuracy+1))
-							break;
-					}
-					
-				}
-				
-				
-				result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
-				
+				if(fillerWords.size()==(parameters.accuracy+1))
+					break;
 			}
 			
 		}
-
 		
+		if(fillerWords.size()==1){
+			if(!fillerWords.contains("ass"))
+				fillerWords.add("ass");
+			else
+				fillerWords.add("sa");
+				
+		}
+		result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
+		
+
+			
+		}
+
+		if (result.size()==0){
+			result.add(new GameElement(new GameSentence("@@@{@}@@", new ArrayList<String>(){{add("@");}})));
+
+		}
 		
 		return result;
 	}
@@ -200,8 +200,14 @@ public class MusicHallUK implements GameLevel {
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.CLUSTER};
-
+		
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		
+		if(lA==LanguageAreasUK.SYLLABLES){
+			return new FillerType[]{FillerType.NONE};
+		}else{
+			return new FillerType[]{FillerType.CLUSTER};
+		}
 	}
 
 	@Override
