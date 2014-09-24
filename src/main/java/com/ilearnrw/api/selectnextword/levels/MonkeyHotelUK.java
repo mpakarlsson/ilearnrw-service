@@ -31,7 +31,7 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 		
-		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)|(lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)){
+		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)|(lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)|(lA==LanguageAreasUK.BLENDS)){
 			return new FillerType[]{FillerType.CLUSTER};
 		}else if(lA==LanguageAreasUK.CONFUSING){
 			return new FillerType[]{FillerType.NONE};
