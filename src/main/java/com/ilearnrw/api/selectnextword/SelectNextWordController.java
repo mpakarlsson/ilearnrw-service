@@ -69,7 +69,7 @@ public class SelectNextWordController {
 		if (appId == 4){
 			List<GameElement> result = new ArrayList<GameElement>();
 			ProblemWordListLoader pwll = new ProblemWordListLoader();
-			pwll.loadItems(lc);
+			pwll.loadItems(lc,"sentences.txt");
 			EasyHardList thelist = new EasyHardList(pwll.getItems());
 			for (String w : thelist.getRandom(count, difficultyLevel)){
 				result.add(new GameElement(SentenceLoaderControler.fromString(w)));

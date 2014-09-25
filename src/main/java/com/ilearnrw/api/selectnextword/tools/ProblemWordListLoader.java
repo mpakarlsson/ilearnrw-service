@@ -29,14 +29,14 @@ public class ProblemWordListLoader {
 		}
 	}
 
-	public void loadItems(LanguageCode lc) {
+	public void loadItems(LanguageCode lc, String fname) {
 		String path = "game_words_GR/";
 		if (lc == LanguageCode.EN) {
 			path = "game_words_EN/";
 		}
 		try {
 			SentenceListLoader ggl = new SentenceListLoader();
-			ggl.load(path + "/sentences.txt");
+			ggl.load(path+fname);
 			items = ggl.getSentenceList();
 		} catch (Exception e) {
 			items = null;
