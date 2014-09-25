@@ -28,8 +28,10 @@
 				</c:forEach>
 				${questions.getRelatedWords().get(questions.getRelatedWords().size()-1)}
 			</c:when>
-			<c:otherwise>
+			<c:when test="${questions.isAttachRelWords() && questions.getRelatedWords().size()==1}">
 				${questions.getRelatedWords().get(0)}
+			</c:when>
+			<c:otherwise>
 			</c:otherwise>
 		</c:choose>
 		<br>
