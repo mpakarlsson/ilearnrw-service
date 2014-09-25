@@ -109,6 +109,24 @@ public class MonkeyHotelUK implements GameLevel {
 						candidates.add(ii);
 			}
 			
+			if(candidates.size()==0){
+				
+				for(int ii = 0; ii< languageArea;ii++){
+					candidates.add(ii);
+
+				}
+				
+			}
+			
+			if(candidates.size()==0){
+				
+				for(int ii = languageArea+1; ii< definitions.getRowLength(languageArea);ii++){
+					candidates.add(ii);
+
+				}
+				
+			}
+			
 			for(int i=0;i<parameters.accuracy;i++){
 				int randomDifficulty = candidates.get(rand.nextInt(candidates.size()));
 				ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems();

@@ -33,6 +33,10 @@ public class BikeShedUK implements GameLevel {
 			result.add(new GameElement(false,ew,languageArea, difficulty));
 		
 		}
+		
+		if(result.size()==0)
+			result.add(new GameElement(false,new EnglishWord("@@@@@"),languageArea, difficulty));
+			
 		return result;
 		
 	}
