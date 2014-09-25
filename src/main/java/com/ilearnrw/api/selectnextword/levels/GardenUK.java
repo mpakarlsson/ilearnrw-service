@@ -41,13 +41,20 @@ public class GardenUK implements GameLevel {
 		
 			for(String word : targetWords){
 			
-				int randomDifficulty = rand.nextInt(difficulty+1);
-				ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems();
-				EasyHardList otherList = new EasyHardList(otherWords);
-				String fillerWord = otherList.getRandom(1, parameters.wordLevel).get(0);
+				int randomDifficulty = 1;
+				if (difficulty>0)
+					difficulty = rand.nextInt(difficulty);
 				
-				EnglishWord ew =  new EnglishWord(fillerWord.split("\'")[0]);
-				result.add(new GameElement(true, ew,languageArea, randomDifficulty));
+				EasyHardList otherList = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems());
+				
+				ArrayList<String> otherWords = otherList.getRandom(1, parameters.wordLevel);
+				
+				if(otherWords.size()>0){
+					String fillerWord = otherWords.get(0);
+					EnglishWord ew =  new EnglishWord(fillerWord.split("\'")[0]);
+					result.add(new GameElement(true, ew,languageArea, randomDifficulty));
+					
+				}
 
 			}
 			
@@ -65,18 +72,30 @@ public class GardenUK implements GameLevel {
 						candidates.add(ii);
 			}
 			
+			if(candidates.size()==0){
+				
+				for(int ii = 0; ii< difficulty;ii++)
+							candidates.add(ii);
+			}
+			if(candidates.size()==0){
+				
+				for(int ii = difficulty+1; ii< definitions.getRowLength(languageArea);ii++)
+							candidates.add(ii);
+			}
+			
 			for(String word : targetWords){
 				
 				int randomDifficulty = candidates.get(rand.nextInt(candidates.size()));
-				ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems();
-				EasyHardList otherList = new EasyHardList(otherWords);
-				String fillerWord = otherList.getRandom(1, parameters.wordLevel).get(0);
 				
-				EnglishWord ew =  new EnglishWord(fillerWord.split("\'")[0]);
-				result.add(new GameElement(true, ew,languageArea, randomDifficulty));
+				ArrayList<String> otherWords = (new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems())).getRandom(1, parameters.wordLevel);
 
+				if(otherWords.size()>0){
+					String fillerWord = otherWords.get(0);
+				
+					EnglishWord ew =  new EnglishWord(fillerWord.split("\'")[0]);
+					result.add(new GameElement(true, ew,languageArea, randomDifficulty));
+				}
 			}
-			
 			
 		}
 
@@ -133,8 +152,15 @@ public class GardenUK implements GameLevel {
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
-		if(languageArea==0){//for syllabification: open and closed syllables
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		
+		
+		
+		if(lA==LanguageAreasUK.SYLLABLES){//for syllabification: open and closed syllables
 			return new int[]{0};
+		}else if(lA==LanguageAreasUK.CONFUSING){
+			return new int[]{2};
+
 		}else
 			return new int[]{1};//based on the character
 	}

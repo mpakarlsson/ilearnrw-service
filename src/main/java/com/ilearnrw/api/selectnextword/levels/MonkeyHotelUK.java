@@ -31,7 +31,7 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 		
-		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)|(lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)){
+		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)|(lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)|(lA==LanguageAreasUK.BLENDS)){
 			return new FillerType[]{FillerType.CLUSTER};
 		}else if(lA==LanguageAreasUK.CONFUSING){
 			return new FillerType[]{FillerType.NONE};
@@ -107,6 +107,24 @@ public class MonkeyHotelUK implements GameLevel {
 				if(ii!=difficulty)
 					if(definitions.getProblemDescription(languageArea,ii).getCluster()==targetCluster)
 						candidates.add(ii);
+			}
+			
+			if(candidates.size()==0){
+				
+				for(int ii = 0; ii< languageArea;ii++){
+					candidates.add(ii);
+
+				}
+				
+			}
+			
+			if(candidates.size()==0){
+				
+				for(int ii = languageArea+1; ii< definitions.getRowLength(languageArea);ii++){
+					candidates.add(ii);
+
+				}
+				
 			}
 			
 			for(int i=0;i<parameters.accuracy;i++){

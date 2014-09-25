@@ -28,7 +28,7 @@ public class BridgeUK implements GameLevel {
 		List<GameElement> result = new ArrayList<GameElement>();
 
 		
-		 if( (languageArea==LanguageAreasUK.VOWELS) | (languageArea==LanguageAreasUK.CONSONANTS)){//vowel or consonant sounds// Use matching difficulty
+		 if( (languageArea==LanguageAreasUK.VOWELS) | (languageArea==LanguageAreasUK.CONSONANTS)| (languageArea==LanguageAreasUK.BLENDS)){//vowel or consonant sounds// Use matching difficulty
 			 
 			 ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
 				EasyHardList list = new EasyHardList(words);
@@ -98,6 +98,11 @@ public class BridgeUK implements GameLevel {
 		 }
 		
 		
+		 if(result.size()==0){
+				result.add(new GameElement(false,new EnglishWord("@@@@@"),lA, difficulty));
+
+		 }
+		 
 		return result;		
 
 		
@@ -170,6 +175,8 @@ public class BridgeUK implements GameLevel {
 			return new int[]{2};//match first syllable
 		}else if( (languageArea==LanguageAreasUK.CONSONANTS) | (languageArea==LanguageAreasUK.VOWELS)){
 			return new int[]{4};//match vowel or consonant sound
+		}else if( (languageArea==LanguageAreasUK.BLENDS)){
+			return new int[]{5};//match vowel or consonant sound
 		}else
 			return new int[]{0};
 	}
@@ -190,7 +197,7 @@ public class BridgeUK implements GameLevel {
 			case VOWELS://Vowels
 				return true;
 			case BLENDS://Blends and letter patterns
-				return false;
+				return true;
 			case SYLLABLES://Syllables
 				return true;
 			case SUFFIXES://Suffixes

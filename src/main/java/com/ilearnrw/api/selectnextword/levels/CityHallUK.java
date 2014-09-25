@@ -44,7 +44,7 @@ public class CityHallUK implements GameLevel {
 
 	@Override
 	public FillerType[] fillerTypes(int lA, int difficulty) {
-		return new FillerType[]{FillerType.RANDOM};
+		return new FillerType[]{FillerType.CLUSTER};
 
 /*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 		
@@ -74,7 +74,11 @@ public class CityHallUK implements GameLevel {
 		
 		if(languageArea==LanguageAreasUK.VOWELS){//vowels
 			return new int[]{1,2,3};//one or several correct
+		}else if(languageArea==LanguageAreasUK.BLENDS){
+			return new int[]{1,5,10};//one or several correct
+			
 		}else{
+		
 			return new int[]{1};//only one correct
 		}
 	}
@@ -94,14 +98,16 @@ public class CityHallUK implements GameLevel {
 
 		if(languageArea==LanguageAreasUK.CONFUSING){
 			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-			result.add(new GameElement(false, new Word(words.get(0)), lA, difficulty));			
+			result.add(new GameElement(false, new EnglishWord(words.get(0)), lA, difficulty));			
 			
 		}else{
 	
 			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
+			EasyHardList list = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems());
+			ArrayList<String> words = list.getRandom(parameters.accuracy, parameters.wordLevel);
 
-			result.add(new GameElement(false, new Word(words.get(0)), lA, difficulty));
+			for(String w : words)
+				result.add(new GameElement(false, new EnglishWord(w), lA, difficulty));
 			
 			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
 			Random rand = new Random();
@@ -114,16 +120,31 @@ public class CityHallUK implements GameLevel {
 			
 			//Find filler
 			if(parameters.fillerType==FillerType.RANDOM){
-				while(true){
+				
+				int attempts = 3;
+				while(attempts>0){
+					attempts--;
 					int i = rand.nextInt(definitions.getRowLength(lA));
 				
 					String newPhoneme = definitions.getProblemDescription(lA, i).getDescriptions()[0].split("-")[1];
+					
 					if ( newPhoneme!= phoneme){
-						result.add(new GameElement(true, new Word( new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems().get(0) ), lA, i));
-						break;
+						EasyHardList newList = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, lA, i).getItems());
+						ArrayList<String> newWords = list.getRandom(parameters.accuracy, parameters.wordLevel);
+						
+						for(String w : newWords){
+							result.add(new GameElement(true, new EnglishWord( w ), lA, i));
+							attempts--;
+						}
+						if(newWords.size()>0){
+							attempts=0;
+							break;
+						}
+					
 					}
 				}
 			}else if (parameters.fillerType==FillerType.CLUSTER){
+				
 				int targetCluster = definitions.getProblemDescription(lA, difficulty).getCluster();
 				ArrayList<Integer> candidates = new ArrayList<Integer>();
 				
@@ -134,13 +155,38 @@ public class CityHallUK implements GameLevel {
 							candidates.add(ii);
 				}
 				
+				if (candidates.size()==0){
+					
+					for(int ii = 0; ii< difficulty;ii++){
+						candidates.add(ii);
+					}	
+				}
+				
+				if (candidates.size()==0){
+					
+					for(int ii = difficulty+1; ii< definitions.getRowLength(lA);ii++){
+						candidates.add(ii);
+					}	
+				}
+				
 				int numberFillers = parameters.accuracy;
-				while(numberFillers>0){
-					int i = rand.nextInt(candidates.size());
-					String newPhoneme = definitions.getProblemDescription(lA, candidates.get(i)).getDescriptions()[0].split("-")[1];
+				
+				int attempts = 3;
+				while((numberFillers>0)||attempts>0){
+					attempts--;
+					int i = candidates.get(rand.nextInt(candidates.size()));
+					
+					String newPhoneme = definitions.getProblemDescription(lA, i).getDescriptions()[0].split("-")[1];
+					
 					if ( newPhoneme!= phoneme){
-						result.add(new GameElement(true, new Word( new ProblemWordListLoader(LanguageCode.EN, lA, candidates.get(i)).getItems().get(0) ), lA, candidates.get(i)));
-						numberFillers--;
+						
+						ArrayList<String> newList = new ProblemWordListLoader(LanguageCode.EN, lA, i).getItems();
+						if(newList.size()>0){
+						
+							result.add(new GameElement(true, new EnglishWord( newList.get(0) ), lA, i));
+							numberFillers--;
+							
+						}
 					}
 					
 				}
@@ -167,7 +213,7 @@ public class CityHallUK implements GameLevel {
 			case VOWELS://Vowels
 				return true;
 			case BLENDS://Blends and letter patterns
-				return false;
+				return true;
 			case SYLLABLES://Syllables
 				return false;
 			case SUFFIXES://Suffixes
