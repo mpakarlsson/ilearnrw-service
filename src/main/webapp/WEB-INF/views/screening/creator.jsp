@@ -74,7 +74,7 @@
 
 							<c:choose>
 								<c:when test="${profileClusters.getClusterProblems(cluster) != null}">
-									<h3>Cluster ${cluster } (${clusterCategories })</h3>
+									<h4>Cluster ${cluster } (${clusterCategories })</h4>
 									<ul>
 									<c:forEach items="${profileClusters.getClusterProblems(cluster)}" var="res" varStatus="inner">
 									<li> Pr[${1+res.getCategory()}, ${1+res.getIndex()}]: ${res.getProblemDescription().getHumanReadableDescription() }</li>
@@ -87,7 +87,7 @@
 									<h2>Test name: ${fname} </h2>
 								    <%Integer current = 0;%>
 									<c:forEach items="${profileClusters.getClustersNumbers()}" var="cluster" varStatus="inner">
-										<h3>Cluster ${cluster } (${clustersCategoriesMap.get(cluster) }) </h3>
+										<h4>Cluster ${cluster } (${clustersCategoriesMap.get(cluster) }) </h4>
 										<ul>
 										<c:forEach items="${screeningTest.getClusterQuestions(cluster)}" var="questions" varStatus="inner">
 										<li> <% current++; out.print(current); %> <strong>Question:</strong> ${questions.getQuestion() } <!-- <br>${questions.getId() }  --><br></li>
