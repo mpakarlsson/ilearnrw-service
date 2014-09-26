@@ -25,7 +25,7 @@ public class LevelFactory {
 			switch(appId){
 			
 			case 0://Mail Sorter//Mail room
-				return new NotImplemented();
+				return new MailRoomGR();
 			case 1://Whack a Mole
 				return new NotImplemented();
 			case 2://Endless Runner
