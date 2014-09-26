@@ -1,0 +1,13 @@
+package com.ilearnrw.api.selectnextword.levels;
+
+public enum LanguageAreasGR {
+	CONSONANTS,
+	VOWELS,
+	LETTER_SIMILARITY,
+	GP_CORRESPONDENCE,	
+	SYLLABLE_DIVISION,
+	PREFIXES,
+	DERIVATIONAL,
+	INFLECTIONAL,
+	FUNCTION_WORDS,
+}

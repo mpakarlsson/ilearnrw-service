@@ -43,6 +43,9 @@ public class BridgeUK implements GameLevel {
 					
 				}
 			 
+				
+				
+				
 		 }else if(languageArea==LanguageAreasUK.SYLLABLES){//desired number of syllables
 			 
 				ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
