@@ -12,9 +12,19 @@
 <title>User profile</title>
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 <style>
-.progressbar {
+.progress {
 	cursor: pointer;
+    position: relative;
 }
+
+.progress span {
+    position: absolute;
+    display: block;
+    left: 1em;
+    width: 100%;
+    color: darkgray;
+    text-align: left;
+ }
 
 .problemsblock {
 	border: 1px solid #aaa;
@@ -75,13 +85,15 @@
 			$("#supervised-profile").show();
 
 		});
-		$(".progressbar").each(
+		$('.progress-bar').each(function() {
+			  var min = $(this).attr('aria-valuemin');
+			  var max = $(this).attr('aria-valuemax');
+			  var now = $(this).attr('aria-valuenow');
+			  var siz = (now-min)*100/(max-min);
+			  $(this).css('width', siz+'%');
+			});
+		$(".progress").each(
 				function(i) {
-					$(this).progressbar({
-						disabled : false,
-						value : $(this).data('position'),
-						max : 100
-					});
 					$(this).click(
 							function() {
 								$(
@@ -200,15 +212,20 @@
 							<div class="row">
 								<div class="col-md-6">${row.uri}</div>
 								<div class="col-md-6">
-									<div class="progressbar"
-										data-position="${(profile.userProblems.userSeverities.systemIndices[statusRow.index] / fn:length(profile.userProblems.userSeverities.severities[statusRow.index])) * 100}"
+									<div class="progress"
 										data-index="${statusRow.index}" data-type="independent"
-										data-severitytype="${row.severityType }"
-										id="progressbar${statusRow.index}">
-										<div class="progress-label">${profile.userProblems.userSeverities.systemIndices[statusRow.index]}
+										data-severitytype="${row.severityType }">
+										
+										
+										<div class="progress-bar" role="progressbar" 
+											aria-valuenow="${(profile.userProblems.userSeverities.systemIndices[statusRow.index] / fn:length(profile.userProblems.userSeverities.severities[statusRow.index])) * 100 + 90}"
+											aria-valuemin="0" aria-valuemax="100">
+											<span class="" >${profile.userProblems.userSeverities.systemIndices[statusRow.index]}
 											out of
 											${fn:length(profile.userProblems.userSeverities.severities[statusRow.index])}
-											skills accomplished</div>
+											skills accomplished</span>
+											</div>
+										
 									</div>
 								</div>
 							</div>
@@ -248,15 +265,20 @@
 							<div class="row">
 								<div class="col-md-6">${row.uri}</div>
 								<div class="col-md-6">
-									<div class="progressbar"
-										data-position="${(profile.userProblems.userSeverities.teacherIndices[statusRow.index] / fn:length(profile.userProblems.userSeverities.severities[statusRow.index])) * 100}"
+									<div class="progress"
 										data-index="${statusRow.index}" data-type="supervised"
-										data-severitytype="${row.severityType }"
-										id="progressbar${statusRow.index}">
-										<div class="progress-label">${profile.userProblems.userSeverities.teacherIndices[statusRow.index]}
+										data-severitytype="${row.severityType }">
+										
+										
+										<div class="progress-bar" role="progressbar" 
+											aria-valuenow="${(profile.userProblems.userSeverities.systemIndices[statusRow.index] / fn:length(profile.userProblems.userSeverities.severities[statusRow.index])) * 100 + 90}"
+											aria-valuemin="0" aria-valuemax="100">
+											<span class="" >${profile.userProblems.userSeverities.systemIndices[statusRow.index]}
 											out of
 											${fn:length(profile.userProblems.userSeverities.severities[statusRow.index])}
-											skills accomplished</div>
+											skills accomplished</span>
+											</div>
+										
 									</div>
 								</div>
 							</div>

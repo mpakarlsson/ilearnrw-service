@@ -760,7 +760,10 @@ public class UserManagerController {
 		all.setUsername("All students");
 		students.add(0, all);
 		if (classroom.getId() != -1)
-			students.addAll(studentDetailsService.getStudentsFromClassRoom(classroom));
+			students.addAll(studentDetailsService.getStudentsFromClassRoom(classroom)); 
+		else {
+			students.addAll(teacherStudentService.getAllStudentsList());
+		}
 		return students;
 	}
 
@@ -794,25 +797,25 @@ public class UserManagerController {
 	private StudentFilter getStudentFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
 	{
 		StudentFilter studentFilter = new StudentFilter();
-		if (breakdownFilter.getSchool().getId() == -1)
+		
+		if (breakdownFilter.getStudent().getId() != -1)
 		{
-			studentFilter.setType(StudentFilterType.ALL);
-			studentFilter.setName(null);
+			studentFilter.setType(StudentFilterType.STUDENT);
+			studentFilter.setName(breakdownFilter.getStudent().getUsername());
 		}
-		else if (breakdownFilter.getClassroom().getId() == -1)
+		else if (breakdownFilter.getSchool().getId() != -1)
 		{
 			studentFilter.setType(StudentFilterType.SCHOOL);
 			studentFilter.setName(breakdownFilter.getSchool().getName());
 		}
-		else if (breakdownFilter.getStudent().getId() == -1)
+		else if (breakdownFilter.getClassroom().getId() != -1)
 		{
 			studentFilter.setType(StudentFilterType.CLASSROOM);
 			studentFilter.setName(breakdownFilter.getClassroom().getName());
 		}
-		else
-		{
-			studentFilter.setType(StudentFilterType.STUDENT);
-			studentFilter.setName(breakdownFilter.getStudent().getUsername());
+		else {
+			studentFilter.setType(StudentFilterType.ALL);
+			studentFilter.setName(null);
 		}
 		return studentFilter;
 	}
@@ -914,8 +917,9 @@ public class UserManagerController {
 		User current = userService.getUserByUsername(SecurityContextHolder
 				.getContext().getAuthentication().getName());
 		List<com.ilearnrw.api.info.model.Problem> getProblems = infoService.getProblems(current.getLanguage());
-		for (String id : overviewBreakdownResult.getSkillsWorkedOn())
-			skills.add("<li>" + getProblems.get(Integer.parseInt(id)).getTitle() + "</li>");
+		for (String id : overviewBreakdownResult.getSkillsWorkedOn()) {
+			skills.add(getProblems.get(Integer.parseInt(id)).getTitle());
+		}
 		overviewBreakdownResult.setSkillsWorkedOn(skills);
 		return overviewBreakdownResult;
 	}

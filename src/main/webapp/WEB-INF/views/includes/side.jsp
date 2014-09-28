@@ -14,12 +14,14 @@
                         <li>
                             <a href="${pageContext.request.contextPath}/apps/users/manage"><i class="fa fa-user fa-fw"></i> Manage users</a>
                         </li>
+                        <%--
                         <li>
                             <a href="${pageContext.request.contextPath}/apps/roles/manage"><i class="fa fa-tag fa-fw"></i> Manage roles</a>
                         </li>
                         <li>
                             <a href="${pageContext.request.contextPath}/apps/permissions/manage"><i class="fa fa-ticket fa-fw"></i> Manage permissions</a>
                         </li>
+                         --%>
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_EXPERT">
                         <li>

@@ -102,8 +102,11 @@ $(function() {
 			}
 			else
 			{
-				$("#overview-skills ul").html(data.skillsWorkedOn);
-				$("#overview-time-spent").val(data.timeSpent);
+				$("#overview-skills ul li").remove();
+				$.each(data.skillsWorkedOn, function(key, value) {
+						$("#overview-skills ul").append($('<li>').append(value));
+				});
+				$("#overview-time-spent").val(data.timeSpent + " sec.");
 				$("#overview-number-of-activities").val(data.numberOfActivities);
 				$("#overview-success-rate").val(data.successRate);
 			}
@@ -118,10 +121,11 @@ $(function() {
 			$.postJSON(detailsUrl, 
 					JSON.stringify({ filter:getBreakdownFilter(), dataPoint:plotData[obj.seriesIndex]}),
 					function(data){
-				$("#flot-skill-timeSpent").val(data.timeSpent);
+				$("#flot-skill-timeSpent").val(data.timeSpent + " sec.");
 				$("#flot-skill-successRate").val(data.successRate);
 				$("#flot-skill-correctAnswers").val(data.correctAnswers);
 				$("#flot-skill-incorrectAnswers").val(data.incorrectAnswers);
+				$("#flot-skill-nrOfApps").val(data.nrOfApps);
 				$("#flot-skill").show();
 			});
 			$("#flot-click-title").html(obj.series.label);

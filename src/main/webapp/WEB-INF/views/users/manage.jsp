@@ -10,7 +10,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Manage users</title>
+<sec:authorize var="isExpert" ifAnyGranted="PERMISSION_EXPERT"/>
+
+<title>
+<c:choose>
+<c:when test="${isExpert}">Teachers and Students</c:when>
+<c:otherwise>Manage Users</c:otherwise>
+</c:choose></title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 <script>
@@ -67,7 +73,12 @@
 		<div id="page-wrapper">
 			<div class="row">
 				<div class="col-lg-12">
-					<h1 class="page-header">Manage users</h1>
+					<h1 class="page-header">
+					<c:choose>
+					<c:when test="${isExpert}">Teachers and Students</c:when>
+					<c:otherwise>Manage Users</c:otherwise>
+					</c:choose>
+					</h1>
 				</div>
 			</div>
 			<div class="row col-xs-12">

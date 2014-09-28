@@ -42,66 +42,71 @@ function url(link)
 				</div>
 			</div>
 			<div class="row">
-			    <div class="panel panel-default">
-			        <div class="panel-heading">Filter</div>
-			        <div class="panel-body">
-			        	<form id="filter-form">
-				        	<div class="form-group">
-							    <label class="col-sm-2 control-label">Select school</label>
-							    <div class="col-sm-10 ">
-							        <select class="col-sm-10 form-control" id="schools"></select>
-							    </div>
-							</div>
-				        	<div class="form-group">
-							    <label class="col-sm-2 control-label">Select class</label>
-							    <div class="col-sm-10 ">
-							        <select class="col-sm-10 form-control" id="classrooms"></select>
-							    </div>
-							</div>
-				        	<div class="form-group">
-							    <label class="col-sm-2 control-label">Select student</label>
-							    <div class="col-sm-10 ">
-							        <select class="col-sm-10 form-control" id="students"></select>
-							    </div>
-							</div>
-				        	<div class="form-group">
-							    <label class="col-sm-2 control-label">Select date</label>
-							    <div class="col-sm-10 ">
-							        <select class="col-sm-10 form-control" id="date">
-							        	<option value="0">Total</option>
-							        	<option value="1">Today</option>
-							        	<option value="2">This week</option>
-							        	<option value="3">This month</option>
-							        	<option value="4">Custom range</option>
-							        </select>
-							    </div>
-							</div>
-						</form>
-			        </div>
-			    </div>
-			</div>
-			<div class="row">
-			    <div id="flot-panel" class="panel panel-default">
-			        <div class="panel-heading"><c:out value="${title}"></c:out></div>
-			        <div class="panel-body">
-			        	<div class = "row">
-							<div id="flot-pie-chart" style="height:500px"></div>
+				<div class="col-lg-4">
+					<div class="panel panel-default">
+						<div class="panel-heading">Filter</div>
+						<div class="panel-body">
+							<form id="filter-form" class="form-horizontal">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Select school</label>
+									<div class="col-sm-10 ">
+										<select class="col-sm-10 form-control" id="schools"></select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Select class</label>
+									<div class="col-sm-10 ">
+										<select class="col-sm-10 form-control" id="classrooms"></select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Select student</label>
+									<div class="col-sm-10 ">
+										<select class="col-sm-10 form-control" id="students"></select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Select date</label>
+									<div class="col-sm-10 ">
+										<select class="col-sm-10 form-control" id="date">
+											<option value="0">Total</option>
+											<option value="1">Today</option>
+											<option value="2">This week</option>
+											<option value="3">This month</option>
+											<option value="4">Custom range</option>
+										</select>
+									</div>
+								</div>
+							</form>
 						</div>
-						<div class="alert alert-danger" style="display:none" id="flot-unavailable">
-                                No data found.
-                        </div>
 					</div>
 				</div>
+				<div class="col-lg-8">
+					<div id="flot-panel" class="panel panel-default">
+						<div class="panel-heading">
+							<c:out value="${title}"></c:out>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div id="flot-pie-chart" style="height: 500px"></div>
+							</div>
+							<div class="alert alert-danger" style="display: none"
+								id="flot-unavailable">No data found.</div>
+						</div>
+						<div class="panel-footer">Click on a segment to view further
+							breakdown of progress in that skill</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
 			</div>
 			<div class="row">
 			    <div id="flot-click-panel" class="panel panel-default" style="display:none">
 			        <div id="flot-click-title" class="panel-heading"></div>
 			        <div class="panel-body">
-			        	<div class = "row">
-							<div id="flot-pie-chart"></div>
-						</div>
 						<div class="row">
 							<div id="flot-click">
+							<form class="form-horizontal">
 								<div class="form-group">
 								    <label class="col-sm-2 control-label">Time spent</label>
 								    <div class="col-sm-10 ">
@@ -126,6 +131,13 @@ function url(link)
 								        <input type="text" class="col-sm-10 form-control" id="flot-skill-incorrectAnswers" disabled></input>
 								    </div>
 								</div>
+								<div class="form-group">
+								    <label class="col-sm-2 control-label">No. of applications</label>
+								    <div class="col-sm-10 ">
+								        <input type="text" class="col-sm-10 form-control" id="flot-skill-nrOfApps" disabled></input>
+								    </div>
+								</div>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -135,15 +147,12 @@ function url(link)
 			    <div id="overview-panel" class="panel panel-default" style="display:none">
 			        <div class="panel-heading"><c:out value="${title}"></c:out></div>
 			        <div class="panel-body">
-			        	<div class = "row">
-							<div id="flot-pie-chart"></div>
-						</div>
 						<div class="row">
 							<div>
 								<div class="form-group row">
 								    <label class="col-sm-4 control-label" for="overview-skills"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/book.png">Skills worked on</label>
 								    <div class="col-sm-8 ">
-								        <div id="overview-skills" class="col-sm-10"><ul></ul></div>
+								        <div id="overview-skills" class="col-sm-10"><ul class="list-unstyled"></ul></div>
 								    </div>
 								</div>
 					        	<div class="form-group row">

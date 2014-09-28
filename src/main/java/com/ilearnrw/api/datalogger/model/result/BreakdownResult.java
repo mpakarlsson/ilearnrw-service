@@ -6,6 +6,7 @@ public class BreakdownResult {
 	int incorrectAnswers = 0;
 	int totalAnswers = 0;
 	String successRate = "-";
+	int nrOfApps = 0;
 
 	public String getTimeSpent() {
 		return timeSpent;
@@ -45,5 +46,13 @@ public class BreakdownResult {
 
 	public void setSuccessRate(String successRate) {
 		this.successRate = successRate;
+	}
+
+	public int getNrOfApps() {
+		return nrOfApps;
+	}
+
+	public void setNrOfApps(int nrOfApps) {
+		this.nrOfApps = nrOfApps;
 	}
 }

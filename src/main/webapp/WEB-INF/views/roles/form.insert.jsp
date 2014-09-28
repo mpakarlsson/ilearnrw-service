@@ -11,7 +11,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Manage users</title>
+<title>Manage roles</title>
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 
