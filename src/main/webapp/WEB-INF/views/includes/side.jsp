@@ -59,8 +59,8 @@
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 						<li class="active">
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Tests<span class="fa arrow"></span></a>
-                            <ul style="height: auto;" class="nav nav-second-level collapse in">
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Debug<span class="fa arrow"></span></a>
+                            <ul style="height: auto;" class="nav nav-second-level collapse">
                                 <li>
                                     <a href="${pageContext.request.contextPath}/apps/tests/logs">Send logs</a>
                                 </li>

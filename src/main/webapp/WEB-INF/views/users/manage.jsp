@@ -46,21 +46,12 @@
 		$(".deleteLink").click(function(e) {
 			e.preventDefault();
 			var targetUrl = $(this).attr("href");
-			$("#dialog-confirm").dialog({
-				resizable : false,
-				height : 200,
-				width : 500,
-				modal : true,
-				buttons : {
-					"Delete item" : function() {
-						window.location.href = targetUrl;
-						$(this).dialog("close");
-					},
-					Cancel : function() {
-						$(this).dialog("close");
-					}
-				}
+			$("#deletebtn").click(function() {
+				window.location.href = targetUrl;
+				$("dialog-confirm").modal("hide");
+				
 			});
+			$("#dialog-confirm").modal({});
 		});
 
 	});
@@ -207,11 +198,25 @@
 		</div>
 
 	</div>
-	<div id="dialog-confirm" title="Delete?">
-		<p>
+<div id="dialog-confirm" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+		<div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="mySmallModalLabel">Delete?</h4>
+        </div>
+        <div class="modal-body">
+        <p>
 			<span class="ui-icon ui-icon-alert"
 				style="float: left; margin: 0 7px 20px 0;"></span>Are you sure you
 			want to delete this item?
 		</p>
-	</div>
+		<button type="button" id="deletebtn" class="btn btn-primary" data-dismiss="modal">Delete</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		
+        </div>
+    </div>
+  </div>
+</div>
+	
 </body>

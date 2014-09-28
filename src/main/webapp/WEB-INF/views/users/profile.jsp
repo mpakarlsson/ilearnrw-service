@@ -114,13 +114,11 @@
 							'category' : $("#dialog").data("category"),
 							'index' : $("#dialog").data("index")
 						}, function(data) {
-							$("#dialog").dialog("close");
+							$("#dialog").modal("hide");
 						});
 					});
 					 --%>
-					$("#dialog").dialog({
-						width : 600
-					});
+					$("#dialog").modal({});
 
 				});
 
@@ -129,11 +127,18 @@
 
 </head>
 <body>
-	<div id="dialog" style="display: none" title="Problem details">
+<div class="modal fade" id="dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Problem details</h4>
+      </div>
+      <div class="modal-body">
 		<div class="row">
 			<div id="dialog-description" class="col-md-12 well"></div>
 		</div>
-		<div class="row">
+        <div class="row">
 			<div id="dialog-value" class="col-md-12 well">
 				Current skill level: <select id="dialog-value-level-zeroToThree"
 					disabled>
@@ -147,14 +152,21 @@
 				</select>
 			</div>
 		</div>
+
+      </div>
+      <div class="modal-footer">
 		<%-- we should not allow direct altering of profile entries
-		<div class="row">
 			<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 				<button type="submit" class="btn btn-primary" id="dialog-save">Save</button>
 			</sec:authorize>
-		</div>
+        <button type="button" class="btn btn-primary">Save changes</button>
 		 --%>
-	</div>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 	<div id="wrapper">
 
 		<jsp:include page="../includes/navigation.jsp"></jsp:include>

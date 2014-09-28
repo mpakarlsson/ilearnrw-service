@@ -45,52 +45,30 @@
 						$("#btn-changepassword")
 								.click(
 										function() {
-											$("#dialog-changepassword")
-													.dialog(
-															{
-																width : 400,
-																modal : true,
-																buttons : {
-																	"Change" : function() {
-																		$
-																				.ajax(
-																						{
-																							url : "${pageContext.request.contextPath}/apps/users/${userform.user.id}/changepassword",
-																							type : 'POST',
-																							data : {
-																								password : $(
-																										"#newpassword")
-																										.val()
-																							}
+											$("#changebtn").click(function(){
+												$.ajax(
+														{
+															url : "${pageContext.request.contextPath}/apps/users/${userform.user.id}/changepassword",
+															type : 'POST',
+															data : {
+																password : $(
+																		"#newpassword")
+																		.val()
+															}
 
-																						})
-																				.always(
-																						function(
-																								data) {
-																							$(
-																									'#changepasswordstatus')
-																									.html(
-																											data);
-																							$(
-																									'#changepasswordstatus')
-																									.removeClass(
-																											"hide");
-																							$(
-																									"#newpassword")
-																									.val(
-																											"");
-																						});
-																		$(this)
-																				.dialog(
-																						"close");
-																	},
-																	Cancel : function() {
-																		$(this)
-																				.dialog(
-																						"close");
-																	}
-																}
-															});
+														})
+												.always(
+														function(data) {
+															$('#changepasswordstatus')
+																	.html(data);
+															$('#changepasswordstatus')
+																	.removeClass("hidden");
+															$("#newpassword")
+																	.val("");
+														});
+												
+											});
+											$("#dialog-changepassword").modal({});
 										});
 
 					});
@@ -262,19 +240,31 @@
 							class="btn btn-default">Change password</button>
 					</div>
 					<div class="col-md-8">
-						<div class="alert alert-info hide" id="changepasswordstatus"></div>
+						<div class="alert alert-info hidden" id="changepasswordstatus"></div>
 					</div>
 				</div>
 			</form:form>
 		</div>
 	</div>
-	<div id="dialog-changepassword" title="Change password">
-		<div class="form-group">
-			<label>Enter a new password</label> <input id="newpassword"
-				type="password" class="form-control" placeholder="New password"></input>
-
-		</div>
-	</div>
-
+	
+<div id="dialog-changepassword" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+		<div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="mySmallModalLabel">Change password</h4>
+        </div>
+        <div class="modal-body">
+			<div class="form-group">
+				<label>Enter a new password</label> <input id="newpassword"
+					type="password" class="form-control" placeholder="New password"></input>
+	
+			</div>
+			<button type="button" id="changebtn" class="btn btn-primary" data-dismiss="modal">Change</button>
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
