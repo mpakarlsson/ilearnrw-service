@@ -282,7 +282,7 @@ public class MailRoomGR implements GameLevel {
 		}else if(lA==LanguageAreasGR.PREFIXES){
 			return new int[]{2};//Prefix
 		}else
-			return new int[]{0};
+			return new int[]{3};//GP correspondence
 	}
 
 	
@@ -306,7 +306,7 @@ public class MailRoomGR implements GameLevel {
 		case PREFIXES://Suffixes
 			return false;//true;
 		case GP_CORRESPONDENCE://Prefixes
-			return false;
+			return true;
 		case FUNCTION_WORDS://Confusing letters
 			return false;//true;
 		case LETTER_SIMILARITY:

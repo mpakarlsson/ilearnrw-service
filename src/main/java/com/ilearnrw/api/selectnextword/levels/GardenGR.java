@@ -120,7 +120,16 @@ public class GardenGR implements GameLevel {
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
+		
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+		
+		if(lA==LanguageAreasGR.FUNCTION_WORDS){
+			return new FillerType[]{FillerType.NONE};
+		}else{
+			
+			return new FillerType[]{FillerType.CLUSTER};
+		}
+
 
 	}
 
@@ -150,8 +159,12 @@ public class GardenGR implements GameLevel {
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
 		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
-
-			return new int[]{3};//no choice//number of syllables
+		if(lA==LanguageAreasGR.FUNCTION_WORDS){
+			return new int[]{4};
+		}else{
+			
+			return new int[]{3};//number of syllables
+		}
 		
 	}
 
@@ -179,7 +192,7 @@ public class GardenGR implements GameLevel {
 			case GP_CORRESPONDENCE://Prefixes
 				return false;
 			case FUNCTION_WORDS://Confusing letters
-				return false;
+				return true;
 			case LETTER_SIMILARITY:
 				return false;
 			default:
