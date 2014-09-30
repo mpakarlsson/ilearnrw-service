@@ -25,13 +25,13 @@ public class LevelFactory {
 			switch(appId){
 			
 			case 0://Mail Sorter//Mail room
-				return new NotImplemented();
+				return new MailRoomGR();
 			case 1://Whack a Mole
-				return new NotImplemented();
+				return new MonkeyHotelGR();
 			case 2://Endless Runner
 				return new BikeShedGR();
 			case 3://Harvest
-				return new NotImplemented();
+				return new GardenGR();
 			case 4://Serenade Hero
 				return new MusicHallGR();
 			case 5://Moving Pathways

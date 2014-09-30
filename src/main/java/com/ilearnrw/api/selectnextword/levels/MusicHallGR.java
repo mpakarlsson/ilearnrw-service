@@ -96,6 +96,7 @@ public class MusicHallGR implements GameLevel {
 				GreekWord ew =  new GreekWord(word.split("\'")[0]);
 				AnnotatedWord aw = new AnnotatedWord(ew,languageArea,difficulty);
 				
+				if ( aw.getWordProblems().size()>0){
 				WordProblemInfo correctAnswer = aw.getWordProblems().get(0);
 				
 				sentences.add(    ew.getWord().substring(0, correctAnswer.getMatched().get(0).getStart())+"{"+
@@ -104,7 +105,7 @@ public class MusicHallGR implements GameLevel {
 				
 				answer.add(ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
 						
-				
+				}
 				
 			}
 			
@@ -150,9 +151,10 @@ public class MusicHallGR implements GameLevel {
 					
 					String wordFromOtherDifficulty = moreWords.get(0);
 					
-					EnglishWord ew =  new EnglishWord(wordFromOtherDifficulty);
+					GreekWord ew =  new GreekWord(wordFromOtherDifficulty);
 					AnnotatedWord aw = new AnnotatedWord(ew,languageArea,randomDifficulty);
 					
+					if(aw.getWordProblems().size()>0){
 					WordProblemInfo correctAnswer = aw.getWordProblems().get(0);
 					
 					sentences.add(    ew.getWord().substring(0, correctAnswer.getMatched().get(0).getStart())+"{"+
@@ -160,7 +162,7 @@ public class MusicHallGR implements GameLevel {
 									  ew.getWord().substring(correctAnswer.getMatched().get(0).getEnd()));
 					
 					answer.add(ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()) );
-
+					}
 				}
 			}
 	
