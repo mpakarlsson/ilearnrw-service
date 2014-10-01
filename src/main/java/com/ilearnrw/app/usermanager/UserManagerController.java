@@ -803,15 +803,15 @@ public class UserManagerController {
 			studentFilter.setType(StudentFilterType.STUDENT);
 			studentFilter.setName(breakdownFilter.getStudent().getUsername());
 		}
-		else if (breakdownFilter.getSchool().getId() != -1)
-		{
-			studentFilter.setType(StudentFilterType.SCHOOL);
-			studentFilter.setName(breakdownFilter.getSchool().getName());
-		}
 		else if (breakdownFilter.getClassroom().getId() != -1)
 		{
 			studentFilter.setType(StudentFilterType.CLASSROOM);
 			studentFilter.setName(breakdownFilter.getClassroom().getName());
+		}
+		else if (breakdownFilter.getSchool().getId() != -1)
+		{
+			studentFilter.setType(StudentFilterType.SCHOOL);
+			studentFilter.setName(breakdownFilter.getSchool().getName());
 		}
 		else {
 			studentFilter.setType(StudentFilterType.ALL);
