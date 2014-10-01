@@ -307,12 +307,12 @@ public class ScreeningCreationControler {
 					continue;
 				
 				int severity = 3;
-				if (cstats.highScore>2 && cstats.getRate()==1)
+				if (cstats.highScore>0 && cstats.getRate()==1)
 					severity = 1;
-				else if (cstats.highScore>2 && cstats.getRate()>0.5)
+				else if (cstats.highScore>0 && cstats.getRate()>0.5)
 					severity = 2;
-				System.err.println(ci.getClusterNumber()+"  --  "+cstats.highScore+" ,, "+cstats.userScore);
-				if (cstats.highScore<2)
+				//System.err.println(ci.getClusterNumber()+"  --  "+cstats.highScore+" ,, "+cstats.userScore);
+				if (cstats.highScore==0)
 					continue;
 				for (ProblemDescriptionCoordinates pdc : ci.getRelatedProblems()){
 					if (profile.getUserProblems().getProblemDefinition(pdc.getCategory()).getSeverityType().equals("binary"))
