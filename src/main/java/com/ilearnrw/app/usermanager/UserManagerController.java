@@ -491,7 +491,7 @@ public class UserManagerController {
 		} else if (form.getRole().equals("teacher")) {
 			roleService.setRoleList(user,
 					Arrays.asList(roleService.getRole("ROLE_TEACHER")));
-			if (request.isUserInRole("ROLE_EXPERT")) //TODO: check if this is ok (was PERMISSION_EXPERT)
+			if (request.isUserInRole("PERMISSION_EXPERT"))
 				expertTeacherService.assignTeacherToExpert(current, user);
 		} else if (form.getRole().equals("student")) {
 			roleService.setRoleList(user,
