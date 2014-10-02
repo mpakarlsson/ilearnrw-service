@@ -173,6 +173,30 @@ public class ScreeningCreationControler {
 		return "screening/test_viewer";
 	}
 
+	@RequestMapping(value = "/teachertestviewer", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_EXPERT', 'PERMISSION_TEACHER')")
+	public String viewTeachersScreeningTest(ModelMap model, HttpServletRequest request, 
+			@RequestParam(value = "fname", required = true) String fname) 
+			throws ProfileProviderException, Exception {
+		int userId = (Integer)request.getSession().getAttribute("userid");
+		User user = userService.getUser(userId);
+		ProblemDefinitionIndex pdi = new ProblemDefinitionIndex(user.getLanguage().equals("EN")?LanguageCode.EN:LanguageCode.GR);
+		ProfileClusters pc = new ProfileClusters(pdi);
+		ScreeningTest st = new ScreeningTest();
+
+		ScreeningTestList stl = new ScreeningTestList();
+		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
+		
+		if (stl.getFilenames().contains(fname))
+			st.loadTest(ScreeningResources.path+user.getLanguage()+"/"+fname+".json");
+
+		model.put("fname", fname);
+		model.put("profileClusters", pc);
+		model.put("screeningTest", st);
+		return "screening/teacher_test_viewer";
+	}
+
 	@RequestMapping(value = "/{userId}/screeningtest", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasAnyRole('PERMISSION_ADMIN', 'PERMISSION_EXPERT', 'PERMISSION_TEACHER')")

@@ -57,7 +57,9 @@
                             <i class="fa fa-bar-chart-o fa-fw"></i> ${fname} | 
                             <a href="${pageContext.request.contextPath}/apps/screening?fname=${fname}">View Full Test</a>
                      		 | 
-                            <a href="${pageContext.request.contextPath}/apps/testviewer?fname=${fname}" target="_blank">View Printable Test</a>
+                            <a href="${pageContext.request.contextPath}/apps/testviewer?fname=${fname}" target="_blank">View Student's Test</a>
+                     		 | 
+                            <a href="${pageContext.request.contextPath}/apps/teachertestviewer?fname=${fname}" target="_blank">View Teacher's Test</a>
                      		 | 
 							<span>Go to a cluster
 							<select name="forma" onchange="location = this.options[this.selectedIndex].value;">
