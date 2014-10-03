@@ -246,7 +246,7 @@ public class DbProfileProvider implements IProfileProvider {
 		/* Small hack to insert a default row in the database.
 		 */
 		try {
-			storeProfile( userId, getProfile(userId, getLanguage(languageCode)));
+			storeProfile( userId, getNewProfile(userId, getLanguage(languageCode)));
 		} catch (QueryParamException e) {
 			throw new ProfileProviderException(Type.generalFailure, "Could not store the user profile");
 		}
@@ -407,7 +407,35 @@ public class DbProfileProvider implements IProfileProvider {
 	public class QueryParamException extends Throwable
 	{}
 	
-	
+	/**
+	 * Returns a new User Profile with all severities to 3 (binary automatically go to 1).
+	 * 
+	 * @param userId
+	 * @param languageCode
+	 * @return
+	 */
+	private UserProfile getNewProfile(int userId, LC_Base languageCode) {
+		final LC_Base language = languageCode;
+
+		final UserSeverities userSeverities = new UserSeverities(language.getProblemDefinitionIndexSize_X());
+		final UserProblems userProblems = new UserProblems(languageCode.getLanguageCode());
+
+		userProblems.setUserSeverities(userSeverities);
+		final UserPreferences preferences = new UserPreferences();
+		for(int x = 0; x < language.getProblemDefinitionIndexSize_X(); x++){
+			userProblems.setSystemIndex(x, 0);
+			userProblems.setTeacherIndex(x, 0);
+			userSeverities.constructRow(x, language.getProblemDefinitionIndexSizes_Y()[x]);
+			for(int y = 0; y < language.getProblemDefinitionIndexSizes_Y()[x]; y++){
+				userProblems.setUserSeverity(x, y, 3);
+			}
+		}
+		final List<Word> trickyWords = new ArrayList<Word>();
+		userProblems.setTrickyWords(trickyWords);
+		return new UserProfile(language.getLanguageCode(),
+				userProblems,
+				preferences);
+	}
 
 	/**
 	 * Returns a complete User Profile using a language code supplied by the user.

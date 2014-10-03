@@ -124,6 +124,11 @@ public class SetupController {
 			giorgos_e.setLanguage("GR");
 			users.add(giorgos_e);
 
+			User antonis = createGirl("antonis");
+			antonis.setBirthdate(df.parse("2009-09-11"));
+			antonis.setLanguage("GR");
+			users.add(antonis);
+
 			User englishteacher = new User();
 			englishteacher.setUsername("englishteacher");
 			englishteacher.setPassword("test");
@@ -177,6 +182,7 @@ public class SetupController {
 			roleService.setRoleList(sue_t, studentRole);
 			roleService.setRoleList(maria_b, studentRole);
 			roleService.setRoleList(giorgos_e, studentRole);
+			roleService.setRoleList(antonis, studentRole);
 			outputLog.add("Added roles for students");
 
 			List<Role> teacherRole = new ArrayList<Role>();
@@ -209,7 +215,7 @@ public class SetupController {
 					permissionService.getPermission("PERMISSION_EXPERT")));
 			
 			teacherStudentService.setStudentList(englishteacher, Arrays.asList(joe_t, sue_t));
-			teacherStudentService.setStudentList(greekteacher, Arrays.asList(maria_b, giorgos_e));
+			teacherStudentService.setStudentList(greekteacher, Arrays.asList(maria_b, giorgos_e, antonis));
 			expertTeacherService.setTeacherList(englishexpert, Arrays.asList(englishteacher));
 			expertTeacherService.setTeacherList(greekexpert, Arrays.asList(greekteacher));
 			
