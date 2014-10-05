@@ -106,7 +106,7 @@ function url(link)
 								id="flot-unavailable">No data found.</div>
 						</div>
 						<div class="panel-footer">Click on a segment to view further
-							breakdown of progress in that skill</div>
+							breakdown of progress in that <c:out value="${type}"></c:out></div>
 					</div>
 				</div>
 			</div>

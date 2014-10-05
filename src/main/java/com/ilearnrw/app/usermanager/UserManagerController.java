@@ -715,6 +715,7 @@ public class UserManagerController {
 	@Transactional
 	public String reportsSkills(ModelMap model) {
 		model.put("title", "Skill breakdown");
+		model.put("type", "skill");
 		model.put("js", "skill.js");
 		return "reports/reports";
 	}
@@ -723,6 +724,7 @@ public class UserManagerController {
 	@Transactional
 	public String reportsActivities(ModelMap model) {
 		model.put("title", "Activity breakdown");
+		model.put("type", "activity");
 		model.put("js", "activity.js");
 		return "reports/reports";
 	}
