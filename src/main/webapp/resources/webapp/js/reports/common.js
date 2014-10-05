@@ -74,6 +74,19 @@ $(function() {
 	$.get( url("/apps/jquery/admin/schools"), function( data ) {
 		populate(data, "#schools");
 	});
+	$(".custom-date").hide();
+	$("#startDate").datepicker({
+		maxDate : 0,
+		changeMonth : true,
+		changeYear : true,
+		dateFormat : "dd.mm.yy"
+	});
+	$("#endDate").datepicker({
+		maxDate : 0,
+		changeMonth : true,
+		changeYear : true,
+		dateFormat : "dd.mm.yy"
+	});
 	
 	if (isOverview)
 	{
@@ -81,7 +94,7 @@ $(function() {
 		$("#overview-panel").show();
 	}
 	
-	$("#students,#date").change(function()
+	$("#students,#date,#startDate,#endDate").change(function()
 	{
 		var filter = getBreakdownFilter();
 		$.postJSON(breakdownUrl, JSON.stringify(filter), function(data) {
@@ -111,6 +124,17 @@ $(function() {
 				$("#overview-success-rate").val(data.successRate);
 			}
 	    });
+	});
+	$("#date").change(function()
+	{
+		if ($(this).val() == 4) //Custom range
+		{
+			$(".custom-date").show();
+		}
+		else
+		{
+			$(".custom-date").hide();
+		}
 	});
 	if (!isOverview)
 	{

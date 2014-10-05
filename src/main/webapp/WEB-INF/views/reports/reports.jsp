@@ -77,6 +77,18 @@ function url(link)
 										</select>
 									</div>
 								</div>
+								<div class="form-group custom-date">
+									<label class="col-sm-2 control-label">Start date</label>
+									<div class="col-sm-10 ">
+										<input type="text" class="col-sm-10 form-control" id="startDate" placeholder="Click to select the date"></input>
+									</div>
+								</div>
+								<div class="form-group custom-date">
+									<label class="col-sm-2 control-label">End date</label>
+									<div class="col-sm-10 ">
+										<input type="text" class="col-sm-10 form-control" id="endDate" placeholder="Click to select the date"></input>
+									</div>
+								</div>
 							</form>
 						</div>
 					</div>
