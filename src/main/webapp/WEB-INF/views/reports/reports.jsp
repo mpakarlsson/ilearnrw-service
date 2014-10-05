@@ -14,19 +14,25 @@
 
 <jsp:include page="../includes/includes.jsp"></jsp:include>
 
-<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/excanvas.min.js"></script>
-<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.js"></script>
-<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.pie.js"></script>
-<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.resize.js"></script>
-<script src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/excanvas.min.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.pie.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.resize.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/libs/sb-admin-v2/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
 <script type="text/javascript">
-function url(link)
-{
-	return "${pageContext.request.contextPath}" + link;
-}
+	function url(link) {
+		return "${pageContext.request.contextPath}" + link;
+	}
 </script>
-<script src="${pageContext.request.contextPath}/apps/resources/webapp/js/reports/<c:out value="${js}"></c:out>"></script>
-<script src="${pageContext.request.contextPath}/apps/resources/webapp/js/reports/common.js"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/webapp/js/reports/<c:out value="${js}"></c:out>"></script>
+<script
+	src="${pageContext.request.contextPath}/apps/resources/webapp/js/reports/common.js"></script>
 
 </head>
 <body>
@@ -38,7 +44,10 @@ function url(link)
 		<div id="page-wrapper">
 			<div class="row">
 				<div class="col-lg-12">
-					<h1 class="page-header">Reports: <c:out value="${title}"></c:out></h1>
+					<h1 class="page-header">
+						Reports:
+						<c:out value="${title}"></c:out>
+					</h1>
 				</div>
 			</div>
 			<div class="row">
@@ -48,25 +57,25 @@ function url(link)
 						<div class="panel-body">
 							<form id="filter-form" class="form-horizontal">
 								<div class="form-group">
-									<label class="col-sm-2 control-label">Select school</label>
+									<label class="col-sm-2 control-label">School</label>
 									<div class="col-sm-10 ">
 										<select class="col-sm-10 form-control" id="schools"></select>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-2 control-label">Select class</label>
+									<label class="col-sm-2 control-label">Class</label>
 									<div class="col-sm-10 ">
 										<select class="col-sm-10 form-control" id="classrooms"></select>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-2 control-label">Select student</label>
+									<label class="col-sm-2 control-label">Student</label>
 									<div class="col-sm-10 ">
 										<select class="col-sm-10 form-control" id="students"></select>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-2 control-label">Select date</label>
+									<label class="col-sm-2 control-label">Date range</label>
 									<div class="col-sm-10 ">
 										<select class="col-sm-10 form-control" id="date">
 											<option value="0">Total</option>
@@ -80,13 +89,15 @@ function url(link)
 								<div class="form-group custom-date">
 									<label class="col-sm-2 control-label">Start date</label>
 									<div class="col-sm-10 ">
-										<input type="text" class="col-sm-10 form-control" id="startDate" placeholder="Click to select the date"></input>
+										<input type="text" class="col-sm-10 form-control"
+											id="startDate" placeholder="Click to select the date"></input>
 									</div>
 								</div>
 								<div class="form-group custom-date">
 									<label class="col-sm-2 control-label">End date</label>
 									<div class="col-sm-10 ">
-										<input type="text" class="col-sm-10 form-control" id="endDate" placeholder="Click to select the date"></input>
+										<input type="text" class="col-sm-10 form-control" id="endDate"
+											placeholder="Click to select the date"></input>
 									</div>
 								</div>
 							</form>
@@ -105,85 +116,113 @@ function url(link)
 							<div class="alert alert-danger" style="display: none"
 								id="flot-unavailable">No data found.</div>
 						</div>
-						<div class="panel-footer">Click on a segment to view further
-							breakdown of progress in that <c:out value="${type}"></c:out></div>
+						<div class="panel-footer">
+							Click on a segment to view further breakdown of progress in that
+							<c:out value="${type}"></c:out>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="row">
-			</div>
-			<div class="row">
-			    <div id="flot-click-panel" class="panel panel-default" style="display:none">
-			        <div id="flot-click-title" class="panel-heading"></div>
-			        <div class="panel-body">
-						<div class="row">
-							<div id="flot-click">
-							<form class="form-horizontal">
-								<div class="form-group">
-								    <label class="col-sm-2 control-label">Time spent</label>
-								    <div class="col-sm-10 ">
-								        <input type="text"  class="col-sm-10 form-control" id="flot-skill-timeSpent" disabled></input>
-								    </div>
+				<div class="col-lg-5">
+					<div id="flot-click-panel" class="panel panel-default"
+						style="display: none">
+						<div id="flot-click-title" class="panel-heading"></div>
+						<div class="panel-body">
+							<div class="row">
+								<div id="flot-click">
+									<form class="form-horizontal">
+										<div class="form-group">
+											<label class="col-sm-5 control-label">Time spent</label>
+											<div class="col-sm-7 ">
+												<input type="text" class="col-sm-10 form-control"
+													id="flot-skill-timeSpent" disabled></input>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label">Success rate</label>
+											<div class="col-sm-7 ">
+												<input type="text" class="col-sm-10 form-control"
+													id="flot-skill-successRate" disabled></input>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label">No. of correct
+												answers</label>
+											<div class="col-sm-7 ">
+												<input type="text" class="col-sm-10 form-control"
+													id="flot-skill-correctAnswers" disabled></input>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label">No. of
+												incorrect answers</label>
+											<div class="col-sm-7 ">
+												<input type="text" class="col-sm-10 form-control"
+													id="flot-skill-incorrectAnswers" disabled></input>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-5 control-label">No. of
+												applications</label>
+											<div class="col-sm-7 ">
+												<input type="text" class="col-sm-10 form-control"
+													id="flot-skill-nrOfApps" disabled></input>
+											</div>
+										</div>
+									</form>
 								</div>
-					        	<div class="form-group">
-								    <label class="col-sm-2 control-label">Success rate</label>
-								    <div class="col-sm-10 ">
-								        <input type="text"  class="col-sm-10 form-control" id="flot-skill-successRate" disabled></input>
-								    </div>
-								</div>
-					        	<div class="form-group">
-								    <label class="col-sm-2 control-label">No. of correct answers</label>
-								    <div class="col-sm-10 ">
-								        <input type="text"  class="col-sm-10 form-control" id="flot-skill-correctAnswers" disabled></input>
-								    </div>
-								</div>
-								<div class="form-group">
-								    <label class="col-sm-2 control-label">No. of incorrect answers</label>
-								    <div class="col-sm-10 ">
-								        <input type="text" class="col-sm-10 form-control" id="flot-skill-incorrectAnswers" disabled></input>
-								    </div>
-								</div>
-								<div class="form-group">
-								    <label class="col-sm-2 control-label">No. of applications</label>
-								    <div class="col-sm-10 ">
-								        <input type="text" class="col-sm-10 form-control" id="flot-skill-nrOfApps" disabled></input>
-								    </div>
-								</div>
-								</form>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="row">
-			    <div id="overview-panel" class="panel panel-default" style="display:none">
-			        <div class="panel-heading"><c:out value="${title}"></c:out></div>
-			        <div class="panel-body">
-						<div class="row">
-							<div>
-								<div class="form-group row">
-								    <label class="col-sm-4 control-label" for="overview-skills"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/book.png">Skills worked on</label>
-								    <div class="col-sm-8 ">
-								        <div id="overview-skills" class="col-sm-10"><ul class="list-unstyled"></ul></div>
-								    </div>
-								</div>
-					        	<div class="form-group row">
-								    <label class="col-sm-4 control-label" for="overview-time-spent"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/clock.png">Time spent</label>
-								    <div class="col-sm-8 ">
-								        <input type="text"  class="col-sm-10 form-control" id="overview-time-spent" disabled></input>
-								    </div>
-								</div>
-					        	<div class="form-group row">
-								    <label class="col-sm-4 control-label" for="overview-number-of-activities"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/game.png">Number of activities</label>
-								    <div class="col-sm-8 ">
-								        <input type="text"  class="col-sm-10 form-control" id="overview-number-of-activities" disabled></input>
-								    </div>
-								</div>
-								<div class="form-group row">
-								    <label class="col-sm-4 control-label" for="overview-success-rate"><img src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/tick.png">Success rate</label>
-								    <div class="col-sm-8 ">
-								        <input type="text" class="col-sm-10 form-control" id="overview-success-rate" disabled></input>
-								    </div>
+				<div class="col-lg-8">
+					<div id="overview-panel" class="panel panel-default"
+						style="display: none">
+						<div class="panel-heading">
+							<c:out value="${title}"></c:out>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div>
+									<div class="form-group row vertical-align">
+										<label class="col-sm-5 control-label" for="overview-skills"><img
+											src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/book.png">Skills
+											worked on</label>
+										<div class="col-sm-7 ">
+											<div id="overview-skills" class="col-sm-10">
+												<ul class="list-unstyled"></ul>
+											</div>
+										</div>
+									</div>
+									<div class="form-group row vertical-align">
+										<label class="col-sm-5 control-label"
+											for="overview-time-spent"><img
+											src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/clock.png">Time
+											spent</label>
+										<div class="col-sm-7 ">
+											<input type="text" class="col-sm-10 form-control"
+												id="overview-time-spent" disabled></input>
+										</div>
+									</div>
+									<div class="form-group row vertical-align">
+										<label class="col-sm-5 control-label"
+											for="overview-number-of-activities"><img
+											src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/game.png">Number
+											of activities</label>
+										<div class="col-sm-7 ">
+											<input type="text" class="col-sm-10 form-control"
+												id="overview-number-of-activities" disabled></input>
+										</div>
+									</div>
+									<div class="form-group row vertical-align">
+										<label class="col-sm-5 control-label"
+											for="overview-success-rate"><img
+											src="${pageContext.request.contextPath}/apps/resources/webapp/images/reports/tick.png">Success
+											rate</label>
+										<div class="col-sm-7 ">
+											<input type="text" class="col-sm-10 form-control"
+												id="overview-success-rate" disabled></input>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
