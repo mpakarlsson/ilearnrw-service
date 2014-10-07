@@ -114,19 +114,22 @@ public class SetupController {
 			sue_t.setLanguage("EN");
 			users.add(sue_t);
 
-			User maria_b = createBoy("Maria_Begineraki");
+			User maria_b = createGirl("Maria_Begineraki");
 			maria_b.setBirthdate(df.parse("2007-04-21"));
 			maria_b.setLanguage("GR");
+			maria_b.setPassword("test");
 			users.add(maria_b);
 
-			User giorgos_e = createGirl("Giorgos_Expertidis");
+			User giorgos_e = createBoy("Giorgos_Expertidis");
 			giorgos_e.setBirthdate(df.parse("2009-09-11"));
 			giorgos_e.setLanguage("GR");
+			giorgos_e.setPassword("test");
 			users.add(giorgos_e);
 
-			User antonis = createGirl("antonis");
-			antonis.setBirthdate(df.parse("2009-09-11"));
+			User antonis = createBoy("antonis");
+			antonis.setBirthdate(df.parse("2007-09-11"));
 			antonis.setLanguage("GR");
+			antonis.setPassword("test");
 			users.add(antonis);
 
 			User englishteacher = new User();

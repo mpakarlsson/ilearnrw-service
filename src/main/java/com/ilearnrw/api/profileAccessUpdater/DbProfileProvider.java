@@ -11,6 +11,7 @@ import ilearnrw.utils.LanguageCode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,9 +28,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import com.ilearnrw.api.datalogger.model.ListWithCount;
+import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException.Type;
+import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.UserService;
 
 
 /** 
@@ -89,6 +94,12 @@ public class DbProfileProvider implements IProfileProvider {
 	
 	@Autowired
 	CubeService cubeService;
+
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	LogEntryService logEntryService;
 	
 	@Override
 	public UserProfile getProfile(int userId)
@@ -101,10 +112,11 @@ public class DbProfileProvider implements IProfileProvider {
 			throws ProfileProviderException {
 		try {
 			UserProfile up = getProfile(userId);
-			String username = cubeService.getUsername(userId);
+			User user = userService.getUser(userId);
+			String username = user.getUsername();
 			ListWithCount<WordSuccessCount> l = 
 					cubeService.getWordsByProblemAndSessions(username, 
-							category, index, null, null, 20, true);
+							category, index, null, null, numberOfSessionsToConsiderForUpdate, true);
 			List<WordSuccessCount> thelist = l.getList();
 			
 			int SuccessSum = 0, FailSum = 0, count = 0;
@@ -113,7 +125,7 @@ public class DbProfileProvider implements IProfileProvider {
 				SuccessSum += wc.getSucceed();
 				FailSum += wc.getFailed();
 			}
-			if (count<threshold)
+			if (count<threshold || SuccessSum+FailSum == 0)
 				return null;
 			UpdatedProfileEntry update = new UpdatedProfileEntry(category, index, 
 					up.getUserProblems().getUserSeverity(category, index), -1, 
@@ -141,6 +153,27 @@ public class DbProfileProvider implements IProfileProvider {
 				if (update.getNewSeverity() == 3 && update.getPreviousSeverity() == 3)
 					nwi = modifyWorkingIndex(userId, category, false);
 				update.setNewWorkingIndex(nwi);
+
+				if (update.getNewSeverity() != update.getPreviousSeverity()){
+					java.util.Date date= new java.util.Date();
+					LogEntry le = new LogEntry(username, "PROFILE_UPDATER", new Timestamp(date.getTime()), 
+							"PROFILE_UPDATE",  "", category, index, 
+							0, "", "", "severity: "+update.getNewSeverity()+" from "+update.getPreviousSeverity(), "");
+					
+					logEntryService.insertData(le);
+					cubeService.handle(le);
+				}
+
+				if (update.getNewWorkingIndex() != update.getPreviousWorkingIndex()){
+					java.util.Date date= new java.util.Date();
+					LogEntry le = new LogEntry(username, "PROFILE_UPDATER", new Timestamp(date.getTime()), 
+							"PROFILE_UPDATE",  "", category, index, 
+							0, "", "", "system index: "+update.getNewWorkingIndex()+" from "+update.getPreviousWorkingIndex(), "");
+					
+					logEntryService.insertData(le);
+					cubeService.handle(le);
+				}
+				
 				return update;
 			}
 		} catch(Exception e){
