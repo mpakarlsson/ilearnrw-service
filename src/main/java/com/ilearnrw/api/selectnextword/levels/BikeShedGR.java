@@ -1,10 +1,8 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.greek.GreekWord;
+
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -12,64 +10,27 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
+
+
+/**
+ * 
+ * @author hector
+ *
+ * Level configuration for knocking maze / endless runner
+ * 
+ * Only mode is about counting words, no TTS support
+ * 
+ */
 
 public class BikeShedGR implements GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
-
+			int languageArea, int difficulty) {
 		
-		LanguageAreasGR languageArea = LanguageAreasGR.values()[lA];
-
-		List<GameElement> result = new ArrayList<GameElement>();
-
-			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.GR, lA, difficulty).getItems();
-			EasyHardList list = new EasyHardList(words);
-			
-			List<String> wordList  = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
-
-		
-			/*if(parameters.wordLevel==0)
-				wordList= list.getEasy();
-			else
-				wordList= list.getHard();
-			*/
-			ArrayList<GreekWord> reserve = new ArrayList<GreekWord>();
-			
-			//Add words with the desired number of syllables
-			for (int i=0;i<wordList.size();i++){
-				GreekWord aux = new GreekWord(wordList.get(i));
-				
-				if (aux.getNumberOfSyllables()>1){
-					result.add(new GameElement(false, aux, lA, difficulty));
-				}
-				
-				if(result.size()==parameters.batchSize)
-					break;
-				
-			}
-			
-			//Add words of other lengths if not enough
-			if (result.size()!=parameters.batchSize){
-				for (GreekWord ew : reserve){
-						result.add(new GameElement(false, ew, lA, difficulty));
-						if(result.size()==parameters.batchSize)
-							break;
-					
-				}
-			}
-			
-			
-			if(result.size()==0){
-				
-				result.add(new GameElement(false, new GreekWord("@@@@@@"), lA, difficulty));
-			}
-			
+		return WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);		
 	
-		return result;		
 
 		
 	}
@@ -77,7 +38,7 @@ public class BikeShedGR implements GameLevel {
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
 
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Easy and hard
 
 	}
 
@@ -89,7 +50,7 @@ public class BikeShedGR implements GameLevel {
 
 	@Override
 	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
+		return new int[]{5};//10 words
 
 	}
 
@@ -112,9 +73,9 @@ public class BikeShedGR implements GameLevel {
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
-		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+		//LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
 
-			return new int[]{0};//no choice
+			return new int[]{0};//no choice, only syllables
 		
 	}
 

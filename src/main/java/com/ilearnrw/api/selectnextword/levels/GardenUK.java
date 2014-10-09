@@ -14,6 +14,7 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public class GardenUK implements GameLevel {
@@ -21,83 +22,28 @@ public class GardenUK implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 		
-		List<GameElement> result = new ArrayList<GameElement>();
+		
+		List<GameElement> result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);	
+		
+		if (result.size()==0)
+			return result;
+		
+		
+		List<GameElement> fillers = WordSelectionUtils.getClusterDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,4);	
 
-		ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, languageArea, difficulty).getItems();
-		EasyHardList list = new EasyHardList(words);
-		
-		ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
-		
-		Random rand = new Random();
-		for(String word : targetWords){
-			
-			EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
-			result.add(new GameElement(false,ew,languageArea, difficulty));
-			
-		}
+		for (GameElement f : fillers)
+			result.add(f);		
 		
 		
-		if(parameters.fillerType==FillerType.PREVIOUS){
 		
-			for(String word : targetWords){
+		/*List<GameElement> resultComplete = new ArrayList<GameElement>();
+		
+		for(GameElement ge : result){
 			
-				int randomDifficulty = 1;
-				if (difficulty>0)
-					difficulty = rand.nextInt(difficulty);
-				
-				EasyHardList otherList = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems());
-				
-				ArrayList<String> otherWords = otherList.getRandom(1, parameters.wordLevel);
-				
-				if(otherWords.size()>0){
-					String fillerWord = otherWords.get(0);
-					EnglishWord ew =  new EnglishWord(fillerWord.split("\'")[0]);
-					result.add(new GameElement(true, ew,languageArea, randomDifficulty));
-					
-				}
-
-			}
+			resultComplete.add(new GameElement(ge.isFiller(),ge.getAnnotatedWord()));
 			
-		}else if(parameters.fillerType==FillerType.CLUSTER){
-			
-			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
-
-			int targetCluster = definitions.getProblemDescription(languageArea, difficulty).getCluster();
-			ArrayList<Integer> candidates = new ArrayList<Integer>();
-			
-			for(int ii = 0; ii< definitions.getRowLength(languageArea);ii++){
-				
-				if(ii!=difficulty)
-					if(definitions.getProblemDescription(languageArea,ii).getCluster()==targetCluster)
-						candidates.add(ii);
-			}
-			
-			if(candidates.size()==0){
-				
-				for(int ii = 0; ii< difficulty;ii++)
-							candidates.add(ii);
-			}
-			if(candidates.size()==0){
-				
-				for(int ii = difficulty+1; ii< definitions.getRowLength(languageArea);ii++)
-							candidates.add(ii);
-			}
-			
-			for(String word : targetWords){
-				
-				int randomDifficulty = candidates.get(rand.nextInt(candidates.size()));
-				
-				ArrayList<String> otherWords = (new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems())).getRandom(1, parameters.wordLevel);
-
-				if(otherWords.size()>0){
-					String fillerWord = otherWords.get(0);
-				
-					EnglishWord ew =  new EnglishWord(fillerWord.split("\'")[0]);
-					result.add(new GameElement(true, ew,languageArea, randomDifficulty));
-				}
-			}
-			
-		}
+		}*/
+		
 
 		return result;
 	
@@ -110,7 +56,7 @@ public class GardenUK implements GameLevel {
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
 
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Easy and hard
 
 	}
 
@@ -122,7 +68,7 @@ public class GardenUK implements GameLevel {
 		if (languageArea==LanguageAreasUK.CONFUSING){
 			return new FillerType[]{FillerType.NONE};
 		}else{
-			return new FillerType[]{FillerType.CLUSTER,FillerType.PREVIOUS};
+			return new FillerType[]{FillerType.CLUSTER};//,FillerType.PREVIOUS};
 		}
 			
 			
@@ -153,7 +99,6 @@ public class GardenUK implements GameLevel {
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
-		
 		
 		
 		if(lA==LanguageAreasUK.SYLLABLES){//for syllabification: open and closed syllables

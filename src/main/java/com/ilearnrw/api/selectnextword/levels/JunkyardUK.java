@@ -14,15 +14,48 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public class JunkyardUK implements GameLevel {
 
+	@Override
+	public List<GameElement> getWords(LevelParameters parameters,
+			int lA, int difficulty) {
 
+		
+		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+
+		List<GameElement> result = new ArrayList<GameElement>();
+
+		if (languageArea==LanguageAreasUK.SYLLABLES){//Syllable division
+			
+			
+			return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
+			
+			
+		}else if((languageArea==LanguageAreasUK.SUFFIXES)||(languageArea==LanguageAreasUK.PREFIXES)){
+			
+			return WordSelectionUtils.getTargetWordsGreaterLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
+
+		}else{
+			
+			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+
+			
+			
+		}
+			
+		
+
+			
+
+	}
+	
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Easy and hard
 
 	}
 
@@ -78,108 +111,7 @@ public class JunkyardUK implements GameLevel {
 
 	}
 	
-	@Override
-	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
 
-		
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		if (languageArea==LanguageAreasUK.SYLLABLES){//Syllable division
-			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-			EasyHardList list = new EasyHardList(words);
-			
-			List<String> wordList  = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
-
-		
-			/*if(parameters.wordLevel==0)
-				wordList= list.getEasy();
-			else
-				wordList= list.getHard();
-			*/
-			ArrayList<EnglishWord> reserve = new ArrayList<EnglishWord>();
-			
-			//Add words with the desired number of syllables
-			for (int i=0;i<wordList.size();i++){
-				EnglishWord aux = new EnglishWord(wordList.get(i).split("\'")[0]);
-				
-				if (aux.getNumberOfSyllables()==parameters.accuracy){
-					result.add(new GameElement(false, aux, lA, difficulty));
-				}else if(aux.getNumberOfSyllables()>1){
-					reserve.add(aux);
-				}
-				
-				if(result.size()==parameters.batchSize)
-					break;
-				
-			}
-			
-			//Add words of other lengths if not enough
-			if (result.size()!=parameters.batchSize){
-				for (EnglishWord ew : reserve){
-						result.add(new GameElement(false, ew, lA, difficulty));
-						if(result.size()==parameters.batchSize)
-							break;
-					
-				}
-			}
-			
-			
-			if(result.size()==0){
-				
-				result.add(new GameElement(false, new EnglishWord("@@@@@@"), lA, difficulty));
-			}
-			
-			
-		}else{
-			
-			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-			EasyHardList list = new EasyHardList(words);
-			
-			ArrayList<String> targetWords = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
-			
-			Random rand = new Random();
-			for(String word : targetWords){
-				
-				EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
-				if (ew.getNumberOfSyllables()>1) 
-					result.add(new GameElement(false,ew,lA, difficulty));
-				
-				if(result.size()==parameters.batchSize)
-					break;
-				
-				if(result.size()==0){
-					
-					result.add(new GameElement(false, new Word("@@@@@@"), lA, difficulty));
-				}
-				
-				/*if(parameters.fillerType==FillerType.PREVIOUS){
-				
-					int randomDifficulty = rand.nextInt(difficulty);
-					ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems();
-					EasyHardList otherList = new EasyHardList(otherWords);
-					String fillerWord = otherList.getRandom(1, parameters.wordLevel).get(0);
-					ew =  new EnglishWord(fillerWord.split("\'")[0]);
-					if (ew.getNumberOfSyllables()>1) result.add(new GameElement(true, ew,languageArea, randomDifficulty));
-
-				}*/
-				
-			}		
-			
-			
-		}
-		return result;		
-		
-
-
-			
-
-	}
-	
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {
 		

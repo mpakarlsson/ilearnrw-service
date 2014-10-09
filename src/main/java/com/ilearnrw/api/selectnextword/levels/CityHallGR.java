@@ -120,9 +120,9 @@ public class CityHallGR implements GameLevel {
 		case LETTER_SIMILARITY://Consonants
 			return new int[]{1};//confusing	
 		case CONSONANTS://Consonants
-			return new int[]{2};//confusing
+			return new int[]{2};//words that start with that letter
 		case VOWELS://Vowels
-			return new int[]{2};//confusing
+			return new int[]{2};//words that start with that letter
 		default:
 			return new int[]{2};//confusing
 		}

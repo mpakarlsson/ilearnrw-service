@@ -11,15 +11,23 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 
 public class TrainStationUK implements GameLevel {
+	
+	@Override
+	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
+		return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+
+		
+	}
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Easy and hard
 
 	}
 
@@ -71,36 +79,7 @@ public class TrainStationUK implements GameLevel {
 	}
 	
 	
-	@Override
-	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, languageArea, difficulty).getItems();
-		EasyHardList list = new EasyHardList(words);
-		
-		ArrayList<String> targetWords = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
-		
-		for(String word : targetWords){
-			
-			EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
-			if (ew.getNumberOfSyllables()>1) {
-				result.add(new GameElement(false,ew,languageArea, difficulty));
-				if(result.size()==parameters.batchSize)
-					break;
-			}
-		
-		}
-		
-		if(targetWords.size()==0)
-			result.add(new GameElement(false,new EnglishWord("@@@@@"),languageArea, difficulty));
-		
-		if(result.size()==0)
-			result.add(new GameElement(false,new EnglishWord("#####"),languageArea, difficulty));
-
-		return result;
-		
-	}
 	
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {
@@ -122,7 +101,7 @@ public class TrainStationUK implements GameLevel {
 			case SUFFIXES://Suffixes
 				return true;
 			case PREFIXES://Prefixes
-				return false;
+				return true;
 			case CONFUSING://Confusing letters
 				return false;
 			default:
