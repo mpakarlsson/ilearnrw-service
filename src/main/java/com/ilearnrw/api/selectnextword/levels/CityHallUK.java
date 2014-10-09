@@ -15,10 +15,43 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public class CityHallUK implements GameLevel {
 
+	
+	@Override
+	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
+		
+		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+
+
+		if(languageArea==LanguageAreasUK.CONFUSING){
+			
+			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,1, 0);
+		
+			
+		}else{
+	
+			List<GameElement> result = WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.accuracy, parameters.wordLevel);	
+			
+			if (result.size()>0){
+				List<GameElement> fillers = WordSelectionUtils.getClusterDistractorsDiffPhoneme(LanguageCode.EN, lA, difficulty,1, parameters.wordLevel,parameters.accuracy);	
+
+				for(GameElement ge : fillers)
+					result.add(ge);
+			}
+			//Word pattern= new Word(phoneme);//Phoneme
+			//result.add(new GameElement(false, pattern, languageArea, difficulty));
+			//pattern= new Word(definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[0]);//Grapheme
+			//result.add(new GameElement(false, pattern, languageArea, difficulty));
+
+			return result;
+		}
+		
+
+	}
 
 	@Override
 	public int[] modeLevels(int lA, int difficulty) {
@@ -26,7 +59,7 @@ public class CityHallUK implements GameLevel {
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 		
 		if((languageArea==LanguageAreasUK.VOWELS) | (languageArea==LanguageAreasUK.CONSONANTS)){	
-			return new int[]{0};//phoneme of difficulty is the pattern; letter combinations on the tiles
+			return new int[]{2};//phoneme of difficulty is the pattern; letter combinations on the tiles//removed mode 0 for now
 		}else if(languageArea==LanguageAreasUK.CONFUSING){
 			return new int[]{1};//tiles have letters, pattern has spoken letter
 		}else{//blends and letter patterns
@@ -38,7 +71,7 @@ public class CityHallUK implements GameLevel {
 	
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Easy and hard
 
 	}
 
@@ -84,119 +117,17 @@ public class CityHallUK implements GameLevel {
 	}
 
 	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.SPOKEN2WRITTEN};
-
-	}
-	
-	@Override
-	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
+	public TtsType[] TTSLevels(int lA, int difficulty) {
 		
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		if(languageArea==LanguageAreasUK.CONFUSING){
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-			result.add(new GameElement(false, new EnglishWord(words.get(0)), lA, difficulty));			
-			
-		}else{
-	
-			
-			EasyHardList list = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems());
-			ArrayList<String> words = list.getRandom(parameters.accuracy, parameters.wordLevel);
-
-			for(String w : words)
-				result.add(new GameElement(false, new EnglishWord(w), lA, difficulty));
-			
-			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
-			Random rand = new Random();
-			
-			String phoneme = definitions.getProblemDescription(lA, difficulty).getDescriptions()[0].split("-")[1];
-			//Word pattern= new Word(phoneme);//Phoneme
-			//result.add(new GameElement(false, pattern, languageArea, difficulty));
-			//pattern= new Word(definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[0]);//Grapheme
-			//result.add(new GameElement(false, pattern, languageArea, difficulty));
-			
-			//Find filler
-			if(parameters.fillerType==FillerType.RANDOM){
-				
-				int attempts = 3;
-				while(attempts>0){
-					attempts--;
-					int i = rand.nextInt(definitions.getRowLength(lA));
-				
-					String newPhoneme = definitions.getProblemDescription(lA, i).getDescriptions()[0].split("-")[1];
-					
-					if ( newPhoneme!= phoneme){
-						EasyHardList newList = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, lA, i).getItems());
-						ArrayList<String> newWords = list.getRandom(parameters.accuracy, parameters.wordLevel);
-						
-						for(String w : newWords){
-							result.add(new GameElement(true, new EnglishWord( w ), lA, i));
-							attempts--;
-						}
-						if(newWords.size()>0){
-							attempts=0;
-							break;
-						}
-					
-					}
-				}
-			}else if (parameters.fillerType==FillerType.CLUSTER){
-				
-				int targetCluster = definitions.getProblemDescription(lA, difficulty).getCluster();
-				ArrayList<Integer> candidates = new ArrayList<Integer>();
-				
-				for(int ii = 0; ii< definitions.getRowLength(lA);ii++){
-					
-					if(ii!=difficulty)
-						if(definitions.getProblemDescription(lA, ii).getCluster()==targetCluster)
-							candidates.add(ii);
-				}
-				
-				if (candidates.size()==0){
-					
-					for(int ii = 0; ii< difficulty;ii++){
-						candidates.add(ii);
-					}	
-				}
-				
-				if (candidates.size()==0){
-					
-					for(int ii = difficulty+1; ii< definitions.getRowLength(lA);ii++){
-						candidates.add(ii);
-					}	
-				}
-				
-				int numberFillers = parameters.accuracy;
-				
-				int attempts = 3;
-				while((numberFillers>0)||attempts>0){
-					attempts--;
-					int i = candidates.get(rand.nextInt(candidates.size()));
-					
-					String newPhoneme = definitions.getProblemDescription(lA, i).getDescriptions()[0].split("-")[1];
-					
-					if ( newPhoneme!= phoneme){
-						
-						ArrayList<String> newList = new ProblemWordListLoader(LanguageCode.EN, lA, i).getItems();
-						if(newList.size()>0){
-						
-							result.add(new GameElement(true, new EnglishWord( newList.get(0) ), lA, i));
-							numberFillers--;
-							
-						}
-					}
-					
-				}
-				
-			}
-			
-		}
-		return result;
+		if(languageArea==LanguageAreasUK.BLENDS){
+			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
+		}else
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};
 
 	}
+	
+
 	
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {
