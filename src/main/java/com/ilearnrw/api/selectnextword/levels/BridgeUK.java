@@ -1,21 +1,16 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.annotation.AnnotatedWord;
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.WordProblemInfo;
-import ilearnrw.textclassification.english.EnglishWord;
+
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 public class BridgeUK implements GameLevel {
 	
@@ -25,98 +20,25 @@ public class BridgeUK implements GameLevel {
 
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		
-		 if( (languageArea==LanguageAreasUK.VOWELS) | (languageArea==LanguageAreasUK.CONSONANTS)| (languageArea==LanguageAreasUK.BLENDS)){//vowel or consonant sounds// Use matching difficulty
 			 
-			 ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-				EasyHardList list = new EasyHardList(words);
-				
-				ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
-				
-				
-				for(String word : targetWords){
-					EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
-
-					result.add(new GameElement(false, ew, lA, difficulty));					
-					
-				}
+		if(languageArea==LanguageAreasUK.SYLLABLES){//desired number of syllables
 			 
-				
-				
-				
-		 }else if(languageArea==LanguageAreasUK.SYLLABLES){//desired number of syllables
-			 
-				ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-				EasyHardList list = new EasyHardList(words);
-				
-				List<String> wordList;
-			
-				wordList= list.getRandom(parameters.batchSize*3, parameters.wordLevel);
-				
-				
-				ArrayList<EnglishWord> reserve = new ArrayList<EnglishWord>();
-				
-				//Add words with the desired number of syllables
-				for (int i=0;i<wordList.size();i++){
-					EnglishWord aux = new EnglishWord(wordList.get(i).split("\'")[0]);
-					
-					if (aux.getNumberOfSyllables()==parameters.accuracy){
-						result.add(new GameElement(false, aux, lA, difficulty));
-					}else{
-						reserve.add(aux);
-					}
-					if(result.size()==parameters.batchSize)
-						break;
-					
-				}
-				
-				//Add words of other lengths if not enough
-				if (result.size()!=parameters.batchSize){
-					for (EnglishWord ew : reserve){
-						if (ew.getNumberOfSyllables()>1){
-							result.add(new GameElement(true, ew, lA, difficulty));
-							if(result.size()==parameters.batchSize)
-								break;
-						}
-						
-					}
-				}			 
+			 return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
 			 
 			 
 		 }else{//any syllables
-			 
-				ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, lA, difficulty).getItems();
-				EasyHardList list = new EasyHardList(words);
-				
-				ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
-				
-				for(String word : targetWords){
-					
-					EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
-					result.add(new GameElement(false,ew,lA, difficulty));
-				}
+			 //or if( (languageArea==LanguageAreasUK.VOWELS) | (languageArea==LanguageAreasUK.CONSONANTS)| (languageArea==LanguageAreasUK.BLENDS)){//vowel or consonant sounds// Use matching difficulty
+
+			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 			 
 		 }
-		
-		
-		 if(result.size()==0){
-				result.add(new GameElement(false,new EnglishWord("@@@@@"),lA, difficulty));
-
-		 }
-		 
-		return result;		
-
-		
-		
 		
 	}
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
 		
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Any level
 
 	}
 
@@ -151,18 +73,16 @@ public class BridgeUK implements GameLevel {
 	@Override
 	public TtsType[] TTSLevels(int lA, int difficulty) {
 		
-		
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
 		if( (languageArea==LanguageAreasUK.CONSONANTS) | (languageArea==LanguageAreasUK.VOWELS)){//vowel or consonant
 			
-			return new TtsType[]{TtsType.SPOKEN2WRITTEN};
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};//BLENDS CANT DO SPOKEN
 			
 		}else
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
 
 
-		
 	}
 
 	@Override
@@ -179,7 +99,7 @@ public class BridgeUK implements GameLevel {
 		}else if( (languageArea==LanguageAreasUK.CONSONANTS) | (languageArea==LanguageAreasUK.VOWELS)){
 			return new int[]{4};//match vowel or consonant sound
 		}else if( (languageArea==LanguageAreasUK.BLENDS)){
-			return new int[]{5};//match vowel or consonant sound
+			return new int[]{5};//match vowel or consonant sound//sound not available, can be merged with suffix and prefix
 		}else
 			return new int[]{0};
 	}
@@ -206,7 +126,7 @@ public class BridgeUK implements GameLevel {
 			case SUFFIXES://Suffixes
 				return true;
 			case PREFIXES://Prefixes
-				return false;
+				return true;
 			case CONFUSING://Confusing letters
 				return false;
 			default:

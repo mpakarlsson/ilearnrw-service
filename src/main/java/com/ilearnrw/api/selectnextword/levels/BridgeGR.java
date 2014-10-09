@@ -1,7 +1,6 @@
 package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.utils.LanguageCode;
 
@@ -13,6 +12,7 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public class BridgeGR implements GameLevel {
@@ -20,28 +20,13 @@ public class BridgeGR implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
 		
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+		return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 
-		List<GameElement> result = new ArrayList<GameElement>();
-		
-		
-		ArrayList<String> words = new ProblemWordListLoader(LanguageCode.GR, lA, difficulty).getItems();
-		EasyHardList list = new EasyHardList(words);
-		
-		ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
-		
-		for(String word : targetWords){
-			
-			GreekWord ew =  new GreekWord(word.split("\'")[0]);
-			result.add(new GameElement(false,ew,lA, difficulty));
-		}
-		
-		return result;
 	}
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};
+		return new int[]{0};
 	}
 
 	@Override
@@ -76,9 +61,9 @@ public class BridgeGR implements GameLevel {
 		if (languageArea == LanguageAreasGR.SYLLABLE_DIVISION){//Random syllable
 			return new int[]{0};//match 1,2,3.. syllables
 		}else if((languageArea == LanguageAreasGR.DERIVATIONAL)||(languageArea == LanguageAreasGR.INFLECTIONAL)){//suffixing
-			return new int[]{7};//match last syllable
+			return new int[]{1};//match last syllable
 		}else if(languageArea == LanguageAreasGR.PREFIXES){
-			return new int[]{8};//match first syllable
+			return new int[]{2};//match first syllable
 		}else if(languageArea == LanguageAreasGR.LETTER_SIMILARITY){
 			return new int[]{6};//match first syllable			
 		}else{
@@ -104,9 +89,9 @@ public class BridgeGR implements GameLevel {
 			case VOWELS://Vowels
 				return false;
 			case DERIVATIONAL://Blends and letter patterns
-				return false;//true;
+				return true;
 			case INFLECTIONAL://Syllables
-				return false;//true;
+				return true;
 			case PREFIXES://Suffixes
 				return false;//true;
 			case GP_CORRESPONDENCE://Prefixes

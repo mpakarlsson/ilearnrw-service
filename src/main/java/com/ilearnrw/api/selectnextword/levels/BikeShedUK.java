@@ -1,55 +1,57 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.english.EnglishWord;
+
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
+
+
+/**
+ * 
+ * @author hector
+ *
+ * Level configuration for knocking maze / endless runner
+ * 
+ * Only mode is about counting words, no TTS support
+ * 
+ */
 
 public class BikeShedUK implements GameLevel {
 
+	
+
+	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		ArrayList<String> words = new ProblemWordListLoader(LanguageCode.EN, languageArea, difficulty).getItems();
-		EasyHardList list = new EasyHardList(words);
 		
-		ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
+		return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);		
 		
-		for(String word : targetWords){
-			
-			EnglishWord ew =  new EnglishWord(word.split("\'")[0]);
-			result.add(new GameElement(false,ew,languageArea, difficulty));
-		
-		}
-		
-		if(result.size()==0)
+		/*
+		if(result.length==0)
+			return 
 			result.add(new GameElement(false,new EnglishWord("@@@@@"),languageArea, difficulty));
 			
-		return result;
+		return result;*/
 		
 	}
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//As many as difficulties
 
 	}
 	
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
-		return new int[]{0};
+		return new int[]{0};//Always is about counting syllables
 	}
 
 	@Override
