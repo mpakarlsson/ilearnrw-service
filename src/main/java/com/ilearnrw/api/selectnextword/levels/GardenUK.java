@@ -1,13 +1,9 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.english.EnglishWord;
-import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
@@ -15,7 +11,19 @@ import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+
+
+
+
+/**
+ * 
+ * @author hector
+ *
+ *	Levels configuration for harvest / sorting potions
+ *
+ *	prefix/suffix/vowels categories are characters, syllables categories are first/second open/closed, confusing 4 letters
+ *
+ */
 
 public class GardenUK implements GameLevel {
 
@@ -23,17 +31,49 @@ public class GardenUK implements GameLevel {
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 		
 		
-		List<GameElement> result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);	
-		
-		if (result.size()==0)
-			return result;
-		
-		
-		List<GameElement> fillers = WordSelectionUtils.getClusterDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,4);	
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		List<GameElement> result = new ArrayList<GameElement>();
 
-		for (GameElement f : fillers)
-			result.add(f);		
 		
+		if(lA==LanguageAreasUK.SYLLABLES){
+			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);	
+		
+			if (result.size()==0)
+				return result;
+		
+		
+			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,3,-1,new ArrayList<String>());	
+		
+			for(List<GameElement> lge : distractors)
+				for (GameElement f : lge)
+					result.add(f);		
+		}else if(lA==LanguageAreasUK.CONFUSING){
+			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);	
+			
+			if (result.size()==0)
+				return result;
+		
+		
+			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,1,-1,new ArrayList<String>());	
+		
+			for(List<GameElement> lge : distractors)
+				for (GameElement f : lge)
+					result.add(f);					
+			
+		}else{
+			//TODO routine to pull words from different characters
+			
+			List<Integer> difficulties = WordSelectionUtils.findDifferentCharacter(LanguageCode.EN,  languageArea, difficulty,3);
+			
+			
+			for(int i = 0; i<difficulties.size();i++){
+				
+				List<GameElement> aux = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulties.get(i),parameters.batchSize, parameters.wordLevel,i!=0);	
+				for(GameElement ge : aux)
+					result.add(ge);
+			}	
+			
+		}
 		
 		
 		/*List<GameElement> resultComplete = new ArrayList<GameElement>();
@@ -46,8 +86,6 @@ public class GardenUK implements GameLevel {
 		
 
 		return result;
-	
-	
 	
 	}
 	
@@ -63,13 +101,15 @@ public class GardenUK implements GameLevel {
 	@Override
 	public FillerType[] fillerTypes(int lA, int difficulty) {
 		
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+		return new FillerType[]{FillerType.CLUSTER};//,FillerType.PREVIOUS};
+
+		/*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 		
 		if (languageArea==LanguageAreasUK.CONFUSING){
 			return new FillerType[]{FillerType.NONE};
 		}else{
 			return new FillerType[]{FillerType.CLUSTER};//,FillerType.PREVIOUS};
-		}
+		}*/
 			
 			
 	}
@@ -87,7 +127,8 @@ public class GardenUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
+
+		return new int[]{3};//Number of distractors
 	}
 
 	@Override
@@ -106,7 +147,7 @@ public class GardenUK implements GameLevel {
 		}else if(lA==LanguageAreasUK.CONFUSING){
 			return new int[]{2};
 
-		}else
+		}else//Prefix Suffix & vowels
 			return new int[]{1};//based on the character
 	}
 	@Override

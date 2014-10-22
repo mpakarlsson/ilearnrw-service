@@ -1,9 +1,6 @@
 package com.ilearnrw.api.selectnextword.levels;
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -12,9 +9,17 @@ import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 
+/**
+ * 
+ * @author hector
+ *
+ *	Levels configuration for train dispatcher
+ *
+ *	prefix/suffix split the problem, syllables split the syllables vowels/consonants split the sounds
+ *
+ */
 public class TrainStationUK implements GameLevel {
 	
 	@Override
@@ -73,7 +78,7 @@ public class TrainStationUK implements GameLevel {
 			return new int[]{1};//Suffixes
 		else if(languageArea==LanguageAreasUK.PREFIXES)
 			return new int[]{2};//Prefixes
-		else
+		else//consonant vowels
 			return new int[]{3};//Graphemes
 
 	}

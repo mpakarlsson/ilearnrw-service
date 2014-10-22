@@ -1,13 +1,6 @@
 package com.ilearnrw.api.selectnextword.levels;
 
 
-import ilearnrw.languagetools.english.EnglishDictionary;
-import ilearnrw.languagetools.english.EnglishLanguageAnalyzer;
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.GraphemePhonemePair;
-import ilearnrw.textclassification.Word;
-import ilearnrw.textclassification.WordVsProblems;
-import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
@@ -15,281 +8,112 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
 
-import com.ilearnrw.api.selectnextactivity.TestSelectNextWordsController;
 import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 
 /**
  * 
- * @author Hector P. Martinez
+ * @author hector
  *
- *	Levels are independent of language area
- *	Need to send batches of 2-4 words (1 target word plus 1-3 fillers)
- *	Words must contain the sound corresponding to the difficulty in the matching difficulty information
+ *	Levels configuration for mail sorter/ pelmanism
+ *	Need to send batches of 3-4 words (1 target word plus 2-3 distractors)
+ *	Consonant/vowels will match phoneme to word; Prefixes/suffixes the part to the word
  *
  */
 
 public class MailRoomUK implements GameLevel {
 
 	
-	
-	private static Logger LOG = Logger
-			.getLogger(MailRoomUK.class);
 
-	
 	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
-		int difficulties[] = new int[1+parameters.accuracy];
+		//int difficulties[] = new int[1+parameters.accuracy];
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
+		List<List<GameElement>> listsWords = new ArrayList<List<GameElement>>();
 
-		
-		List<GameElement> target = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
-		
-		System.err.println("Hello?");
-		
-		if (target.size()==0){
-			System.err.println("Nothing on target difficulty");
-			return target;
-		}
-		
-		List<GameElement> distractors;
-		
 		if((lA==LanguageAreasUK.CONSONANTS)| (lA==LanguageAreasUK.VOWELS)){
+
+			//Find compatible phonetic difficulties
+			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
+
+			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, languageArea, difficulty,parameters.accuracy);
 			
-			distractors =  WordSelectionUtils.getClusterDistractorsDiffPhoneme(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel, parameters.accuracy);
+			String[] phonemes = new String[selectedDifficulties.size()];
 			
-		}else{
-			
-			distractors =  WordSelectionUtils.getClusterDistractors(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel, parameters.accuracy);
-			
-		}
-		
-		if (distractors.size()!=parameters.accuracy*parameters.batchSize)
-			return new ArrayList<GameElement>();
-		
-		
-		List<GameElement> result = new  ArrayList<GameElement>();
-		
-		for(int i=0;i<target.size();i++){
-			
-			result.add(target.get(i));
-			for(int j=0;j<parameters.accuracy;j++){
-				result.add(distractors.get((j*parameters.batchSize)+i));
+			for(int i =0;i< selectedDifficulties.size();i++){
+				System.err.println(selectedDifficulties.get(i));
+				phonemes[i] = (definitions.getProblemDescription(languageArea, i).getDescriptions()[0].split("-")[1]);
 				
 			}
 			
+			
+			for(int i=0;i<phonemes.length;i++){
+				
+				List<String> copy = new ArrayList<String>();
+				
+				for(int j = 0;j< phonemes.length;j++){
+					
+					if (j!=i)
+						copy.add(phonemes[j]);
+				}
+				
+					
+				listsWords.add(WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.EN, languageArea, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy));
+
+			}
+			
+
+		}else{
+			
+			
+			List<GameElement> target = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
+			
+			if (target.size()==0){
+				System.err.println("Empty difficulty "+languageArea+"_"+difficulty);
+				return target;
+			}
+			
+			 listsWords = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel ,parameters.accuracy,0,new ArrayList<String>());
+			 
+			 listsWords.add(target);
+			
+			
+		}
+		
+		
+		List<GameElement> result = new ArrayList<GameElement>();
+		Random rand = new Random();
+		
+		for(int i = 0;i<parameters.batchSize;i++){
+			for(int j = 0; j<listsWords.size(); j++){
+			
+				if(i<listsWords.get(j).size())
+					result.add(listsWords.get(j).get(i));
+				else{
+					if(listsWords.get(j).size()==0) {
+						System.err.println("Empty difficulty ");
+						return new ArrayList<GameElement>();
+					}else{
+						result.add( listsWords.get(j).get( rand.nextInt(listsWords.get(j).size() ) ) );
+					}
+				}
+			}
 		}
 		
 		return result;
 		
-		/*ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
-
-
-			int targetCluster = definitions.getProblemDescription(languageArea, difficulty).getCluster();
-			ArrayList<Integer> candidates = new ArrayList<Integer>();
-
-			for(int ii = 0; ii< definitions.getRowLength(languageArea);ii++){
-
-				if(ii!=difficulty)
-					if(definitions.getProblemDescription(languageArea,ii).getCluster()==targetCluster)
-						candidates.add(ii);
-			}
-
-			if(candidates.size()<parameters.accuracy){
-
-				for(int ii = 0; ii< difficulty;ii++)//add previous
-					candidates.add(ii);
-
-
-			}
-
-			if(candidates.size()<parameters.accuracy){//add next
-
-				for(int ii = difficulty+1; ii< definitions.getRowLength(languageArea);ii++)
-					candidates.add(ii);
-
-
-			}
-
-			Random rand = new Random();
-
-			difficulties[0] = difficulty;
-			for (int i=1;i<difficulties.length;i++){
-
-				int ind = rand.nextInt(candidates.size());
-				difficulties[i] = candidates.get(ind);
-				candidates.remove(ind);
-
-			}
-
-*/
-
-		/*ArrayList<ArrayList<String>> wordLists = new ArrayList<ArrayList<String>>();
-
-		for(int  i = 0;i<1+parameters.accuracy;i++){
-
-			wordLists.add(new ArrayList<String>());
-
-			int attempts = 3;
-			while(attempts>0){
-
-				attempts--;	
-
-				WordVsProblems wp = new WordVsProblems(EnglishLanguageAnalyzer.getInstance());
-
-				ProblemWordListLoader pwll = new ProblemWordListLoader(LanguageCode.EN, languageArea, difficulties[i]);
-				EasyHardList list = new EasyHardList(pwll.getItems());
-				ArrayList<String> aux = list.getRandom(parameters.batchSize, parameters.wordLevel);
-
-				if (aux.size()==0){
-					//No words
-					
-					for(int j=wordLists.get(i).size();j<parameters.batchSize;j++){
-
-						wordLists.get(i).add("@@@@@");
-						
-					}
-					attempts = 0;
-					break;
-					
-				}
-				
-				for(String word : aux){
-
-					boolean clean = true;
-
-					if(parameters.mode==0){
-						for(int j : difficulties){
-
-							if(j!=difficulties[i]){//assume that j==difficulties[i] will always have the difficulty
-
-								wp.insertWord(new EnglishWord(word), languageArea, j);
-								if(wp.getMatchedProbs().size()!=0){
-									clean = false;
-									break;
-								}
-
-							}
-
-						}
-
-						if (clean){//need to check that the phonemes do not exist by chance
-							EnglishDictionary dic = EnglishLanguageAnalyzer.getInstance().getDictionary();
-
-							for(int j : difficulties){
-
-								if(j!=difficulties[i]){//assume that j==difficulties[i] will always have the difficulty
-
-									EnglishWord w = dic.getWord(word);
-
-									for(GraphemePhonemePair gp : w.getGraphemesPhonemes()){
-										String phoneme = definitions.getProblemDescription(languageArea, j).getDescriptions()[0].split("-")[1];
-										if (gp.getPhoneme()==phoneme){
-											clean = false;
-											break;
-										}
-
-									}
-
-
-								}
-							}
-						}
-
-					}else if(parameters.mode==1){
-
-
-						for(int j : difficulties){
-
-							if(j!=difficulties[i]){//assume that j==difficulties[i] will always have the difficulty
-
-								String suffix = definitions.getProblemDescription(languageArea, j).getDescriptions()[0].split("-")[0];
-								LOG.debug(String.format("-%s vs %s",suffix,word));
-
-								if(word.endsWith(suffix)){
-									clean = false;
-									break;
-								}
-
-							}
-
-						}
-
-					}else if (parameters.mode==2){
-						for(int j : difficulties){
-
-							if(j!=difficulties[i]){//assume that j==difficulties[i] will always have the difficulty
-
-								String prefix = definitions.getProblemDescription(languageArea, j).getDescriptions()[0];
-
-								if(word.startsWith(prefix)){
-									clean = false;
-									break;
-								}
-
-							}
-
-						}
-
-					}
-
-					if(clean){
-						wordLists.get(i).add(word);
-						if(wordLists.get(i).size()==parameters.batchSize){
-							attempts=0;
-							break;
-						}
-					}
-				}
-
-			}
-			
-			if(wordLists.get(i).size()==0){
-				for(int j=wordLists.get(i).size();j<parameters.batchSize;j++)
-					wordLists.get(i).add("####");
-
-			}
-
-			for(int j=wordLists.get(i).size();j<parameters.batchSize;j++){
-
-				wordLists.get(i).add(wordLists.get(i).get(0));
-					
-			}				
-			
-		}
+		
 		
 
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		for(int j=0;j< parameters.batchSize;j++){
-
-			for (int i = 0; i< difficulties.length;i++){
-
-				if(i==0)
-					result.add(new GameElement(false, new EnglishWord(wordLists.get(i).get(j)), languageArea, difficulties[i]));
-				else
-					result.add(new GameElement(true, new EnglishWord(wordLists.get(i).get(j)), languageArea, difficulties[i]));
-
-				LOG.debug(String.format("Create Word!!%s ",wordLists.get(i).get(j)));
-
-			}
-
-		}
-
-		LOG.debug(String.format("Done!"));
-
-		return result;*/
 	}
 
 	

@@ -1,12 +1,8 @@
 package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.annotation.AnnotatedWord;
-
 import ilearnrw.languagetools.english.EnglishLanguageAnalyzer;
-
-import ilearnrw.textclassification.Word;
 import ilearnrw.textclassification.WordProblemInfo;
-
 import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
@@ -21,6 +17,18 @@ import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
+
+
+/**
+ * 
+ * @author hector
+ *
+ *	Levels configuration for serenade hero / fix the footpath / bridge builder
+ *
+ *	prefix/suffix/vowels/consonants difficulty missing, syllables one random syllable missing
+ *
+ */
+
 public class MusicHallUK implements GameLevel {
 
 	@Override
@@ -33,32 +41,19 @@ public class MusicHallUK implements GameLevel {
 		ArrayList<String> sentences = new ArrayList<String>();
 		ArrayList<String> answers = new ArrayList<String>();
 
-	
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		List<GameElement> targetWords;
 		
-		List<GameElement> targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
+		if(lA==LanguageAreasUK.SYLLABLES){
 			
-		if (targetWords.size()==0)
-			return targetWords;
-		
-		
-		if(parameters.fillerType==FillerType.CLUSTER){
+			targetWords =  WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel,1);
+			if (targetWords.size()==0)
+				return targetWords;
 			
-			List<GameElement> distractors  = WordSelectionUtils.getClusterDistractors(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel , parameters.accuracy);
-			for(GameElement ge : distractors){
-				targetWords.add(ge);
-				
-			}
-
-		}
-				
-		System.err.println("Create sentences");
-		for(GameElement ge : targetWords){
 			
-			AnnotatedWord w = (AnnotatedWord) ge.getAnnotatedWord();
-
-			if(LanguageAreasUK.values()[languageArea]==LanguageAreasUK.SYLLABLES){//Syllables
-
-				
+			
+			for(GameElement ge : targetWords){
+				AnnotatedWord w = (AnnotatedWord) ge.getAnnotatedWord();
 				int syllable = rand.nextInt(w.getNumberOfSyllables());
 				
 				String sentence = "";
@@ -76,13 +71,34 @@ public class MusicHallUK implements GameLevel {
 				}
 				
 				sentences.add(sentence);
-								
+				
+			}
+			
+		}else{
+		
+			targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
 
-			}else{
+			if (targetWords.size()==0)
+				return targetWords;
+					
+		System.err.println(parameters.accuracy);
+			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, parameters.batchSize, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
+				
+					
+			for(List<GameElement> lge : distractors){
+				for(GameElement ge : lge)
+					targetWords.add(ge);
+				
+			}
+
+				
+
+			for(GameElement ge : targetWords){
+			
+				AnnotatedWord w = (AnnotatedWord) ge.getAnnotatedWord();
 
 				String sentence = "";
 				
-
 				WordProblemInfo correctAnswer = w.getWordProblems().get(0);
 				
 				sentence =    w.getWord().substring(0, correctAnswer.getMatched().get(0).getStart())+"{"+
@@ -90,9 +106,7 @@ public class MusicHallUK implements GameLevel {
 							  w.getWord().substring(correctAnswer.getMatched().get(0).getEnd());
 				
 				answers.add(w.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
-						
-				
-				
+
 				sentences.add(sentence);
 				
 			}
@@ -125,13 +139,81 @@ public class MusicHallUK implements GameLevel {
 			
 		}
 		
-		if(fillerWords.size()==1){
-			if(!fillerWords.contains("xh"))
-				fillerWords.add("xh");
-			else
-				fillerWords.add("?");
+		
+		
+		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+			if(!answers.contains(answers.get(i).replace("d","t"))){
+
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(i).replace("d","t"));
+				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+					
+					fillerWords.add(answers.get(i).replace("d","t"));
+				}
 				
+			}
 		}
+		
+		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+			if(!answers.contains(answers.get(i).replace("e","i"))){
+
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(i).replace("e","i"));
+				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+					
+					fillerWords.add(answers.get(i).replace("e","i"));
+				}
+				
+			}
+		}
+		
+		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+			if(!answers.contains(answers.get(i).replace("s","r"))){
+
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(i).replace("s","r"));
+				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+					
+					fillerWords.add(answers.get(i).replace("s","r"));
+				}
+				
+			}
+		}
+			
+		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+			if(!fillerWords.contains("ad")){
+
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "ad");
+				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+					
+					fillerWords.add("ad");
+				}
+				
+			}
+		}
+		
+		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+			if(!fillerWords.contains("tion")){
+
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "tion");
+				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+					
+					fillerWords.add("tion");
+				}
+				
+			}
+		}
+		
+		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+			if(!fillerWords.contains("ww")){
+
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "ww");
+				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+					
+					fillerWords.add("ww");
+				}
+				
+			}
+		}
+		
+		
 		result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
 			
 		}
@@ -141,7 +223,7 @@ public class MusicHallUK implements GameLevel {
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//Easy and hard
 
 	}
 
@@ -171,7 +253,7 @@ public class MusicHallUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{1,2,3};//Number of fillers
+		return new int[]{1,2,3};//Number of fillers and number of difficulties from which take distractors (when needed)
 
 	}
 
