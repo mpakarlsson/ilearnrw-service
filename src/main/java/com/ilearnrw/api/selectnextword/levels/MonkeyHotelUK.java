@@ -1,8 +1,6 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.Word;
-import ilearnrw.textclassification.english.EnglishWord;
+
 import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
@@ -16,121 +14,107 @@ import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
+
+/**
+ * 
+ * @author hector
+ *
+ *	Levels configuration for whack a monkey / whack a mole
+ *
+ *	prefix/suffix to words, confusing letters TTS to letters, vowel/consonant sounds to words and blends written-phoneme to words
+ *
+ *  confusing letters with sound untested
+ */
 public class MonkeyHotelUK implements GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
 		
-		//When mode==0, only the grapheme or phoneme in matching difficulty is used
-
-		
-		List<GameElement> result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
-		
-		if (result.size()==0)
-			return result;
-		
-		
-		List<GameElement> distractors;
-		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
-		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)){
-			
-			distractors = WordSelectionUtils.getClusterDistractorsDiffPhoneme(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel, parameters.accuracy);
+		List<List<GameElement>> listsWords = new ArrayList<List<GameElement>>();
 
-		}else if( (lA==LanguageAreasUK.PREFIXES) || (lA==LanguageAreasUK.SUFFIXES)){
-			distractors = WordSelectionUtils.getClusterDistractors(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel, parameters.accuracy);
+		if((lA==LanguageAreasUK.CONSONANTS)| (lA==LanguageAreasUK.VOWELS)| (lA==LanguageAreasUK.BLENDS)){
 
-		}else{// if(lA==LanguageAreasUK.CONFUSING){
-			distractors = new ArrayList<GameElement>();
-			
-		}
-		
-		for(GameElement ge : distractors)
-			result.add(ge);
-		
-		return result;
-		
-	
-		
-		
-		
-		/*if ((languageArea==1)|(languageArea==4)|(languageArea==5)){//Vowels or consonants or letter patterns/blends
-			
+			//Find compatible phonetic difficulties
 			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
-			Random rand = new Random();
+
+			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, languageArea, difficulty,parameters.accuracy);
 			
-			System.out.println("Do we need to add the phonics to that word?");
+			String[] phonemes = new String[selectedDifficulties.size()];
 			
-			
-			
-			Word pattern;
-			
-			String phoneme = definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[1];
-			String grapheme = definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[0];
-			
-			if(parameters.ttsType==TtsType.SPOKEN2WRITTEN){
-				pattern= new Word(phoneme);//Phoneme
-			}else{
-				pattern= new Word(grapheme);
+			for(int i =0;i< selectedDifficulties.size();i++){
+				System.err.println(selectedDifficulties.get(i));
+				phonemes[i] = (definitions.getProblemDescription(languageArea, i).getDescriptions()[0].split("-")[1]);
 				
 			}
-				
-				
-			result.add(new GameElement(false, pattern, languageArea, difficulty));
 			
-			if (parameters.accuracy==0){//Letters and phonemes
+			
+			for(int i=0;i<phonemes.length;i++){
 				
-				for (int i=0;i< parameters.batchSize;i++){
-					result.add(new GameElement(false, pattern, languageArea, difficulty));					
-				}
+				List<String> copy = new ArrayList<String>();
 				
-				for (int i=0;i< parameters.batchSize;i++){
-					if (parameters.fillerType==FillerType.PREVIOUS){
-						
-						int randomDifficulty = rand.nextInt(java.lang.Math.max(2,difficulty));
-						pattern = new Word(definitions.getProblemDescription(languageArea, randomDifficulty).getDescriptions()[0].split("-")[0]);
-						result.add(new GameElement(true, pattern, languageArea, randomDifficulty));					
-				
-					}
-				}
-				
-			}else{//words again
-				
-				
-				EasyHardList list = new EasyHardList(new ProblemWordListLoader(LanguageCode.EN, languageArea, difficulty).getItems());
-				
-				ArrayList<String> wordLists = list.getRandom(parameters.batchSize, parameters.wordLevel);
-				
-				for(String word : wordLists){
+				for(int j = 0;j< phonemes.length;j++){
 					
-					result.add(new GameElement(false, new EnglishWord(word), languageArea, difficulty));					
-
+					if (j!=i)
+						copy.add(phonemes[j]);
 				}
 				
-				if(parameters.fillerType==FillerType.PREVIOUS){
 					
-					int randomDifficulty = rand.nextInt(java.lang.Math.max(2,difficulty));
-					ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.EN, languageArea, randomDifficulty).getItems();
-					EasyHardList otherList = new EasyHardList(otherWords);
-					String fillerWord = otherList.getRandom(1, parameters.wordLevel).get(0);
+				listsWords.add(WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.EN, languageArea, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy));
 
-				
-					result.add(new GameElement(true, new EnglishWord(fillerWord.split("\'")[0]),languageArea, randomDifficulty));
-
-				}
-				
-				
 			}
+			
+
+		}else if(lA==LanguageAreasUK.CONFUSING){
+			
+			return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
 			
 		}else{
 			
-			System.err.println("Confusing letters and irregular/sight words");
 			
-		}*/
+			List<GameElement> target = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
+			
+			if (target.size()==0){
+				System.err.println("Empty difficulty "+languageArea+"_"+difficulty);
+				return target;
+			}
+			
+			 listsWords = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel ,parameters.accuracy,0,new ArrayList<String>());
+			 
+			 listsWords.add(target);
+			
+			
+		}
+		
+		
+		List<GameElement> result = new ArrayList<GameElement>();
+		Random rand = new Random();
+		
+		for(int i = 0;i<parameters.batchSize;i++){
+			for(int j = 0; j<listsWords.size(); j++){
+			
+				if(i<listsWords.get(j).size())
+					result.add(listsWords.get(j).get(i));
+				else{
+					if(listsWords.get(j).size()==0) {
+						System.err.println("Empty difficulty ");
+						return new ArrayList<GameElement>();
+					}else{
+						result.add( listsWords.get(j).get( rand.nextInt(listsWords.get(j).size() ) ) );
+					}
+				}
+			}
+		}
+		
+		return result;
+		
+		
+		
+	
+
 		
 		
 	}
@@ -183,10 +167,13 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)){
 			
-			return new TtsType[]{TtsType.WRITTEN2WRITTEN,TtsType.SPOKEN2WRITTEN};//Only matching difficulty on the monkeys; phoneme on the pattern
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN,TtsType.WRITTEN2WRITTEN};
 			
-		}else if((lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)|(lA==LanguageAreasUK.CONFUSING)){
+		}else if((lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)){
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
+			
+		}else if((lA==LanguageAreasUK.CONFUSING)){
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN,TtsType.WRITTEN2WRITTEN};
 		}else
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
 		
@@ -200,17 +187,17 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 		
-		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)){
+		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)){//mode 0 removed for now
 			
-			return new int[]{0,1};//Only matching difficulty on the monkeys; phoneme on the pattern; word on monkeys
+			return new int[]{1};//Only matching difficulty on the monkeys; phoneme on the pattern; word on monkeys
 			
 		}else if((lA==LanguageAreasUK.PREFIXES)){
 			return new int[]{3};//prefix to word
 		}else if((lA==LanguageAreasUK.SUFFIXES)){
 			return new int[]{2};//suffix to word
 		}else if(lA==LanguageAreasUK.CONFUSING){
-			return new int[]{4};//Just written letters
-		}else
+			return new int[]{4};//letter to letters
+		}else//BLENDS
 			return new int[]{0};
 
 	}

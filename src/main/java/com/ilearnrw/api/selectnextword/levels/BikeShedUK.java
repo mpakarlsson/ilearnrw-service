@@ -31,7 +31,6 @@ public class BikeShedUK implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
-		
 		return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);		
 		
 		/*

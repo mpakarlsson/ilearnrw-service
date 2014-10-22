@@ -12,13 +12,26 @@ import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
+
+/**
+ * 
+ * @author hector
+ *
+ * Level configuration for bridge reinforcer / eye exam
+ * 
+ * Consonant/vowels use TTS; different modes for syllables (highlight particular syllable), prefix and suffix (highlight problem), vowel/consonants (highlight sound) and blends (highlight grapheme?)
+ * 
+ */
 public class BridgeUK implements GameLevel {
 	
 	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
 
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+		return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+		
+		
+		/*LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
 			 
 		if(languageArea==LanguageAreasUK.SYLLABLES){//desired number of syllables
@@ -31,7 +44,7 @@ public class BridgeUK implements GameLevel {
 
 			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 			 
-		 }
+		 }*/
 		
 	}
 
@@ -61,13 +74,16 @@ public class BridgeUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int lA, int difficulty) {
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+
+		return new int[]{0};//No choice
+
+/*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
 		if(languageArea==LanguageAreasUK.SYLLABLES)
 			return new int[]{2,3,4};//Number syllables
 		else
 			return new int[]{0};//No choice
-
+*/
 	}
 
 	@Override
@@ -91,11 +107,11 @@ public class BridgeUK implements GameLevel {
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
 		if (languageArea == LanguageAreasUK.SYLLABLES){//Random syllable
-			return new int[]{0};//match 1,2,3.. syllables
+			return new int[]{0};//match a syllable
 		}else if(languageArea == LanguageAreasUK.SUFFIXES){//suffixing
-			return new int[]{1};//match last syllable
+			return new int[]{1};//match last part
 		}else if(languageArea == LanguageAreasUK.PREFIXES){
-			return new int[]{2};//match first syllable
+			return new int[]{2};//match first part
 		}else if( (languageArea==LanguageAreasUK.CONSONANTS) | (languageArea==LanguageAreasUK.VOWELS)){
 			return new int[]{4};//match vowel or consonant sound
 		}else if( (languageArea==LanguageAreasUK.BLENDS)){

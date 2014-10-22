@@ -1,13 +1,9 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.Word;
-import ilearnrw.textclassification.english.EnglishWord;
+
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
@@ -15,41 +11,45 @@ import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+
+
+/**
+ * 
+ * @author hector
+ *
+ * Level configuration for junkyard / drop chops / karate chops
+ * 
+ * Different modes for prefixes, suffixes, syllables and vowel/consonants
+ * 
+ * 
+ */
 
 public class JunkyardUK implements GameLevel {
 
 	@Override
-	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
+	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
 
-		
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-
-		List<GameElement> result = new ArrayList<GameElement>();
 
 		if (languageArea==LanguageAreasUK.SYLLABLES){//Syllable division
 			
-			
-			return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
+			return WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
+
+			//return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
 			
 			
 		}else if((languageArea==LanguageAreasUK.SUFFIXES)||(languageArea==LanguageAreasUK.PREFIXES)){
 			
-			return WordSelectionUtils.getTargetWordsGreaterLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
+			//return WordSelectionUtils.getTargetWordsGreaterLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
+			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 
-		}else{
+		}else{//VOWELS & CONSONANTS 
 			
 			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 
 			
-			
 		}
 			
-		
-
-			
-
 	}
 	
 
@@ -79,14 +79,15 @@ public class JunkyardUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
+		return new int[]{0};//No choice
 		
-		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		/*LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
 		if(lA==LanguageAreasUK.SYLLABLES)
 			return new int[]{2,3,4};//Number syllables
 		else
 			return new int[]{0};//No choice
-			
+			*/
 	}
 
 	@Override
