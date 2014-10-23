@@ -47,7 +47,7 @@ public class MonkeyHotelUK implements GameLevel {
 			
 			for(int i =0;i< selectedDifficulties.size();i++){
 				System.err.println(selectedDifficulties.get(i));
-				phonemes[i] = (definitions.getProblemDescription(languageArea, i).getDescriptions()[0].split("-")[1]);
+				phonemes[i] = (definitions.getProblemDescription(languageArea, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
 				
 			}
 			
@@ -167,13 +167,13 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)){
 			
-			return new TtsType[]{TtsType.SPOKEN2WRITTEN,TtsType.WRITTEN2WRITTEN};
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};//,TtsType.WRITTEN2WRITTEN};
 			
 		}else if((lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)){
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
 			
 		}else if((lA==LanguageAreasUK.CONFUSING)){
-			return new TtsType[]{TtsType.SPOKEN2WRITTEN,TtsType.WRITTEN2WRITTEN};
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};//,TtsType.WRITTEN2WRITTEN};
 		}else
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
 		

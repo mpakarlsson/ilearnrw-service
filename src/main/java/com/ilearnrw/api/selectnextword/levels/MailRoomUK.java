@@ -51,7 +51,7 @@ public class MailRoomUK implements GameLevel {
 			
 			for(int i =0;i< selectedDifficulties.size();i++){
 				System.err.println(selectedDifficulties.get(i));
-				phonemes[i] = (definitions.getProblemDescription(languageArea, i).getDescriptions()[0].split("-")[1]);
+				phonemes[i] = (definitions.getProblemDescription(languageArea, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
 				
 			}
 			
@@ -169,7 +169,7 @@ public class MailRoomUK implements GameLevel {
 
 		if((lA==LanguageAreasUK.CONSONANTS)| (lA==LanguageAreasUK.VOWELS))
 
-			return new TtsType[]{TtsType.WRITTEN2WRITTEN,TtsType.SPOKEN2WRITTEN};
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};//TtsType.WRITTEN2WRITTEN,
 
 		else
 
