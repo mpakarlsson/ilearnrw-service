@@ -50,7 +50,7 @@ public class CityHallUK implements GameLevel {
 			
 			for(int i =0;i< selectedDifficulties.size();i++){
 				
-				phonemes[i] = (definitions.getProblemDescription(lA, i).getDescriptions()[0].split("-")[1]);
+				phonemes[i] = (definitions.getProblemDescription(lA, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
 				
 			}
 			List<GameElement> result = new ArrayList<GameElement>();

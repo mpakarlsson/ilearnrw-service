@@ -106,13 +106,13 @@ public  class WordSelectionUtils {
 
 		for(int i=validEnd-1;i>=0;i--){
 			
-			Word w;
+			AnnotatedWord w;
 			System.err.println(words.get(i));
 			
 			if(language == LanguageCode.EN){	
-				w = new EnglishWord(words.get(i));
+				w = new AnnotatedWord(new EnglishWord(words.get(i)));
 			}else{
-				w = new GreekWord(words.get(i));
+				w = new AnnotatedWord(new GreekWord(words.get(i)));
 			}
 			
 			

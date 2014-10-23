@@ -75,14 +75,20 @@ public class MusicHallUK implements GameLevel {
 			}
 			
 		}else{
+			
+			int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
 		
-			targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
+			targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, numberTargets, parameters.wordLevel);
 
 			if (targetWords.size()==0)
 				return targetWords;
 					
+			int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
+			if (numberDistractorsPerDifficulty==0)
+				numberDistractorsPerDifficulty++;
+			
 		System.err.println(parameters.accuracy);
-			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, parameters.batchSize, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
+			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
 				
 					
 			for(List<GameElement> lge : distractors){

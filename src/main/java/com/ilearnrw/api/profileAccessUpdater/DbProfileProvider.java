@@ -121,30 +121,78 @@ public class DbProfileProvider implements IProfileProvider {
 			
 			int SuccessSum = 0, FailSum = 0, count = 0;
 			for (WordSuccessCount wc : thelist){
+				System.err.println(wc.getWord()+" "+wc.getCount()+" "+wc.getSucceed()+" "+wc.getFailed());
 				count += wc.getCount();
 				SuccessSum += wc.getSucceed();
 				FailSum += wc.getFailed();
 			}
+			
 			if (count<threshold || SuccessSum+FailSum == 0)
 				return null;
+			
 			UpdatedProfileEntry update = new UpdatedProfileEntry(category, index, 
 					up.getUserProblems().getUserSeverity(category, index), -1, 
 					up.getUserProblems().getSystemIndex(category), -1);
+			
+			System.err.println(SuccessSum+" "+FailSum+" "+count);
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
-			if (pcnt >thresholdForSeverityZero/100.0)
-				up.getUserProblems().setUserSeverity(category, index, 0);
-			else if (pcnt >thresholdForSeverityOne/100.0)
-				up.getUserProblems().setUserSeverity(category, index, 1);
-			else if (pcnt >thresholdForSeverityTwo/100.0)
-				up.getUserProblems().setUserSeverity(category, index, 2);
-			else 
-				up.getUserProblems().setUserSeverity(category, index, 3);
+			System.err.println(pcnt);
+		/*	if (up.getUserProblems().getUserSeverity(category, index) == 0){
+				pcnt = (thresholdForSeverityOne+1)/100.0;
+			}else if (up.getUserProblems().getUserSeverity(category, index) == 1){
+				
+				pcnt = (thresholdForSeverityZero+1)/100.0;
+
+			}else if(up.getUserProblems().getUserSeverity(category, index) == 2){
+				
+				pcnt = (thresholdForSeverityOne+1)/100.0;
+				
+			}else if(up.getUserProblems().getUserSeverity(category, index) == 3){
+				
+				pcnt = (thresholdForSeverityTwo+1)/100.0;
+				
+			}*/
+				
+			int severity = up.getUserProblems().getUserSeverity(category, index);
+			int targetSeverity = -1;
+			if (pcnt >thresholdForSeverityZero/100.0){
+				targetSeverity = 0;
+				
+				
+			}else if (pcnt >thresholdForSeverityOne/100.0){
+				targetSeverity = 1;
+
+
+			}else if (pcnt >thresholdForSeverityTwo/100.0){
+				targetSeverity = 2;
+
+			}else{ 
+				targetSeverity = 3;
+
+			}
+			
+			if(targetSeverity>severity){
+				up.getUserProblems().setUserSeverity(category, index, severity+1);
+			}else if(targetSeverity<severity){
+				up.getUserProblems().setUserSeverity(category, index, severity-1);
+				
+			}else{
+				up.getUserProblems().setUserSeverity(category, index, severity);
+			}
+			
 			update.setNewSeverity(up.getUserProblems().getUserSeverity(category, index));
+			
+			
+
 			storeProfile(userId, up);
 			
+			System.err.println("Profile updated "+update.getNewSeverity()+" "+update.getPreviousSeverity());
 
 			if (update.getNewSeverity() != update.getPreviousSeverity() || 
 					(update.getNewSeverity() == 3 && update.getPreviousSeverity() == 3)){
+				
+				System.err.println("There was a change");
+
 				int nwi = update.getPreviousWorkingIndex();
 				if (update.getNewSeverity() < update.getPreviousSeverity())
 					nwi = modifyWorkingIndex(userId, category, true);
