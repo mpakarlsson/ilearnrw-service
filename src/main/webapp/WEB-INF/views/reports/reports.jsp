@@ -161,8 +161,7 @@
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="col-sm-5 control-label">No. of
-												activities</label>
+											<label class="col-sm-5 control-label"><c:out value="${count}"></c:out></label>
 											<div class="col-sm-7 ">
 												<input type="text" class="col-sm-10 form-control"
 													id="flot-skill-nrOfApps" disabled></input>
