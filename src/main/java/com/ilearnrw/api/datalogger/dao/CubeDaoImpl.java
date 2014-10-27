@@ -636,7 +636,7 @@ public class CubeDaoImpl implements CubeDao {
 			break;
 		case CUSTOM:
 			dateFilterString = "( DATE(" + fieldName
-					+ ") between DATE(:start) and DATE(:end)) ";
+					+ ") between STR_TO_DATE(:start, '%d.%m.%Y') and STR_TO_DATE(:end, '%d.%m.%Y')) ";
 			parameterMap.put("start", dateFilter.getStartDate());
 			parameterMap.put("end", dateFilter.getEndDate());
 			break;
