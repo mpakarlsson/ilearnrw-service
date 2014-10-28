@@ -8,6 +8,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>View user logs</title>
 <jsp:include page="../includes/includes.jsp"></jsp:include>
+<script>
+$(function() {
+	var table = $("#logstable").DataTable({
+		'paging' : false,
+		'searching' : false
+	});
+});
+</script>
 </head>
 <body>
 	<div id="wrapper">
@@ -33,6 +41,7 @@
 				</c:if>
 				<div class="panel panel-default">
 					<div class="panel-heading">Current filters</div>
+					<div class="panel-body">
 					<c:if
 						test="${ empty sessionScope.tags and empty sessionScope.applicationId and empty sessionScope.timestart and empty sessionScope.timeend}">
 			There are no current filters applied.
@@ -53,11 +62,12 @@
 			Time end: <c:out value="${sessionScope.timeend}" />
 						<br />
 					</c:if>
+					</div>
 				</div>
 				<form:form action="" method="POST" class="form-vertical">
 					<div class="panel panel-default">
 						<div class="panel-heading">New filters</div>
-						<div class="form-group">
+						<div class="panel-body">
 							<label class="control-label col-lg-2">Tags:</label>
 							<div class="col-lg-10">
 								<input class="form-control " type="text" name="tags"
@@ -78,38 +88,50 @@
 								<input class="form-control" type="text" name="timeend"
 									value="<c:out value="${sessionScope.timeend}"/>" />
 							</div>
+						<button type="submit" class="btn btn-primary">Submit</button>
 						</div>
 
-						<button type="submit" class="btn btn-primary">Submit</button>
 					</div>
 				</form:form>
 				<div class="panel panel-default">
 					<div class="panel-heading">Logs</div>
+					<div class="panel-body">
 					<c:choose>
 						<c:when test="${ not empty logEntryResult.results}">
-							<table border="1">
+							<table id="logstable" border="1" class="table table-striped table-bordered table-condensed table-hover">
+							<thead>
 								<tr>
 									<th>Username</th>
+									<th>Application ID</th>
 									<th>Tag</th>
 									<th>Value</th>
-									<th>Application ID</th>
+									<th>Word</th>
+									<th>Problem Category</th>
+									<th>Problem Index</th>
 									<th>Time</th>
 								</tr>
+							</thead>
+							<tbody>
 								<c:forEach items="${logEntryResult.results}" var="log">
 									<tr>
 										<td>${log.username}</td>
+										<td>${log.applicationId}</td>
 										<td>${log.tag}</td>
 										<td>${log.value}</td>
-										<td>${log.applicationId}</td>
+										<td>${log.word}</td>
+										<td>${log.problemCategory}</td>
+										<td>${log.problemIndex}</td>
 										<td>${log.timestamp}</td>
 									</tr>
 								</c:forEach>
+								</tbody>
 							</table>
 						</c:when>
 						<c:otherwise>
 		        There are no logs for the current user with the current filters.
 		    </c:otherwise>
 					</c:choose>
+					</div>
 				</div>
 			</div>
 		</div>

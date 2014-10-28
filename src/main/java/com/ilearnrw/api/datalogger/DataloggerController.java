@@ -8,7 +8,6 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ilearnrw.api.datalogger.model.*;
+import com.ilearnrw.api.datalogger.model.ListWithCount;
+import com.ilearnrw.api.datalogger.model.LogEntry;
+import com.ilearnrw.api.datalogger.model.LogEntryFilter;
+import com.ilearnrw.api.datalogger.model.LogEntryResult;
+import com.ilearnrw.api.datalogger.model.Problem;
+import com.ilearnrw.api.datalogger.model.RequestFilters;
+import com.ilearnrw.api.datalogger.model.Session;
+import com.ilearnrw.api.datalogger.model.WordCount;
+import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
 

@@ -202,11 +202,40 @@ public class LogEntryDaoImpl implements LogEntryDao {
 		// Make a copy of params for the Count (we don't what the LIMIT in
 		// there)
 		final List<Object> paramsCount = new ArrayList<Object>(params);
+
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
+
+		class PageResult {
+			public int totalAmountOfPages;
+		}
+		;
+		final PageResult pageResult = new PageResult();
+
+		String sqlCount = queryCount.toString();
+		debugInfo.put("sql-count", sqlCount);
+		debugInfo.put("sql-count-params", paramsCount);
+		jdbcTemplate.query(sqlCount, paramsCount.toArray(),
+				new RowCallbackHandler() {
+
+					@Override
+					public void processRow(ResultSet rs) throws SQLException {
+						int result = rs.getInt("COUNT(*)");
+						if (result == 0)
+							pageResult.totalAmountOfPages = result;
+						else
+							pageResult.totalAmountOfPages = (result / resultLimit) + 1;
+					}
+				});
+
+		LOG.debug(debugInfo.toString());
+
+		if (page > pageResult.totalAmountOfPages) {
+			page = 1;
+		}
+		
 		query.append(" ORDER BY timestamp LIMIT ?, ?;");
 		params.add((page - 1) * resultLimit);
 		params.add(resultLimit);
-
-		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
 
 		/*
 		 * Execute the query and return the results.
@@ -245,29 +274,6 @@ public class LogEntryDaoImpl implements LogEntryDao {
 			}
 		};
 
-		class PageResult {
-			public int totalAmountOfPages;
-		}
-		;
-		final PageResult pageResult = new PageResult();
-
-		String sqlCount = queryCount.toString();
-		debugInfo.put("sql-count", sqlCount);
-		debugInfo.put("sql-count-params", paramsCount);
-		jdbcTemplate.query(sqlCount, paramsCount.toArray(),
-				new RowCallbackHandler() {
-
-					@Override
-					public void processRow(ResultSet rs) throws SQLException {
-						int result = rs.getInt("COUNT(*)");
-						if (result == 0)
-							pageResult.totalAmountOfPages = result;
-						else
-							pageResult.totalAmountOfPages = (result / resultLimit) + 1;
-					}
-				});
-
-		LOG.debug(debugInfo.toString());
 		
 		return new LogEntryResult(page, pageResult.totalAmountOfPages, results,
 				debugInfo.toString());
