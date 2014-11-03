@@ -1,21 +1,29 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.languagetools.extras.EasyHardList;
-import ilearnrw.textclassification.Word;
-import ilearnrw.textclassification.english.EnglishWord;
-import ilearnrw.textclassification.greek.GreekWord;
+
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
+
+
+/**
+ * 
+ * @author hector
+ *
+ * Level configuration for junkyard / drop chops / karate chops
+ * 
+ * Different modes for prefixes, suffixes and 
+ * 
+ * 
+ */
+
 
 public class JunkyardGR implements GameLevel {
 
@@ -26,53 +34,28 @@ public class JunkyardGR implements GameLevel {
 		
 		LanguageAreasGR languageArea = LanguageAreasGR.values()[lA];
 
-		List<GameElement> result = new ArrayList<GameElement>();
+		if (languageArea==LanguageAreasGR.SYLLABLE_DIVISION){//Syllable division
+			
+			//List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel ,3,1, new ArrayList<String>());
+			//More than one syllable
+			return WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
+
+			//return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
+			
+			
+		}else if((languageArea==LanguageAreasGR.PREFIXES)){
+			
+			return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+
+		}else{//INFL SUFF
+			
+			return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 
 			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.GR, lA, difficulty).getItems();
-			EasyHardList list = new EasyHardList(words);
-			
-			List<String> wordList  = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
+		}
 
 		
-			/*if(parameters.wordLevel==0)
-				wordList= list.getEasy();
-			else
-				wordList= list.getHard();
-			*/
-			ArrayList<GreekWord> reserve = new ArrayList<GreekWord>();
-			
-			//Add words with the desired number of syllables
-			for (int i=0;i<wordList.size();i++){
-				GreekWord aux = new GreekWord(wordList.get(i));
-				
-				if (aux.getNumberOfSyllables()>1){
-					result.add(new GameElement(false, aux, lA, difficulty));
-				}
-				
-				if(result.size()==parameters.batchSize)
-					break;
-				
-			}
-			
-			//Add words of other lengths if not enough
-			if (result.size()!=parameters.batchSize){
-				for (GreekWord ew : reserve){
-						result.add(new GameElement(false, ew, lA, difficulty));
-						if(result.size()==parameters.batchSize)
-							break;
-					
-				}
-			}
-			
-			
-			if(result.size()==0){
-				
-				result.add(new GameElement(false, new GreekWord("@@@@@@"), lA, difficulty));
-			}
-			
-	
-		return result;		
+		
 
 		
 	}
@@ -80,7 +63,7 @@ public class JunkyardGR implements GameLevel {
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
 
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//All
 
 	}
 

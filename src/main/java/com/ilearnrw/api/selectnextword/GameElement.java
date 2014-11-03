@@ -19,6 +19,14 @@ public class GameElement implements Serializable {
 		this.annotatedSentence = null;
 	}
 
+	
+	public GameElement(boolean isFiller, AnnotatedWord theWord) {
+		super();
+		this.isFiller = isFiller;
+		annotatedWord = theWord;
+		this.annotatedSentence = null;
+	}
+	
 	public GameElement(boolean isFiller, Word theWord, int category, int index) {
 		super();
 		this.isFiller = isFiller;

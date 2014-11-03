@@ -163,6 +163,33 @@ public class DataloggerController {
 				timeend, page, tags, applicationId);
 		return logEntryService.getLogs(filter);
 	}
+	
+	@RequestMapping(value = "/lastLogs/{username}", method = RequestMethod.GET)
+	public @ResponseBody
+	LogEntryResult getLastLogs(
+			@PathVariable String username,
+			/*
+			 * Following parameters are "semi-required" if they are not set,
+			 * defaults will be used
+			 */
+			@RequestParam(value = "timestart", required = false) String timestart,
+			@RequestParam(value = "timeend", required = false) String timeend,
+			@RequestParam(value = "page", required = false) Integer page,
+			/*
+			 * Optional parameters. If omitted they will be ignored.
+			 */
+			@RequestParam(value = "tags", required = false) String tags,
+			@RequestParam(value = "applicationId", required = false) String applicationId) {
+		
+			LogEntryFilter filter = new LogEntryFilter(username, timestart,
+				timeend, page, tags, applicationId);
+			//LogEntryResult result = logEntryService.getLogs(filter);
+		return logEntryService.getLastLogs(filter);
+	}	
+	
+	
+	
+	
 
 	@RequestMapping(value = "/logs/{username}/sessions/{session_type}", method = RequestMethod.GET)
 	public @ResponseBody

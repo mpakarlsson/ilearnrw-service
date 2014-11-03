@@ -16,4 +16,6 @@ public interface LogEntryDao {
 
 	public LogEntryResult getLogs(LogEntryFilter filter);
 	
+	public LogEntryResult getLogs(LogEntryFilter filter,boolean desc, int resultLimit);
+	
 }
