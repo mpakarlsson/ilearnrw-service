@@ -154,46 +154,31 @@ public class LogEntryDaoImpl implements LogEntryDao {
 		query.append("SELECT * FROM logs WHERE ");
 		queryCount.append("SELECT COUNT(*) FROM logs WHERE ");
 
-		/*
-		 * Add optional parameters to the query.
-		 */
-		class Filter {
-			public Filter(String queryString, Object paramObj,
-					Boolean addAndToQuery) {
-				query = queryString;
-				param = paramObj;
-				addAND = addAndToQuery;
-			}
-
-			public Filter(String queryString, Object paramObj) {
-				query = queryString;
-				param = paramObj;
-				addAND = true;
-			}
-
-			public String query;
-			public Object param;
-			public Boolean addAND;
-		}
-		;
-
-		List<Filter> w = new ArrayList<Filter>();
 		final List<Object> params = new ArrayList<Object>();
-		String tag = filter.tag;
-		if (tag != null) {
-			w.add(new Filter("tag LIKE ?", tag));
-		}
-		
-		String applicationId = filter.applicationId;
-		if (applicationId != null)
-			w.add(new Filter("applicationId=?", applicationId));
 
-		for(Filter f : w)
-		{
-			queryWhere.append(f.query);
-			params.add(f.param);
-			if( f.addAND )
-				queryWhere.append(" AND ");
+		if (filter.tag != null) {
+			String[] tags = filter.tag.split(",");
+
+			String operator = " (";
+			for (String tag : tags) {
+				String trimmedTag = tag.trim();
+				queryWhere.append(operator);
+				if (trimmedTag.startsWith("~")) {
+					queryWhere.append("tag NOT LIKE ?");
+					params.add(tag.replaceFirst("~", ""));
+				}
+				else {
+					queryWhere.append("tag LIKE ?");
+					params.add(tag);
+				}
+				operator = " OR ";
+			}
+			queryWhere.append(" ) AND ");
+		}		
+		String applicationId = filter.applicationId;
+		if (applicationId != null) {
+			queryWhere.append("applicationId=? AND ");
+			params.add(applicationId);
 		}
 
 		/*
