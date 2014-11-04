@@ -1,9 +1,9 @@
 package com.ilearnrw.api.selectnextword.levels;
 
-import ilearnrw.textclassification.greek.GreekWord;
+import ilearnrw.annotation.AnnotatedWord;
+import ilearnrw.textclassification.StringMatchesInfo;
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -11,34 +11,97 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
-import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
+
+
+/**
+ * 
+ * @author hector
+ *
+ *	Levels configuration for whack a monkey / whack a mole
+ *
+ *
+ * 
+ */
 
 public class MonkeyHotelGR implements GameLevel {
 
+	//TODO
+	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+			int languageArea, int difficulty) {
 
-		List<GameElement> result = new ArrayList<GameElement>();
-
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.GR, lA, difficulty).getItems();
-			result.add(new GameElement(false, new GreekWord(words.get(0)), lA, difficulty));			
-			
 		
-		return result;
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+
+		
+		if((lA == LanguageAreasGR.PREFIXES)||(lA == LanguageAreasGR.DERIVATIONAL)){
+			
+			List<GameElement> targetWords =WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+			
+			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
+
+
+			for(GameElement ge : targetWords)
+				if(!ge.getAnnotatedWord().getWord().contains(grapheme)){
+					ge.setFiller(true);
+				}
+			return targetWords;			
+			
+			
+		}else if(lA == LanguageAreasGR.LETTER_SIMILARITY){
+			
+			if (parameters.mode==4){
+				return WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,1, 0);
+
+			}else{
+				
+				List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+				
+				String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
+				for(GameElement ge : targetWords)
+					if(ge.getAnnotatedWord().getWord().substring(0, 1)!=correctLetter){
+						ge.setFiller(true);
+					}
+				return targetWords;			
+				
+				
+				
+			}
+			
+		}else{//GP
+			
+			List<GameElement> targetWords =WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+			
+			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
+			String phoneme ="";
+			for(int i=0;i<targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().size();i++)
+				if(targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getGrapheme()==grapheme)
+					phoneme = targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getPhoneme();
+			
+			for(GameElement ge : targetWords)
+				if(!ge.getAnnotatedWord().getPhonetics().contains(phoneme)){
+					ge.setFiller(true);
+				}
+			return targetWords;			
+			
+			
+		}
 
 	}
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//only one correct
+		return new int[]{0};
 
 	}
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.CLUSTER};
+		return new FillerType[]{FillerType.NONE};
 
 	}
 
@@ -62,13 +125,35 @@ public class MonkeyHotelGR implements GameLevel {
 
 	@Override
 	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
+		
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+
+		if((lA == LanguageAreasGR.PREFIXES)||(lA == LanguageAreasGR.DERIVATIONAL)||(lA == LanguageAreasGR.LETTER_SIMILARITY))
+			
+			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
+		
+		else if(lA == LanguageAreasGR.GP_CORRESPONDENCE)
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN,TtsType.WRITTEN2WRITTEN};
+		else
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};
 
 	}
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
-		return new int[]{4};
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+
+		if((lA == LanguageAreasGR.PREFIXES)||(lA == LanguageAreasGR.DERIVATIONAL))
+			
+			return new int[]{5};//the pattern is a word
+		
+		else if(lA == LanguageAreasGR.LETTER_SIMILARITY){
+			return new int[]{4,6};//two modes, letter-letter and letter-word
+		}else{//GP
+			return new int[]{7};//one mode, grapheme/phoneme - word
+
+		}
+
 	}
 
 	@Override
@@ -84,13 +169,13 @@ public class MonkeyHotelGR implements GameLevel {
 			case VOWELS://Vowels
 				return false;
 			case DERIVATIONAL://Blends and letter patterns
-				return false;//true;
+				return true;//true;
 			case INFLECTIONAL://Syllables
-				return false;//true;
-			case PREFIXES://Suffixes
-				return false;//true;
-			case GP_CORRESPONDENCE://Prefixes
 				return false;
+			case PREFIXES://Suffixes
+				return true;//true;
+			case GP_CORRESPONDENCE://Prefixes
+				return true;
 			case FUNCTION_WORDS://Confusing letters
 				return false;//true;
 			case LETTER_SIMILARITY:

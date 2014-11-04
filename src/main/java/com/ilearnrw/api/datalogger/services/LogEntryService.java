@@ -15,4 +15,7 @@ public interface LogEntryService {
 
 	public LogEntryResult getLogs(LogEntryFilter filter);
 
+	public LogEntryResult getLastLogs(LogEntryFilter filter);
+	
+	
 }

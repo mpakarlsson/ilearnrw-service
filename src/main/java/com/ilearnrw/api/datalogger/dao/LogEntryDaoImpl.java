@@ -82,9 +82,17 @@ public class LogEntryDaoImpl implements LogEntryDao {
 		return result;
 	}
 
+	
+	
 	@Override
 	public LogEntryResult getLogs(LogEntryFilter filter) {
 		final int resultLimit = 100;
+		return getLogs(filter, false,resultLimit);
+	}
+	
+	
+	@Override	
+	public LogEntryResult getLogs(LogEntryFilter filter,boolean desc,final int resultLimit) {
 
 		final Map<String, Object> debugInfo = new HashMap<String, Object>() {
 			private static final long serialVersionUID = 4679762402945674449L;
@@ -202,40 +210,16 @@ public class LogEntryDaoImpl implements LogEntryDao {
 		// Make a copy of params for the Count (we don't what the LIMIT in
 		// there)
 		final List<Object> paramsCount = new ArrayList<Object>(params);
-
-		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
-
-		class PageResult {
-			public int totalAmountOfPages;
-		}
-		;
-		final PageResult pageResult = new PageResult();
-
-		String sqlCount = queryCount.toString();
-		debugInfo.put("sql-count", sqlCount);
-		debugInfo.put("sql-count-params", paramsCount);
-		jdbcTemplate.query(sqlCount, paramsCount.toArray(),
-				new RowCallbackHandler() {
-
-					@Override
-					public void processRow(ResultSet rs) throws SQLException {
-						int result = rs.getInt("COUNT(*)");
-						if (result == 0)
-							pageResult.totalAmountOfPages = result;
-						else
-							pageResult.totalAmountOfPages = (result / resultLimit) + 1;
-					}
-				});
-
-		LOG.debug(debugInfo.toString());
-
-		if (page > pageResult.totalAmountOfPages) {
-			page = 1;
+		if(desc){
+			query.append(" ORDER BY timestamp DESC LIMIT ?, ?;");
+		}else{
+			query.append(" ORDER BY timestamp LIMIT ?, ?;");
 		}
 		
-		query.append(" ORDER BY timestamp LIMIT ?, ?;");
 		params.add((page - 1) * resultLimit);
 		params.add(resultLimit);
+
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataLoggerDataSource);
 
 		/*
 		 * Execute the query and return the results.
@@ -274,6 +258,29 @@ public class LogEntryDaoImpl implements LogEntryDao {
 			}
 		};
 
+		class PageResult {
+			public int totalAmountOfPages;
+		}
+		;
+		final PageResult pageResult = new PageResult();
+
+		String sqlCount = queryCount.toString();
+		debugInfo.put("sql-count", sqlCount);
+		debugInfo.put("sql-count-params", paramsCount);
+		jdbcTemplate.query(sqlCount, paramsCount.toArray(),
+				new RowCallbackHandler() {
+
+					@Override
+					public void processRow(ResultSet rs) throws SQLException {
+						int result = rs.getInt("COUNT(*)");
+						if (result == 0)
+							pageResult.totalAmountOfPages = result;
+						else
+							pageResult.totalAmountOfPages = (result / resultLimit) + 1;
+					}
+				});
+
+		LOG.debug(debugInfo.toString());
 		
 		return new LogEntryResult(page, pageResult.totalAmountOfPages, results,
 				debugInfo.toString());

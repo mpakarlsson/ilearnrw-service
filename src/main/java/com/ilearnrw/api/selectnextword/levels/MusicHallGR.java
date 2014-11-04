@@ -2,10 +2,8 @@ package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.annotation.AnnotatedWord;
 import ilearnrw.languagetools.extras.EasyHardList;
+import ilearnrw.languagetools.greek.GreekLanguageAnalyzer;
 import ilearnrw.textclassification.WordProblemInfo;
-import ilearnrw.textclassification.english.EnglishWord;
-import ilearnrw.textclassification.greek.GreekWord;
-import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
@@ -19,202 +17,269 @@ import com.ilearnrw.api.selectnextword.GameSentence;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.SentenceLoaderControler;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public class MusicHallGR implements GameLevel {
+
+
+	/**
+	 * 
+	 * @author hector
+	 *
+	 *	Levels configuration for serenade hero / fix the footpath / bridge builder
+	 *
+	 *  syllable one random syllable missing, derivational and prefixing difficulty missing, 
+	 *  
+	 *  inflectional sentences and function words sentences
+	 *
+	 *
+	 */
+
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
 			int languageArea, int difficulty) {
 
+
 		List<GameElement> result = new ArrayList<GameElement>();
 		Random rand = new Random();
-		
+
 		ArrayList<String> sentences = new ArrayList<String>();
-		ArrayList<String> answer = new ArrayList<String>();
+		ArrayList<String> answers = new ArrayList<String>();
 
-		if(LanguageAreasGR.values()[languageArea]==LanguageAreasGR.SYLLABLE_DIVISION){//Syllables
-			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.GR, languageArea, difficulty).getItems();
-			EasyHardList list = new EasyHardList(words);
-			
-			ArrayList<String> targetWords = list.getRandom(parameters.batchSize*3, parameters.wordLevel);
-			
-			
-			for(String word : targetWords){
-				
-				GreekWord ew =  new GreekWord(word.split("\'")[0]);
-				
-				if (ew.getNumberOfSyllables()>1){
-				
-					int syllable = rand.nextInt(ew.getNumberOfSyllables());
-				
-					String sentence = "";
+		List<GameElement> targetWords;
 
-				
-					for(int i=0;i<ew.getNumberOfSyllables();i++){
-						if (i==syllable){
-							sentence += "{"+ew.getSyllables()[i]+"}";
-							answer.add(ew.getSyllables()[i]);
-						}else{
-							sentence += ew.getSyllables()[i];
-						
-						}
-					
-					}
-				
-					sentences.add(sentence);
-					
-					if (sentences.size()==parameters.batchSize)
-						break;
+
+		if(LanguageAreasGR.values()[languageArea]==LanguageAreasGR.FUNCTION_WORDS){
+
+			ProblemWordListLoader pwll = new ProblemWordListLoader();
+			pwll.loadItems(LanguageCode.GR,"set_round_8.txt");
+			EasyHardList thelist = new EasyHardList(pwll.getItems());
+			for (String w : thelist.getRandom(parameters.batchSize, parameters.wordLevel)){
+				GameSentence sentence = SentenceLoaderControler.fromString(w);
+				for(String answer_aux : sentence.getTargetedWords()){
+					sentence.getFillerWords().add(answer_aux);
 				}
-								
+				result.add(new GameElement(sentence));
 			}
-			
-			
-		}else if(LanguageAreasGR.values()[languageArea]==LanguageAreasGR.FUNCTION_WORDS){
+			return result;
+
+		}else if(LanguageAreasGR.values()[languageArea]==LanguageAreasGR.INFLECTIONAL){
+
 			ProblemWordListLoader pwll = new ProblemWordListLoader();
 			pwll.loadItems(LanguageCode.GR,"set_round_7.txt");
 			EasyHardList thelist = new EasyHardList(pwll.getItems());
 			for (String w : thelist.getRandom(parameters.batchSize, parameters.wordLevel)){
-				result.add(new GameElement(SentenceLoaderControler.fromString(w)));
+				GameSentence sentence = SentenceLoaderControler.fromString(w);
+				for(String answer_aux : sentence.getTargetedWords()){
+					sentence.getFillerWords().add(answer_aux);
+				}
+				result.add(new GameElement(sentence));
 			}
-			return result;
-			
-		}else{
-			
-			ArrayList<String> words = new ProblemWordListLoader(LanguageCode.GR, languageArea, difficulty).getItems();
-			EasyHardList list = new EasyHardList(words);
-			
-			ArrayList<String> targetWords = list.getRandom(parameters.batchSize, parameters.wordLevel);
-			
+			return result;		
 
-			
-			for(String word : targetWords){
-				
-				
-				GreekWord ew =  new GreekWord(word.split("\'")[0]);
-				AnnotatedWord aw = new AnnotatedWord(ew,languageArea,difficulty);
-				
-				if ( aw.getWordProblems().size()>0){
-				WordProblemInfo correctAnswer = aw.getWordProblems().get(0);
-				
-				sentences.add(    ew.getWord().substring(0, correctAnswer.getMatched().get(0).getStart())+"{"+
-								  ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd())+"}"+
-								  ew.getWord().substring(correctAnswer.getMatched().get(0).getEnd()));
-				
-				answer.add(ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
-						
-				}
-				
-			}
-			
-		}
-		if(parameters.fillerType==FillerType.CLUSTER){
+		}else if(LanguageAreasGR.values()[languageArea]==LanguageAreasGR.SYLLABLE_DIVISION){//Syllables
 
-				ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.GR);
+			targetWords =  WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.GR, languageArea, difficulty, parameters.batchSize, parameters.wordLevel,1);
+			if (targetWords.size()==0)
+				return targetWords;
 
-				int targetCluster = definitions.getProblemDescription(languageArea, difficulty).getCluster();
-				ArrayList<Integer> candidates = new ArrayList<Integer>();
-				
-				for(int ii = 0; ii< definitions.getRowLength(languageArea);ii++){
-					
-					if(ii!=difficulty)
-						if(definitions.getProblemDescription(languageArea,ii).getCluster()==targetCluster)
-							candidates.add(ii);
-				}
-				
-				if(candidates.size()==0){
-					for(int ii = 0; ii< difficulty;ii++){
-						candidates.add(ii);
-					}					
-					
-				}
-				
-				if(candidates.size()==0){
-					for(int ii =difficulty+1; ii< definitions.getRowLength(languageArea);ii++){
-						candidates.add(ii);
-					}					
-					
-				}
-				
-				for(int i=0;i<parameters.batchSize;i++){
-					
-					int randomDifficulty = candidates.get(rand.nextInt(candidates.size()));
-					
-					ArrayList<String> otherWords = new ProblemWordListLoader(LanguageCode.GR, languageArea, randomDifficulty).getItems();
-					EasyHardList otherList = new EasyHardList(otherWords);
-					
-					ArrayList<String> moreWords = otherList.getRandom(1, parameters.wordLevel);
-					if(moreWords.size()==0)
-						continue;
-					
-					String wordFromOtherDifficulty = moreWords.get(0);
-					
-					GreekWord ew =  new GreekWord(wordFromOtherDifficulty);
-					AnnotatedWord aw = new AnnotatedWord(ew,languageArea,randomDifficulty);
-					
-					if(aw.getWordProblems().size()>0){
-					WordProblemInfo correctAnswer = aw.getWordProblems().get(0);
-					
-					sentences.add(    ew.getWord().substring(0, correctAnswer.getMatched().get(0).getStart())+"{"+
-									  ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd())+"}"+
-									  ew.getWord().substring(correctAnswer.getMatched().get(0).getEnd()));
-					
-					answer.add(ew.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()) );
+
+
+			for(GameElement ge : targetWords){
+				AnnotatedWord w = (AnnotatedWord) ge.getAnnotatedWord();
+				int syllable = rand.nextInt(w.getNumberOfSyllables());
+
+				String sentence = "";
+
+				for(int j=0;j<w.getNumberOfSyllables();j++){
+
+					if (j==syllable){
+						sentence += "{"+w.getSyllables()[j]+"}";
+						answers.add(w.getSyllables()[j]);
+					}else{
+						sentence += w.getSyllables()[j];
+
 					}
+
+				}
+
+				sentences.add(sentence);
+
+			}
+
+		}else{//prefixes or derivational
+
+			int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
+
+			targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty, numberTargets, parameters.wordLevel);
+
+			if (targetWords.size()==0)
+				return targetWords;
+
+			int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
+			if (numberDistractorsPerDifficulty==0)
+				numberDistractorsPerDifficulty++;
+
+			System.err.println(parameters.accuracy);
+			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.GR,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
+
+
+			for(List<GameElement> lge : distractors){
+				for(GameElement ge : lge)
+					targetWords.add(ge);
+
+			}
+
+
+
+			for(GameElement ge : targetWords){
+
+				AnnotatedWord w = (AnnotatedWord) ge.getAnnotatedWord();
+
+				String sentence = "";
+
+				WordProblemInfo correctAnswer = w.getWordProblems().get(0);
+
+				sentence =    w.getWord().substring(0, correctAnswer.getMatched().get(0).getStart())+"{"+
+						w.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd())+"}"+
+						w.getWord().substring(correctAnswer.getMatched().get(0).getEnd());
+
+				answers.add(w.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
+
+				sentences.add(sentence);
+
+			}
+
+
+		}
+
+		for (int i=0;i<sentences.size();i++){
+
+			ArrayList<String> fillerWords = new ArrayList<String>();
+
+			fillerWords.add(answers.get(i));
+
+			for(int j=0;j<answers.size();j++){
+
+				if( !fillerWords.contains(answers.get(j))){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(j));
+
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add(answers.get(j));
+
+						if(fillerWords.size()==(parameters.accuracy+1))
+							break;
+					}
+
+				}
+
+			}
+
+
+
+			if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+				if(!answers.contains(answers.get(i).replace("d","t"))){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(i).replace("d","t"));
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add(answers.get(i).replace("d","t"));
+					}
+
 				}
 			}
-	
-	for (int i=0;i<sentences.size();i++){
-		
-		ArrayList<String> fillerWords = new ArrayList<String>();
-		fillerWords.add(answer.get(i));
-		
-		for(int j=0;j<answer.size();j++){
-			
-			if( !fillerWords.contains(answer.get(j))){
-				
-				fillerWords.add(answer.get(j));
-				
-				if(fillerWords.size()==(parameters.accuracy+1))
-					break;
+
+			if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+				if(!answers.contains(answers.get(i).replace("e","i"))){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(i).replace("e","i"));
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add(answers.get(i).replace("e","i"));
+					}
+
+				}
 			}
-			
-		}
-		
-		if(fillerWords.size()==1){
-			if(!fillerWords.contains("ass"))
-				fillerWords.add("ass");
-			else
-				fillerWords.add("sa");
-				
-		}
-		result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
-		
 
-			
+			if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+				if(!answers.contains(answers.get(i).replace("s","r"))){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", answers.get(i).replace("s","r"));
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add(answers.get(i).replace("s","r"));
+					}
+
+				}
+			}
+
+			if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+				if(!fillerWords.contains("ad")){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "ad");
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add("ad");
+					}
+
+				}
+			}
+
+			if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+				if(!fillerWords.contains("tion")){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "tion");
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add("tion");
+					}
+
+				}
+			}
+
+			if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
+				if(!fillerWords.contains("ww")){
+
+					String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "ww");
+					if(!GreekLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
+
+						fillerWords.add("ww");
+					}
+
+				}
+			}
+
+
+			result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
+
 		}
 
-		if (result.size()==0){
-			result.add(new GameElement(new GameSentence("@@@{@}@@", new ArrayList<String>(){{add("@");}})));
-
-		}
-		
 		return result;
+
+
+
+
+
+
+
+
 	}
 
 	@Override
 	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0,1};//Easy and hard
+		return new int[]{0};//All
 
 	}
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		
+
 		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
-		
+
 		if(lA==LanguageAreasGR.SYLLABLE_DIVISION){
 			return new FillerType[]{FillerType.NONE};
 		}else{
@@ -254,32 +319,32 @@ public class MusicHallGR implements GameLevel {
 	public boolean allowedDifficulty(int languageArea, int difficulty) {
 		if(languageArea>=LanguageAreasGR.values().length)
 			return false;
-		
+
 		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
-		
+
 		switch(lA){
-		
-			case SYLLABLE_DIVISION://Consonants
-				return true;		
-			case CONSONANTS://Consonants
-				return false;
-			case VOWELS://Vowels
-				return false;
-			case DERIVATIONAL://Blends and letter patterns
-				return true;//true;
-			case INFLECTIONAL://Syllables
-				return true;//true;
-			case PREFIXES://Suffixes
-				return true;//true;
-			case GP_CORRESPONDENCE://Prefixes
-				return false;
-			case FUNCTION_WORDS://Confusing letters
-				return false;//true;
-			case LETTER_SIMILARITY:
-				return false;
-			default:
-				return false;
-		
+
+		case SYLLABLE_DIVISION://Consonants
+			return true;		
+		case CONSONANTS://Consonants
+			return false;
+		case VOWELS://Vowels
+			return false;
+		case DERIVATIONAL://Blends and letter patterns
+			return true;//true;
+		case INFLECTIONAL://Syllables
+			return true;//true;
+		case PREFIXES://Suffixes
+			return true;//true;
+		case GP_CORRESPONDENCE://Prefixes
+			return false;
+		case FUNCTION_WORDS://Confusing letters
+			return false;//true;
+		case LETTER_SIMILARITY:
+			return false;
+		default:
+			return false;
+
 		}
 	}
 

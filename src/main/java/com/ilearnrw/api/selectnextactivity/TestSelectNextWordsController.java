@@ -33,9 +33,28 @@ import com.ilearnrw.common.security.users.services.UserService;
 @Controller
 public class TestSelectNextWordsController {
 
-	private static Logger LOG = Logger
-			.getLogger(TestSelectNextWordsController.class);
-
+	public static void main(String [ ] args)
+	{
+		
+		TestSelectNextWordsController aux = new TestSelectNextWordsController();
+	   
+		for (int j=0;j<8;j++){
+		for(int i=0;i<9;i++){
+			int index = 0;
+			while(true){
+				String level = aux.SelectNextActivityTestSelectWords(LanguageCode.GR.toString(),i,0, j,index).getLevel();
+				if (level==""){
+					break;
+				}else{
+					System.out.println(j+","+i+",0,"+index+","+level);
+				}
+				index++;
+			}
+		}
+		}
+		
+	}
+	
 	@Autowired
 	IProfileProvider profileProvider;
 
@@ -57,7 +76,6 @@ public class TestSelectNextWordsController {
 
 
 
-		LOG.debug(String.format("Retrieving next activity for app %d", appID));
 
 
 		//	if(GamesInformation.getAppRelatedProblems(appID, LanguageCode.fromString(language)).contains(languageArea)){
@@ -73,7 +91,6 @@ public class TestSelectNextWordsController {
 		appIds.add("DROP_CHOPS");
 
 		GameLevel level = LevelFactory.createLevel(LanguageCode.fromString(language), languageArea, appIds.get(appID));	
-		LOG.debug(String.format("Create level"));
 
 		int i=0;
 
@@ -81,26 +98,18 @@ public class TestSelectNextWordsController {
 
 		if(level.allowedDifficulty(languageArea, difficulty)){
 			for(int mode : level.modeLevels(languageArea, difficulty)){
-				LOG.debug(String.format("Mode %d", mode));
 
 				for(int accuracy : level.accuracyLevels(languageArea, difficulty)){
-					LOG.debug(String.format("Accuracy %d", accuracy));
 
 					for(int speed : level.speedLevels(languageArea, difficulty)){
-						LOG.debug(String.format("speed %d", speed));
 
 						for(int batchSize : level.batchSizes(languageArea, difficulty)){
-							LOG.debug(String.format("batchSize %d", batchSize));
 
 							for(int wordLevels : level.wordLevels(languageArea, difficulty)){
-								LOG.debug(String.format("wordLevels %d", wordLevels));
 
 								for (FillerType fillerTypes : level.fillerTypes(languageArea, difficulty)){
-									LOG.debug(String.format("fillerTypes %s", fillerTypes.toString()));
 
 									for(TtsType ttstype : level.TTSLevels(languageArea, difficulty)){
-										LOG.debug(String.format("ttstype %s", ttstype.toString()));
-
 
 										activityLevel = 	"M"+mode+"-"
 												+ 	"A"+accuracy+"-"
@@ -112,7 +121,6 @@ public class TestSelectNextWordsController {
 
 
 										if (i==index){
-											LOG.debug(String.format("Return level %s", activityLevel));
 
 											return new LevelJSON(activityLevel);
 										}else{
@@ -133,18 +141,17 @@ public class TestSelectNextWordsController {
 				}
 
 			}
-			LOG.debug(String.format("Return level %s", activityLevel));
 
-			return new LevelJSON(activityLevel);
+			//return new LevelJSON(activityLevel);
 
 
-		}else{
+		//}else{
 
-			LOG.debug(String.format("Not compatible"));
 
-			return new LevelJSON("");
+//			return new LevelJSON("");
 		}
 
+		return new LevelJSON("");
 
 	}
 

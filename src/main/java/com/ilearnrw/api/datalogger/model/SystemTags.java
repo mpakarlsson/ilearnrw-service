@@ -13,6 +13,7 @@ public class SystemTags {
 	public static final String APP_SESSION_END 			= "APP_SESSION_END";
 	public static final String APP_ROUND_SESSION_START 	= "APP_ROUND_SESSION_START";
 	public static final String APP_ROUND_SESSION_END 	= "APP_ROUND_SESSION_END";
+	public static final String ACTIVITY_PROPOSED 	= "ACTIVITY_PROPOSED";
 	
 	public static final String APP_USAGE_TIME	= "APP_USAGE_TIME";
 	

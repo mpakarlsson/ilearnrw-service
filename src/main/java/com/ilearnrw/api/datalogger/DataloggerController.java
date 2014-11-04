@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,15 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ilearnrw.api.datalogger.model.ListWithCount;
-import com.ilearnrw.api.datalogger.model.LogEntry;
-import com.ilearnrw.api.datalogger.model.LogEntryFilter;
-import com.ilearnrw.api.datalogger.model.LogEntryResult;
-import com.ilearnrw.api.datalogger.model.Problem;
-import com.ilearnrw.api.datalogger.model.RequestFilters;
-import com.ilearnrw.api.datalogger.model.Session;
-import com.ilearnrw.api.datalogger.model.WordCount;
-import com.ilearnrw.api.datalogger.model.WordSuccessCount;
+import com.ilearnrw.api.datalogger.model.*;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
 
@@ -170,6 +163,33 @@ public class DataloggerController {
 				timeend, page, tags, applicationId);
 		return logEntryService.getLogs(filter);
 	}
+	
+	@RequestMapping(value = "/lastLogs/{username}", method = RequestMethod.GET)
+	public @ResponseBody
+	LogEntryResult getLastLogs(
+			@PathVariable String username,
+			/*
+			 * Following parameters are "semi-required" if they are not set,
+			 * defaults will be used
+			 */
+			@RequestParam(value = "timestart", required = false) String timestart,
+			@RequestParam(value = "timeend", required = false) String timeend,
+			@RequestParam(value = "page", required = false) Integer page,
+			/*
+			 * Optional parameters. If omitted they will be ignored.
+			 */
+			@RequestParam(value = "tags", required = false) String tags,
+			@RequestParam(value = "applicationId", required = false) String applicationId) {
+		
+			LogEntryFilter filter = new LogEntryFilter(username, timestart,
+				timeend, page, tags, applicationId);
+			//LogEntryResult result = logEntryService.getLogs(filter);
+		return logEntryService.getLastLogs(filter);
+	}	
+	
+	
+	
+	
 
 	@RequestMapping(value = "/logs/{username}/sessions/{session_type}", method = RequestMethod.GET)
 	public @ResponseBody

@@ -107,12 +107,12 @@ public  class WordSelectionUtils {
 		for(int i=validEnd-1;i>=0;i--){
 			
 			AnnotatedWord w;
-			System.err.println(words.get(i));
+			System.err.println("Word: "+words.get(i));
 			
 			if(language == LanguageCode.EN){	
-				w = new AnnotatedWord(new EnglishWord(words.get(i)));
+				w = new AnnotatedWord(new EnglishWord(words.get(i)),languageArea,difficulty);
 			}else{
-				w = new AnnotatedWord(new GreekWord(words.get(i)));
+				w = new AnnotatedWord(new GreekWord(words.get(i)),languageArea,difficulty);
 			}
 			
 			
@@ -132,7 +132,7 @@ public  class WordSelectionUtils {
 			if(!clean)
 				continue;
 			
-			GameElement ge = new GameElement(isFiller,w,languageArea,difficulty);
+			GameElement ge = new GameElement(isFiller,w);
 			if(  ((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().size()==0)//If no difficulties found, get out!
 				continue;
 				
