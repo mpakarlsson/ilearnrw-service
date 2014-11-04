@@ -1741,10 +1741,10 @@
          },
          {  
             "descriptions":[  
-               "Vce-Vɪs"
+               "Vce-Vs"
             ],
             "problemType":"PATTERN_EQUALS_PRONUNCIATION_ENDS",
-            "humanReadableDescription":"Pronounce \u0027Vce\u0027 as \u0027Vɪs\u0027.For example: space, ice, price",
+            "humanReadableDescription":"Pronounce \u0027Vce\u0027 as \u0027Vs\u0027.For example: space, ice, price",
             "cluster":33,
             "character":"Vowel pattern"
          },
@@ -3339,7 +3339,7 @@
             "problemType":"PREFIX_GROUP",
             "humanReadableDescription":"Prefix \u0027acc\u0027 is a common pattern in some words. When you chop off this prefix, you don\u0027t get a new word.For example: accessed, accesses, accept",
             "cluster":36,
-            "character":"Assimiliate"
+            "character":"Assimilate"
          },
          {  
             "descriptions":[  

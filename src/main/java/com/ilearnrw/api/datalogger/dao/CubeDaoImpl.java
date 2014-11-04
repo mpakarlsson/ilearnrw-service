@@ -554,7 +554,7 @@ public class CubeDaoImpl implements CubeDao {
 					+ "sum(word_failed) as incorrectAnswers, "
 					+ "sum(word_success_or_failed) as totalAnswers, "
 					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate, "
-					+ "count(distinct app_ref) as nrOfApps "
+					+ "count(distinct app_round_session_ref) as nrOfApps "
 					+ "from facts_expanded " + "where " + dateFilterString
 					+ "and " + studentFilterString
 					+ "and app_name = :app_name " + "group by app_name;";
@@ -636,7 +636,7 @@ public class CubeDaoImpl implements CubeDao {
 			break;
 		case CUSTOM:
 			dateFilterString = "( DATE(" + fieldName
-					+ ") between DATE(:start) and DATE(:end)) ";
+					+ ") between STR_TO_DATE(:start, '%d.%m.%Y') and STR_TO_DATE(:end, '%d.%m.%Y')) ";
 			parameterMap.put("start", dateFilter.getStartDate());
 			parameterMap.put("end", dateFilter.getEndDate());
 			break;
