@@ -110,7 +110,7 @@ public class GardenGR implements GameLevel {
 			case GP_CORRESPONDENCE://Prefixes
 				return true;
 			case FUNCTION_WORDS://Confusing letters
-				return true;
+				return false;
 			case LETTER_SIMILARITY:
 				return false;
 			default:

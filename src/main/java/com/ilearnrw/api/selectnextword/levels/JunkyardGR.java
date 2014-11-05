@@ -104,10 +104,9 @@ public class JunkyardGR implements GameLevel {
 			return new int[]{0};//Syllables
 		else if(lA==LanguageAreasGR.INFLECTIONAL)
 			return new int[]{1};//Suffixes
-		else if(lA==LanguageAreasGR.PREFIXES)
+		else //if(lA==LanguageAreasGR.PREFIXES)
 			return new int[]{2};//Prefixes
-		else
-			return new int[]{3};
+		
 	}
 
 	@Override

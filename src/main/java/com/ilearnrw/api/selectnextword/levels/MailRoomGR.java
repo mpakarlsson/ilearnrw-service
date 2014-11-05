@@ -34,7 +34,7 @@ public class MailRoomGR implements GameLevel {
 	public List<GameElement> getWords(LevelParameters parameters,
 			int languageArea, int difficulty) {
 
-		List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize*(parameters.accuracy+1), parameters.wordLevel);
+		List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize*(parameters.accuracy+1), parameters.wordLevel,false,true);
 		List<GameElement> results = new ArrayList<GameElement>();
 		
 		for(int i=0;i<parameters.batchSize;i++){
