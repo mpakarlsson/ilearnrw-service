@@ -1,17 +1,24 @@
 package com.ilearnrw.api.selectnextword;
 
 import ilearnrw.annotation.AnnotatedWord;
+import ilearnrw.resource.ResourceLoader;
+import ilearnrw.resource.ResourceLoader.Type;
 import ilearnrw.textclassification.Word;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public  class WordSelectionUtils {
@@ -78,6 +85,13 @@ public  class WordSelectionUtils {
 
 	}
 	
+	/* Provides words of the specified language area and difficulty */
+	static public List<GameElement> getTargetWordsBegins(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean begins,boolean single){
+		
+		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,false,-1,new ArrayList<String>(),begins,single);
+
+	}
+	
 	/* Provides words of the specified language area and difficulty, and mark them as distractors or not */
 	static public List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean isFiller){
 		
@@ -86,11 +100,24 @@ public  class WordSelectionUtils {
 	}
 	
 	
-
-	/* Provides words satisfying all given constraints */
+	
 	static private List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean findDistractors,boolean isFiller,int numberSyllables,List<String> phoneme){
 		
-		ArrayList<String> words = new ProblemWordListLoader(language, languageArea, difficulty).getItems();
+		return getTargetWords(language, languageArea, difficulty, amount,  wordLevel, findDistractors, isFiller, numberSyllables, phoneme,false,false);
+		
+	}
+
+	
+
+	/* Provides words satisfying all given constraints */
+	static private List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean findDistractors,boolean isFiller,int numberSyllables,List<String> phoneme,boolean begins,boolean single){
+		List<String> words;
+		if(language==LanguageCode.EN){
+			words = new ProblemWordListLoader(language, languageArea, difficulty).getItems();
+		}else{
+			words = getListGreekWords(languageArea, difficulty,begins,single);
+			
+		}
 		
 		int tmp = words.indexOf("###");
 		if(tmp>-1) words.remove(tmp);
@@ -115,7 +142,8 @@ public  class WordSelectionUtils {
 				w = new AnnotatedWord(new GreekWord(words.get(i)),languageArea,difficulty);
 			}
 			
-			
+			System.err.println("Word Annotated: "+words.get(i));
+
 			if(w.getNumberOfSyllables()<numberSyllables){
 				continue;
 			}
@@ -157,7 +185,7 @@ public  class WordSelectionUtils {
 	}
 	
 	/* Returns several sets of distractors, each with several different difficulties depending on availability of words */ 
-	static public List<List<GameElement>> getDistractors(LanguageCode language, int languageArea, int originalDifficulty,int wordsPerDifficulty, int wordLevel ,int numberDifficulties,int numberSyllables,List<String> phoneme){
+static public List<List<GameElement>> getDistractors(LanguageCode language, int languageArea, int originalDifficulty,int wordsPerDifficulty, int wordLevel ,int numberDifficulties,int numberSyllables,List<String> phoneme){
 		
 		
 		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
@@ -262,6 +290,157 @@ static public List<Integer> findDifferentCharacter(LanguageCode language, int la
 	
 	
 	
+}
+
+/* Creates a list that alternates words with different patters */
+static private List<String> getListGreekWords(int languageArea, int difficulty,boolean begins,boolean single){
+	
+	ArrayList<String> words = new ArrayList<String>();;
+	
+	try {
+		
+		String jsonFile = "";
+		
+		InputStreamReader in = new InputStreamReader(ResourceLoader.getInstance().getInputStream(Type.DATA,"game_words_GR/cat"+languageArea+"/words_"+languageArea+"_"+difficulty+"_GR.json"), "UTF-8");
+		BufferedReader buf = new BufferedReader(in);
+		String line = null;
+		while((line=buf.readLine())!=null) {
+			jsonFile += line;
+		}
+		buf.close();
+		
+		HashMap<String, ArrayList<String>> hm = new Gson().fromJson(jsonFile, new TypeToken<HashMap<String, ArrayList<String>>>() {}.getType());
+
+		HashMap<String, ArrayList<String>> validWords = new HashMap<String, ArrayList<String>>();
+		
+		//List<String> validKeys = new ArrayList<String>();
+		
+		if(begins&single){
+			
+			
+			for(String key : hm.keySet()){
+				if(key.contains("BEGINS")&!key.contains(" ")){
+					validWords.put(key, hm.get(key));
+				}
+			}
+			
+			//No sorting of the keys required
+
+			
+		}else if(begins){
+			for(String key : hm.keySet()){
+				if(key.contains("BEGINS")){
+					
+					String shortKey = key.split(" ")[0];
+						
+					if(!validWords.containsKey(shortKey)){
+							validWords.put(shortKey, hm.get(key));
+					}else{
+							ArrayList<String> reference = validWords.get(shortKey);
+							for(String word : hm.get(key)){
+								reference.add(word);
+							}								
+							
+					}
+													
+
+				}
+			}
+			
+		}else{
+			
+			for(String key : hm.keySet()){
+				
+				List<String> patterns = new ArrayList<String>();
+				if (key.contains("BEGIN")){
+					patterns.add(key.split(" ")[0].replace("BEGINS:", ""));
+					
+				}
+				
+				if (key.contains("ENDS")){
+					String nextPattern = key.split("ENDS:")[1];
+					if(!patterns.contains(nextPattern))
+						patterns.add(nextPattern);
+				}
+				
+				if(key.contains("(")){
+					String[] nextPatterns = key.replace("*","").split("\\(")[1].split("\\)")[0].split(" ");
+					for(String nextPattern : nextPatterns)
+						if(!patterns.contains(nextPattern))
+							patterns.add(nextPattern);
+				}
+				
+				if(single){
+					if(patterns.size()==1){
+						String shortKey = patterns.get(0);
+					
+						if(!validWords.containsKey(shortKey)){
+							validWords.put(shortKey, hm.get(key));
+						}else{
+							ArrayList<String> reference = validWords.get(shortKey);
+							for(String word : hm.get(key)){
+								reference.add(word);
+							}								
+						
+						}				
+					
+					}
+				 }else{
+					 for(String shortKey : patterns){
+						 if(!validWords.containsKey(shortKey)){
+								validWords.put(shortKey, new ArrayList<String>());
+						 }
+					 }
+					 
+					 int nextIndex = 0;
+					 for(String word : hm.get(key)){//distribute the words along the different patterns
+						 validWords.get(patterns.get(nextIndex)).add(word);
+						 nextIndex = (nextIndex+1)%patterns.size();
+					 }
+					 
+				 }
+			}	
+		}
+		
+
+		int maxSize = 0;
+		HashMap<String,Integer> indexes = new HashMap<String,Integer>();
+		
+		for(String key:validWords.keySet()){
+			indexes.put(key, 0);
+			if(validWords.get(key).size()>maxSize)
+				maxSize = validWords.get(key).size();
+		}
+		
+		
+		for(int i=0;i<maxSize;i++){
+			
+			for(String key : validWords.keySet()){
+				
+				int nextIndex = indexes.get(key);
+				if(nextIndex>=validWords.get(key).size()){
+					
+					nextIndex = validWords.get(key).size()-(maxSize-indexes.get(key));
+					if(nextIndex<0)
+						nextIndex = 0;
+					
+				}
+				
+				words.add(validWords.get(key).get(nextIndex));
+				indexes.put(key, nextIndex+1);
+				
+			}
+			
+		}
+
+		
+		} catch (IOException e) {
+		e.printStackTrace();
+		return null;
+	}
+	
+	return words;
+			
 }
 
 	

@@ -38,7 +38,7 @@ public class TestSelectNextWordsController {
 		
 		TestSelectNextWordsController aux = new TestSelectNextWordsController();
 	   
-		for (int j=0;j<8;j++){
+		for (int j=0;j<9;j++){
 		for(int i=0;i<9;i++){
 			int index = 0;
 			while(true){

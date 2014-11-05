@@ -58,7 +58,7 @@ public class MonkeyHotelGR implements GameLevel {
 
 			}else{
 				
-				List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+				List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
 				
 				String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
 				for(GameElement ge : targetWords)
@@ -73,7 +73,7 @@ public class MonkeyHotelGR implements GameLevel {
 			
 		}else{//GP
 			
-			List<GameElement> targetWords =WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+			List<GameElement> targetWords =WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
 			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
 			
 			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
