@@ -29,7 +29,7 @@ public class GardenGR implements GameLevel {
 			int lA, int difficulty) {
 
 		
-		return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,4+parameters.batchSize, parameters.wordLevel);			
+		return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,4+(parameters.batchSize*10), parameters.wordLevel);			
 
 		
 	}

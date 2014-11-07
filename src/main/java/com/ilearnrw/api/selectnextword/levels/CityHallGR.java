@@ -44,8 +44,13 @@ public class CityHallGR implements GameLevel {
 			
 			String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
 			for(GameElement ge : targetWords)
-				if(ge.getAnnotatedWord().getWord().substring(0, 1)!=correctLetter){
+				if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
 					ge.setFiller(true);
+					System.err.println(ge.getAnnotatedWord().getWord()+" Filler");
+				}else{
+					ge.setFiller(false);
+					System.err.println(ge.getAnnotatedWord().getWord()+" No filler");
+
 				}
 			return targetWords;			
 			/*if(languageArea == LanguageAreasGR.LETTER_SIMILARITY){

@@ -44,13 +44,13 @@ public class TrainStationUK implements GameLevel {
 
 	@Override
 	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{5};//5 packages
+		return new int[]{5};//5 rounds
 
 	}
 
 	@Override
 	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
+		return new int[]{0};
 
 	}
 

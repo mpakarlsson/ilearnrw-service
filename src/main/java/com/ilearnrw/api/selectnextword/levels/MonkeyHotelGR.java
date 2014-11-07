@@ -4,6 +4,7 @@ import ilearnrw.annotation.AnnotatedWord;
 import ilearnrw.textclassification.StringMatchesInfo;
 import ilearnrw.utils.LanguageCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -38,17 +39,34 @@ public class MonkeyHotelGR implements GameLevel {
 		
 		if((lA == LanguageAreasGR.PREFIXES)||(lA == LanguageAreasGR.DERIVATIONAL)){
 			
-			List<GameElement> targetWords =WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+			List<GameElement> targetWords =WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,(10*parameters.batchSize)+1, parameters.wordLevel);
 			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
 			
 			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
 
+			int correct = 0;
+			int filler = 0;
 
+			List<GameElement> result = new ArrayList<GameElement>();
+			
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getWord().contains(grapheme)){
-					ge.setFiller(true);
+					if(filler<=parameters.batchSize/2.0){
+						ge.setFiller(true);
+						filler++;
+						result.add(ge);
+					}
+				}else{
+					if(correct<=(1+(parameters.batchSize/2.0))){
+						
+						result.add(ge);
+						correct++;
+
+					}
+					
+					
 				}
-			return targetWords;			
+			return result;			
 			
 			
 		}else if(lA == LanguageAreasGR.LETTER_SIMILARITY){
@@ -58,14 +76,32 @@ public class MonkeyHotelGR implements GameLevel {
 
 			}else{
 				
+				int correct = 0;
+				int filler = 0;
+
+				List<GameElement> result = new ArrayList<GameElement>();
+				
 				List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
 				
 				String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
 				for(GameElement ge : targetWords)
-					if(ge.getAnnotatedWord().getWord().substring(0, 1)!=correctLetter){
-						ge.setFiller(true);
+					if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
+						
+						
+						if(filler<=parameters.batchSize/2.0){
+							ge.setFiller(true);
+							filler++;
+							result.add(ge);
+						}
+					}else{
+						if(correct<=(1+(parameters.batchSize/2.0))){
+							
+							result.add(ge);
+							correct++;
+
+						}						
 					}
-				return targetWords;			
+				return result;			
 				
 				
 				
@@ -79,14 +115,31 @@ public class MonkeyHotelGR implements GameLevel {
 			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
 			String phoneme ="";
 			for(int i=0;i<targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().size();i++)
-				if(targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getGrapheme()==grapheme)
+				if(targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getGrapheme().equals(grapheme))
 					phoneme = targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getPhoneme();
+			
+			
+			int correct = 0;
+			int filler = 0;
+
+			List<GameElement> result = new ArrayList<GameElement>();
 			
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getPhonetics().contains(phoneme)){
-					ge.setFiller(true);
+					if(filler<=parameters.batchSize/2.0){
+						ge.setFiller(true);
+						filler++;
+						result.add(ge);
+					}
+				}else{
+					if(correct<=(1+(parameters.batchSize/2.0))){
+						
+						result.add(ge);
+						correct++;
+
+					}						
 				}
-			return targetWords;			
+			return result;			
 			
 			
 		}

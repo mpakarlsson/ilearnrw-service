@@ -131,6 +131,7 @@ public  class WordSelectionUtils {
 
 		ArrayList<GameElement> targetWords = new ArrayList<GameElement>();// new GameElement[amount];
 
+		System.err.println("Hello?");
 		for(int i=validEnd-1;i>=0;i--){
 			
 			AnnotatedWord w;
@@ -319,6 +320,9 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 			
 			
 			for(String key : hm.keySet()){
+				
+				if (hm.get(key).size()==0)
+					continue;
 				if(key.contains("BEGINS")&!key.contains(" ")){
 					validWords.put(key, hm.get(key));
 				}
@@ -329,6 +333,11 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 			
 		}else if(begins){
 			for(String key : hm.keySet()){
+				
+				if (hm.get(key).size()==0)
+					continue;
+				
+				
 				if(key.contains("BEGINS")){
 					
 					String shortKey = key.split(" ")[0];
@@ -350,6 +359,9 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 		}else{
 			
 			for(String key : hm.keySet()){
+				
+				if (hm.get(key).size()==0)
+					continue;
 				
 				List<String> patterns = new ArrayList<String>();
 				if (key.contains("BEGIN")){
@@ -394,6 +406,7 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 					 
 					 int nextIndex = 0;
 					 for(String word : hm.get(key)){//distribute the words along the different patterns
+
 						 validWords.get(patterns.get(nextIndex)).add(word);
 						 nextIndex = (nextIndex+1)%patterns.size();
 					 }
@@ -407,6 +420,9 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 		HashMap<String,Integer> indexes = new HashMap<String,Integer>();
 		
 		for(String key:validWords.keySet()){
+			if(validWords.get(key).size()==0){
+				continue;	
+			}
 			indexes.put(key, 0);
 			if(validWords.get(key).size()>maxSize)
 				maxSize = validWords.get(key).size();
@@ -416,7 +432,9 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 		for(int i=0;i<maxSize;i++){
 			
 			for(String key : validWords.keySet()){
-				
+				if(validWords.get(key).size()==0){
+					continue;	
+				}
 				int nextIndex = indexes.get(key);
 				if(nextIndex>=validWords.get(key).size()){
 					
@@ -426,6 +444,11 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 					
 				}
 				
+				 if(validWords.get(key).size()==0){
+					 System.err.println();
+					 
+				 }
+				
 				words.add(validWords.get(key).get(nextIndex));
 				indexes.put(key, nextIndex+1);
 				
@@ -434,7 +457,7 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 		}
 
 		
-		} catch (IOException e) {
+		} catch (Exception e) {
 		e.printStackTrace();
 		return null;
 	}
