@@ -123,9 +123,9 @@ public class JunkyardUK implements GameLevel {
 	
 	switch(lA){			
 			case CONSONANTS://Consonants
-				return true;
+				return false;
 			case VOWELS://Vowels
-				return true;
+				return false;
 			case BLENDS://Blends and letter patterns
 				return false;
 			case SYLLABLES://Syllables

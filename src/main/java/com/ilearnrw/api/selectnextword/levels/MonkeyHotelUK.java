@@ -110,12 +110,7 @@ public class MonkeyHotelUK implements GameLevel {
 		}
 		
 		return result;
-		
-		
-		
-	
 
-		
 		
 	}
 	

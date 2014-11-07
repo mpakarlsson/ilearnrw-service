@@ -288,7 +288,7 @@ public class MusicHallUK implements GameLevel {
 			case VOWELS://Vowels
 				return true;
 			case BLENDS://Blends and letter patterns
-				return false;
+				return true;
 			case SYLLABLES://Syllables
 				return true;
 			case SUFFIXES://Suffixes

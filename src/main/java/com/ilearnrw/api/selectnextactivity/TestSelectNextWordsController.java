@@ -42,7 +42,7 @@ public class TestSelectNextWordsController {
 		for(int i=0;i<9;i++){
 			int index = 0;
 			while(true){
-				String level = aux.SelectNextActivityTestSelectWords(LanguageCode.GR.toString(),i,0, j,index).getLevel();
+				String level = aux.SelectNextActivityTestSelectWords(LanguageCode.EN.toString(),i,0, j,index).getLevel();
 				if (level==""){
 					break;
 				}else{
