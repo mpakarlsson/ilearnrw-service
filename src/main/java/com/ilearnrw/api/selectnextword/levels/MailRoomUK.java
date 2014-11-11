@@ -127,6 +127,8 @@ public class MailRoomUK implements GameLevel {
 			return new int[]{1};//Suffix
 		}else if(lA==LanguageAreasUK.PREFIXES){
 			return new int[]{2};//Prefix
+		}else if(lA==LanguageAreasUK.BLENDS){
+			return new int[]{3};//Prefix
 		}else
 			return new int[]{0};
 	}
@@ -194,7 +196,7 @@ public class MailRoomUK implements GameLevel {
 		case VOWELS://Vowels
 			return true;
 		case BLENDS://Blends and letter patterns
-			return false;
+			return true;
 		case SYLLABLES://Syllables
 			return false;
 		case SUFFIXES://Suffixes

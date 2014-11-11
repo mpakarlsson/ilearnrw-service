@@ -1,6 +1,7 @@
 package com.ilearnrw.api.selectnextword.levels;
 import ilearnrw.utils.LanguageCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -25,7 +26,31 @@ public class TrainStationUK implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
-		return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
+		
+		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
+		
+		List<GameElement> targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, numberTargets, parameters.wordLevel);
+
+		if (targetWords.size()==0)
+			return targetWords;
+				
+		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
+		if (numberDistractorsPerDifficulty==0)
+			numberDistractorsPerDifficulty++;
+		
+		List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
+		
+		for(List<GameElement> lge : distractors){
+			for(GameElement ge : lge)
+				targetWords.add(ge);
+			
+		}
+
+		return targetWords;
+		
+		
+		
+	//	return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
 
 		
 	}
@@ -38,13 +63,13 @@ public class TrainStationUK implements GameLevel {
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
+		return new FillerType[]{FillerType.CLUSTER};
 
 	}
 
 	@Override
 	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{5};//5 rounds
+		return new int[]{10};//5 rounds
 
 	}
 
@@ -56,7 +81,7 @@ public class TrainStationUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Nothing
+		return new int[]{2};//Nothing
 
 	}
 

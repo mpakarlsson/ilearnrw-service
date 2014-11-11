@@ -3,6 +3,7 @@ package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.utils.LanguageCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -28,7 +29,39 @@ public class BridgeUK implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
 
-		return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+		
+		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+
+		if( (languageArea==LanguageAreasUK.CONFUSING)){
+			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+			
+		
+		}
+		
+		
+		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
+		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
+		if (numberDistractorsPerDifficulty==0)
+			numberDistractorsPerDifficulty++;
+
+		
+		
+		List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,numberTargets, parameters.wordLevel);
+		
+		if (targetWords.size()==0)
+			return targetWords;
+		
+		
+		List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  lA, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
+			
+				
+		for(List<GameElement> lge : distractors){
+			for(GameElement ge : lge)
+				targetWords.add(ge);
+			
+		}
+
+		return targetWords;
 		
 		
 		/*LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
@@ -57,7 +90,9 @@ public class BridgeUK implements GameLevel {
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
+		
+		
+		return new FillerType[]{FillerType.CLUSTER};
 	}
 
 	@Override
@@ -75,7 +110,7 @@ public class BridgeUK implements GameLevel {
 	@Override
 	public int[] accuracyLevels(int lA, int difficulty) {
 
-		return new int[]{0};//No choice
+		return new int[]{2};//No choice
 
 /*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
@@ -93,7 +128,7 @@ public class BridgeUK implements GameLevel {
 
 		if( (languageArea==LanguageAreasUK.CONSONANTS) | (languageArea==LanguageAreasUK.VOWELS)){//vowel or consonant
 			
-			return new TtsType[]{TtsType.SPOKEN2WRITTEN};//BLENDS CANT DO SPOKEN
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};
 			
 		}else
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
@@ -107,14 +142,14 @@ public class BridgeUK implements GameLevel {
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
 		if (languageArea == LanguageAreasUK.SYLLABLES){//Random syllable
-			return new int[]{0};//match a syllable
+			return new int[]{0};//match a syllable//NOT USED ANYMORE
 		}else if(languageArea == LanguageAreasUK.SUFFIXES){//suffixing
 			return new int[]{1};//match last part
 		}else if(languageArea == LanguageAreasUK.PREFIXES){
 			return new int[]{2};//match first part
 		}else if( (languageArea==LanguageAreasUK.CONSONANTS) | (languageArea==LanguageAreasUK.VOWELS)){
 			return new int[]{4};//match vowel or consonant sound
-		}else if( (languageArea==LanguageAreasUK.BLENDS)){
+		}else if( (languageArea==LanguageAreasUK.CONFUSING)){//No more for blends
 			return new int[]{5};//match vowel or consonant sound//sound not available, can be merged with suffix and prefix
 		}else
 			return new int[]{0};
@@ -136,15 +171,15 @@ public class BridgeUK implements GameLevel {
 			case VOWELS://Vowels
 				return true;
 			case BLENDS://Blends and letter patterns
-				return true;
+				return false;
 			case SYLLABLES://Syllables
-				return true;
+				return false;
 			case SUFFIXES://Suffixes
 				return true;
 			case PREFIXES://Prefixes
 				return true;
 			case CONFUSING://Confusing letters
-				return false;
+				return true;
 			default:
 				return false;
 		

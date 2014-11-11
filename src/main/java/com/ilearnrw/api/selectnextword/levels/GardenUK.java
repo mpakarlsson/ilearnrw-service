@@ -30,31 +30,39 @@ public class GardenUK implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 		
+		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
+		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
+		if (numberDistractorsPerDifficulty==0)
+			numberDistractorsPerDifficulty++;
 		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 		List<GameElement> result = new ArrayList<GameElement>();
 
 		
 		if(lA==LanguageAreasUK.SYLLABLES){
-			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);	
+			
+			
+			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,numberTargets, parameters.wordLevel);	
 		
 			if (result.size()==0)
 				return result;
 		
 		
-			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,3,-1,new ArrayList<String>());	
+			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,numberDistractorsPerDifficulty, parameters.wordLevel,parameters.accuracy,-1,new ArrayList<String>());	
 		
 			for(List<GameElement> lge : distractors)
 				for (GameElement f : lge)
-					result.add(f);		
+					result.add(f);	
+			
 		}else if(lA==LanguageAreasUK.CONFUSING){
-			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);	
+			
+			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,numberTargets, parameters.wordLevel);	
 			
 			if (result.size()==0)
 				return result;
 		
 		
-			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,1,-1,new ArrayList<String>());	
+			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,numberDistractorsPerDifficulty, parameters.wordLevel,parameters.accuracy,-1,new ArrayList<String>());	
 		
 			for(List<GameElement> lge : distractors)
 				for (GameElement f : lge)
@@ -64,7 +72,6 @@ public class GardenUK implements GameLevel {
 			//TODO routine to pull words from different characters
 			
 			List<Integer> difficulties = WordSelectionUtils.findDifferentCharacter(LanguageCode.EN,  languageArea, difficulty,3);
-			
 			
 			for(int i = 0; i<difficulties.size();i++){
 				
@@ -116,7 +123,7 @@ public class GardenUK implements GameLevel {
 
 	@Override
 	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{5};//5 words
+		return new int[]{10};//5 words
 
 	}
 
@@ -128,6 +135,8 @@ public class GardenUK implements GameLevel {
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
 
+		if(LanguageAreasUK.values()[languageArea]==LanguageAreasUK.CONFUSING)
+			return new int[]{1};//just one distractor as this difficulty has 2 letter each
 		return new int[]{3};//Number of distractors
 	}
 
@@ -143,7 +152,7 @@ public class GardenUK implements GameLevel {
 		
 		
 		if(lA==LanguageAreasUK.SYLLABLES){//for syllabification: open and closed syllables
-			return new int[]{0};
+			return new int[]{0,6};
 		}else if(lA==LanguageAreasUK.CONFUSING){
 			return new int[]{2};
 
