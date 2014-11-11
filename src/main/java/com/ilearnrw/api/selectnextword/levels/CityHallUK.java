@@ -122,7 +122,7 @@ public class CityHallUK implements GameLevel {
 
 	@Override
 	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{1,2,5};//words per difficulty
+		return new int[]{1,3,5};//words per difficulty
 
 	}
 
@@ -139,7 +139,7 @@ public class CityHallUK implements GameLevel {
 		if(languageArea==LanguageAreasUK.CONFUSING)
 			return new int[]{0};//irrelevant
 		else{
-			return new int[]{1,2,3};//number of alternative words
+			return new int[]{1,2,3};//number of alternative difficulties
 		}
 		
 		/*if(languageArea==LanguageAreasUK.VOWELS){//vowels
@@ -157,10 +157,11 @@ public class CityHallUK implements GameLevel {
 	public TtsType[] TTSLevels(int lA, int difficulty) {
 		
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-		if(languageArea==LanguageAreasUK.BLENDS){
-			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-		}else
+
+		if((languageArea==LanguageAreasUK.CONSONANTS)|(languageArea==LanguageAreasUK.VOWELS)|(languageArea==LanguageAreasUK.CONFUSING))
 			return new TtsType[]{TtsType.SPOKEN2WRITTEN};
+		else
+			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
 
 	}
 	
@@ -181,7 +182,7 @@ public class CityHallUK implements GameLevel {
 			case VOWELS://Vowels
 				return true;
 			case BLENDS://Blends and letter patterns
-				return true;
+				return false;
 			case SYLLABLES://Syllables
 				return false;
 			case SUFFIXES://Suffixes

@@ -87,7 +87,6 @@ public class MusicHallUK implements GameLevel {
 			if (numberDistractorsPerDifficulty==0)
 				numberDistractorsPerDifficulty++;
 			
-		System.err.println(parameters.accuracy);
 			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
 				
 					
@@ -182,42 +181,22 @@ public class MusicHallUK implements GameLevel {
 				
 			}
 		}
+		
+		for(String weird : new String[]{"str","ou","min","lap","ack","ad","tion","ww"}){
 			
 		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
-			if(!fillerWords.contains("ad")){
+			if(!fillerWords.contains(weird)){
 
-				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "ad");
+				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", weird);
 				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
 					
-					fillerWords.add("ad");
+					fillerWords.add(weird);
 				}
 				
 			}
+		}
 		}
 		
-		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
-			if(!fillerWords.contains("tion")){
-
-				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "tion");
-				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
-					
-					fillerWords.add("tion");
-				}
-				
-			}
-		}
-		
-		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
-			if(!fillerWords.contains("ww")){
-
-				String newWord = sentences.get(i).replace("{"+answers.get(i)+"}", "ww");
-				if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){
-					
-					fillerWords.add("ww");
-				}
-				
-			}
-		}
 		
 		
 		result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));

@@ -162,7 +162,7 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)){
 			
-			return new TtsType[]{TtsType.SPOKEN2WRITTEN};//,TtsType.WRITTEN2WRITTEN};
+			return new TtsType[]{TtsType.SPOKEN2WRITTEN};
 			
 		}else if((lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)){
 			return new TtsType[]{TtsType.WRITTEN2WRITTEN};
@@ -191,7 +191,7 @@ public class MonkeyHotelUK implements GameLevel {
 		}else if((lA==LanguageAreasUK.SUFFIXES)){
 			return new int[]{2};//suffix to word
 		}else if(lA==LanguageAreasUK.CONFUSING){
-			return new int[]{4};//letter to letters
+			return new int[]{4,7};//letter to letters
 		}else//BLENDS
 			return new int[]{0};
 
@@ -212,7 +212,7 @@ public class MonkeyHotelUK implements GameLevel {
 			case VOWELS://Vowels
 				return true;
 			case BLENDS://Blends and letter patterns
-				return true;
+				return false;
 			case SYLLABLES://Syllables
 				return false;
 			case SUFFIXES://Suffixes

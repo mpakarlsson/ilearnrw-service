@@ -10,7 +10,6 @@ import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,11 +130,9 @@ public  class WordSelectionUtils {
 
 		ArrayList<GameElement> targetWords = new ArrayList<GameElement>();// new GameElement[amount];
 
-		System.err.println("Hello?");
 		for(int i=validEnd-1;i>=0;i--){
 			
 			AnnotatedWord w;
-			System.err.println("Word: "+words.get(i));
 			
 			if(language == LanguageCode.EN){	
 				w = new AnnotatedWord(new EnglishWord(words.get(i)),languageArea,difficulty);
@@ -143,7 +140,6 @@ public  class WordSelectionUtils {
 				w = new AnnotatedWord(new GreekWord(words.get(i)),languageArea,difficulty);
 			}
 			
-			System.err.println("Word Annotated: "+words.get(i));
 
 			if(w.getNumberOfSyllables()<numberSyllables){
 				continue;
@@ -167,7 +163,6 @@ public  class WordSelectionUtils {
 				
 			targetWords.add(ge);
 
-			System.err.println("Game element created");
 
 			if (targetWords.size()==amount)
 				break;
@@ -444,10 +439,7 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 					
 				}
 				
-				 if(validWords.get(key).size()==0){
-					 System.err.println();
-					 
-				 }
+
 				
 				words.add(validWords.get(key).get(nextIndex));
 				indexes.put(key, nextIndex+1);

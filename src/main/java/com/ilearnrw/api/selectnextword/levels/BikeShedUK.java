@@ -50,7 +50,10 @@ public class BikeShedUK implements GameLevel {
 	
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Always is about counting syllables
+		if(LanguageAreasUK.values()[languageArea] == LanguageAreasUK.SYLLABLES)
+			return new int[]{0};//Always is about counting syllables
+		else 
+			return new int[]{1};//phonemes, for vowels and consonants
 	}
 
 	@Override
@@ -73,7 +76,7 @@ public class BikeShedUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Nothing
+		return new int[]{1,3,5};//Words per door
 
 	}
 
@@ -96,9 +99,9 @@ public class BikeShedUK implements GameLevel {
 		switch(lA){
 		
 			case CONSONANTS://Consonants
-				return false;
+				return true;
 			case VOWELS://Vowels
-				return false;
+				return true;
 			case BLENDS://Blends and letter patterns
 				return false;
 			case SYLLABLES://Syllables

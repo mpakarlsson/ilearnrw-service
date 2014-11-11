@@ -3,6 +3,7 @@ package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.utils.LanguageCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.FillerType;
@@ -31,21 +32,55 @@ public class JunkyardUK implements GameLevel {
 
 		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
 
+		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
+		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
+		if (numberDistractorsPerDifficulty==0)
+			numberDistractorsPerDifficulty++;
+		
+		
 		if (languageArea==LanguageAreasUK.SYLLABLES){//Syllable division
 			
-			return WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
-
+			List<GameElement> result = WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.EN, lA, difficulty,numberTargets, parameters.wordLevel,1);	
+			
+			if (result.size()==0)
+				return result;
+		
+		
+			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, lA, difficulty,numberDistractorsPerDifficulty, parameters.wordLevel,parameters.accuracy,1,new ArrayList<String>());	
+		
+			for(List<GameElement> lge : distractors)
+				for (GameElement f : lge)
+					result.add(f);	
+			
+			return result;
+			
 			//return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
 			
 			
-		}else if((languageArea==LanguageAreasUK.SUFFIXES)||(languageArea==LanguageAreasUK.PREFIXES)){
+		/*}else if((languageArea==LanguageAreasUK.SUFFIXES)||(languageArea==LanguageAreasUK.PREFIXES)){
 			
 			//return WordSelectionUtils.getTargetWordsGreaterLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
 			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
-
+*/
 		}else{//VOWELS & CONSONANTS 
 			
-			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,numberTargets, parameters.wordLevel);
+			
+			if (targetWords.size()==0)
+				return targetWords;
+			
+			
+			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  lA, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
+				
+					
+			for(List<GameElement> lge : distractors){
+				for(GameElement ge : lge)
+					targetWords.add(ge);
+				
+			}
+
+			return targetWords;
+			//return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
 
 			
 		}
@@ -61,7 +96,7 @@ public class JunkyardUK implements GameLevel {
 
 	@Override
 	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
+		return new FillerType[]{FillerType.CLUSTER};
 	}
 
 
@@ -79,7 +114,7 @@ public class JunkyardUK implements GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
+		return new int[]{2};//No choice
 		
 		/*LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
