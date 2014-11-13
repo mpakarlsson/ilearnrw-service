@@ -30,7 +30,7 @@
 
 		var table = $("#usertable").DataTable({
 			'paging' : false,
-			'searching' : false
+			'searching' : true
 		});
 
 		// Apply the search

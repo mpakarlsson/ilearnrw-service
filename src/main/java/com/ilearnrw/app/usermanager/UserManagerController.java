@@ -3,7 +3,6 @@ package com.ilearnrw.app.usermanager;
 import ilearnrw.user.profile.UserProfile;
 import ilearnrw.utils.LanguageCode;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,10 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import scala.language;
-
 import com.ilearnrw.api.datalogger.model.LogEntryResult;
-import com.ilearnrw.api.datalogger.model.Problem;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter.DateFilterType;
@@ -60,7 +56,6 @@ import com.ilearnrw.app.usermanager.jquery.model.ApplicationDataPoint;
 import com.ilearnrw.app.usermanager.jquery.model.BreakdownFilter;
 import com.ilearnrw.app.usermanager.jquery.model.SkillDataPoint;
 import com.ilearnrw.app.usermanager.jquery.model.SkillBreakdownRequest;
-import com.ilearnrw.app.usermanager.jquery.model.SkillDetails;
 import com.ilearnrw.common.AuthenticatedRestClient;
 import com.ilearnrw.common.security.Tokens;
 import com.ilearnrw.common.security.users.model.Classroom;
@@ -102,10 +97,10 @@ public class UserManagerController {
 
 	@Autowired
 	private StudentDetailsService studentDetailsService;
-	
+
 	@Autowired
 	private CubeService cubeService;
-	
+
 	@Autowired
 	private InfoService infoService;
 
@@ -317,13 +312,14 @@ public class UserManagerController {
 		if (profile == null) {
 			throw new Exception("No profile available.");
 		}
-		
+
 		User user = new User();
 		user.setId(id);
 		model.put("userId", id);
 		model.put("profile", profile);
 		model.put("student", userService.getUser(id));
-		model.put("studentDetails", studentDetailsService.getStudentDetails(user));
+		model.put("studentDetails",
+				studentDetailsService.getStudentDetails(user));
 		return "users/profile";
 	}
 
@@ -379,12 +375,13 @@ public class UserManagerController {
 		List<Role> selectedRoles = roleService.getRoleList(user);
 		userForm.setUser(user);
 		userForm.setRole(selectedRoles.get(0).getName());
-		userForm.setStudentDetails(studentDetailsService.getStudentDetails(user));
+		userForm.setStudentDetails(studentDetailsService
+				.getStudentDetails(user));
 
 		model.put("userform", userForm);
 		model.put("schools", studentDetailsService.getSchools());
-		//TODO: this has to go as ajax
-		//model.put("classRooms", studentDetailsService.getClassRooms());
+		// TODO: this has to go as ajax
+		// model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
 
 		return "users/form.update";
@@ -392,7 +389,9 @@ public class UserManagerController {
 
 	@RequestMapping(value = "users/{id}/changepassword", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody String changePassword(@PathVariable int id, @RequestParam("password") String password,
+	public @ResponseBody
+	String changePassword(@PathVariable int id,
+			@RequestParam("password") String password,
 			HttpServletRequest request) {
 
 		try {
@@ -421,8 +420,8 @@ public class UserManagerController {
 		}
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			//TODO: also, this
-			//model.put("classRooms", studentDetailsService.getClassRooms());
+			// TODO: also, this
+			// model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.update";
 		}
@@ -448,8 +447,8 @@ public class UserManagerController {
 	public String viewUserInsertForm(
 			@ModelAttribute("userform") UserNewForm form, ModelMap model) {
 		model.put("schools", studentDetailsService.getSchools());
-		//TODO: and this
-		//model.put("classRooms", studentDetailsService.getClassRooms());
+		// TODO: and this
+		// model.put("classRooms", studentDetailsService.getClassRooms());
 		model.put("teachersList", teacherStudentService.getTeacherList());
 		return "users/form.insert";
 	}
@@ -474,10 +473,17 @@ public class UserManagerController {
 		}
 		if (userService.getUserByUsername(user.getUsername()) != null)
 			result.rejectValue("user.username", "user.username.exists");
+		StudentDetails sd = form.getStudentDetails();
+		if (form.getRole().equals("student")) {
+			if (sd.getTeacherId() == null) {
+				result.rejectValue("studentDetails.teacherId",
+						"studentDetails.teacherId.enter");
+			}
+		}
 		if (result.hasErrors()) {
 			model.put("schools", studentDetailsService.getSchools());
-			//TODO: and this
-			//model.put("classRooms", studentDetailsService.getClassRooms());
+			// TODO: and this
+			// model.put("classRooms", studentDetailsService.getClassRooms());
 			model.put("teachersList", teacherStudentService.getTeacherList());
 			return "users/form.insert";
 		}
@@ -496,12 +502,10 @@ public class UserManagerController {
 		} else if (form.getRole().equals("student")) {
 			roleService.setRoleList(user,
 					Arrays.asList(roleService.getRole("ROLE_STUDENT")));
-			StudentDetails sd = form.getStudentDetails();
 			sd.setStudentId(user.getId());
 			studentDetailsService.insertData(sd);
 			User teacher = userService.getUser(sd.getTeacherId());
 			teacherStudentService.assignStudentToTeacher(teacher, user);
-
 		}
 		profileProvider.createProfile(userId,
 				LanguageCode.fromString(user.getLanguage()));
@@ -733,7 +737,8 @@ public class UserManagerController {
 
 	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
 	@Transactional
-	public @ResponseBody List<School> getSchools() {
+	public @ResponseBody
+	List<School> getSchools() {
 		List<School> schools = studentDetailsService.getSchools();
 		School all = new School();
 		all.setId(-1);
@@ -744,7 +749,8 @@ public class UserManagerController {
 
 	@RequestMapping(value = "jquery/admin/classrooms", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<Classroom> getClassRooms(@RequestBody School school) {
+	public @ResponseBody
+	List<Classroom> getClassRooms(@RequestBody School school) {
 		List<Classroom> classrooms = new ArrayList<Classroom>();
 		Classroom all = new Classroom();
 		all.setId(-1);
@@ -757,22 +763,24 @@ public class UserManagerController {
 
 	@RequestMapping(value = "jquery/admin/students", method = RequestMethod.POST)
 	@Transactional
-	public @ResponseBody List<User> getStudents(@RequestBody Classroom classroom) {
+	public @ResponseBody
+	List<User> getStudents(@RequestBody Classroom classroom) {
 		List<User> students = new ArrayList<User>();
 		User all = new User();
 		all.setId(-1);
 		all.setUsername("All students");
 		students.add(0, all);
 		if (classroom.getId() != -1)
-			students.addAll(studentDetailsService.getStudentsFromClassRoom(classroom)); 
+			students.addAll(studentDetailsService
+					.getStudentsFromClassRoom(classroom));
 		else {
 			students.addAll(teacherStudentService.getAllStudentsList());
 		}
 		return students;
 	}
 
-	private DateFilter getDateFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
-	{
+	private DateFilter getDateFilterFromBreakdownFilter(
+			BreakdownFilter breakdownFilter) {
 		DateFilter dateFilter = new DateFilter();
 		switch (breakdownFilter.getDateType()) {
 		case 0:
@@ -797,27 +805,21 @@ public class UserManagerController {
 		}
 		return dateFilter;
 	}
-	
-	private StudentFilter getStudentFilterFromBreakdownFilter(BreakdownFilter breakdownFilter)
-	{
+
+	private StudentFilter getStudentFilterFromBreakdownFilter(
+			BreakdownFilter breakdownFilter) {
 		StudentFilter studentFilter = new StudentFilter();
-		
-		if (breakdownFilter.getStudent().getId() != -1)
-		{
+
+		if (breakdownFilter.getStudent().getId() != -1) {
 			studentFilter.setType(StudentFilterType.STUDENT);
 			studentFilter.setName(breakdownFilter.getStudent().getUsername());
-		}
-		else if (breakdownFilter.getClassroom().getId() != -1)
-		{
+		} else if (breakdownFilter.getClassroom().getId() != -1) {
 			studentFilter.setType(StudentFilterType.CLASSROOM);
 			studentFilter.setName(breakdownFilter.getClassroom().getName());
-		}
-		else if (breakdownFilter.getSchool().getId() != -1)
-		{
+		} else if (breakdownFilter.getSchool().getId() != -1) {
 			studentFilter.setType(StudentFilterType.SCHOOL);
 			studentFilter.setName(breakdownFilter.getSchool().getName());
-		}
-		else {
+		} else {
 			studentFilter.setType(StudentFilterType.ALL);
 			studentFilter.setName(null);
 		}
@@ -871,7 +873,7 @@ public class UserManagerController {
 						.getLanguage());
 		return breakdownResult;
 	}
-	
+
 	@RequestMapping(value = "jquery/admin/plot/activity/breakdown", method = RequestMethod.POST)
 	@Transactional
 	public @ResponseBody
@@ -886,7 +888,8 @@ public class UserManagerController {
 			dataPoint = new ApplicationDataPoint();
 			dataPoint.setLabel(application.getName());
 			BreakdownResult breakdownResult = cubeService
-					.getActivityBreakdownResult(dateFilter, studentFilter, application.getName());
+					.getActivityBreakdownResult(dateFilter, studentFilter,
+							application.getName());
 			dataPoint.setData(breakdownResult.getTotalAnswers());
 			if (dataPoint.getData() > 0)
 				applicationBreakdown.add(dataPoint);
@@ -903,8 +906,9 @@ public class UserManagerController {
 				.getFilter());
 		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(applicationBreakdownRequest
 				.getFilter());
-		BreakdownResult breakdownResult = cubeService.getActivityBreakdownResult(
-				dateFilter, studentFilter, applicationBreakdownRequest.getDataPoint().getLabel());
+		BreakdownResult breakdownResult = cubeService
+				.getActivityBreakdownResult(dateFilter, studentFilter,
+						applicationBreakdownRequest.getDataPoint().getLabel());
 		return breakdownResult;
 	}
 
@@ -920,7 +924,8 @@ public class UserManagerController {
 		List<String> skills = new ArrayList<String>();
 		User current = userService.getUserByUsername(SecurityContextHolder
 				.getContext().getAuthentication().getName());
-		List<com.ilearnrw.api.info.model.Problem> getProblems = infoService.getProblems(current.getLanguage());
+		List<com.ilearnrw.api.info.model.Problem> getProblems = infoService
+				.getProblems(current.getLanguage());
 		for (String id : overviewBreakdownResult.getSkillsWorkedOn()) {
 			skills.add(getProblems.get(Integer.parseInt(id)).getTitle());
 		}
