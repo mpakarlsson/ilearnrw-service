@@ -169,7 +169,7 @@
 														--%>
 														<c:when test="${o.role eq 'ROLE_STUDENT'}">
 															<sec:authorize
-																ifAnyGranted="PERMISSION_EXPERT,PERMISSION_TEACHER">
+																ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT,PERMISSION_TEACHER">
 																<li><a
 																	href="${pageContext.request.contextPath}/apps/${o.user.id}/screeningtest"><i
 																		class="fa fa-location-arrow fa-fw"></i> Screening Test</a></li>
