@@ -367,7 +367,7 @@ public class UserManagerController {
 
 	@RequestMapping(value = "/users/{id}/edit", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String viewUserUpdateForm(@PathVariable int id, ModelMap model) {
+	public String viewUserUpdateForm(@PathVariable int id, ModelMap model, HttpServletRequest request) {
 		UserNewForm userForm = new UserNewForm();
 		User user = userService.getUser(id);
 		user.setPassword("");
@@ -382,8 +382,7 @@ public class UserManagerController {
 		model.put("schools", studentDetailsService.getSchools());
 		// TODO: this has to go as ajax
 		// model.put("classRooms", studentDetailsService.getClassRooms());
-		model.put("teachersList", teacherStudentService.getTeacherList());
-
+		model.put("teachersList", getTeachersAccessibleByCurrentUser(request));
 		return "users/form.update";
 	}
 
@@ -401,12 +400,24 @@ public class UserManagerController {
 		}
 		return "OK";
 	}
+	
+	List<User> getTeachersAccessibleByCurrentUser(HttpServletRequest request)
+	{
+		if (request.isUserInRole("PERMISSION_ADMIN"))
+			return teacherStudentService.getTeacherList();
+		else if (request.isUserInRole("PERMISSION_EXPERT")) {
+			User current = userService.getUserByUsername(SecurityContextHolder
+					.getContext().getAuthentication().getName());
+			return expertTeacherService.getTeacherList(current);
+		}
+		return null;
+	}
 
 	@RequestMapping(value = "users/{id}/edit", method = RequestMethod.POST)
 	@Transactional
 	public String updateUser(@PathVariable int id,
 			@Valid @ModelAttribute("userform") UserNewForm userForm,
-			BindingResult result, ModelMap model) {
+			BindingResult result, ModelMap model, HttpServletRequest request) {
 		User user = userForm.getUser();
 		user.setId(id);
 		userForm.setUser(user);
@@ -422,7 +433,7 @@ public class UserManagerController {
 			model.put("schools", studentDetailsService.getSchools());
 			// TODO: also, this
 			// model.put("classRooms", studentDetailsService.getClassRooms());
-			model.put("teachersList", teacherStudentService.getTeacherList());
+			model.put("teachersList", getTeachersAccessibleByCurrentUser(request));
 			return "users/form.update";
 		}
 
@@ -445,11 +456,17 @@ public class UserManagerController {
 	@RequestMapping(value = "users/new", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String viewUserInsertForm(
-			@ModelAttribute("userform") UserNewForm form, ModelMap model) {
+			@ModelAttribute("userform") UserNewForm form, ModelMap model, HttpServletRequest request) {
 		model.put("schools", studentDetailsService.getSchools());
 		// TODO: and this
 		// model.put("classRooms", studentDetailsService.getClassRooms());
-		model.put("teachersList", teacherStudentService.getTeacherList());
+		if (request.isUserInRole("PERMISSION_ADMIN"))
+			model.put("teachersList", teacherStudentService.getTeacherList());
+		else if (request.isUserInRole("PERMISSION_EXPERT")) {
+			User current = userService.getUserByUsername(SecurityContextHolder
+					.getContext().getAuthentication().getName());
+			model.put("teachersList", expertTeacherService.getTeacherList(current));
+		}
 		return "users/form.insert";
 	}
 

@@ -83,7 +83,7 @@
 			</div>
 			<div class="row col-xs-12">
 				<div class="panel panel-default">
-					<div class="panel-heading">Important: Experts can only see the teachers that are assigned to them and the students that are assigned to those teachers. Experts can be assigned teachers in the actions menu. Please note that a teacher can be assigned to multiple experts.</div>
+					<div class="panel-heading"></div>
 					<div class="panel-body">
 						<table id="usertable"
 							class="table table-striped table-bordered table-condensed table-hover">
