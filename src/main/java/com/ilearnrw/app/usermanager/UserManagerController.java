@@ -683,9 +683,10 @@ public class UserManagerController {
 		ExpertTeacherForm expertTeacherForm = new ExpertTeacherForm();
 		expertTeacherForm.setExpert(expert);
 		List<User> unassignedTeachersList = expertTeacherService
-				.getUnassignedTeachersList();
-		unassignedTeachersList.addAll(expertTeacherService
-				.getTeacherList(expert));
+				//.getUnassignedTeachersList();
+				.getAllTeachersList();
+//		unassignedTeachersList.addAll(expertTeacherService
+//				.getTeacherList(expert));
 		expertTeacherForm.setAllTeachers(unassignedTeachersList);
 		expertTeacherForm.setSelectedTeachers(expertTeacherService
 				.getTeacherList(expert));

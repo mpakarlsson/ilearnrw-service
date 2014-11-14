@@ -31,8 +31,7 @@ CREATE TABLE `teachers_students` (
 
 CREATE TABLE `experts_teachers` (
   `expert_id` bigint(20) NOT NULL,
-  `teacher_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`teacher_id`)
+  `teacher_id` bigint(20) NOT NULL
 );
 
 CREATE TABLE `applications` (

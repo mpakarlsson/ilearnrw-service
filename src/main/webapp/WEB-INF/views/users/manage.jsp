@@ -83,9 +83,7 @@
 			</div>
 			<div class="row col-xs-12">
 				<div class="panel panel-default">
-					<div class="panel-heading">Hover over the icons to see the
-						user's role. Teachers can be assigned students in the actions
-						menu. Experts can be assigned teachers also in the actions menu.</div>
+					<div class="panel-heading">Important: Experts can only see the teachers that are assigned to them and the students that are assigned to those teachers. Experts can be assigned teachers in the actions menu. Please note that a teacher can be assigned to multiple experts.</div>
 					<div class="panel-body">
 						<table id="usertable"
 							class="table table-striped table-bordered table-condensed table-hover">
@@ -147,7 +145,6 @@
 													class="caret"></span></a>
 												<ul class="dropdown-menu pull-right">
 													<c:choose>
-														<%--
 														<c:when test="${o.role eq 'ROLE_EXPERT'}">
 															<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 																<li><a
@@ -156,7 +153,7 @@
 																		this expert</a></li>
 															</sec:authorize>
 														</c:when>
-														 
+														<%--
 														<c:when test="${o.role eq 'ROLE_TEACHER'}">
 															<sec:authorize
 																ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
