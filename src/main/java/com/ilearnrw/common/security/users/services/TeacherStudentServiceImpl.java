@@ -50,4 +50,9 @@ public class TeacherStudentServiceImpl implements TeacherStudentService {
 		return teacherStudentDao.isUserStudentOfTeacher(userName, teacherName);
 	}
 
+	@Override
+	public User getTeacherOfStudent(User student) {
+		return teacherStudentDao.getTeacherOfStudent(student);
+	}
+
 }

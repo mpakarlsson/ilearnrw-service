@@ -45,7 +45,7 @@ public class ExpertTeacherServiceImpl implements ExpertTeacherService {
 	}
 
 	@Override
-	public boolean isUserStudentOfTeacher(String userName, String expertName) {
+	public boolean isUserAssignedToExpert(String userName, String expertName) {
 		return expertTeacherDao.isUserAssignedToExpert(userName, expertName);
 	}
 

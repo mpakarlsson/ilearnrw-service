@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
 import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.ExpertTeacherService;
 import com.ilearnrw.common.security.users.services.TeacherStudentService;
 import com.ilearnrw.common.security.users.services.UserService;
 
 public class ProfilePermissionChecker implements PermissionChecker {
+
+	@Autowired
+	private ExpertTeacherService expertTeacherService;
 
 	@Autowired
 	private TeacherStudentService teacherStudentService;
@@ -24,8 +28,12 @@ public class ProfilePermissionChecker implements PermissionChecker {
 			int userId = (Integer) targetDomainObject;
 			User user = userService.getUser(userId);
 			String loggedInUser = (String) authentication.getPrincipal();
-			isAllowed = (loggedInUser.compareTo(user.getUsername()) == 0 || teacherStudentService
-					.isUserStudentOfTeacher(user.getUsername(), loggedInUser));
+			isAllowed = (loggedInUser.compareTo(user.getUsername()) == 0
+					|| teacherStudentService.isUserStudentOfTeacher(
+							user.getUsername(), loggedInUser) || expertTeacherService
+					.isUserAssignedToExpert(teacherStudentService
+							.getTeacherOfStudent(user).getUsername(),
+							loggedInUser));
 		}
 
 		return isAllowed;

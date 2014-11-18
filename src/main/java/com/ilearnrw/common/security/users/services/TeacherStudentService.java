@@ -20,4 +20,6 @@ public interface TeacherStudentService {
 	
 	public boolean isUserStudentOfTeacher(String userName, String teacherName);
 
+	public User getTeacherOfStudent(User student);
+
 }

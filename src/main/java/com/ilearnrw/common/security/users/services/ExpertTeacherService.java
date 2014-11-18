@@ -18,7 +18,7 @@ public interface ExpertTeacherService {
 	
 	public abstract void assignTeacherToExpert(User expert, User teacher);
 
-	public abstract boolean isUserStudentOfTeacher(String userName,
+	public abstract boolean isUserAssignedToExpert(String userName,
 			String expertName);
 
 }
