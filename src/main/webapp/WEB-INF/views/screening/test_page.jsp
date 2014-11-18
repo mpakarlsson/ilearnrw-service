@@ -69,9 +69,10 @@
 									</c:when>
 								</c:choose>
 								<hr>
-								<c:forEach items="${profileClusters.getClusterProblems(questions.getParentCluster())}" var="res" varStatus="inner">
+								${profileClusters.getClusterHTMLDescription(questions.getParentCluster()) }
+								<%-- <c:forEach items="${profileClusters.getClusterProblems(questions.getParentCluster())}" var="res" varStatus="inner">
 									<i> ${res.getProblemDescription().getHumanReadableDescription() }</i><br>
-								</c:forEach>
+								</c:forEach> --%>
 								<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
 									<div class="word" data-word="${relatedWords}"
 										data-cluster="${questions.getParentCluster()}" style="padding: 3px;background-color:${inner.index % 2 == 0 ? '#F8F8F8' : '#ebebeb '};">

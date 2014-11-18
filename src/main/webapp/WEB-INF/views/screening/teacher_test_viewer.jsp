@@ -22,9 +22,13 @@
 			</c:when>
 		</c:choose>
 		
+		${profileClusters.getClusterHTMLDescription(questions.getParentCluster()) }
+		<%--
 		<c:forEach items="${profileClusters.getClusterProblems(questions.getParentCluster())}" var="res" varStatus="inner">
 		<i> ${res.getProblemDescription().getHumanReadableDescription() }</i><br>
 		</c:forEach>
+		--%>
+		<br>
 		<strong>
 		<c:choose>
 			<c:when test="${questions.isAttachRelWords() && questions.getRelatedWords().size()>1}">
