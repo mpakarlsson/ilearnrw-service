@@ -89,9 +89,14 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public User getUser(int id) {
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		User user = template.queryForObject("select * from users where id=?",
-				new Object[] { id },
-				new BeanPropertyRowMapper<User>(User.class));
+		User user;
+		try {
+			user = template.queryForObject("select * from users where id=?",
+					new Object[] { id },
+					new BeanPropertyRowMapper<User>(User.class));
+		} catch (DataAccessException e) {
+			return null;
+		}
 		return user;
 	}
 

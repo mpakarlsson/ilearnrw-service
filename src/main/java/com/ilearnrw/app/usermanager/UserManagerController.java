@@ -950,5 +950,44 @@ public class UserManagerController {
 		overviewBreakdownResult.setSkillsWorkedOn(skills);
 		return overviewBreakdownResult;
 	}
+	
+	boolean userHasRole(User user, String permission)
+	{
+		List<Role> roles = roleService.getRoleList(user);
+		List<Permission> permissions = new ArrayList<Permission>();
+		for (Role role : roles)
+			permissions.addAll(permissionService.getPermissionList(role));
+		return permissions.contains(permissionService.getPermission(permission));
+	}
+	
+	@RequestMapping(value = "application/{userId}/profiles", method = RequestMethod.GET)
+	@Transactional
+	public @ResponseBody
+	List<User> getProfilesForApplication(@PathVariable int userId) {
+		User user = userService.getUser(userId);
+		if (user == null)
+			return new ArrayList<User>();
+		if (userHasRole(user, "PERMISSION_ADMIN"))
+			return teacherStudentService.getAllStudentsList();
+		if (userHasRole(user, "PERMISSION_EXPERT"))
+		{
+			List<User> teachers = expertTeacherService.getTeacherList(user);
+			List<User> students = new ArrayList<User>();
+			for (User teacher : teachers)
+				students.addAll(teacherStudentService.getStudentList(teacher));
+			return students;
+		}
+		if (userHasRole(user, "PERMISSION_TEACHER"))
+		{
+			return teacherStudentService.getStudentList(user);
+		}
+		if (userHasRole(user, "PERMISSION_STUDENT"))
+		{
+			List<User> students = new ArrayList<User>();
+			students.add(user);
+			return students;
+		}
+		return new ArrayList<User>();
+	}
 
 }
