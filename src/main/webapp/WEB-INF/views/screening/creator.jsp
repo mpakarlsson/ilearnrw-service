@@ -75,7 +75,7 @@
 
 
 							<c:choose>
-								<c:when test="${profileClusters.getClusterProblems(cluster) != null}">
+								<c:when test="${profileClusters.getClusterProblems(cluster) != null && cluster>-1}">
 									<h4>Cluster ${cluster } (${clusterCategories })</h4>
 									<ul>
 									<c:forEach items="${profileClusters.getClusterProblems(cluster)}" var="res" varStatus="inner">

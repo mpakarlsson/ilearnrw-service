@@ -100,6 +100,7 @@ public class ScreeningCreationControler {
 		st.storeTest("data/EN_testing_screening.json");*/
 		
 		ScreeningTestList stl = new ScreeningTestList();
+		//stl.storeScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		stl.loadScreeningTestList(ScreeningResources.path+user.getLanguage()+"/test_list.json");
 		
 		if (stl.getFilenames().contains(fname))
