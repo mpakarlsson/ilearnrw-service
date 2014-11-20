@@ -41,6 +41,9 @@ public class MusicHallUK implements GameLevel {
 		ArrayList<String> sentences = new ArrayList<String>();
 		ArrayList<String> answers = new ArrayList<String>();
 
+		ArrayList<Integer> languageAreas = new ArrayList<Integer>();
+		ArrayList<Integer> difficulties = new ArrayList<Integer>();
+		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 		List<GameElement> targetWords;
 		
@@ -70,7 +73,10 @@ public class MusicHallUK implements GameLevel {
 					
 				}
 				
+				
 				sentences.add(sentence);
+				languageAreas.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getCategory());
+				difficulties.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getIndex());
 				
 			}
 			
@@ -113,6 +119,8 @@ public class MusicHallUK implements GameLevel {
 				answers.add(w.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
 
 				sentences.add(sentence);
+				languageAreas.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getCategory());
+				difficulties.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getIndex());
 				
 			}
 			
@@ -199,7 +207,7 @@ public class MusicHallUK implements GameLevel {
 		
 		
 		
-		result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
+		result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords, languageAreas.get(i),difficulties.get(i))));
 			
 		}
 		
