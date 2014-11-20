@@ -14,6 +14,8 @@ import ilearnrw.utils.LanguageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +24,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
+import com.ilearnrw.common.security.users.model.Permission;
+import com.ilearnrw.common.security.users.model.Role;
+import com.ilearnrw.common.security.users.model.User;
+import com.ilearnrw.common.security.users.services.ExpertTeacherService;
+import com.ilearnrw.common.security.users.services.PermissionService;
+import com.ilearnrw.common.security.users.services.RoleService;
+import com.ilearnrw.common.security.users.services.TeacherStudentService;
+import com.ilearnrw.common.security.users.services.UserService;
 
 /**
  * @TODO Add more methods of accessing only the preferences, the severities etc.
@@ -39,6 +49,21 @@ public class ProfileAccessUpdaterController {
 
 	@Autowired
 	IProfileProvider profileProvider;
+	
+	@Autowired
+	private RoleService roleService;
+	
+	@Autowired
+	private TeacherStudentService teacherStudentService;
+
+	@Autowired
+	private ExpertTeacherService expertTeacherService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private PermissionService permissionService;
 
 
 	/**
@@ -244,5 +269,44 @@ public class ProfileAccessUpdaterController {
 		else
 			return "word not found";
 		return "ok";
+	}
+	
+	boolean userHasRole(User user, String permission)
+	{
+		List<Role> roles = roleService.getRoleList(user);
+		List<Permission> permissions = new ArrayList<Permission>();
+		for (Role role : roles)
+			permissions.addAll(permissionService.getPermissionList(role));
+		return permissions.contains(permissionService.getPermission(permission));
+	}
+	
+	@RequestMapping(value = "application/{userId}/profiles", method = RequestMethod.GET)
+	@Transactional
+	public @ResponseBody
+	List<User> getProfilesForApplication(@PathVariable int userId) {
+		User user = userService.getUser(userId);
+		if (user == null)
+			return new ArrayList<User>();
+		if (userHasRole(user, "PERMISSION_ADMIN"))
+			return teacherStudentService.getAllStudentsList();
+		if (userHasRole(user, "PERMISSION_EXPERT"))
+		{
+			List<User> teachers = expertTeacherService.getTeacherList(user);
+			List<User> students = new ArrayList<User>();
+			for (User teacher : teachers)
+				students.addAll(teacherStudentService.getStudentList(teacher));
+			return students;
+		}
+		if (userHasRole(user, "PERMISSION_TEACHER"))
+		{
+			return teacherStudentService.getStudentList(user);
+		}
+		if (userHasRole(user, "PERMISSION_STUDENT"))
+		{
+			List<User> students = new ArrayList<User>();
+			students.add(user);
+			return students;
+		}
+		return new ArrayList<User>();
 	}
 }
