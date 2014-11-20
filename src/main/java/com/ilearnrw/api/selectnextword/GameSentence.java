@@ -8,6 +8,23 @@ public class GameSentence {
 	private String theSentence;
 	private ArrayList<String> fillerWords;
 	
+	private int languageArea = -1;
+	private int difficulty = -1;
+	
+	
+	public void setDifficulty(int languageArea,int difficulty){
+		this.languageArea = languageArea;
+		this.difficulty = difficulty;
+		
+	}
+	
+	public GameSentence(String theSentence, ArrayList<String> fillerWords,int languageArea, int difficulty) {
+		this.theSentence = theSentence;
+		this.fillerWords = fillerWords;
+		this.difficulty = difficulty;
+		this.languageArea = languageArea;
+	}
+	
 	public GameSentence(String theSentence, ArrayList<String> fillerWords) {
 		this.theSentence = theSentence;
 		this.fillerWords = fillerWords;

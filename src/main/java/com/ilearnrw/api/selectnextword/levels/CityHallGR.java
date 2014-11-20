@@ -40,8 +40,11 @@ public class CityHallGR implements GameLevel {
 			
 		}else if(parameters.mode==2){//Need words for vowels, consonants or letter similarity
 			
-			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
 			
+			System.err.println("Hey");
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
+			System.err.println("Hoy "+targetWords.size()+"  "+parameters.batchSize);
+
 			String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
@@ -208,7 +211,8 @@ public class CityHallGR implements GameLevel {
 		case CONSONANTS://Consonants
 			return new int[]{1,2};//words that start with that letter or letter to letter
 		case VOWELS://Vowels
-			return new int[]{1,2};//words that start with that letter or letter to letter
+			//TODO add also 1
+			return new int[]{2};//words that start with that letter or letter to letter
 		default://GP_CORRESPONDENCE
 			return new int[]{3};//confusing
 		}

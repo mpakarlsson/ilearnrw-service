@@ -47,6 +47,9 @@ public class MusicHallGR implements GameLevel {
 
 		ArrayList<String> sentences = new ArrayList<String>();
 		ArrayList<String> answers = new ArrayList<String>();
+		
+		ArrayList<Integer> languageAreas = new ArrayList<Integer>();
+		ArrayList<Integer> difficulties = new ArrayList<Integer>();
 
 		List<GameElement> targetWords;
 
@@ -58,6 +61,7 @@ public class MusicHallGR implements GameLevel {
 			EasyHardList thelist = new EasyHardList(pwll.getItems());
 			for (String w : thelist.getRandom(parameters.batchSize, parameters.wordLevel)){
 				GameSentence sentence = SentenceLoaderControler.fromString(w);
+				sentence.setDifficulty(languageArea, difficulty);
 				for(String answer_aux : sentence.getTargetedWords()){
 					sentence.getFillerWords().add(answer_aux);
 				}
@@ -72,6 +76,8 @@ public class MusicHallGR implements GameLevel {
 			EasyHardList thelist = new EasyHardList(pwll.getItems());
 			for (String w : thelist.getRandom(parameters.batchSize, parameters.wordLevel)){
 				GameSentence sentence = SentenceLoaderControler.fromString(w);
+				sentence.setDifficulty(languageArea, difficulty);
+
 				for(String answer_aux : sentence.getTargetedWords()){
 					sentence.getFillerWords().add(answer_aux);
 				}
@@ -106,6 +112,8 @@ public class MusicHallGR implements GameLevel {
 				}
 
 				sentences.add(sentence);
+				languageAreas.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getCategory());
+				difficulties.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getIndex());
 
 			}
 
@@ -149,6 +157,8 @@ public class MusicHallGR implements GameLevel {
 				answers.add(w.getWord().substring(correctAnswer.getMatched().get(0).getStart(), correctAnswer.getMatched().get(0).getEnd()));
 
 				sentences.add(sentence);
+				languageAreas.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getCategory());
+				difficulties.add(((AnnotatedWord)ge.getAnnotatedWord()).getWordProblems().get(0).getIndex());
 
 			}
 
@@ -254,7 +264,7 @@ public class MusicHallGR implements GameLevel {
 			}
 
 
-			result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords)));
+			result.add(new GameElement(new GameSentence(sentences.get(i), fillerWords,languageAreas.get(i), difficulties.get(i))));
 
 		}
 
