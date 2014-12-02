@@ -315,6 +315,8 @@ public class UserManagerController {
 
 		User user = new User();
 		user.setId(id);
+		//TODO: remove this when severities are implemented properly in the games
+		profile.getUserProblems().getUserSeverities().setIndicesFromCount(profile.getUserProblems().getProblems());
 		model.put("userId", id);
 		model.put("profile", profile);
 		model.put("student", userService.getUser(id));
