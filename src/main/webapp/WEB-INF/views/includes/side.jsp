@@ -55,9 +55,6 @@
                         </li>
                         </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_STUDENT">
-                        <li>
-                            <a href="tables.html"><i class="fa fa-table fa-fw"></i> Personal</a>
-                        </li>
     			        </sec:authorize>
     			        <sec:authorize ifAnyGranted="PERMISSION_ADMIN">
 						<li class="active">

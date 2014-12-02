@@ -33,46 +33,39 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<h1 class="page-header">Online Management System Dashboard</h1>
-					<sec:authorize ifAnyGranted="PERMISSION_ADMIN">
-					</sec:authorize>
-					<sec:authorize ifAnyGranted="PERMISSION_TEACHER">
-					</sec:authorize>
-					<sec:authorize ifAnyGranted="PERMISSION_STUDENT">
-						<h1 class="page-header">Student statistics</h1>
-					</sec:authorize>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-6 box">
 					<div class="row">
-						<img
-							src="${pageContext.request.contextPath}/apps/resources/webapp/images/test.png" />
+						<a
+							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/usersGuide.pdf">
+							<img
+							src="${pageContext.request.contextPath}/apps/resources/webapp/images/placeholder.png" />
+						</a>
 					</div>
-					<div class="row">Print paper-based screening test</div>
+					<div class="row">
+						<a
+							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/usersGuide.pdf">View
+							user guides</a>
+					</div>
 				</div>
+				<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
 				<div class="col-lg-6 box">
 					<div class="row">
-						<img
+						<a
+							href="${pageContext.request.contextPath}/apps/screening">
+							<img
 							src="${pageContext.request.contextPath}/apps/resources/webapp/images/screening.png" />
+						</a>
 					</div>
-					<div class="row">Access online screening test</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-6 box">
 					<div class="row">
-						<img
-							src="${pageContext.request.contextPath}/apps/resources/webapp/images/placeholder.png" />
+						<a
+							href="${pageContext.request.contextPath}/apps/screening">Screening
+							tests</a>
 					</div>
-					<div class="row">View reader user guide</div>
 				</div>
-				<div class="col-lg-6 box">
-					<div class="row">
-						<img
-							src="${pageContext.request.contextPath}/apps/resources/webapp/images/placeholder.png" />
-					</div>
-					<div class="row">View game user guide</div>
-				</div>
+				</sec:authorize>
 			</div>
 		</div>
 
