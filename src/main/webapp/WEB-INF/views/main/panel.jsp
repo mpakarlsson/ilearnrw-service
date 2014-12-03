@@ -39,15 +39,29 @@
 				<div class="col-lg-6 box">
 					<div class="row">
 						<a
-							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/usersGuide.pdf">
+							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/Game User Guide Nov11.pdf">
 							<img
 							src="${pageContext.request.contextPath}/apps/resources/webapp/images/placeholder.png" />
 						</a>
 					</div>
 					<div class="row">
 						<a
-							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/usersGuide.pdf">View
-							user guides</a>
+							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/Game User Guide Nov11.pdf">View
+							game user guide</a>
+					</div>
+				</div>
+				<div class="col-lg-6 box">
+					<div class="row">
+						<a
+							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/iLearnRW Reader User Guide 3Dec.pdf">
+							<img
+							src="${pageContext.request.contextPath}/apps/resources/webapp/images/placeholder.png" />
+						</a>
+					</div>
+					<div class="row">
+						<a
+							href="${pageContext.request.contextPath}/apps/resources/webapp/pdf/iLearnRW Reader User Guide 3Dec.pdf">View
+							reader user guide</a>
 					</div>
 				</div>
 				<sec:authorize ifAnyGranted="PERMISSION_ADMIN,PERMISSION_EXPERT">
