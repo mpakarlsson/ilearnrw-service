@@ -3,15 +3,17 @@ package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.annotation.AnnotatedWord;
 import ilearnrw.textclassification.StringMatchesInfo;
+import ilearnrw.textclassification.WordProblemInfo;
 import ilearnrw.utils.LanguageCode;
 
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -28,164 +30,154 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  */
 
 
-public class CityHallGR implements GameLevel {
+public class CityHallGR extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
+			int languageArea, int difficulty) {
 		
-		if (parameters.mode==1){//Need only the difficulty
+		if (parameters.mode==1){//Need only the difficulty, but as they are mixed, get many words and use the match
 			
-			return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,1, 0);
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+				//	new ArrayList<String>(),
+					false,//begins
+					false);
 			
-		}else if(parameters.mode==2){//Need words for vowels, consonants or letter similarity
-			
-			
-			System.err.println("Hey");
-			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
-			System.err.println("Hoy "+targetWords.size()+"  "+parameters.batchSize);
+					
+			WordProblemInfo correctProblem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0);//Flag as correct only 
+			String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(correctProblem.getMatched().get(0).getStart(), correctProblem.getMatched().get(0).getEnd());
 
-			String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
 			for(GameElement ge : targetWords)
-				if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
+				if(!ge.getAnnotatedWord().getWord().contains(correctLetter)){
 					ge.setFiller(true);
-					System.err.println(ge.getAnnotatedWord().getWord()+" Filler");
 				}else{
 					ge.setFiller(false);
-					System.err.println(ge.getAnnotatedWord().getWord()+" No filler");
-
 				}
-			return targetWords;			
-			/*if(languageArea == LanguageAreasGR.LETTER_SIMILARITY){
-
-				List<GameElement> targetWords = new ArrayList<GameElement>();
-				int numberFillers = 0;
-				int difficultyOffset = 0;
-				while(numberFillers == 0){
-					
-					targetWords = WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel+difficultyOffset);
-					
-					String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
-					for(GameElement ge : targetWords)
-						if(ge.getAnnotatedWord().getWord().substring(0, 1)!=correctLetter){
-							ge.setFiller(true);
-							numberFillers ++;
-						}
-					difficultyOffset+=10;
-					
-					if (difficultyOffset>100)
-						break;
-				}
-				
-				return targetWords;
-				
-			}else{
 			
-				List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel);
-				List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.GR, lA, difficulty, parameters.batchSize, parameters.wordLevel, parameters.accuracy, 0, new ArrayList<String>());
-				for(List<GameElement> lge : distractors)
-					for(GameElement ge : lge)
-						targetWords.add(ge);
-				
-				return targetWords;
-			}*/
-			
-			
-		}else{//Need words for GP correspondence,  with distractors without the sound
-						
-			List<GameElement> targetWords =WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel,false,true);
-			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
-			
-			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
-			String phoneme ="";
-			for(int i=0;i<targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().size();i++)
-				if(targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getGrapheme()==grapheme)
-					phoneme = targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getPhoneme();
-			
-			for(GameElement ge : targetWords)
-				if(!ge.getAnnotatedWord().getPhonetics().contains(phoneme)){
-					ge.setFiller(true);
-				}
 			return targetWords;
 			
-			/*//Find compatible phonetic difficulties
-			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.GR);
-
-			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.GR, lA, difficulty,parameters.accuracy);
+		}else if(parameters.mode==2){//Need words for consonants or letter similarity
 			
-			String[] phonemes = new String[selectedDifficulties.size()];
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					true,//begins
+					false);
 			
-			for(int i =0;i< selectedDifficulties.size();i++){
+			if(targetWords.size()!=0){
 				
-				String[] desc = definitions.getProblemDescription(lA, selectedDifficulties.get(i)).getDescriptions();
-				phonemes[i] = (definitions.getProblemDescription(lA, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
+				String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);//Flag as correct only 
+				
+				for(GameElement ge : targetWords)
+					if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
+						ge.setFiller(true);
+					}else{
+						ge.setFiller(false);
+					}
+								
+			}	
+
+			return targetWords;			
+
+			
+		}else if(parameters.mode==3){//Need words for GP correspondence,  with distractors without the sound
+				
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					true,//begins
+					false);
+			
+			if(targetWords.size()!=0){
+				
+				
+				StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+				String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
+				String phoneme ="";
+				for(int i=0;i<targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().size();i++)
+					if(targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getGrapheme()==grapheme)
+						phoneme = targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getPhoneme();
+				
+				for(GameElement ge : targetWords)
+					if(!ge.getAnnotatedWord().getPhonetics().contains(phoneme)){
+						ge.setFiller(true);
+					}else
+						ge.setFiller(false);
+
+
 				
 			}
-			List<GameElement> result = new ArrayList<GameElement>();
 			
-			for(int i=0;i<phonemes.length;i++){
-				
-				List<String> copy = new ArrayList<String>();
-				
-				for(int j = 0;j< phonemes.length;j++){
-					
-					if (j!=i)
-						copy.add(phonemes[j]);
-				}
-				
-					
-				List<GameElement> aux =	WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.GR, lA, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy);
-				
-				for(GameElement ge : aux)
-					result.add(ge);
-				
-			}
-			
+			return targetWords;			
 
-			//Word pattern= new Word(phoneme);//Phoneme
-			//result.add(new GameElement(false, pattern, languageArea, difficulty));
-			//pattern= new Word(definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[0]);//Grapheme
-			//result.add(new GameElement(false, pattern, languageArea, difficulty));
+		}else{//Vowels, contain letter
+			
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					false,//begins
+					true);//only one difficulty
+			
+			if(targetWords.size()!=0){
+				
+				StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+				String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
+				
+				for(GameElement ge : targetWords)
+					if(!ge.getAnnotatedWord().getWord().contains(grapheme)){
+						ge.setFiller(true);
+					}else{
+						ge.setFiller(false);
+					}
+			}	
 
-			return result;		*/	
-			
-			
-			
-			
+			return targetWords;	
+						
 		}
 	
+	}
+	
+	
+	@Override
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
+		
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+		if(lA==LanguageAreasGR.VOWELS)
+			return new TypeFiller[]{TypeFiller.CLUSTER};//Distractors from other difficulties
+		else
+			return new TypeFiller[]{TypeFiller.NONE};//Distractors within difficulty
 
 	}
+	
+	
 
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//only one correct
-
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+		if(lA==LanguageAreasGR.VOWELS)
+			return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};//number of alternative difficulties
+		else{
+			return new TypeAmount[]{TypeAmount.FEW};//No control over number of distractors
+		}		
+		
 	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//only one correct
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Sizes of the map
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//irrelevant
-
-	}
+	
+	
 
 	@Override
 	public TtsType[] TTSLevels(int languageArea, int difficulty) {
@@ -211,8 +203,7 @@ public class CityHallGR implements GameLevel {
 		case CONSONANTS://Consonants
 			return new int[]{1,2};//words that start with that letter or letter to letter
 		case VOWELS://Vowels
-			//TODO add also 1
-			return new int[]{2};//words that start with that letter or letter to letter
+			return new int[]{1,4};//words that contain that letter or letter to letter
 		default://GP_CORRESPONDENCE
 			return new int[]{3};//confusing
 		}

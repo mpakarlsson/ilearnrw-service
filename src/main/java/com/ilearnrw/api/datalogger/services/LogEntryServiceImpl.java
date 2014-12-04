@@ -41,7 +41,7 @@ public class LogEntryServiceImpl implements LogEntryService {
 	@Override
 	public LogEntryResult getLastLogs(LogEntryFilter filter) {
 
-		return logEntryDao.getLogs(filter,true,3);
+		return logEntryDao.getLogs(filter,true,5);
 
 	}
 

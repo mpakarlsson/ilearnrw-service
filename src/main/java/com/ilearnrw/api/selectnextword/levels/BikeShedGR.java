@@ -5,11 +5,11 @@ import ilearnrw.utils.LanguageCode;
 
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -23,61 +23,42 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  * 
  */
 
-public class BikeShedGR implements GameLevel {
+public class BikeShedGR extends GameLevel {
 
 	@Override
-	public List<GameElement> getWords(LevelParameters parameters,
-			int languageArea, int difficulty) {
+	public List<GameElement> getWords(
+			LevelParameters parameters,
+			int languageArea, 
+			int difficulty) {
 		
-		return WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);		
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.GR, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				false,
+				false);
 	
-
-		
 	}
-
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-
-		return new int[]{0};//Easy and hard
-
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{5};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
-
-	}
-
+	
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
-
+		return new int[]{1,3,5};//Words per door
 	}
 
 	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-	}
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
+		return new TypeFiller[]{TypeFiller.NONE};//Distractors within difficulty
 
+	}
+	
 	@Override
-	public int[] modeLevels(int languageArea, int difficulty) {
-		//LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
-
-			return new int[]{0};//no choice, only syllables
-		
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		return new TypeAmount[]{TypeAmount.FEW};//No control over number of distractors
 	}
+	
+	
 
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {

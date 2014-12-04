@@ -22,7 +22,8 @@ import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.info.dao.InfoDaoImpl;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeBasic;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelFactory;
 import com.ilearnrw.api.selectnextword.TtsType;
@@ -92,66 +93,12 @@ public class TestSelectNextWordsController {
 
 		GameLevel level = LevelFactory.createLevel(LanguageCode.fromString(language), languageArea, appIds.get(appID));	
 
-		int i=0;
-
-		String activityLevel = "";
-
-		if(level.allowedDifficulty(languageArea, difficulty)){
-			for(int mode : level.modeLevels(languageArea, difficulty)){
-
-				for(int accuracy : level.accuracyLevels(languageArea, difficulty)){
-
-					for(int speed : level.speedLevels(languageArea, difficulty)){
-
-						for(int batchSize : level.batchSizes(languageArea, difficulty)){
-
-							for(int wordLevels : level.wordLevels(languageArea, difficulty)){
-
-								for (FillerType fillerTypes : level.fillerTypes(languageArea, difficulty)){
-
-									for(TtsType ttstype : level.TTSLevels(languageArea, difficulty)){
-
-										activityLevel = 	"M"+mode+"-"
-												+ 	"A"+accuracy+"-"
-												+ 	"S"+speed+"-"
-												+ 	"B"+batchSize+"-"
-												+ 	"W"+wordLevels+"-"
-												+ 	"F"+fillerTypes.ordinal()+"-"
-												+	"T"+ttstype.ordinal();
-
-
-										if (i==index){
-
-											return new LevelJSON(activityLevel);
-										}else{
-											i++;
-										}
-
-
-									}
-
-
-
-								}
-							}
-						}
-
-
-					}
-				}
-
-			}
-
-			//return new LevelJSON(activityLevel);
-
-
-		//}else{
-
-
-//			return new LevelJSON("");
-		}
-
-		return new LevelJSON("");
+		List<String> activityLevels = level.getAllLevels(languageArea, difficulty);
+		
+		if(index<activityLevels.size())
+			return new LevelJSON(activityLevels.get(index));
+		else
+			return new LevelJSON(activityLevels.get(0));
 
 	}
 

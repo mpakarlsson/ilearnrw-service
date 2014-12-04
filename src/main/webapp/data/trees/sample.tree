@@ -1,0 +1,9 @@
+Node,0,severity,0,-1,0
+Edge,0,1,MASTER
+Terminal,1,severity:null;difficulty:NEXT_CLUSTER:IGNORE;accuracyRel:IGNORE:IGNORE;speedRel:IGNORE:IGNORE;challenge:HIGHER:IGNORE;amountDistractors:IGNORE:IGNORE;amountTrickyWords:IGNORE:IGNORE;wordDifficulty:IGNORE:IGNORE;gameType:DIFFERENT:IGNORE;numberWords:IGNORE:IGNORE
+Edge,0,2,REINFORCE
+Terminal,2,severity:null;difficulty:SAME_CLUSTER:IGNORE;accuracyRel:IGNORE:IGNORE;speedRel:IGNORE:IGNORE;challenge:HIGHER:IGNORE;amountDistractors:IGNORE:IGNORE;amountTrickyWords:IGNORE:IGNORE;wordDifficulty:IGNORE:IGNORE;gameType:DIFFERENT:IGNORE;numberWords:IGNORE:IGNORE
+Edge,0,3,NEED_WORK
+Terminal,3,severity:null;difficulty:SAME_CLUSTER:IGNORE;accuracyRel:IGNORE:IGNORE;speedRel:IGNORE:IGNORE;challenge:HIGHER:IGNORE;amountDistractors:IGNORE:IGNORE;amountTrickyWords:IGNORE:IGNORE;wordDifficulty:IGNORE:IGNORE;gameType:SAME:IGNORE;numberWords:IGNORE:IGNORE
+Edge,0,4,NEW
+Terminal,4,severity:null;difficulty:SAME:IGNORE;accuracyRel:IGNORE:IGNORE;speedRel:IGNORE:IGNORE;challenge:HIGHER:IGNORE;amountDistractors:IGNORE:IGNORE;amountTrickyWords:IGNORE:IGNORE;wordDifficulty:IGNORE:IGNORE;gameType:DIFFERENT:IGNORE;numberWords:IGNORE:IGNORE

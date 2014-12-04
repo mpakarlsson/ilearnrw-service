@@ -2,14 +2,14 @@ package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeBasic;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -25,12 +25,23 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  *
  */
 
-public class GardenUK implements GameLevel {
+public class GardenUK extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 		
-		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
+		
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.EN, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				false,//begins
+				false);
+		
+		
+		/*int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
 		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
 		if (numberDistractorsPerDifficulty==0)
 			numberDistractorsPerDifficulty++;
@@ -82,6 +93,10 @@ public class GardenUK implements GameLevel {
 			
 		}
 		
+		return result;
+		
+		*/
+		
 		
 		/*List<GameElement> resultComplete = new ArrayList<GameElement>();
 		
@@ -92,59 +107,36 @@ public class GardenUK implements GameLevel {
 		}*/
 		
 
-		return result;
 	
 	}
 	
 
+	@Override
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
+		if((LanguageAreasUK.values()[languageArea]==LanguageAreasUK.CONFUSING)||(LanguageAreasUK.values()[languageArea]==LanguageAreasUK.SYLLABLES))
+			return new TypeFiller[]{TypeFiller.CLUSTER};
+		else
+			return new TypeFiller[]{TypeFiller.CHARACTER};
+
+	}
+	
 
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-
-		return new int[]{0};//Easy and hard
-
+	public TypeBasic[] speedLevels(int languageArea, int difficulty) {
+		return new TypeBasic[]{TypeBasic.LOW};//No choice
 	}
 
 	@Override
-	public FillerType[] fillerTypes(int lA, int difficulty) {
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
 		
-		return new FillerType[]{FillerType.CLUSTER};//,FillerType.PREVIOUS};
-
-		/*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-		
-		if (languageArea==LanguageAreasUK.CONFUSING){
-			return new FillerType[]{FillerType.NONE};
+		if(LanguageAreasUK.values()[languageArea]==LanguageAreasUK.CONFUSING){
+			return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};//At least one distractor
 		}else{
-			return new FillerType[]{FillerType.CLUSTER};//,FillerType.PREVIOUS};
-		}*/
-			
-			
+			return new TypeAmount[]{TypeAmount.MANY};//3 distractors
+
+		}
 	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//5 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-
-		if(LanguageAreasUK.values()[languageArea]==LanguageAreasUK.CONFUSING)
-			return new int[]{1};//just one distractor as this difficulty has 2 letter each
-		return new int[]{3};//Number of distractors
-	}
-
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-
-	}
+	
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {

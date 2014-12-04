@@ -3,10 +3,9 @@ package com.ilearnrw.api.selectnextword.levels;
 
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeBasic;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -23,103 +22,47 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  * Consonant/vowels use TTS; different modes for syllables (highlight particular syllable), prefix and suffix (highlight problem), vowel/consonants (highlight sound) and blends (highlight grapheme?)
  * 
  */
-public class BridgeUK implements GameLevel {
+public class BridgeUK extends GameLevel {
 	
 	
 	@Override
-	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
-
+	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 		
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.EN, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				false,
+				false);
+		
+		/*LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
 		if( (languageArea==LanguageAreasUK.CONFUSING)){
-			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
+			
+			return WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.EN, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					new ArrayList<String>(),
+					false,
+					false);
 			
 		
-		}
-		
-		
-		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
-		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
-		if (numberDistractorsPerDifficulty==0)
-			numberDistractorsPerDifficulty++;
-
-		
-		
-		List<GameElement> targetWords = WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,numberTargets, parameters.wordLevel);
-		
-		if (targetWords.size()==0)
-			return targetWords;
-		
-		
-		List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  lA, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
-			
-				
-		for(List<GameElement> lge : distractors){
-			for(GameElement ge : lge)
-				targetWords.add(ge);
-			
-		}
-
-		return targetWords;
-		
-		
-		/*LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-
-			 
-		if(languageArea==LanguageAreasUK.SYLLABLES){//desired number of syllables
-			 
-			 return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
-			 
-			 
-		 }else{//any syllables
-			 //or if( (languageArea==LanguageAreasUK.VOWELS) | (languageArea==LanguageAreasUK.CONSONANTS)| (languageArea==LanguageAreasUK.BLENDS)){//vowel or consonant sounds// Use matching difficulty
-
-			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel);
-			 
-		 }*/
+		}*/	
 		
 	}
+
 
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		
-		return new int[]{0};//Any level
+	public TypeBasic[] speedLevels(int languageArea, int difficulty) {
+		return new TypeBasic[]{TypeBasic.LOW};//No choice
 
 	}
 
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		
-		
-		return new FillerType[]{FillerType.CLUSTER};
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int lA, int difficulty) {
-
-		return new int[]{2};//No choice
-
-/*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-
-		if(languageArea==LanguageAreasUK.SYLLABLES)
-			return new int[]{2,3,4};//Number syllables
-		else
-			return new int[]{0};//No choice
-*/
-	}
 
 	@Override
 	public TtsType[] TTSLevels(int lA, int difficulty) {

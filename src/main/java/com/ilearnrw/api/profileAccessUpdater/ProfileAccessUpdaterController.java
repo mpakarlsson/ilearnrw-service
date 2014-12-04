@@ -192,6 +192,9 @@ public class ProfileAccessUpdaterController {
 		else{
 			updates.add(profileProvider.updateProfileEntry(userId, category, index, 20));
 		}
+		
+		profileProvider.getProfile(userId).getUserProblems().updateSystemCluster();
+		
 		return updates;
 	}
 

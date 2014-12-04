@@ -1,14 +1,12 @@
 package com.ilearnrw.api.selectnextword.levels;
 
 
-import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -26,7 +24,7 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  *
  *  confusing letters with sound untested
  */
-public class MonkeyHotelUK implements GameLevel {
+public class MonkeyHotelUK extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
@@ -34,12 +32,22 @@ public class MonkeyHotelUK implements GameLevel {
 		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
-		List<List<GameElement>> listsWords = new ArrayList<List<GameElement>>();
+		//List<List<GameElement>> listsWords = new ArrayList<List<GameElement>>();
 
 		if((lA==LanguageAreasUK.CONSONANTS)| (lA==LanguageAreasUK.VOWELS)| (lA==LanguageAreasUK.BLENDS)){
 
+			
+			return WordSelectionUtils.getTargetWordsWithDistractorsAndNoPhonemes(
+					LanguageCode.EN, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					false,
+					false);	
+			
 			//Find compatible phonetic difficulties
-			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
+			/*ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
 
 			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, languageArea, difficulty,parameters.accuracy);
 			
@@ -65,14 +73,26 @@ public class MonkeyHotelUK implements GameLevel {
 					
 				listsWords.add(WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.EN, languageArea, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy));
 
-			}
+			}*/
 			
 
-		}else if(lA==LanguageAreasUK.CONFUSING){
-			
-			return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
-			
 		}else{
+			
+				
+			return WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.EN, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					false,
+					false);
+			
+			//return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
+			
+		}
+		
+		/*else{
 			
 			
 			List<GameElement> target = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel);
@@ -109,49 +129,37 @@ public class MonkeyHotelUK implements GameLevel {
 			}
 		}
 		
-		return result;
+		return result;*/
 
 		
 	}
 	
 	
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Easy and hard
-
-	}
 
 	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty) {
 		
 		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 		
 		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)|(lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)|(lA==LanguageAreasUK.BLENDS)){
-			return new FillerType[]{FillerType.CLUSTER};
+			return new TypeFiller[]{TypeFiller.CLUSTER};
 		}else if(lA==LanguageAreasUK.CONFUSING){
-			return new FillerType[]{FillerType.NONE};
+			return new TypeFiller[]{TypeFiller.NONE};
 			
 		}else
-			return new FillerType[]{FillerType.NONE};
+			return new TypeFiller[]{TypeFiller.NONE};
 
 	}
 
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//1o words
-
-	}
 
 	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-
-			return new int[]{1,2,3};//Number of fillers
+		if((lA==LanguageAreasUK.VOWELS)|(lA==LanguageAreasUK.CONSONANTS)|(lA==LanguageAreasUK.PREFIXES)|(lA==LanguageAreasUK.SUFFIXES)|(lA==LanguageAreasUK.BLENDS)){
+			return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};
+		}else		
+			return new TypeAmount[]{TypeAmount.NONE};//need some distractors
 	}
 
 	@Override

@@ -1,13 +1,11 @@
 package com.ilearnrw.api.selectnextword.levels;
 
 
-import ilearnrw.user.problems.ProblemDefinitionIndex;
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -25,32 +23,54 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  * Consonant/vowels use TTS and confusing letters us TTS; ; vowel/consonants find words with the sound; confusing find letter with the sound
  * 
  */
-public class CityHallUK implements GameLevel {
+public class CityHallUK extends GameLevel {
 
 	
 	@Override
-	public List<GameElement> getWords(LevelParameters parameters, int lA, int difficulty) {
+	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 		
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
 
 
-		if(languageArea==LanguageAreasUK.CONFUSING){//Only the letters on the difficulty will be used
+		if(lA==LanguageAreasUK.CONFUSING){//Only the letters on the difficulty will be used
 			
-			return WordSelectionUtils.getTargetWords(LanguageCode.EN, lA, difficulty,1, 0);
+			parameters.amountDistractors = TypeAmount.NONE;
+			parameters.batchSize = 1;
+			
+			return WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.EN, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					//new ArrayList<String>(),
+					false,
+					false);
+			
 		
 			
 		}else{
 	
+			
+			return WordSelectionUtils.getTargetWordsWithDistractorsAndNoPhonemes(
+					LanguageCode.EN, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					false,
+					false);			
+			
 			//Find compatible phonetic difficulties
-			ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
+			/*ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
 
-			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, lA, difficulty,parameters.accuracy);
+			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, languageArea, difficulty,parameters.amountDistractors.ordinal());
 			
 			String[] phonemes = new String[selectedDifficulties.size()];
 			
 			for(int i =0;i< selectedDifficulties.size();i++){
 				
-				phonemes[i] = (definitions.getProblemDescription(lA, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
+				phonemes[i] = (definitions.getProblemDescription(languageArea, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
 				
 			}
 			List<GameElement> result = new ArrayList<GameElement>();
@@ -66,6 +86,7 @@ public class CityHallUK implements GameLevel {
 				}
 				
 					
+				
 				List<GameElement> aux =	WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.EN, lA, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy);
 				
 				for(GameElement ge : aux)
@@ -73,13 +94,16 @@ public class CityHallUK implements GameLevel {
 				
 			}
 			
+						return result;
+
+			*/
+			
 
 			//Word pattern= new Word(phoneme);//Phoneme
 			//result.add(new GameElement(false, pattern, languageArea, difficulty));
 			//pattern= new Word(definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[0]);//Grapheme
 			//result.add(new GameElement(false, pattern, languageArea, difficulty));
 
-			return result;
 		}
 		
 
@@ -102,56 +126,42 @@ public class CityHallUK implements GameLevel {
 	
 	
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Easy and hard
-
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int lA, int difficulty) {
-		return new FillerType[]{FillerType.CLUSTER};
-
-/*		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
 		
-		if(languageArea==LanguageAreasUK.VOWELS){			
-			return new FillerType[]{FillerType.PREVIOUS};
-		}else
-			return new FillerType[]{FillerType.NONE,FillerType.PREVIOUS};*/
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{1,3,5};//words per difficulty
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Sizes of the map
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int lA, int difficulty) {
-		
-		LanguageAreasUK languageArea = LanguageAreasUK.values()[lA];
-		if(languageArea==LanguageAreasUK.CONFUSING)
-			return new int[]{0};//irrelevant
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		if(lA==LanguageAreasUK.CONFUSING)
+			return new TypeAmount[]{TypeAmount.NONE};//irrelevant
 		else{
-			return new int[]{1,2,3};//number of alternative difficulties
-		}
+			return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};//number of alternative difficulties
+		}		
 		
-		/*if(languageArea==LanguageAreasUK.VOWELS){//vowels
-			return new int[]{1,2,3};//one or several correct
-		}else if(languageArea==LanguageAreasUK.BLENDS){
-			return new int[]{1,5,10};//one or several correct
-			
-		}else{
-		
-			return new int[]{1};//only one correct
-		}*/
 	}
+	
+	
+	@Override
+	public int[] wordLevels(int languageArea, int difficulty){
+		
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		if(lA==LanguageAreasUK.CONFUSING)
+			return new int[]{0};
+		else{
+			return new int[]{0,1,2,3,4,5,6,7,8,9};
+		}
+	}
+
+	
+	@Override
+	public int[] batchSizes(int languageArea, int difficulty){
+		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
+		if(lA==LanguageAreasUK.CONFUSING)
+			return new int[]{1};
+		else{
+			return new int[]{4,12,20};
+		}	
+	}
+	
+	
+	
 
 	@Override
 	public TtsType[] TTSLevels(int lA, int difficulty) {

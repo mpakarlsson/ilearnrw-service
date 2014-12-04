@@ -5,14 +5,12 @@ import ilearnrw.utils.LanguageCode;
 
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
-public class TrainStationGR implements GameLevel {
+public class TrainStationGR extends GameLevel {
 
 	
 	/**
@@ -29,48 +27,18 @@ public class TrainStationGR implements GameLevel {
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
 			int languageArea, int difficulty) {
-
-		return WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
-	
-
+		
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.GR, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				false,
+				false);	
 		
 	}
 
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-
-		return new int[]{0};
-
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0};
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
-
-	}
-
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-	}
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {

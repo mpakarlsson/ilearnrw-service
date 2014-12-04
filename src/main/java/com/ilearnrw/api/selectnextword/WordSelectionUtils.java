@@ -3,7 +3,6 @@ package com.ilearnrw.api.selectnextword;
 import ilearnrw.annotation.AnnotatedWord;
 import ilearnrw.resource.ResourceLoader;
 import ilearnrw.resource.ResourceLoader.Type;
-import ilearnrw.textclassification.Word;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;
 import ilearnrw.user.problems.ProblemDefinitionIndex;
@@ -14,7 +13,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -22,7 +20,7 @@ import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
 public  class WordSelectionUtils {
 
-	static public Word[] getListWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel){
+	/*static public Word[] getListWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel){
 		
 		ArrayList<String> words = new ProblemWordListLoader(language, languageArea, difficulty).getItems();
 		
@@ -51,65 +49,275 @@ public  class WordSelectionUtils {
 			
 		}
 		
-		/*for(int i=validEnd-validStart;i<amount;i++){//if there are not enough words, repeat the first ones
+		//for(int i=validEnd-validStart;i<amount;i++){//if there are not enough words, repeat the first ones
 			
-			targetWords[i] = targetWords[i-(validEnd-validStart)];
+		//	targetWords[i] = targetWords[i-(validEnd-validStart)];
 			
-		}*/
+		//}
 						
 		return targetWords;
 		
-	}
+	}*/
 	
 
 	
 	/* Provides words with more than the number of syllables specified */
-	static public List<GameElement> getTargetWordsWithSyllables(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,int numberSyllables){
+	/*static public List<GameElement> getTargetWordsWithSyllables(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount, 
+			int wordLevel,
+			TypeFiller typeDistractors,
+			int numberSyllables){
 		
-		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true, false,numberSyllables,new ArrayList<String>());
+		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,typeDistractors, false,numberSyllables,new ArrayList<String>());
 		
-	}
+	}*/
 	
 	/* Provides distractors that do not contain the given phonemes */
-	static public List<GameElement> getTargetWordsWithoutPhonemes(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean isFiller, List<String> phoneme){
+	/*static public List<GameElement> getTargetWordsWithoutPhonemes(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount, 
+			int wordLevel,
+			boolean isFiller, 
+			TypeFiller typeDistractors,
+			List<String> phoneme){
 
-		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,false, isFiller,-1,phoneme);
+		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,false,typeDistractors, isFiller,-1,phoneme);
 
-	}
+	}/*
 		
 	/* Provides words of the specified language area and difficulty */
-	static public List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel){
+	/*static public List<GameElement> getTargetWords(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount, 
+			int wordLevel,
+			TypeFiller typeDistractors){
 		
-		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,false,-1,new ArrayList<String>());
+		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,typeDistractors,false,-1,new ArrayList<String>());
 
-	}
+	}*/
 	
 	/* Provides words of the specified language area and difficulty */
-	static public List<GameElement> getTargetWordsBegins(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean begins,boolean single){
+	/*static public List<GameElement> getTargetWordsBegins(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount, 
+			int wordLevel,
+			TypeFiller typeDistractors,
+			boolean begins,
+			boolean single){
 		
-		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,false,-1,new ArrayList<String>(),begins,single);
+		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,typeDistractors,false,-1,new ArrayList<String>(),begins,single);
 
-	}
+	}*/
 	
 	/* Provides words of the specified language area and difficulty, and mark them as distractors or not */
-	static public List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean isFiller){
+	/*static public List<GameElement> getTargetWords(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount, 
+			int wordLevel,
+			TypeFiller typeDistractors,
+			boolean isFiller){
 		
-		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true, isFiller,-1,new ArrayList<String>());
+		return  getTargetWords( language,  languageArea,  difficulty, amount,  wordLevel,true,typeDistractors, isFiller,-1,new ArrayList<String>());
 
+	}*/
+	
+	
+	
+	/*static private List<GameElement> getTargetWords(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount,
+			int wordLevel,
+			boolean findDistractors,
+			TypeFiller typeDistractors,
+			boolean isFiller,
+			int numberSyllables,
+			List<String> phoneme){
+		
+		return getTargetWords(language, languageArea, difficulty, amount,  wordLevel, findDistractors, typeDistractors,isFiller, numberSyllables, phoneme,false,false);
+		
+	}*/
+
+	static public List<GameElement> getTargetWordsWithDistractorsAndNoPhonemes(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			LevelParameters parameters,
+			int numberSyllables,
+			boolean begins,
+			boolean single){
+		
+		if(language == LanguageCode.GR)
+			System.err.println("Might not work");
+		
+		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
+
+		List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(language, languageArea, difficulty,parameters.amountDistractors.ordinal());
+		
+		String[] phonemes = new String[selectedDifficulties.size()];
+		
+		for(int i =0;i< selectedDifficulties.size();i++){
+			
+			phonemes[i] = (definitions.getProblemDescription(languageArea, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
+			
+		}
+		List<GameElement> result = new ArrayList<GameElement>();
+		
+		
+		int wordsPerDistractor = (int)java.lang.Math.floor(0.25*parameters.batchSize);
+
+		if(parameters.amountDistractors.ordinal()==0){
+			wordsPerDistractor = 0;
+		}
+		
+		
+		for(int i=phonemes.length-1;i>=0;i--){
+			
+			List<String> copy = new ArrayList<String>();
+			
+			for(int j = 0;j< phonemes.length;j++){
+				
+				if (j!=i)
+					copy.add(phonemes[j]);
+			}
+			
+			int numberWords = wordsPerDistractor;
+			
+			if(i==0)//Target difficulty
+				numberWords = parameters.batchSize-result.size();
+			
+			List<GameElement> aux =	WordSelectionUtils.getTargetWords(
+					language, 
+					languageArea, 
+					selectedDifficulties.get(i), 
+					numberWords, 
+					parameters.wordLevel,
+					false,//complete with distractors
+					TypeFiller.NONE,
+					i!=0, //isFiller
+					numberSyllables,
+					copy,
+					begins,
+					single,
+					parameters.amountTricky);
+
+			if(i==0)
+				if(aux.size()==0)
+					return aux;
+			
+			for(GameElement ge : aux)
+				result.add(ge);
+			
+		}
+		return result;
+		
 	}
 	
 	
 	
-	static private List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean findDistractors,boolean isFiller,int numberSyllables,List<String> phoneme){
+	static public List<GameElement> getTargetWordsWithDistractors(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			LevelParameters parameters,
+			int numberSyllables,
+			//List<String> phoneme,
+			boolean begins,
+			boolean single){
 		
-		return getTargetWords(language, languageArea, difficulty, amount,  wordLevel, findDistractors, isFiller, numberSyllables, phoneme,false,false);
+		List<GameElement> result = new ArrayList<GameElement>();
+		
+		int wordsPerDistractor = (int)java.lang.Math.floor(0.25*parameters.batchSize);
+		if(parameters.amountDistractors.ordinal()==0)
+			wordsPerDistractor = 0;
+		
+		if(parameters.fillerType == TypeFiller.NONE)
+			wordsPerDistractor = 0;
+		
+		if(wordsPerDistractor>0){
+			
+			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(
+					language,  
+					languageArea, 
+					difficulty, 
+					wordsPerDistractor,
+					parameters.wordLevel ,
+					parameters.amountDistractors.ordinal(),//number of different distractors = amountDistractors.ordinal() (25% of words per distractor)
+					parameters.fillerType,
+					numberSyllables,
+					new ArrayList<String>(),
+					begins,
+					single,
+					parameters.amountTricky);
+			
+			for(List<GameElement> lge : distractors){
+				for(GameElement ge : lge)
+					result.add(ge);
+				
+			}
+			
+		}
+		
+		int numberTargets = parameters.batchSize-result.size();//After selecting distractors, fill the list with the target words
+		
+		List<GameElement> targetWords = WordSelectionUtils.getTargetWords(
+				language, 
+				languageArea, 
+				difficulty,
+				numberTargets, 
+				parameters.wordLevel,
+				true,
+				parameters.fillerType,
+				false,
+				numberSyllables,
+				new ArrayList<String>(),
+				begins,
+				single,
+				parameters.amountTricky);
+		
+		if(targetWords.size()==0)
+			return targetWords;
+		
+		for(int i= targetWords.size()-1;i>=0;i--)//Target words placed first
+			result.add(0,targetWords.get(i));
+
+		return result;
+				
+		
 		
 	}
-
 	
 
 	/* Provides words satisfying all given constraints */
-	static private List<GameElement> getTargetWords(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,boolean findDistractors,boolean isFiller,int numberSyllables,List<String> phoneme,boolean begins,boolean single){
+	static private List<GameElement> getTargetWords(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int amount, 
+			int wordLevel,
+			boolean completeWithDistractors,
+			TypeFiller typeDistractors,
+			boolean isFiller,
+			int numberSyllables,
+			List<String> phoneme,
+			boolean begins,
+			boolean single,
+			TypeAmount trickyWords){
+		
+		//TODO tricky words
+		
 		List<String> words;
 		if(language==LanguageCode.EN){
 			words = new ProblemWordListLoader(language, languageArea, difficulty).getItems();
@@ -168,8 +376,20 @@ public  class WordSelectionUtils {
 				break;
 		}
 		
-		if (findDistractors &&(targetWords.size()<amount)){
-			List<GameElement> distractors = getDistractors( language,  languageArea,  difficulty, amount-targetWords.size() ,  wordLevel, 1,numberSyllables, phoneme).get(0);
+		if (completeWithDistractors &&(targetWords.size()<amount)){
+			List<GameElement> distractors = getDistractors( 
+					language,  
+					languageArea,  
+					difficulty, 
+					amount-targetWords.size() ,  
+					wordLevel, 
+					1,
+					typeDistractors,
+					numberSyllables, 
+					phoneme,
+					begins,
+					single,
+					trickyWords).get(0);
 			
 			for(GameElement ge : distractors)
 				targetWords.add(ge);
@@ -181,20 +401,44 @@ public  class WordSelectionUtils {
 	}
 	
 	/* Returns several sets of distractors, each with several different difficulties depending on availability of words */ 
-static public List<List<GameElement>> getDistractors(LanguageCode language, int languageArea, int originalDifficulty,int wordsPerDifficulty, int wordLevel ,int numberDifficulties,int numberSyllables,List<String> phoneme){
+	static private List<List<GameElement>> getDistractors(
+		LanguageCode language, 
+		int languageArea, 
+		int originalDifficulty,
+		int wordsPerDifficulty,
+		int wordLevel ,
+		int numberDifficulties,
+		TypeFiller distractorType,
+		int numberSyllables,
+		List<String> phoneme,
+		boolean begins,
+		boolean single,
+		TypeAmount trickyWords){
 		
-		
+
 		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
 		
 		HashMap<Integer,ArrayList<Integer>> differentClusters = new HashMap<Integer,ArrayList<Integer>>();
 
+		HashMap<String,Integer> characterClusters = new HashMap<String,Integer>();
+
+		
 		int maxCluster = 0;
 		for(int i = 0; i< definitions.getRowLength(languageArea);i++){
 			
 			if (i==originalDifficulty)
 				continue;
 		
-			int nextCluster = definitions.getProblemDescription(languageArea, i).getCluster();
+			int nextCluster = definitions.getProblemDescription(languageArea, i).getCluster();;
+			
+			if(distractorType==TypeFiller.CHARACTER){
+				String character = definitions.getProblemDescription(languageArea, i).getCharacter();
+				if(!characterClusters.containsKey(character))
+					characterClusters.put(character, characterClusters.size());
+				
+				nextCluster = characterClusters.get(character);
+			}
+				
 			if (nextCluster> maxCluster)
 				maxCluster = nextCluster;
 			
@@ -210,23 +454,41 @@ static public List<List<GameElement>> getDistractors(LanguageCode language, int 
 		
 		int originalCluster = definitions.getProblemDescription(languageArea, originalDifficulty).getCluster();
 		
+		if(distractorType==TypeFiller.CHARACTER){
+			String character = definitions.getProblemDescription(languageArea, originalDifficulty).getCharacter();
+			originalCluster = characterClusters.get(character);
+		}
+		
 		List<List<GameElement>> distractors = new ArrayList<List<GameElement>>();
 		for(int i=0;i<numberDifficulties;i++)
 			distractors.add(new ArrayList<GameElement>());
 		
 		int currentDifficulty = 0;
 		
-		for(int cluster=originalCluster;cluster>=0;cluster--){
+		for(int cluster=originalCluster;cluster>=0;cluster--){//Distractors from current or previous clusters
 			
 			if (differentClusters.containsKey(cluster)){
 				
 				for(int newDifficulty : differentClusters.get(cluster)){
 					
-					List<GameElement> aux =  getTargetWords( language,  languageArea, newDifficulty,wordsPerDifficulty-distractors.get(currentDifficulty).size(), wordLevel,false,true, numberSyllables, phoneme);
+					List<GameElement> aux =  getTargetWords( 
+							language,  
+							languageArea, 
+							newDifficulty,
+							wordsPerDifficulty-distractors.get(currentDifficulty).size(), 
+							wordLevel,
+							false,
+							distractorType,
+							true, 
+							numberSyllables, 
+							phoneme,
+							begins,
+							single,
+							trickyWords);
 					for(GameElement ge : aux)
 						distractors.get(currentDifficulty).add(ge);
 					
-					if (distractors.get(currentDifficulty).size()==wordsPerDifficulty)
+					if (distractors.get(currentDifficulty).size()==wordsPerDifficulty)//Move on to fill the next distractor only if we got all necessary words
 						currentDifficulty++;
 					
 					if(currentDifficulty==numberDifficulties)
@@ -235,13 +497,26 @@ static public List<List<GameElement>> getDistractors(LanguageCode language, int 
 			}
 		}
 		
-		for(int cluster=originalCluster+1;cluster<=maxCluster;cluster++){
+		for(int cluster=originalCluster+1;cluster<=maxCluster;cluster++){//if not enough distractors on current and previous clusters, try next
 			
 			if (differentClusters.containsKey(cluster)){
 				
 				for(int newDifficulty : differentClusters.get(cluster)){
 					
-					List<GameElement> aux =  getTargetWords( language,  languageArea, newDifficulty,wordsPerDifficulty-distractors.get(currentDifficulty).size(), wordLevel,false,true, numberSyllables, phoneme);
+					List<GameElement> aux =  getTargetWords( 
+							language,  
+							languageArea, 
+							newDifficulty,
+							wordsPerDifficulty-distractors.get(currentDifficulty).size(), 
+							wordLevel,
+							false,
+							distractorType,
+							true, 
+							numberSyllables, 
+							phoneme,
+							begins,
+							single,
+							trickyWords);
 					for(GameElement ge : aux)
 						distractors.get(currentDifficulty).add(ge);
 					
@@ -262,7 +537,7 @@ static public List<List<GameElement>> getDistractors(LanguageCode language, int 
 
 
 	
-static public List<Integer> findDifferentCharacter(LanguageCode language, int languageArea, int originalDifficulty,int numberDifficulties){
+	static public List<Integer> findDifferentCharacter(LanguageCode language, int languageArea, int originalDifficulty,int numberDifficulties){
 	
 	List<Integer> compatibleDifficulties = new ArrayList<Integer>();
 	ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
@@ -288,8 +563,8 @@ static public List<Integer> findDifferentCharacter(LanguageCode language, int la
 	
 }
 
-/* Creates a list that alternates words with different patters */
-static private List<String> getListGreekWords(int languageArea, int difficulty,boolean begins,boolean single){
+	/* Creates a list that alternates words with different patters */
+	static private List<String> getListGreekWords(int languageArea, int difficulty,boolean begins,boolean single){
 	
 	ArrayList<String> words = new ArrayList<String>();;
 	
@@ -458,8 +733,7 @@ static private List<String> getListGreekWords(int languageArea, int difficulty,b
 			
 }
 
-	
-static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode language, int languageArea, int originalDifficulty,int numberDifficulties){
+	static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode language, int languageArea, int originalDifficulty,int numberDifficulties){
 		
 		List<Integer> compatibleDifficulties = new ArrayList<Integer>();
 		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
@@ -570,160 +844,16 @@ static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode lang
 		return compatibleDifficulties;
 }
 	
-
-	/*static public List<GameElement> getTargetWordsLengthX(LanguageCode language, int languageArea, int difficulty,int amount, int wordLevel,int numberSyllables){
-
-		
-		ArrayList<String> words = new ProblemWordListLoader(language, languageArea, difficulty).getItems();
-		
-		int tmp = words.indexOf("###");
-		if(tmp>-1) words.remove(tmp);
-		
-		if (words.size()==0)
-			return new ArrayList<GameElement>();
-
-		int validEnd = wordLevel+amount;
-		if (validEnd>=words.size())
-			validEnd = words.size();
-		
-		ArrayList<GameElement> targetWords = new ArrayList<GameElement>();// new GameElement[amount];
-		
-		for(int i=validEnd-1;i>0;i--){
-			
-			Word w;
-			if(language == LanguageCode.EN)
-				w = new EnglishWord(words.get(i));
-			else
-				w = new GreekWord(words.get(i));
-
-			if(w.getNumberOfSyllables()==numberSyllables){
-				targetWords.add(new GameElement(false,w,languageArea,difficulty));
-				if (targetWords.size()==amount)
-					break;
-			}
-
-		}
-		
-		int foundWords = targetWords.size();
-		
-		if (foundWords==0)
-			return targetWords;
-		
-		for(int i=foundWords;i<amount;i++){//if there are not enough words, repeat the first ones
-			
-			targetWords.add(targetWords.get(i-foundWords));
-			
-		}
-						
-		return targetWords;
-		
-		
-	}*/
-	
-
-	
-	/*static public List<GameElement> getClusterDistractorsDiffPhoneme(LanguageCode language, int languageArea, int difficulty,int wordsPerDifficulty, int wordLevel,int numberDifficulties){
-		
-		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
-		
-		if(!definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].contains("-"))
-			return new ArrayList<GameElement>();
-		
-		
-		String phoneme = definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[1];
-
-		int targetCluster = definitions.getProblemDescription(languageArea, difficulty).getCluster();
-		ArrayList<Integer> candidates = new ArrayList<Integer>();
-		
-		for(int ii = 0; ii< definitions.getRowLength(languageArea);ii++){
-			
-			if(ii!=difficulty)
-				if(definitions.getProblemDescription(languageArea, ii).getCluster()==targetCluster)
-					candidates.add(ii);
-		}
-		
-		
-		if (candidates.size()<numberDifficulties){//When there are no more difficulties within the cluster, use the previous difficulties
-			
-			for(int ii = 0; ii< difficulty;ii++){
-				candidates.add(ii);
-			}	
-		}
-		
-		if (candidates.size()<numberDifficulties){//As last resort, use the next difficulties
-			
-			for(int ii = difficulty+1; ii< definitions.getRowLength(languageArea);ii++){
-				candidates.add(ii);
-			}	
-		}
-		
-		
-//		int numberFillers = parameters.accuracy;
-		
-		Random rand = new Random();
-		List<GameElement> result = new ArrayList<GameElement>();
-		int numberFillers = numberDifficulties;
-
-		int adjustedWordsPerDifficulty = wordsPerDifficulty;
-		
-		//if (candidates.size()<numberDifficulties){
-			
-		//	adjustedWordsPerDifficulty = (int) Math.ceil(wordsPerDifficulty*numberDifficulties/candidates.size());
-		//}
-		
-		List<String> phonemesList = new ArrayList<String>();
-		
-		
-		phonemesList.add(phoneme);
-		
-		
-		while((numberFillers>0)&&(candidates.size()>0)){
-			
-			System.err.println(candidates.size());
-
-			int index = rand.nextInt(candidates.size());
-			int newDifficulty = candidates.get(index);
-						
-			if(!definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].contains("-")){
-				
-				candidates.remove(index);
-				continue;
-			}
-			
-			String newPhoneme = definitions.getProblemDescription(languageArea, newDifficulty).getDescriptions()[0].split("-")[1];
-			System.err.println(phoneme+" vs "+newPhoneme);
-			
-			boolean clean = true;
-			for(String ph : phonemesList){
-				if(ph.contains(newPhoneme) ||newPhoneme.contains(ph) ){
-					clean = false;
-				}
-			}
-			
-			if (clean){
-				
-				List<GameElement> aux = getTargetWordsWithoutPhonemes( language, languageArea, newDifficulty, adjustedWordsPerDifficulty, wordLevel+5,phonemesList);//+5 to the word level to facilitate word without matches
-				if (aux.size()>0){
-					numberFillers--;
-					phonemesList.add(newPhoneme);
-					for(GameElement ge : aux)
-						result.add(ge);
-					
-				}
-				
-			}
-			
-			candidates.remove(index);
-			
-		}
-		
-		return result;
-
-	}*/
 	
 	
-	
-	static public List<GameElement> getClusterDistractors(LanguageCode language, int languageArea, int difficulty,int wordsPerDifficulty, int wordLevel,int numberDifficulties){
+	/*static public List<GameElement> getClusterDistractors(
+			LanguageCode language, 
+			int languageArea, 
+			int difficulty,
+			int wordsPerDifficulty, 
+			int wordLevel,
+			int numberDifficulties,
+			TypeFiller distractorType){
 		
 		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
 		
@@ -735,7 +865,7 @@ static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode lang
 			if(ii!=difficulty)
 				if(definitions.getProblemDescription(languageArea, ii).getCluster()==targetCluster){
 				
-					if(getTargetWords( language, languageArea, ii, 1, wordLevel,true).size()>0)
+					if(getTargetWords( language, languageArea, ii, 1, wordLevel,distractorType,true).size()>0)
 						candidates.add(ii);
 					
 				}
@@ -745,7 +875,7 @@ static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode lang
 		if (candidates.size()<numberDifficulties){//When there are no more difficulties within the cluster, use the previous difficulties
 			
 			for(int ii = 0; ii< difficulty;ii++){
-				if(getTargetWords( language, languageArea, ii, 1, wordLevel,true).size()>0)
+				if(getTargetWords( language, languageArea, ii, 1, wordLevel,distractorType,true).size()>0)
 
 					candidates.add(ii);
 			}	
@@ -754,7 +884,7 @@ static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode lang
 		if (candidates.size()<numberDifficulties){//As last resort, use the next difficulties
 			
 			for(int ii = difficulty+1; ii< definitions.getRowLength(languageArea);ii++){
-				if(getTargetWords( language, languageArea, ii, 1, wordLevel,true).size()>0)
+				if(getTargetWords( language, languageArea, ii, 1, wordLevel,distractorType,true).size()>0)
 
 					candidates.add(ii);
 			}	
@@ -779,7 +909,7 @@ static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode lang
 			int newDifficulty = candidates.get(index);
 						
 
-			List<GameElement> aux = getTargetWords( language, languageArea, newDifficulty, adjustedWordsPerDifficulty, wordLevel,true);
+			List<GameElement> aux = getTargetWords( language, languageArea, newDifficulty, adjustedWordsPerDifficulty, wordLevel,distractorType,true);
 
 			if (aux.size()>0)
 				numberFillers--;
@@ -791,5 +921,5 @@ static public List<Integer> findCompatiblePhoneticDifficulties(LanguageCode lang
 		}
 					
 		return result;	
-	}
+	}*/
 }

@@ -5,11 +5,9 @@ import ilearnrw.utils.LanguageCode;
 
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -23,30 +21,24 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  * 
  */
 
-public class BikeShedUK implements GameLevel {
+public class BikeShedUK extends GameLevel {
 
-	
-
-	
+		
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
-		return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);		
-		
-		/*
-		if(result.length==0)
-			return 
-			result.add(new GameElement(false,new EnglishWord("@@@@@"),languageArea, difficulty));
-			
-		return result;*/
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.EN, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				//new ArrayList<String>(),
+				false,
+				false);
 		
 	}
 
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//As many as difficulties
-
-	}
 	
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
@@ -57,35 +49,10 @@ public class BikeShedUK implements GameLevel {
 	}
 
 	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{5};//5 packages
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
-
-	}
-
-	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
 		return new int[]{1,3,5};//Words per door
 
 	}
-
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-
-	}
-	
 
 
 	@Override

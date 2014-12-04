@@ -13,7 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ilearnrw.user.profile.UserProfile;
+
+import com.ilearnrw.api.datalogger.model.LogEntry;
+import com.ilearnrw.api.datalogger.model.LogEntryFilter;
+import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.datalogger.services.CubeService;
+import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
 import com.ilearnrw.common.security.users.services.UserService;
@@ -33,6 +38,9 @@ public class SelectNextActivityControllerUoM {
 	@Autowired
 	CubeService cubeService;
 
+	@Autowired
+	LogEntryService logEntryService;
+	
 
 	@RequestMapping(value = "/activity/next_UoM", method = RequestMethod.GET)
 	public @ResponseBody
@@ -62,13 +70,17 @@ public class SelectNextActivityControllerUoM {
 			//NextActivitiesProvider provider = new WorkingIndexBasedAlgorithm();
 			DecisionTreeBasedAlgorithm provider = new DecisionTreeBasedAlgorithm();
 			
+			//Get last 5 logs corresponding to activities finished
+			LogEntryFilter filter = new LogEntryFilter(username, null, null,null,"APP_ROUND_SESSION_END", null);
+			List<LogEntry> lastLogs = logEntryService.getLastLogs(filter).getResults();
+			
 			if((languageArea!=null)&&(difficulty!=null)&&(game!=null)){
 				return provider.getNextProblems(user,languageArea, difficulty,game);
 
 			}else if((languageArea!=null)&&(difficulty!=null)){
 				return provider.getNextProblems(user,languageArea, difficulty);
 			}else{
-				return provider.getNextProblems(user);
+				return provider.getNextProblems(user,lastLogs);
 			}
 
 
