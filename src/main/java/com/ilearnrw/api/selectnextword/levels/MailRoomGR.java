@@ -2,13 +2,13 @@ package com.ilearnrw.api.selectnextword.levels;
 
 
 import ilearnrw.annotation.AnnotatedWord;
-
 import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -28,13 +28,24 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  *   the same batch
  *
  */
-public class MailRoomGR implements GameLevel {
+public class MailRoomGR extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
 			int languageArea, int difficulty) {
-
-		List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize*(parameters.accuracy+1), parameters.wordLevel,false,true);
+		
+		List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.GR, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				false,
+				true);//only one pattern
+		
+		
+		//TODO
+		
 		List<GameElement> results = new ArrayList<GameElement>();
 		
 		for(int i=0;i<parameters.batchSize;i++){
@@ -42,13 +53,13 @@ public class MailRoomGR implements GameLevel {
 			List<String> patterns = new ArrayList<String>();
 			boolean invalid = false;
 			
-			for(int j=0;j<parameters.accuracy+1;j++){
+			for(int j=0;j<parameters.amountDistractors.ordinal()+1;j++){
 				
-				int attempts = targetWords.size()-((i*(parameters.accuracy+1))+j);
+				int attempts = targetWords.size()-((i*(parameters.amountDistractors.ordinal()+1))+j);
 				
 				while(attempts>0){
 				
-					AnnotatedWord word = (AnnotatedWord)targetWords.get((i*(parameters.accuracy+1))+j).getAnnotatedWord();
+					AnnotatedWord word = (AnnotatedWord)targetWords.get((i*(parameters.amountDistractors.ordinal()+1))+j).getAnnotatedWord();
 				
 					int start =word.getWordProblems().get(0).getMatched().get(0).getStart();
 					int end =word.getWordProblems().get(0).getMatched().get(0).getEnd();
@@ -58,8 +69,8 @@ public class MailRoomGR implements GameLevel {
 						patterns.add(pattern);
 						break;
 					}else{//move word to the end of the list
-						targetWords.add(targetWords.get((i*(parameters.accuracy+1))+j));
-						targetWords.remove((i*(parameters.accuracy+1))+j);
+						targetWords.add(targetWords.get((i*(parameters.amountDistractors.ordinal()+1))+j));
+						targetWords.remove((i*(parameters.amountDistractors.ordinal()+1))+j);
 						attempts--;
 					}
 				}
@@ -71,8 +82,8 @@ public class MailRoomGR implements GameLevel {
 			}
 					
 			if (!invalid){//this batch is correct, copy it to the results
-				for(int j=0;j<parameters.accuracy+1;j++){
-					results.add(targetWords.get((i*(parameters.accuracy+1))+j));
+				for(int j=0;j<parameters.amountDistractors.ordinal()+1;j++){
+					results.add(targetWords.get((i*(parameters.amountDistractors.ordinal()+1))+j));
 				}
 				
 				System.err.println("GOOD BATCH");
@@ -90,31 +101,19 @@ public class MailRoomGR implements GameLevel {
 		
 		
 	}
-
+	
+	
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-
-		return new int[]{0};
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-
-		return new FillerType[]{FillerType.NONE};
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
+		return new TypeFiller[]{TypeFiller.NONE};//Distractors within difficulty
 
 	}
-
-
+	
 	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{5};//5 rounds of packages
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		return new TypeAmount[]{TypeAmount.FEW};//No control over number of distractors
 	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-
-		return new int[]{0,1,2};//Slow, medium and fast
-	}
+	
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {

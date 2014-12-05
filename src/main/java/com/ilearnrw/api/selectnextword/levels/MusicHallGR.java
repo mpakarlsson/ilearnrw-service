@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.GameSentence;
 import com.ilearnrw.api.selectnextword.LevelParameters;
 import com.ilearnrw.api.selectnextword.SentenceLoaderControler;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
-public class MusicHallGR implements GameLevel {
+public class MusicHallGR extends GameLevel {
 
 
 	/**
@@ -87,10 +87,18 @@ public class MusicHallGR implements GameLevel {
 
 		}else if(LanguageAreasGR.values()[languageArea]==LanguageAreasGR.SYLLABLE_DIVISION){//Syllables
 
-			targetWords =  WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.GR, languageArea, difficulty, parameters.batchSize, parameters.wordLevel,1);
+			targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					1,
+					false,
+					false);
+			
+			//targetWords =  WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.GR, languageArea, difficulty, parameters.batchSize, parameters.wordLevel,1);
 			if (targetWords.size()==0)
 				return targetWords;
-
 
 
 			for(GameElement ge : targetWords){
@@ -119,28 +127,14 @@ public class MusicHallGR implements GameLevel {
 
 		}else{//prefixes or derivational
 
-			int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
-
-			targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty, numberTargets, parameters.wordLevel);
-
-			if (targetWords.size()==0)
-				return targetWords;
-
-			int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
-			if (numberDistractorsPerDifficulty==0)
-				numberDistractorsPerDifficulty++;
-
-			System.err.println(parameters.accuracy);
-			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.GR,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
-
-
-			for(List<GameElement> lge : distractors){
-				for(GameElement ge : lge)
-					targetWords.add(ge);
-
-			}
-
-
+			targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					1,
+					false,
+					false);
 
 			for(GameElement ge : targetWords){
 
@@ -274,40 +268,25 @@ public class MusicHallGR implements GameLevel {
 
 
 
-
-
-
 	}
 
+
+	
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//All
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
+		return new TypeFiller[]{TypeFiller.NONE};//Distractors within difficulty
 
 	}
-
+	
 	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-
-		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
-
-		if(lA==LanguageAreasGR.SYLLABLE_DIVISION){
-			return new FillerType[]{FillerType.NONE};
-		}else{
-			return new FillerType[]{FillerType.CLUSTER};
-		}
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		return new TypeAmount[]{TypeAmount.FEW};//No control over number of distractors
 	}
+	
+	
+	
+	
 
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
-
-	}
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
@@ -315,16 +294,15 @@ public class MusicHallGR implements GameLevel {
 
 	}
 
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-	}
+
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
 		return new int[]{0};//No choice; complete the word
 
 	}
+	
+	
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {
 		if(languageArea>=LanguageAreasGR.values().length)

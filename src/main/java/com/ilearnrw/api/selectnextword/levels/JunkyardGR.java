@@ -5,11 +5,9 @@ import ilearnrw.utils.LanguageCode;
 
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -25,76 +23,34 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  */
 
 
-public class JunkyardGR implements GameLevel {
+public class JunkyardGR extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
+			int languageArea, int difficulty) {
 
+		LanguageAreasGR lA = LanguageAreasGR.values()[languageArea];
+
+		int minNumSyllables = -1;
 		
-		LanguageAreasGR languageArea = LanguageAreasGR.values()[lA];
+		if (lA == LanguageAreasGR.SYLLABLE_DIVISION){
+			minNumSyllables = 1;
 
-		if (languageArea==LanguageAreasGR.SYLLABLE_DIVISION){//Syllable division
-			
-			//List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel ,3,1, new ArrayList<String>());
-			//More than one syllable
-			return WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel,1);
-
-			//return WordSelectionUtils.getTargetWordsLengthX(LanguageCode.EN, lA, difficulty,parameters.batchSize, parameters.wordLevel,parameters.accuracy);
-			
-			
-		}else if((languageArea==LanguageAreasGR.PREFIXES)){
-			
-			return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel);
-
-		}else{//INFL SUFF
-			
-			return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,parameters.batchSize, parameters.wordLevel);
-
-			
 		}
+		
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.GR, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				 minNumSyllables,
+				//new ArrayList<String>(),
+				false,
+				false);
 
 		
-		
-
-		
 	}
 
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-
-		return new int[]{0};//All
-
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
-
-	}
-
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-	}
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {

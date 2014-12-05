@@ -7,7 +7,8 @@ import ilearnrw.utils.LanguageCode;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeAmount;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -25,9 +26,8 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  * 
  */
 
-public class MonkeyHotelGR implements GameLevel {
+public class MonkeyHotelGR extends GameLevel {
 
-	//TODO
 	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
@@ -38,8 +38,20 @@ public class MonkeyHotelGR implements GameLevel {
 
 		
 		if((lA == LanguageAreasGR.PREFIXES)||(lA == LanguageAreasGR.DERIVATIONAL)){
+						
+			int originalSize = parameters.batchSize;
+			parameters.batchSize = (10*parameters.batchSize)+1;
 			
-			List<GameElement> targetWords =WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,(10*parameters.batchSize)+1, parameters.wordLevel);
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					false,
+					false);	
+				
+			
 			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
 			
 			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
@@ -51,19 +63,18 @@ public class MonkeyHotelGR implements GameLevel {
 			
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getWord().contains(grapheme)){
-					if(filler<=parameters.batchSize/2.0){
+					if(filler<=(originalSize*parameters.amountDistractors.ordinal()*0.25)){
 						ge.setFiller(true);
 						filler++;
 						result.add(ge);
 					}
 				}else{
-					if(correct<=(1+(parameters.batchSize/2.0))){
+					if(correct<=(originalSize*(4-parameters.amountDistractors.ordinal())*0.25)){
 						
 						result.add(ge);
 						correct++;
 
 					}
-					
 					
 				}
 			return result;			
@@ -72,29 +83,54 @@ public class MonkeyHotelGR implements GameLevel {
 		}else if(lA == LanguageAreasGR.LETTER_SIMILARITY){
 			
 			if (parameters.mode==4){
-				return WordSelectionUtils.getTargetWords(LanguageCode.GR, languageArea, difficulty,1, 0);
+								
+				parameters.batchSize = 1;
+				
+				return WordSelectionUtils.getTargetWordsWithDistractors(
+						LanguageCode.GR, 
+						 languageArea, 
+						 difficulty,
+						 parameters,
+						-1,
+						false,
+						false);				
+				
 
 			}else{
+				
+				int originalSize = parameters.batchSize;
+				parameters.batchSize = (10*parameters.batchSize)+1;
+				
+				List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+						LanguageCode.GR, 
+						 languageArea, 
+						 difficulty,
+						 parameters,
+						-1,
+						true,
+						false);
+				
+				
+				
 				
 				int correct = 0;
 				int filler = 0;
 
 				List<GameElement> result = new ArrayList<GameElement>();
-				
-				List<GameElement> targetWords = WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
-				
+								
 				String correctLetter = targetWords.get(0).getAnnotatedWord().getWord().substring(0, 1);
+				
 				for(GameElement ge : targetWords)
 					if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
 						
 						
-						if(filler<=parameters.batchSize/2.0){
+						if(filler<=(originalSize*parameters.amountDistractors.ordinal()*0.25)){
 							ge.setFiller(true);
 							filler++;
 							result.add(ge);
 						}
 					}else{
-						if(correct<=(1+(parameters.batchSize/2.0))){
+						if(correct<=(originalSize*(4-parameters.amountDistractors.ordinal())*0.25)){
 							
 							result.add(ge);
 							correct++;
@@ -103,13 +139,23 @@ public class MonkeyHotelGR implements GameLevel {
 					}
 				return result;			
 				
-				
-				
 			}
 			
 		}else{//GP
 			
-			List<GameElement> targetWords =WordSelectionUtils.getTargetWordsBegins(LanguageCode.GR, languageArea, difficulty,parameters.batchSize, parameters.wordLevel,true,false);
+			int originalSize = parameters.batchSize;
+			parameters.batchSize = (10*parameters.batchSize)+1;
+			
+			List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.GR, 
+					 languageArea, 
+					 difficulty,
+					 parameters,
+					-1,
+					true,
+					false);
+			
+			
 			StringMatchesInfo problem = ((AnnotatedWord)targetWords.get(0).getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
 			
 			String grapheme = targetWords.get(0).getAnnotatedWord().getWord().substring(problem.getStart(), problem.getEnd());
@@ -117,8 +163,7 @@ public class MonkeyHotelGR implements GameLevel {
 			for(int i=0;i<targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().size();i++)
 				if(targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getGrapheme().equals(grapheme))
 					phoneme = targetWords.get(0).getAnnotatedWord().getGraphemesPhonemes().get(i).getPhoneme();
-			
-			
+						
 			int correct = 0;
 			int filler = 0;
 
@@ -126,13 +171,13 @@ public class MonkeyHotelGR implements GameLevel {
 			
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getPhonetics().contains(phoneme)){
-					if(filler<=parameters.batchSize/2.0){
+					if(filler<=(originalSize*parameters.amountDistractors.ordinal()*0.25)){
 						ge.setFiller(true);
 						filler++;
 						result.add(ge);
 					}
 				}else{
-					if(correct<=(1+(parameters.batchSize/2.0))){
+					if(correct<=(originalSize*(4-parameters.amountDistractors.ordinal())*0.25)){
 						
 						result.add(ge);
 						correct++;
@@ -146,35 +191,25 @@ public class MonkeyHotelGR implements GameLevel {
 
 	}
 
+	
+	
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};
+	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
+
+			return new TypeFiller[]{TypeFiller.NONE};//Distractors within difficulty
 
 	}
+	
 
 	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.NONE};
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		
 
+			return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};//need some distractors
+			
+		
 	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//only one correct
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0};//only one correct
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{1};//only one correct
-
-	}
+	
 
 	@Override
 	public TtsType[] TTSLevels(int languageArea, int difficulty) {
@@ -238,5 +273,4 @@ public class MonkeyHotelGR implements GameLevel {
 		
 		}
 	}
-
 }

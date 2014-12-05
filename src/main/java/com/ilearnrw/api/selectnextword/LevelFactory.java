@@ -8,7 +8,6 @@ import ilearnrw.utils.LanguageCode;
 public class LevelFactory {
 
 	public static GameLevel createLevel(LanguageCode lc, int languageArea, String appName){
-		
 		int appId = GamesInformation.getAppID(appName);
 		
 		if (appId==-1)
@@ -17,12 +16,18 @@ public class LevelFactory {
 		if (appId==-1)
 			return null;
 		
+		return createLevel(lc,languageArea,appId);
+		
+	}
+	
+	public static GameLevel createLevel(LanguageCode lc, int languageArea, int appID){
+
 		
 		GameLevel level = null;
 		
 		if (lc == LanguageCode.GR){
 			
-			switch(appId){
+			switch(appID){
 			
 			case 0://Mail Sorter//Mail room
 				return new MailRoomGR();
@@ -46,7 +51,7 @@ public class LevelFactory {
 			}
 		}else{
 			
-			switch(appId){
+			switch(appID){
 			
 			case 0://Mail Sorter//Mail room
 				return new MailRoomUK();

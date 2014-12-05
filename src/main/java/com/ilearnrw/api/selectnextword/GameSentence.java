@@ -40,6 +40,12 @@ public class GameSentence {
 	public void setTheSentence(String theSentence) {
 		this.theSentence = theSentence;
 	}
+	public int getLanguageArea(){
+		return this.languageArea;
+	}
+	public int getDifficulty(){
+		return this.difficulty;
+	}
 	public ArrayList<String> getFillerWords() {
 		return fillerWords;
 	}

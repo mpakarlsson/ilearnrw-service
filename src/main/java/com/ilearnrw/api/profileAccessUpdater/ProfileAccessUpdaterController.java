@@ -187,11 +187,14 @@ public class ProfileAccessUpdaterController {
 			throws ProfileProviderException {
 		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
 		if (category == null || index == null){
-			updates = profileProvider.updateTheProfileAutomatically(userId, 20);
+			updates = profileProvider.updateTheProfileAutomatically(userId, 15);
 		}
 		else{
-			updates.add(profileProvider.updateProfileEntry(userId, category, index, 20));
+			updates.add(profileProvider.updateProfileEntry(userId, category, index, 15));
 		}
+		
+		profileProvider.getProfile(userId).getUserProblems().updateSystemCluster();
+		
 		return updates;
 	}
 

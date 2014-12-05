@@ -4,7 +4,7 @@ import ilearnrw.utils.LanguageCode;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -21,74 +21,27 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  *	prefix/suffix split the problem, syllables split the syllables vowels/consonants split the sounds
  *
  */
-public class TrainStationUK implements GameLevel {
+public class TrainStationUK extends GameLevel {
 	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
 
 		
-		int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
-		
-		List<GameElement> targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, numberTargets, parameters.wordLevel);
-
-		if (targetWords.size()==0)
-			return targetWords;
-				
-		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
-		if (numberDistractorsPerDifficulty==0)
-			numberDistractorsPerDifficulty++;
-		
-		List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
-		
-		for(List<GameElement> lge : distractors){
-			for(GameElement ge : lge)
-				targetWords.add(ge);
-			
-		}
-
-		return targetWords;
+		return WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.EN, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				//new ArrayList<String>(),
+				false,
+				false);
 		
 		
 		
 	//	return WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,parameters.batchSize, parameters.wordLevel);
 
 		
-	}
-
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Easy and hard
-
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		return new FillerType[]{FillerType.CLUSTER};
-
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//5 rounds
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0};
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{2};//Nothing
-
-	}
-
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-
 	}
 	
 	
@@ -108,8 +61,6 @@ public class TrainStationUK implements GameLevel {
 
 	}
 	
-	
-
 	
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {

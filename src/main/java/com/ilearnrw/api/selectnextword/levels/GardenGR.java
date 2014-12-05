@@ -1,15 +1,18 @@
 package com.ilearnrw.api.selectnextword.levels;
 
 
+import ilearnrw.annotation.AnnotatedWord;
+import ilearnrw.textclassification.StringMatchesInfo;
 import ilearnrw.utils.LanguageCode;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.selectnextword.TypeBasic;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -22,54 +25,111 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  *	 syllables categories are first/second open/closed, confusing 4 letters
  *
  */
-public class GardenGR implements GameLevel {
+public class GardenGR extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters,
-			int lA, int difficulty) {
+			int languageArea, int difficulty) {
+
+		int originalSize = parameters.batchSize;
+		if(parameters.mode!=4){
+			originalSize+=4;//machines need also words
+		}
+		parameters.batchSize = 4+(parameters.batchSize*10);
+		
+		List<GameElement> candidates = WordSelectionUtils.getTargetWordsWithDistractors(
+				LanguageCode.GR, 
+				 languageArea, 
+				 difficulty,
+				 parameters,
+				-1,
+				false,//begins
+				false);
+		List<GameElement> results = new ArrayList<GameElement>();
+
+		HashMap<String,List<GameElement>> sortedCandidates= new HashMap<String,List<GameElement>>();
+		
+					
+			for(GameElement word : candidates){
+				
+				String key = "";
+				if(parameters.mode==4){//FUnction words
+
+					key = word.getAnnotatedWord().getType().name();
+					
+				}else if(parameters.mode==5){
+	
+					StringMatchesInfo match = ((AnnotatedWord)word.getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+					key = word.getAnnotatedWord().getWord().substring(match.getStart(),match.getEnd());				
+					
+				}else{//mode 6
+					
+					key = ""+word.getAnnotatedWord().getNumberOfSyllables();
+				}
+					
+					
+				if(!sortedCandidates.containsKey(key)){
+					
+					sortedCandidates.put(key , new ArrayList<GameElement>());
+				}
+				
+				sortedCandidates.get(key).add(word);
+			}
+		
+		
+		while(sortedCandidates.size()>4){
+				
+				int minSize = Integer.MAX_VALUE;
+				String index = null;
+				for(String key : sortedCandidates.keySet()){
+					
+					if(sortedCandidates.get(key).size()<minSize){
+						minSize = sortedCandidates.get(key).size();
+						index = key;
+					}
+					
+				}
+				sortedCandidates.remove(index);
+				
+			}
+			
+			boolean done = false;
+			
+			while(!done){
+				ArrayList<String> remove = new ArrayList<String>();
+				for(String key : sortedCandidates.keySet()){
+					results.add(sortedCandidates.get(key).get(0));
+					sortedCandidates.get(key).remove(0);
+					if(sortedCandidates.get(key).size()==0)
+						remove.add(key);
+					
+					if(results.size()==originalSize){		
+						done = true;
+						break;
+					}
+				}
+				
+				for(String key : remove)
+					sortedCandidates.remove(key);
+				
+				if(sortedCandidates.size()==0)
+					break;
+				
+			}
+			
 
 		
-		return WordSelectionUtils.getTargetWords(LanguageCode.GR, lA, difficulty,4+(parameters.batchSize*10), parameters.wordLevel);			
-
-		
+		return results;
+				
 	}
+
 
 	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-
-		return new int[]{0};
-
-	}
-
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		
-			return new FillerType[]{FillerType.NONE};
+	public TypeBasic[] speedLevels(int languageArea, int difficulty) {
+		return new TypeBasic[]{TypeBasic.LOW};
 
 	}
 
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0};
-
-	}
-
-	@Override
-	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{0};//No choice
-
-	}
-
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-	}
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {

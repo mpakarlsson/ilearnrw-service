@@ -3,6 +3,10 @@ package com.ilearnrw.app.games.mapping;
 import ilearnrw.utils.LanguageCode;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import com.ilearnrw.api.selectnextword.GameLevel;
+import com.ilearnrw.api.selectnextword.LevelFactory;
 
 public class GamesInformation {
 	public static GamesInformation mapping = new GamesInformation();
@@ -29,7 +33,7 @@ public class GamesInformation {
 			"Eye Exam", "Train Dispatcher", "Drop Chops", "Game World",
 			"Social Network", "Logging Screen", "Profile Setup" };
 
-	private static String appIds[] = { "MAIL_SORTER", "WHAK_A_MOLE",
+	public static String appIds[] = { "MAIL_SORTER", "WHAK_A_MOLE",
 			"ENDLESS_RUNNER", "HARVEST", "SERENADE_HERO", "MOVING_PATHWAYS",
 			"EYE_EXAM", "TRAIN_DISPATCHER", "DROP_CHOPS", "GAME_WORLD",
 			"SOCIAL_NETWORK", "LOGGING_SCREEN", "PROFILE_SETUP" };
@@ -143,9 +147,14 @@ public class GamesInformation {
 		}
 		return -1;
 	}
+	
+	
+	
 
 	public static ArrayList<Integer> getAppRelatedProblems(int appId,
 			LanguageCode lan) {
+		System.err.println("GamesInformation.getAppRelatedProblems: deprecated. tables outdated");
+
 		ArrayList<Integer> res = new ArrayList<Integer>();
 		if (lan == LanguageCode.EN) {
 			if (appId > appsProbsCorrespondanceEN[0].length)
@@ -167,10 +176,14 @@ public class GamesInformation {
 
 	public static ArrayList<Integer> getAppRelatedProblems(String appStringID,
 			LanguageCode lan) {
+		System.err.println("GamesInformation.getAppRelatedProblems: deprecated. tables outdated");
+
 		int id = getAppIDfromStringID(appStringID);
 		if (id == -1)
 			return null;
-		ArrayList<Integer> res = new ArrayList<Integer>();
+		else
+			return getAppRelatedProblems(id,lan);
+		/*ArrayList<Integer> res = new ArrayList<Integer>();
 		if (lan == LanguageCode.EN) {
 			if (id > appsProbsCorrespondanceEN[0].length)
 				return null;
@@ -184,12 +197,29 @@ public class GamesInformation {
 				if (appsProbsCorrespondanceGR[i][id])
 					res.add(i);
 		}
-		return res;
+		return res;*/
 	}
 
-	public static ArrayList<Integer> getProblemRelatedApps(int probId,
+	public static ArrayList<Integer> getProblemRelatedApps(int languageArea,
 			LanguageCode lan) {
-		ArrayList<Integer> res = new ArrayList<Integer>();
+		
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		
+		for(int i=0;i<appIds.length;i++){
+
+			
+			GameLevel gl = LevelFactory.createLevel(lan, languageArea, appIds[i]);
+			if(gl!=null)
+			if(gl.allowedDifficulty(languageArea, 0))
+				result.add(i);
+			
+		}
+		
+		return result;
+		
+
+		
+		/*ArrayList<Integer> res = new ArrayList<Integer>();
 		if (lan == LanguageCode.EN) {
 			if (probId > appsProbsCorrespondanceEN.length)
 				return null;
@@ -203,19 +233,30 @@ public class GamesInformation {
 				if (appsProbsCorrespondanceGR[probId][i])
 					res.add(i);
 		}
-		return res;
+		return res;*/
 	}
 
 	public static ArrayList<Integer> getProblemRelatedApps(String prob,
 			LanguageCode lan) {
+
 		int id = getProblemID(prob, lan);
 		return getProblemRelatedApps(id, lan);
 	}
 
 	public static ArrayList<String> getProblemRelatedAppsString(int probId,
 			LanguageCode lan) {
+
+		ArrayList<Integer> resInteger = getProblemRelatedApps(probId, lan);
+		
 		ArrayList<String> res = new ArrayList<String>();
-		if (lan == LanguageCode.EN) {
+		
+		for(int i : resInteger)
+			res.add(appIds[i]);
+		
+		return res;
+		
+		
+		/*if (lan == LanguageCode.EN) {
 			if (probId > appsProbsCorrespondanceEN.length)
 				return null;
 			for (int i = 0; i < appsProbsCorrespondanceEN[probId].length; i++)
@@ -228,7 +269,7 @@ public class GamesInformation {
 				if (appsProbsCorrespondanceGR[probId][i])
 					res.add(appIds[i]);
 		}
-		return res;
+		return res;*/
 	}
 
 	public static ArrayList<String> getProblemRelatedAppsString(String prob,
@@ -238,10 +279,13 @@ public class GamesInformation {
 	}
 
 	public static boolean allowsLetters(int appId) {
+		System.err.println("GamesInformation.allowsLetters: deprecated.  tables outdated");
 		return appsInputsCorrespondance[appId][0];
 	}
 
 	public static boolean allowsLetters(String appName) {
+		System.err.println("GamesInformation.allowsLetters: deprecated.  tables outdated");
+
 		int id = getAppID(appName);
 		if (id == -1)
 			return false;
@@ -249,10 +293,14 @@ public class GamesInformation {
 	}
 
 	public static boolean allowsWors(int appId) {
+		System.err.println("GamesInformation.allowsWords: deprecated.  tables outdated");
+
 		return appsInputsCorrespondance[appId][1];
 	}
 
 	public static boolean allowsWors(String appName) {
+		System.err.println("GamesInformation.allowsWords: deprecated.  tables outdated");
+
 		int id = getAppID(appName);
 		if (id == -1)
 			return false;
@@ -260,10 +308,14 @@ public class GamesInformation {
 	}
 
 	public static boolean allowsSentences(int appId) {
+		System.err.println("GamesInformation.allowsWords: deprecated.  tables outdated");
+
 		return appsInputsCorrespondance[appId][2];
 	}
 
 	public static boolean allowsSentences(String appName) {
+		System.err.println("GamesInformation.allowsWords: deprecated.  tables outdated");
+
 		int id = getAppID(appName);
 		if (id == -1)
 			return false;

@@ -7,21 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.ilearnrw.api.selectnextword.FillerType;
+import com.ilearnrw.api.datalogger.model.LogEntry;
+import com.ilearnrw.api.selectnextactivity.decisiontree.Recommendation;
+import com.ilearnrw.api.selectnextactivity.decisiontree.Tree;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelFactory;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.tools.ProblemWordListLoader;
 
-public class DecisionTreeBasedAlgorithm implements NextActivitiesProvider {
+public class DecisionTreeBasedAlgorithm {
 
 	
 	Random rand = new Random();
-	@Override
-	public List<NextActivities> getNextProblems(UserProfile profile) {
-		// TODO Auto-generated method stub
+	
+	
+	public List<NextActivities> getNextProblems(UserProfile profile,List<LogEntry> lastLogs) {
+	
 		
-		ClusterBasedAlgorithm tmp = new ClusterBasedAlgorithm();
+		Tree tree = new Tree("trees/sample.tree");
+		
+    	List<Recommendation> recommendations = tree.getRecommendations(profile,lastLogs);
+
+		return Recommendation.GeneralisedLogsToRecommendation(profile, lastLogs, recommendations);
+		
+		/*ClusterBasedAlgorithm tmp = new ClusterBasedAlgorithm();
 		
 		List<NextActivities> nextProbs = tmp.getNextProblems(profile);
 		nextProbs.add(tmp.getNextProblems(profile).get(0));
@@ -40,6 +48,11 @@ public class DecisionTreeBasedAlgorithm implements NextActivitiesProvider {
 			nextProbs.get(i).setLevel(levels);
 			
 		}
+		return nextProbs;
+
+		*
+		*
+		*/
 		
 //		List<NextActivities> nextProbs = new ArrayList<NextActivities>();
 
@@ -96,7 +109,6 @@ public class DecisionTreeBasedAlgorithm implements NextActivitiesProvider {
 		nextProbs.add(next);*/
 		
 		
-		return nextProbs;
 	}
 	
 	
@@ -144,7 +156,7 @@ public class DecisionTreeBasedAlgorithm implements NextActivitiesProvider {
 	
 	String getALevel(UserProfile profile, LanguageCode lc, int languageArea, int difficulty,String appName, int index){
 		
-		GameLevel level = LevelFactory.createLevel(lc, languageArea, appName);
+		 GameLevel level = LevelFactory.createLevel(lc, languageArea, appName);
 		
 		 ArrayList<String> words = new ProblemWordListLoader(lc, languageArea, difficulty).getItems();
 		 int numberWords = words.size()-1;
@@ -157,60 +169,15 @@ public class DecisionTreeBasedAlgorithm implements NextActivitiesProvider {
 		 int wordLevels = randomOffset+ (int)java.lang.Math.floor( (proficiency/3.0)*(numberWords));
 
 		String activityLevel = "";
-		int i = 0;
-		if(level.allowedDifficulty(languageArea, difficulty)){
-			for(int mode : level.modeLevels(languageArea, difficulty)){
-
-				for(int accuracy : level.accuracyLevels(languageArea, difficulty)){
-
-					for(int speed : level.speedLevels(languageArea, difficulty)){
-
-						for(int batchSize : level.batchSizes(languageArea, difficulty)){
-
-							//for(int wordLevels : level.wordLevels(languageArea, difficulty)){
-
-								for (FillerType fillerTypes : level.fillerTypes(languageArea, difficulty)){
-
-									for(TtsType ttstype : level.TTSLevels(languageArea, difficulty)){
-
-
-										 
-										 if(wordLevels<0)
-											 wordLevels = 0;
-										 activityLevel = 	"M"+mode+"-"
-												+ 	"A"+accuracy+"-"
-												+ 	"S"+speed+"-"
-												+ 	"B"+batchSize+"-"
-												+ 	"W"+wordLevels+"-"
-												+ 	"F"+fillerTypes.ordinal()+"-"
-												+	"T"+ttstype.ordinal();
-
-
-										if (i==index){
-
-											return activityLevel;
-										}else{
-											i++;
-										}
-
-
-									}
-
-
-
-								}
-							//}
-						}
-
-
-					}
-				}
-
-			}	
 		
-	}
+		List<String> activityLevels = level.getAllLevels(languageArea, difficulty);
+
 		
-		return activityLevel;
+		if(index<activityLevels.size())
+			return activityLevels.get(index);
+		else
+			return activityLevels.get(0);	
+		
 	}
 
 

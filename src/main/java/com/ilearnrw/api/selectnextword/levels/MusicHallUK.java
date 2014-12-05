@@ -9,12 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.ilearnrw.api.selectnextword.FillerType;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.GameSentence;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -29,7 +27,7 @@ import com.ilearnrw.api.selectnextword.WordSelectionUtils;
  *
  */
 
-public class MusicHallUK implements GameLevel {
+public class MusicHallUK extends GameLevel {
 
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
@@ -49,10 +47,20 @@ public class MusicHallUK implements GameLevel {
 		
 		if(lA==LanguageAreasUK.SYLLABLES){
 			
-			targetWords =  WordSelectionUtils.getTargetWordsWithSyllables(LanguageCode.EN, languageArea, difficulty, parameters.batchSize, parameters.wordLevel,1);
+
+			targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.EN, 
+					languageArea, 
+					difficulty,
+					parameters,
+					1,
+					false,
+					false);
+			
+			
+			
 			if (targetWords.size()==0)
 				return targetWords;
-			
 			
 			
 			for(GameElement ge : targetWords){
@@ -82,27 +90,14 @@ public class MusicHallUK implements GameLevel {
 			
 		}else{
 			
-			int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
-		
-			targetWords =  WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty, numberTargets, parameters.wordLevel);
-
-			if (targetWords.size()==0)
-				return targetWords;
-					
-			int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
-			if (numberDistractorsPerDifficulty==0)
-				numberDistractorsPerDifficulty++;
-			
-			List<List<GameElement>> distractors  = WordSelectionUtils.getDistractors(LanguageCode.EN,  languageArea, difficulty, numberDistractorsPerDifficulty, parameters.wordLevel ,parameters.accuracy,-1,new ArrayList<String>());
-				
-					
-			for(List<GameElement> lge : distractors){
-				for(GameElement ge : lge)
-					targetWords.add(ge);
-				
-			}
-
-				
+			targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
+					LanguageCode.EN, 
+					languageArea, 
+					difficulty,
+					parameters,
+					-1,
+					false,
+					false);				
 
 			for(GameElement ge : targetWords){
 			
@@ -190,7 +185,7 @@ public class MusicHallUK implements GameLevel {
 			}
 		}
 		
-		for(String weird : new String[]{"str","ou","min","lap","ack","ad","tion","ww"}){
+		for(String weird : new String[]{"ou","min","lap","ack","ad","tion","str","ww"}){
 			
 		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
 			if(!fillerWords.contains(weird)){
@@ -214,35 +209,8 @@ public class MusicHallUK implements GameLevel {
 		return result;
 	}
 
-	@Override
-	public int[] wordLevels(int languageArea, int difficulty) {
-		return new int[]{0};//Easy and hard
 
-	}
 
-	@Override
-	public FillerType[] fillerTypes(int languageArea, int difficulty) {
-		
-		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
-		
-		if(lA==LanguageAreasUK.SYLLABLES){
-			return new FillerType[]{FillerType.NONE};
-		}else{
-			return new FillerType[]{FillerType.CLUSTER};
-		}
-	}
-
-	@Override
-	public int[] batchSizes(int languageArea, int difficulty) {
-		return new int[]{10};//10 words
-
-	}
-
-	@Override
-	public int[] speedLevels(int languageArea, int difficulty) {
-		return new int[]{0,1,2};//Slow, medium and fast
-
-	}
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
@@ -250,10 +218,6 @@ public class MusicHallUK implements GameLevel {
 
 	}
 
-	@Override
-	public TtsType[] TTSLevels(int languageArea, int difficulty) {
-		return new TtsType[]{TtsType.WRITTEN2WRITTEN};
-	}
 
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {
