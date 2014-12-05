@@ -9,6 +9,7 @@ public class TimeUtils {
 	public static String minIfNull(String time) {
 		if (time == null) {
 			time = (new SimpleDateFormat("yyyy-mm-dd mm:ss")).format(new Date(0L));
+		//	time = "0000-00-00 00:00";
 		}
 		return time;
 	}

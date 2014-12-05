@@ -1,6 +1,7 @@
 package com.ilearnrw.common;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,6 +10,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 
 import ilearnrw.resource.ResourceLoader;
+import ilearnrw.resource.ResourceLoader.Type;
 
 public class SpringResourceLoader extends ResourceLoader implements
 		ResourceLoaderAware {
@@ -46,6 +48,32 @@ public class SpringResourceLoader extends ResourceLoader implements
 
 		return null;
 	}
+	
+	
+	
+	@Override
+	public FileOutputStream  getOutputStream(Type type, String resource){
+		
+		switch (type) {
+		case DATA:
+			resource = dataFolder + resource;
+			break;
+		
+		}
+
+		try {
+			return new FileOutputStream(resource);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	
+	
+	
+	
 
 	@Override
 	public void setResourceLoader(

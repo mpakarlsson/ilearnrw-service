@@ -33,19 +33,17 @@ public class MailRoomUK extends GameLevel {
 
 	
 
+
 	
 	@Override
 	public List<GameElement> getWords(LevelParameters parameters, int languageArea, int difficulty) {
-
 		
-		if((parameters.amountDistractors==TypeAmount.NONE)||(parameters.amountDistractors==TypeAmount.FEW)){
-			
-			if(parameters.accuracy==2){
-				parameters.amountDistractors=TypeAmount.HALF;
-			}else{
+		if(parameters.accuracy==2){
+			parameters.amountDistractors=TypeAmount.HALF;
+		}else if(parameters.accuracy==3){
+			parameters.amountDistractors=TypeAmount.MANY;
+		}else if((parameters.amountDistractors==TypeAmount.NONE)||(parameters.amountDistractors==TypeAmount.FEW)){
 				parameters.amountDistractors=TypeAmount.MANY;
-			}
-			
 		}
 		
 		//int difficulties[] = new int[1+parameters.accuracy];
@@ -273,7 +271,13 @@ public class MailRoomUK extends GameLevel {
 
 
 	}
-
+	
+	@Override
+	public int[] accuracyLevels(int languageArea, int difficulty){
+		//Bike shed: number of words per door
+		//Music hall: number of alternatives
+		return new int[]{2,3};
+	}
 	
 	@Override
 	public int[] modeLevels(int languageArea, int difficulty) {

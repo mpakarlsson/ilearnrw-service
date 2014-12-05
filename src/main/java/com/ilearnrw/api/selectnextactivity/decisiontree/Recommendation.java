@@ -461,7 +461,7 @@ public class Recommendation {
 								//TODO add comparison with preferred game for this difficulty
 								
 							}else{
-								removeGame = GamesInformation.getAppID(lastLogs.get(memory_i).getApplicationId() );
+								removeGame = GamesInformation.getAppIDfromStringID(lastLogs.get(memory_i).getApplicationId() );
 							}
 							
 							int aux = gameCandidates.indexOf(removeGame);
@@ -476,7 +476,7 @@ public class Recommendation {
 								//TODO add comparison with preferred game for this difficulty
 								onlyGame = GamesInformation.getProblemRelatedApps(lA, profile.getLanguage()).get(0);
 							}else{
-								onlyGame = GamesInformation.getAppID(lastLogs.get(memory_i).getApplicationId() );
+								onlyGame = GamesInformation.getAppIDfromStringID(lastLogs.get(memory_i).getApplicationId() );
 							}
 							
 							
@@ -765,7 +765,7 @@ public class Recommendation {
 					for(int game : gameOrder){
 
 						gameNames.add(GamesInformation.appIds[game]);
-						levelNames.add( gameLevelmappings.get(game).get(gameLevelmappings.get(game).size()-1));						
+						levelNames.add( gameLevelmappings.get(game).get(0));						
 					}
 					
 					

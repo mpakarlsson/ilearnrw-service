@@ -185,7 +185,7 @@ public class MusicHallUK extends GameLevel {
 			}
 		}
 		
-		for(String weird : new String[]{"str","ou","min","lap","ack","ad","tion","ww"}){
+		for(String weird : new String[]{"ou","min","lap","ack","ad","tion","str","ww"}){
 			
 		if(fillerWords.size()<parameters.accuracy+1){//weird combination of letters
 			if(!fillerWords.contains(weird)){

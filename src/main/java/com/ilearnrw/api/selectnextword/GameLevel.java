@@ -23,7 +23,7 @@ public abstract class GameLevel {
 	
 	/* How many target words (fillers not counted)*/
 	public int[] batchSizes(int languageArea, int difficulty){
-		return new int[]{4,12,20};
+		return new int[]{8,12,20};
 	}
 	
 	/* Speed levels */

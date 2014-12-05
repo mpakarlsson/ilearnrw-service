@@ -54,9 +54,11 @@ public class NodeNoTerminal extends Node {
 					
 					List<Enum> attList = (List<Enum>)att.get(object);
 
-					for(int i=0;i<constraints.size();i++){
+					for(int i=0;i<constraints.size();i++){						
 
-	    				if(enumType.getClass().cast(constraints.get(i))==enumType.getClass().cast(attList.get(this.attributeMemory))){
+						
+						if(constraints.get(i)==attList.get(this.attributeMemory)){
+	    				//if(enumType.getClass().cast(constraints.get(i))==enumType.getClass().cast(attList.get(this.attributeMemory))){
 					
 	    					return children.get(i);
 	    				}			
