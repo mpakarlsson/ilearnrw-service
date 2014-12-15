@@ -17,13 +17,13 @@ public abstract class GameLevel {
 		
 	/* Level of difficulty of the words */
 	public int[] wordLevels(int languageArea, int difficulty){
-		return new int[]{0,1,2,3,4,5,6,7,8,9};
+		return new int[]{0,4,9};
 	}
 
 	
 	/* How many target words (fillers not counted)*/
 	public int[] batchSizes(int languageArea, int difficulty){
-		return new int[]{8,12,20};
+		return new int[]{4,8,12,20};
 	}
 	
 	/* Speed levels */

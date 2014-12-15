@@ -99,4 +99,19 @@ public class JunkyardGR extends GameLevel {
 		
 	}
 
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+
+		if(param.mode==0)
+			return "Χώρισε τις συλλαβές";
+		else if(param.mode==1)
+			return "Βρες τις καταλήξεις";
+		else if(param.mode==2)
+			return "Βρες τα προθέματα";
+		
+		
+		return "Not available";
+	}
+	
+	
 }

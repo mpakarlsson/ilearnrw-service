@@ -92,4 +92,18 @@ public class BikeShedGR extends GameLevel {
 		
 		}
 	}
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			return "Χτύπησε την πόρτα τόσες φορές όσες και οι συλλαβές της λέξης";
+			
+		}
+		
+		return "Instructions not available";
+		
+	}
+	
+	
 }

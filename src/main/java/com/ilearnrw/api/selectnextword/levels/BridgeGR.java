@@ -128,5 +128,27 @@ public class BridgeGR extends GameLevel {
 		
 		
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+	
+		if(param.mode==0){
+			return "Υπογράμμισε τη συλλαβή";
+		}else if(param.mode==6){
+			if(languageArea==2)
+				return "Υπογράμμισε το γράμμα";
+			else if(languageArea==5)
+				return "Υπογράμμισε το πρόθεμα";
+			else if(languageArea==6)
+				return "Υπογράμμισε την κατάληξη";
+			else if(languageArea==7)
+				return "Υπογράμμισε την κατάληξη";
+			
+		}
+		
+		return "Not available";
+	}
+	
+	
 
 }

@@ -90,5 +90,26 @@ public class TrainStationUK extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			return "Separate each syllable of the word";
+			
+		}else if (param.mode==1){
+			return "Separate the suffix from the rest of the word";
+			
+		}else if(param.mode==2){
+			return "Separate the prefix from the rest of the word";
+		}else if(param.mode==3){
+			return "Separate each sound of the word";
+		}
+		
+		return "Instructions not available";
+		
+	}
+	
 
 }

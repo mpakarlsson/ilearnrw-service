@@ -217,21 +217,21 @@ public class CityHallGR extends GameLevel {
 		
 		switch(lA){
 		
-			case SYLLABLE_DIVISION://Consonants
+			case SYLLABLE_DIVISION://
 				return false;		
 			case CONSONANTS://Consonants
 				return true;
 			case VOWELS://Vowels
 				return true;
-			case DERIVATIONAL://Blends and letter patterns
+			case DERIVATIONAL://
 				return false;//true;
-			case INFLECTIONAL://Syllables
+			case INFLECTIONAL://
 				return false;//true;
-			case PREFIXES://Suffixes
+			case PREFIXES://
 				return false;//true;
-			case GP_CORRESPONDENCE://Prefixes
+			case GP_CORRESPONDENCE://
 				return true;
-			case FUNCTION_WORDS://Confusing letters
+			case FUNCTION_WORDS://
 				return false;//true;
 			case LETTER_SIMILARITY:
 				return true;
@@ -240,5 +240,34 @@ public class CityHallGR extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==1){
+			if(languageArea==0)
+				return "Βρες το μονοπάτι με το γράμμα που εμφανίζεται";
+			else if(languageArea==1){
+				return "Βρες το μονοπάτι με το γράμμα που εμφανίζεται";
+			}else if(languageArea==2){
+				return "Βρες το μονοπάτι με το γράμμα που εμφανίζεται";
+			}
+		}else if(param.mode==2){
+			if(languageArea==0)
+				return "Βρες το μονοπάτι με τις λέξεις που ξεκινούν με το γράμμα που εμφανίζεται";
+			else if(languageArea==1){
+				return "Βρες το μονοπάτι με τις λέξεις που ξεκινούν με το γράμμα που εμφανίζεται";
+			}else if(languageArea==2){
+				return "Βρες το μονοπάτι με τις λέξεις που ξεκινούν με το γράμμα που εμφανίζεται";
+			}		
+		}else if(param.mode==3){
+			return "Βρες το μονοπάτι με τις λέξεις που περιέχουν τη φωνή";
+		}else if(param.mode==4){
+			return "Βρες το μονοπάτι με το γράμμα που εμφανίζεται";
 
+		}
+		
+		return "Not available";
+	}
+	
 }

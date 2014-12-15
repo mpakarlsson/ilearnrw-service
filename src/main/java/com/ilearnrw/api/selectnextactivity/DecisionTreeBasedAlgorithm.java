@@ -162,13 +162,6 @@ public class DecisionTreeBasedAlgorithm {
 		 int numberWords = words.size()-1;
 		 if(numberWords<1)
 			 numberWords = 1;
-		 
-		 int proficiency = 3-profile.getUserProblems().getUserSeverity(languageArea, difficulty);
-		 int randomOffset = new Random().nextInt( (proficiency+1)*3 );
-		 
-		 int wordLevels = randomOffset+ (int)java.lang.Math.floor( (proficiency/3.0)*(numberWords));
-
-		String activityLevel = "";
 		
 		List<String> activityLevels = level.getAllLevels(languageArea, difficulty);
 

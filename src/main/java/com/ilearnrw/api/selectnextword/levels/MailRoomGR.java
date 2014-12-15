@@ -179,7 +179,24 @@ public class MailRoomGR extends GameLevel {
 		default:
 			return false;
 	
+		}
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(languageArea==3)
+			return "Send the words to the basket starting the letter cluster";
+		else if(languageArea==6){
+			return "Send the words to the right suffix basket";
+		}else if(languageArea==7)
+			return "Send the words to the right suffix basket";
+
+		
+		return "Not available";
 	}
+	
+	
+	
 
 }

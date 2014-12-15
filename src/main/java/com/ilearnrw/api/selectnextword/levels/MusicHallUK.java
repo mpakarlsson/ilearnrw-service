@@ -253,5 +253,18 @@ public class MusicHallUK extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			return "Fill in the missing parts of the word";
+			
+		}
+		
+		return "Instructions not available";
+		
+	}
 
 }

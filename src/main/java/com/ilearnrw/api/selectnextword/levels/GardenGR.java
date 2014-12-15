@@ -178,4 +178,22 @@ public class GardenGR extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		if(param.mode==5){
+			if(languageArea==3)
+				return "Βάλε τα λουλούδια στις μηχανές που έχουν τις λέξεις με το σωστό ήχο";
+			else if(languageArea==5)
+				return "Βάλε τα λουλούδια στις μηχανές που έχουν τις λέξεις με το ίδιο πρόθεμα";
+			else if(languageArea==7)
+				return "Βάλε τα λουλούδια στις μηχανές που έχουν τις λέξεις με την ίδια κατάληξη";
+		}else if(param.mode==6){
+			return "Βάλε τα λουλούδια στις μηχανές που έχουν τις λέξεις με τον ίδιο αριθμό συλλαβών";
+		}
+		
+		return "Instructions not available";
+	}
+	
+	
 }

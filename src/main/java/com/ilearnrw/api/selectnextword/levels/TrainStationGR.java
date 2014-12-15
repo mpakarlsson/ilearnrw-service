@@ -85,5 +85,22 @@ public class TrainStationGR extends GameLevel {
 		}
 		
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+	
+		if(param.mode==0)
+			return "Γράψε κάθε συλλαβή σε διαφορετική κάρτα";
+		else if(param.mode==1){
+			if(languageArea==6)
+				return "Γράψε την κατάληξη και το υπόλοιπο μέρος της λέξης σε διαφορετικές κάρτες";
+			else if(languageArea==7)
+				return "Γράψε την κατάληξη και το υπόλοιπο μέρος της λέξης σε διαφορετικές κάρτες";
+		}else if(param.mode==2)
+			return "Γράψε το πρόθεμα και το υπόλοιπο μέρος της λέξης σε διαφορετικές κάρτες";
+		
+
+		return "Not available";
+	}
 
 }

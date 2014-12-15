@@ -352,7 +352,31 @@ public class MailRoomUK extends GameLevel {
 		}
 	}
 
-
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			if(param.ttsType == TtsType.WRITTEN2WRITTEN){
+				return "Match the phonemes with the words that contain them";
+			}else{
+				return "Match the sounds with the words that contain them";
+			}
+			
+		}else if (param.mode==1){
+			return "Match the group of letters with the word that ends with them";
+			
+		}else if (param.mode==2){
+			return "Match the group of letters with the word that starts with them";
+			
+		}else if (param.mode==3){
+			return "Match the group of letters with the word that contains them";
+			
+		}
+		
+		return "Instructions not available";
+		
+	}
 
 
 

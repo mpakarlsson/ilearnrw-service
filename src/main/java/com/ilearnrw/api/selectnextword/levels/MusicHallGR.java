@@ -335,5 +335,23 @@ public class MusicHallGR extends GameLevel {
 
 		}
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		if(languageArea==4)
+			return  "Συμπλήρωσε τη λέξη με τη συλλαβή που λείπει";
+		else if(languageArea==5)
+			return "Συμπλήρωσε το κενό με το σωστό πρόθεμα";
+		else if(languageArea==6)
+			return "Συμπλήρωσε το κενό με τη σωστή κατάληξη";
+		else if(languageArea==7)
+			return "Συμπλήρωσε τα κενά στις λέξεις με τις σωστές καταλήξεις";
+		else if(languageArea==8)
+			return "Συμπλήρωσε την πρόταση με τις σωστές λέξεις";
+		
+		
+		return "Not available";
+	}
+	
 
 }
