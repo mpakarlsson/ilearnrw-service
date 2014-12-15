@@ -31,8 +31,8 @@ public class Tree {
     	
     	//rebootTree("trees/sample.tree");
     	
-    	Tree tree = new Tree("wrong/sample.tree");
-//    	Tree tree = new Tree("trees/sample.tree");
+//    	Tree tree = new Tree("wrong/sample.tree");
+    	Tree tree = new Tree("trees/sample.tree");
     	
     	
     	System.out.println(tree.toString());

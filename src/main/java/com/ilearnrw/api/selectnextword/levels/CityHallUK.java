@@ -145,7 +145,7 @@ public class CityHallUK extends GameLevel {
 		if(lA==LanguageAreasUK.CONFUSING)
 			return new int[]{0};
 		else{
-			return new int[]{0,1,2,3,4,5,6,7,8,9};
+			return new int[]{0,4,9};
 		}
 	}
 
@@ -205,6 +205,27 @@ public class CityHallUK extends GameLevel {
 				return false;
 		
 		}
+	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			return "Follow the tiles with the spelling of the sound";
+		}else if(param.mode==1){
+			if(param.ttsType==TtsType.WRITTEN2WRITTEN){
+				return "Follow the tiles with the given letter";
+			}else{
+				return "Follow the tiles with the letter read aloud";
+			}
+		}else if(param.mode==2){
+			return "Follow the tiles with a word containing the sound";
+		}
+
+		return "Instructions not available";
+		
+		
 	}
 
 

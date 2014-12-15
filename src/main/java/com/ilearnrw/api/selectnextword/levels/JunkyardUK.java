@@ -93,5 +93,27 @@ public class JunkyardUK extends GameLevel {
 
 		}
 	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			return "Split the words into syllables";
+			
+		}else if (param.mode==1){
+			return "Separate the suffix of each word";
+			
+		}else if(param.mode==2){
+			return "Separate the prefix of each word";
+		}else if(param.mode==3){
+			return "Split the words into sounds";
+		}
+		
+		return "Instructions not available";
+		
+	}
+	
+
 
 }

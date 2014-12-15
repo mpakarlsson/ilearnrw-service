@@ -239,6 +239,7 @@ public class Recommendation {
 
 		
 		List<NextActivities> output = new ArrayList<NextActivities>();
+		List<NextActivities> outputBackup = new ArrayList<NextActivities>();
 		Random rand = new Random();
 		
 		for(Recommendation recommendation : recommendations){
@@ -404,8 +405,6 @@ public class Recommendation {
 			}//end for memory
 			
 			
-			if(constrainedCandidates.size()==0)
-				continue;//move on to the next recommendations
 			
 			
 			//Check severity constraints
@@ -429,9 +428,23 @@ public class Recommendation {
 				
 			}
 
+			boolean constraintIgnored = false;
 			
 			if(constrainedCandidates.size()==0){//No matches, check the next recommendation
-				continue;
+				//continue;
+				
+				//continue;
+				System.err.println("Ignore difficulty constraints");
+				
+				ProfileClusters cls = new ProfileClusters(profile.getUserProblems().getProblems());
+
+				int cluster = profile.getUserProblems().getUserSeverities().getSystemCluster();
+				
+				ProblemDescriptionCoordinates index = cls.getClusterProblems(cluster).get(0);
+				List<Integer> aux = new ArrayList<Integer>();
+				aux.add(index.getIndex());
+				constrainedCandidates.put(index.getCategory(),aux);
+				constraintIgnored = true;
 			}
 				
 			
@@ -491,11 +504,15 @@ public class Recommendation {
 						}
 					}
 					
-					if(gameCandidates.size()==0)
-						continue;
+					if(gameCandidates.size()==0){
+						//continue;
+						System.err.println("Ignore game constraint");
+						gameCandidates.add(GamesInformation.getProblemRelatedApps(lA, profile.getLanguage()).get(0));
+						constraintIgnored = true;
+					}
 					
-					for(int game : gameCandidates){//find levels for each game
-						
+					for(int x = 0; x<gameCandidates.size();x++){//find levels for each game
+						int game = gameCandidates.get(x);
 						/*ArrayList<Integer> candidateChallenge = new ArrayList<Integer>();
 						ArrayList<Integer> candidateAccuracy = new ArrayList<Integer>();
 						ArrayList<Integer> candidateSpeed = new ArrayList<Integer>();
@@ -724,8 +741,58 @@ public class Recommendation {
 						}
 						
 						
-						if(candidateLevels.size()==0)
-							continue;
+						if(candidateLevels.size()==0){
+							//continue;
+							if(gameCandidates.size()==(x+1)){
+								System.err.println("Ignore level constraint for the last game candidate");
+								constraintIgnored = true;
+								
+								String defaultLevel = "";
+								
+								int inverseSeverity = 3-profile.getUserProblems().getUserSeverity(lA, dff);
+								
+											
+								defaultLevel +="W"+((int)(10.0*(inverseSeverity/4.0)));
+								defaultLevel+= "-B"+inverseSeverity;
+								defaultLevel+= "-S"+inverseSeverity;
+								defaultLevel+= "-A"+inverseSeverity;
+
+								defaultLevel+= "-D"+inverseSeverity;
+								defaultLevel+= "-X"+inverseSeverity;
+								
+								defaultLevel+= "-F"+gameLevel.fillerTypes(lA, dff)[0].ordinal();
+								
+								
+								boolean done = false;
+								for(TtsType ttstype : gameLevel.TTSLevels(lA, dff)){
+
+									if(done)
+										break;
+									for(int mode : gameLevel.modeLevels(lA, dff)){
+										
+										inverseSeverity--;
+										if(inverseSeverity<0){
+											defaultLevel+= "-T"+ttstype.ordinal();
+											defaultLevel+= "-M"+mode;
+											done = true;
+											break;
+										}
+										
+									}
+								}
+								
+								if(!done){
+									defaultLevel+= "-T"+gameLevel.TTSLevels(lA, dff)[0].ordinal();
+									defaultLevel+= "-M"+gameLevel.modeLevels(lA, dff)[0];								
+									
+								}
+								
+								candidateLevels.add(new LevelParameters(defaultLevel));
+						
+							}else{
+								continue;
+							}
+						}
 						
 						//Remaining levels
 						
@@ -769,8 +836,10 @@ public class Recommendation {
 					}
 					
 					
-					
-					output.add(new NextActivities(gameNames,lA,dff,levelNames));
+					if(constraintIgnored)
+						outputBackup.add(new NextActivities(gameNames,lA,dff,levelNames));
+					else
+						output.add(new NextActivities(gameNames,lA,dff,levelNames));
 
 				}//end for all candidate difficulties
 								
@@ -780,10 +849,11 @@ public class Recommendation {
 		
 		if(output.size()>5){
 			return output.subList(0, 5);
+		}else if(output.size()==0){
+			return outputBackup;
+		}else{
+			return output;
 		}
-		
-		return output;
-		
 	}
 	
 	

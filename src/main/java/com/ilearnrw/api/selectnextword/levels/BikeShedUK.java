@@ -84,7 +84,23 @@ public class BikeShedUK extends GameLevel {
 		
 		}
 	}
-
+	
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){
+			return "The number of knocks is the number of syllables";
+			
+		}else if (param.mode==1){
+			return "Tap once for each sound in the word. For example, sheep has 5 letters but only 3 sounds. So you tap three times.";
+			
+		}
+		
+		return "Instructions not available";
+		
+	}
 
 
 }

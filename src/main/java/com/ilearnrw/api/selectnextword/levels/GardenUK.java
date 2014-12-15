@@ -180,4 +180,24 @@ public class GardenUK extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode<2){
+			return "Select the categories that correspond to each word";
+			
+		}else if (param.mode==2){
+			return "Select the machines with letters contained in each word";
+			
+		}else if(param.mode==6){
+			return "Select the machine with the right number of syllables";
+		}
+		
+		return "Instructions not available";
+		
+	}
+	
+	
 }

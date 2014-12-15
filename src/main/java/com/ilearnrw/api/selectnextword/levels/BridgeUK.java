@@ -128,5 +128,30 @@ public class BridgeUK extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode<3){
+			return "Highlight the given group of letters";
+		}else if(param.mode==4){
+			
+			if(param.ttsType==TtsType.WRITTEN2WRITTEN){
+				return "Highlight the letters that correspond to the phoneme";
+			}else{
+				return "Highlight the letters that correspond to the sound";
+				
+			}
+			
+		}else if(param.mode==5){
+			return "Highlight the specified letters";
+			
+		}
+		
+
+		return "Instructions not available";
+		
+	}
 
 }

@@ -234,4 +234,44 @@ public class MonkeyHotelUK extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	@Override
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==0){//not used
+			return "Hit the letters that are read as the sound";
+			
+		}else if (param.mode==1){
+			if(param.ttsType == TtsType.WRITTEN2WRITTEN){
+				return "Hit the words that contain the phoneme";
+			}else{
+				return "Hit the words that contain the sound";
+			}
+			
+		}else if(param.mode==2){
+			return "Hit the words that end with the group of letters";
+		}else if(param.mode==3){
+			return "Hit the words that start with the group of letters";
+		}else if(param.mode ==4){
+			return "Hit the letters equal to the given letter";
+		}else if(param.mode==6){//not used
+			if(param.ttsType == TtsType.WRITTEN2WRITTEN){
+				return "Hit the words that start with the letter";
+			}else{
+				return "Hit the words that start with the sound";
+			}
+		}else if(param.mode==7){
+			if(param.ttsType == TtsType.WRITTEN2WRITTEN){
+				return "Hit the words that contain with the letter";
+			}else{
+				return "Hit the words that contain with the sound";
+			}
+		}
+		
+		return "Instructions not available";
+		
+
+	
+	}
 }

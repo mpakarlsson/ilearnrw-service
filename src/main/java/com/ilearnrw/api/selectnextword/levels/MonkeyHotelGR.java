@@ -273,4 +273,26 @@ public class MonkeyHotelGR extends GameLevel {
 		
 		}
 	}
+	
+	/* Instructions for the games */
+	public String instructions(int languageArea, int difficulty,LevelParameters param){
+		
+		if(param.mode==4){
+			return "Χτύπησε το γράμμα που βλέπεις";
+		}else if(param.mode==5){
+			if(languageArea==5)
+				return "Χτύπησε τις λέξεις με το ίδιο πρόθεμα, όπως το παράδειγμα";
+			else if(languageArea==6)
+				return "Χτύπησε τις λέξεις με την ίδια κατάληξη, όπως το παράδειγμα";
+		}else if(param.mode==6){
+			return "Χτύπησε τις λέξεις που αρχίζουν με το γράμμα που βλέπεις";
+		}else if(param.mode==7){
+			return "Χτύπησε τις λέξεις που αρχίζουν με τον ήχο (που ακούς?)";
+		}
+		
+		
+		return "Not available";
+		
+		
+	}
 }
