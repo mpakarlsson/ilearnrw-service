@@ -34,6 +34,16 @@ public class MailRoomGR extends GameLevel {
 	public List<GameElement> getWords(LevelParameters parameters,
 			int languageArea, int difficulty) {
 		
+		
+		if(parameters.accuracy==2){
+			parameters.amountDistractors=TypeAmount.HALF;
+		}else if(parameters.accuracy==3){
+			parameters.amountDistractors=TypeAmount.MANY;
+		}else if((parameters.amountDistractors==TypeAmount.NONE)||(parameters.amountDistractors==TypeAmount.FEW)){
+				parameters.amountDistractors=TypeAmount.MANY;
+		}
+		
+		
 		List<GameElement> targetWords = WordSelectionUtils.getTargetWordsWithDistractors(
 				LanguageCode.GR, 
 				 languageArea, 
@@ -48,7 +58,7 @@ public class MailRoomGR extends GameLevel {
 		
 		List<GameElement> results = new ArrayList<GameElement>();
 		
-		for(int i=0;i<parameters.batchSize;i++){
+		for(int i=0;i<parameters.batchSize/4;i++){
 			
 			List<String> patterns = new ArrayList<String>();
 			boolean invalid = false;
@@ -102,16 +112,16 @@ public class MailRoomGR extends GameLevel {
 		
 	}
 	
-	
+	/*
 	@Override
 	public TypeFiller[] fillerTypes(int languageArea, int difficulty){
 		return new TypeFiller[]{TypeFiller.NONE};//Distractors within difficulty
 
-	}
+	}*/
 	
 	@Override
 	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
-		return new TypeAmount[]{TypeAmount.FEW};//No control over number of distractors
+		return new TypeAmount[]{TypeAmount.HALF,TypeAmount.MANY};//2 or 3 distractors
 	}
 	
 

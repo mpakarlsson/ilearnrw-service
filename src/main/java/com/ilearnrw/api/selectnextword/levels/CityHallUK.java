@@ -156,7 +156,7 @@ public class CityHallUK extends GameLevel {
 		if(lA==LanguageAreasUK.CONFUSING)
 			return new int[]{1};
 		else{
-			return new int[]{4,12,20};
+			return new int[]{4,8,12,20};
 		}	
 	}
 	
