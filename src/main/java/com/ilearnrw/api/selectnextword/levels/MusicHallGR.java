@@ -103,7 +103,25 @@ public class MusicHallGR extends GameLevel {
 
 			for(GameElement ge : targetWords){
 				AnnotatedWord w = (AnnotatedWord) ge.getAnnotatedWord();
+				
+				if(w.getNumberOfSyllables()<2){
+					System.err.println("Only one syllable!");
+					continue;
+				}
+				
+				
+				int start = w.getWordProblems().get(0).getMatched().get(0).getStart();
+				int end = w.getWordProblems().get(0).getMatched().get(0).getStart();
+				String targetSyllable = (w.getWord().substring(start, end));
+				
 				int syllable = rand.nextInt(w.getNumberOfSyllables());
+				
+				for(int i = 0; i <  w.getSyllables().length;i++){
+					if(w.getSyllables()[i].equals(targetSyllable)){
+						syllable = i;
+						break;
+					}
+				}
 
 				String sentence = "";
 
@@ -327,7 +345,7 @@ public class MusicHallGR extends GameLevel {
 		case GP_CORRESPONDENCE://Prefixes
 			return false;
 		case FUNCTION_WORDS://Confusing letters
-			return false;//true;
+			return true;//true;
 		case LETTER_SIMILARITY:
 			return false;
 		default:

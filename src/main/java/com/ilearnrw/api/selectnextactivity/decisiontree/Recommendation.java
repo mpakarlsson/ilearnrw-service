@@ -536,45 +536,12 @@ public class Recommendation {
 							
 							if((memory_i==recommendation.challenge.size()-1)||(lastLogs.size()==0)){
 								
-								String defaultLevel = "";
-								
 								int inverseSeverity = 3-profile.getUserProblems().getUserSeverity(lA, dff);
-								
-											
-								defaultLevel +="W"+((int)(10.0*(inverseSeverity/4.0)));
-								defaultLevel+= "-B"+inverseSeverity;
-								defaultLevel+= "-S"+inverseSeverity;
-								defaultLevel+= "-A"+inverseSeverity;
 
-								defaultLevel+= "-D"+inverseSeverity;
-								defaultLevel+= "-X"+inverseSeverity;
-								
-								defaultLevel+= "-F"+gameLevel.fillerTypes(lA, dff)[0].ordinal();
+								String defaultLevel = generateDefaultLevel(inverseSeverity,lA,dff,gameLevel);
 								
 								
-								boolean done = false;
-								for(TtsType ttstype : gameLevel.TTSLevels(lA, dff)){
-
-									if(done)
-										break;
-									for(int mode : gameLevel.modeLevels(lA, dff)){
-										
-										inverseSeverity--;
-										if(inverseSeverity<0){
-											defaultLevel+= "-T"+ttstype.ordinal();
-											defaultLevel+= "-M"+mode;
-											done = true;
-											break;
-										}
-										
-									}
-								}
 								
-								if(!done){
-									defaultLevel+= "-T"+gameLevel.TTSLevels(lA, dff)[0].ordinal();
-									defaultLevel+= "-M"+gameLevel.modeLevels(lA, dff)[0];								
-									
-								}
 								
 								level_i = new LevelParameters(defaultLevel);
 								
@@ -746,46 +713,11 @@ public class Recommendation {
 							if(gameCandidates.size()==(x+1)){
 								System.err.println("Ignore level constraint for the last game candidate");
 								constraintIgnored = true;
-								
-								String defaultLevel = "";
-								
+
 								int inverseSeverity = 3-profile.getUserProblems().getUserSeverity(lA, dff);
-								
-											
-								defaultLevel +="W"+((int)(10.0*(inverseSeverity/4.0)));
-								defaultLevel+= "-B"+inverseSeverity;
-								defaultLevel+= "-S"+inverseSeverity;
-								defaultLevel+= "-A"+inverseSeverity;
 
-								defaultLevel+= "-D"+inverseSeverity;
-								defaultLevel+= "-X"+inverseSeverity;
+								String defaultLevel = generateDefaultLevel(inverseSeverity,lA,dff,gameLevel);
 								
-								defaultLevel+= "-F"+gameLevel.fillerTypes(lA, dff)[0].ordinal();
-								
-								
-								boolean done = false;
-								for(TtsType ttstype : gameLevel.TTSLevels(lA, dff)){
-
-									if(done)
-										break;
-									for(int mode : gameLevel.modeLevels(lA, dff)){
-										
-										inverseSeverity--;
-										if(inverseSeverity<0){
-											defaultLevel+= "-T"+ttstype.ordinal();
-											defaultLevel+= "-M"+mode;
-											done = true;
-											break;
-										}
-										
-									}
-								}
-								
-								if(!done){
-									defaultLevel+= "-T"+gameLevel.TTSLevels(lA, dff)[0].ordinal();
-									defaultLevel+= "-M"+gameLevel.modeLevels(lA, dff)[0];								
-									
-								}
 								
 								candidateLevels.add(new LevelParameters(defaultLevel));
 						
@@ -854,6 +786,79 @@ public class Recommendation {
 		}else{
 			return output;
 		}
+	}
+
+	private static String generateDefaultLevel(int inverseSeverity, int lA,
+			int dff, GameLevel gameLevel) {
+
+
+		String defaultLevel = "";
+
+		
+		if(inverseSeverity<gameLevel.wordLevels(lA, dff).length)
+			defaultLevel +="W"+gameLevel.wordLevels(lA, dff)[inverseSeverity];
+		else
+			defaultLevel +="W"+gameLevel.wordLevels(lA, dff)[gameLevel.wordLevels(lA, dff).length-1];
+
+		
+		
+		if(inverseSeverity<gameLevel.batchSizes(lA, dff).length)
+			defaultLevel +="-B"+gameLevel.batchSizes(lA, dff)[inverseSeverity];
+		else
+			defaultLevel +="-B"+gameLevel.batchSizes(lA, dff)[gameLevel.batchSizes(lA, dff).length-1];
+
+		if(inverseSeverity<gameLevel.speedLevels(lA, dff).length)
+			defaultLevel +="-S"+gameLevel.speedLevels(lA, dff)[inverseSeverity].ordinal();
+		else
+			defaultLevel +="-S"+gameLevel.speedLevels(lA, dff)[gameLevel.speedLevels(lA, dff).length-1].ordinal();
+			
+		if(inverseSeverity<gameLevel.accuracyLevels(lA, dff).length)
+			defaultLevel +="-A"+gameLevel.accuracyLevels(lA, dff)[inverseSeverity];
+		else
+			defaultLevel +="-A"+gameLevel.accuracyLevels(lA, dff)[gameLevel.accuracyLevels(lA, dff).length-1];
+			
+		if(inverseSeverity<gameLevel.amountDistractors(lA, dff).length)
+			defaultLevel +="-D"+gameLevel.amountDistractors(lA, dff)[inverseSeverity].ordinal();
+		else
+			defaultLevel +="-D"+gameLevel.amountDistractors(lA, dff)[gameLevel.amountDistractors(lA, dff).length-1].ordinal();
+			
+		if(inverseSeverity<gameLevel.amountTricky(lA, dff).length)
+			defaultLevel +="-X"+gameLevel.amountTricky(lA, dff)[inverseSeverity].ordinal();
+		else
+			defaultLevel +="-X"+gameLevel.amountTricky(lA, dff)[gameLevel.amountTricky(lA, dff).length-1].ordinal();
+			
+		if(inverseSeverity<gameLevel.fillerTypes(lA, dff).length)
+			defaultLevel +="-F"+gameLevel.fillerTypes(lA, dff)[inverseSeverity].ordinal();
+		else
+			defaultLevel +="-F"+gameLevel.fillerTypes(lA, dff)[gameLevel.fillerTypes(lA, dff).length-1].ordinal();
+																			
+		
+		boolean done = false;
+		for(TtsType ttstype : gameLevel.TTSLevels(lA, dff)){
+
+			if(done)
+				break;
+			for(int mode : gameLevel.modeLevels(lA, dff)){
+				
+				inverseSeverity--;
+				if(inverseSeverity<0){
+					defaultLevel+= "-T"+ttstype.ordinal();
+					defaultLevel+= "-M"+mode;
+					done = true;
+					break;
+				}
+				
+			}
+		}
+		
+		if(!done){
+			defaultLevel+= "-T"+gameLevel.TTSLevels(lA, dff)[0].ordinal();
+			defaultLevel+= "-M"+gameLevel.modeLevels(lA, dff)[0];								
+			
+		}
+		
+		
+		return defaultLevel;
 	}
 	
 	

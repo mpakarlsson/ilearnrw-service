@@ -349,7 +349,7 @@ public  class WordSelectionUtils {
 			}
 			
 
-			if(w.getNumberOfSyllables()<numberSyllables){
+			if(w.getNumberOfSyllables()<=numberSyllables){
 				continue;
 			}
 			
