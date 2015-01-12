@@ -86,7 +86,7 @@ public class LogEntryDaoImpl implements LogEntryDao {
 	
 	@Override
 	public LogEntryResult getLogs(LogEntryFilter filter) {
-		final int resultLimit = 100;
+		final int resultLimit = 1000;
 		return getLogs(filter, false,resultLimit);
 	}
 	
