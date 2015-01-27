@@ -113,5 +113,52 @@ function sendStudentsAnswers(user, userId) {
 		array.push(log);
 	}
 	httpPost("setupstudent?userId="+userId, JSON.stringify(array));
+	alert('Data Sent!\nProfile Initialized!');
+};
+
+function sendStudentsAnswersNoProfileInit(user, userId) {
+	var array = [];
+	var elements = document.getElementsByClassName("word");
+	for(var i = 0; i < elements.length; i++) {
+		var current = elements[i];
+		var ans = getAnswer(current);
+		if (ans == null){
+			continue;
+		}
+		
+		var log = {
+				username: user,
+				applicationId: "PROFILE_SETUP",
+				tag: ans,
+				word: current.dataset.word,
+				problem_category: -1,
+				problem_index: -1,
+				duration: 0,
+				level: "cluster "+current.dataset.cluster,
+				mode: "REVISE_PROFILE_PROGRESS_MODE",
+				value: current.dataset.cluster,
+				timestamp: new Date().getTime(),
+		};
+		array.push(log);
+		
+		if (ans == "WORD_NOT_SEEN")
+			continue;
+		
+		var log = {
+				username: user,
+				applicationId: "PROFILE_SETUP",
+				tag: "WORD_DISPLAYED",
+				word: current.dataset.word,
+				problem_category: -1,
+				problem_index: -1,
+				duration: 0,
+				level: "cluster "+current.dataset.cluster,
+				mode: "REVISE_PROFILE_PROGRESS_MODE",
+				value: current.dataset.cluster,
+				timestamp: new Date().getTime(),
+		};
+		array.push(log);
+	}
+	httpPost("setupstudent?userId="+userId, JSON.stringify(array));
 	alert('Data Sent!');
 };

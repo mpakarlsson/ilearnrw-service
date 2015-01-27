@@ -307,6 +307,7 @@ public class ScreeningCreationControler {
 			stats.add(new ClusterStats(cl));
 		}
 		
+		boolean initProfile = true;
 		if (logs != null){
 			for (LogEntry t: logs){
 				logEntryService.insertData(t);
@@ -323,34 +324,38 @@ public class ScreeningCreationControler {
 				else if (t.getTag().equals("WORD_FAILED") || t.getTag().equals("WORD_NOT_ANSWERED")){
 					cstats.highScore++;
 				}
+				if (!t.getMode().equals("EVALUATION_MODE"))
+					initProfile = false;
 			}
 			//dataloggerController.addLogs(logs);
+			if (initProfile){
 			UserProfile profile = profileProvider.getProfile(userId);
-			for (ClusterInfo ci : pc.getClusters()){
-				ClusterStats cstats = getStatsObject(stats, ci.getClusterNumber());
-				if (cstats == null)
-					continue;
-				
-				int severity = 3;
-				if (cstats.highScore>0 && cstats.getRate()==1)
-					severity = 1;
-				else if (cstats.highScore>0 && cstats.getRate()>0.5)
-					severity = 2;
-				//System.err.println(ci.getClusterNumber()+"  --  "+cstats.highScore+" ,, "+cstats.userScore);
-				if (cstats.highScore==0)
-					continue;
-				for (ProblemDescriptionCoordinates pdc : ci.getRelatedProblems()){
-					if (profile.getUserProblems().getProblemDefinition(pdc.getCategory()).getSeverityType().equals("binary"))
-						profile.getUserProblems().setUserSeverity(pdc.getCategory(), pdc.getIndex(), severity == 1?0:1);
-					else 
-						profile.getUserProblems().setUserSeverity(pdc.getCategory(), pdc.getIndex(), severity);
+				for (ClusterInfo ci : pc.getClusters()){
+					ClusterStats cstats = getStatsObject(stats, ci.getClusterNumber());
+					if (cstats == null)
+						continue;
+					
+					int severity = 3;
+					if (cstats.highScore>0 && cstats.getRate()==1)
+						severity = 1;
+					else if (cstats.highScore>0 && cstats.getRate()>0.5)
+						severity = 2;
+					//System.err.println(ci.getClusterNumber()+"  --  "+cstats.highScore+" ,, "+cstats.userScore);
+					if (cstats.highScore==0)
+						continue;
+					for (ProblemDescriptionCoordinates pdc : ci.getRelatedProblems()){
+						if (profile.getUserProblems().getProblemDefinition(pdc.getCategory()).getSeverityType().equals("binary"))
+							profile.getUserProblems().setUserSeverity(pdc.getCategory(), pdc.getIndex(), severity == 1?0:1);
+						else 
+							profile.getUserProblems().setUserSeverity(pdc.getCategory(), pdc.getIndex(), severity);
+					}
+					LogEntry le = new LogEntry(user.getUsername(), "PROFILE_SETUP", new Timestamp(date.getTime()), 
+							"USER_SEVERITIES_SET",  "", -1, -1, 
+							0, "cluster "+ci.getClusterNumber(), "EVALUATION_MODE", ""+severity, supervisor.getUsername());
+					logEntryService.insertData(le);
 				}
-				LogEntry le = new LogEntry(user.getUsername(), "PROFILE_SETUP", new Timestamp(date.getTime()), 
-						"USER_SEVERITIES_SET",  "", -1, -1, 
-						0, "cluster "+ci.getClusterNumber(), "EVALUATION_MODE", ""+severity, supervisor.getUsername());
-				logEntryService.insertData(le);
+				profileProvider.updateProfile(userId, profile);
 			}
-			profileProvider.updateProfile(userId, profile);
 		}
 		return userId;
 	}

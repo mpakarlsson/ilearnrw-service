@@ -85,9 +85,12 @@
 									</div>
 								</c:forEach>
 							</c:forEach>
-
+<br>
 							<button onclick="sendStudentsAnswers('${username}', '${userid}')">Submit
-								Data</button>
+								Data and Initialize Profile</button>
+
+							<button onclick="sendStudentsAnswersNoProfileInit('${username}', '${userid}')">Submit
+								Data and NOT Initialize Profile</button>
 
 
 						</div>
