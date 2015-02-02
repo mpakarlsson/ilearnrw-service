@@ -108,7 +108,7 @@ CREATE TABLE `logs` (
   `duration` decimal(10,0) DEFAULT NULL,
   `level` varchar(100) DEFAULT NULL,
   `mode` varchar(100) DEFAULT NULL,
-  `value` text,
+  `value` longtext,
   `timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
