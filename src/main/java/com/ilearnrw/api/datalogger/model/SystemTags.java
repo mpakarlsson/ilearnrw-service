@@ -16,6 +16,11 @@ public class SystemTags {
 	public static final String ACTIVITY_PROPOSED 	= "ACTIVITY_PROPOSED";
 	
 	public static final String APP_USAGE_TIME	= "APP_USAGE_TIME";
+	public static final String SETTINGS_UPDATED = "SETTINGS_UPDATED";
+	public static final String APP_POINTER = "APP_POINTER";
+	
+	public static final String APP_READ_SESSION_START = "APP_READ_SESSION_START";
+	public static final String APP_READ_SESSION_END = "APP_READ_SESSION_END";
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface Fact {
