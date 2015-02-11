@@ -21,6 +21,8 @@ public class SystemTags {
 	
 	public static final String APP_READ_SESSION_START = "APP_READ_SESSION_START";
 	public static final String APP_READ_SESSION_END = "APP_READ_SESSION_END";
+	public static final String APP_READ_SESSION_PAUSE = "APP_READ_SESSION_PAUSE";
+	public static final String APP_READ_SESSION_RESUME = "APP_READ_SESSION_RESUME";
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface Fact {
