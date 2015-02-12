@@ -186,11 +186,12 @@ public class ProfileAccessUpdaterController {
 			@RequestParam(value = "index", required = false) Integer index)
 			throws ProfileProviderException {
 		ArrayList<UpdatedProfileEntry> updates = new ArrayList<UpdatedProfileEntry>();
+		int dataThreshold = 14;
 		if (category == null || index == null){
-			updates = profileProvider.updateTheProfileAutomatically(userId, 15);
+			updates = profileProvider.updateTheProfileAutomatically(userId, dataThreshold);
 		}
 		else{
-			updates.add(profileProvider.updateProfileEntry(userId, category, index, 15));
+			updates.add(profileProvider.updateProfileEntry(userId, category, index, dataThreshold));
 		}
 		
 		profileProvider.getProfile(userId).getUserProblems().updateSystemCluster();

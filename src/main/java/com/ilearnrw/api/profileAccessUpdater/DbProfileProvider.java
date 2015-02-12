@@ -84,8 +84,8 @@ import com.ilearnrw.common.security.users.services.UserService;
  */
 @Service
 public class DbProfileProvider implements IProfileProvider {
-	private int thresholdForSeverityZero = 95, thresholdForSeverityOne = 80, 
-			thresholdForSeverityTwo = 65, numberOfSessionsToConsiderForUpdate = 20;
+	private int thresholdForSeverityZero = 95, thresholdForSeverityOne = 75, 
+			thresholdForSeverityTwo = 60, numberOfSessionsToConsiderForUpdate = 25;
 
 	@Autowired
 	DataSource profileDataSource;
@@ -121,7 +121,6 @@ public class DbProfileProvider implements IProfileProvider {
 			
 			int SuccessSum = 0, FailSum = 0, count = 0;
 			for (WordSuccessCount wc : thelist){
-				System.err.println(wc.getWord()+" "+wc.getCount()+" "+wc.getSucceed()+" "+wc.getFailed());
 				count += wc.getCount();
 				SuccessSum += wc.getSucceed();
 				FailSum += wc.getFailed();
@@ -134,9 +133,7 @@ public class DbProfileProvider implements IProfileProvider {
 					up.getUserProblems().getUserSeverity(category, index), -1, 
 					up.getUserProblems().getSystemIndex(category), -1);
 			
-			System.err.println(SuccessSum+" "+FailSum+" "+count);
 			double pcnt = ( (double)SuccessSum ) /(SuccessSum+FailSum);
-			System.err.println(pcnt);
 		/*	if (up.getUserProblems().getUserSeverity(category, index) == 0){
 				pcnt = (thresholdForSeverityOne+1)/100.0;
 			}else if (up.getUserProblems().getUserSeverity(category, index) == 1){
@@ -181,18 +178,12 @@ public class DbProfileProvider implements IProfileProvider {
 			}
 			
 			update.setNewSeverity(up.getUserProblems().getUserSeverity(category, index));
-			
-			
 
 			storeProfile(userId, up);
 			
-			System.err.println("Profile updated "+update.getNewSeverity()+" "+update.getPreviousSeverity());
-
 			if (update.getNewSeverity() != update.getPreviousSeverity() || 
 					(update.getNewSeverity() == 3 && update.getPreviousSeverity() == 3)){
 				
-				System.err.println("There was a change");
-
 				int nwi = update.getPreviousWorkingIndex();
 				if (update.getNewSeverity() < update.getPreviousSeverity())
 					nwi = modifyWorkingIndex(userId, category, true);
