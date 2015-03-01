@@ -13,6 +13,7 @@ import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.GameSentence;
 import com.ilearnrw.api.selectnextword.LevelParameters;
+import com.ilearnrw.api.selectnextword.TypeAmount;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -214,7 +215,7 @@ public class MusicHallUK extends GameLevel {
 
 	@Override
 	public int[] accuracyLevels(int languageArea, int difficulty) {
-		return new int[]{1,2,3};//Number of fillers and number of difficulties from which take distractors (when needed)
+		return new int[]{1,2,3};//Number of alternatives
 
 	}
 
@@ -224,6 +225,14 @@ public class MusicHallUK extends GameLevel {
 		return new int[]{0};//No choice; complete the word
 
 	}
+
+	@Override
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		
+			return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};//At least one distractor
+		
+	}
+	
 	
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {

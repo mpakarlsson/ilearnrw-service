@@ -8,6 +8,7 @@ import java.util.List;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
+import com.ilearnrw.api.selectnextword.TypeAmount;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 
@@ -85,6 +86,10 @@ public class BikeShedUK extends GameLevel {
 		}
 	}
 	
+	@Override
+	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
+		return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};
+	}
 	
 	/* Instructions for the games */
 	@Override

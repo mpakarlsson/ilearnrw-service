@@ -33,9 +33,9 @@ public class NodeNoTerminal extends Node {
 
     	this.attribute = attribute;
     	
-    	this.attributePosition = attributePosition;//size of memory -1 is the default
-    	this.attributeMemory = attributeMemory;//-1 if not a list, i.e. absolute value (only severity, speed and accuracy)
-    	this.defaultPosition = defaultPosition;
+    	this.attributePosition = attributePosition;//size of memory; which log one shold check; 0 is the previous, 1 the one before previous, etc; -1 is the default
+    	this.attributeMemory = attributeMemory;//how long we should backtrack from attributePosition: 0 compares to previous one (attributePosition+1), etc  -1 if not a list, i.e. absolute value (only severity, speed,  accuracy and absoluteAmountDistractors)
+    	this.defaultPosition = defaultPosition;//default child node to choose
     }
     
     

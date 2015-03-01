@@ -9,14 +9,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.ilearnrw.api.datalogger.model.LogEntry;
-import com.ilearnrw.api.selectnextactivity.NextActivities;
-import com.ilearnrw.api.selectnextactivity.decisiontree.Recommendation.IgBasicComparison;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelFactory;
 import com.ilearnrw.api.selectnextword.LevelParameters;
+import com.ilearnrw.api.selectnextword.TypeAmount;
 
 public class GeneralisedLog {
 
@@ -24,6 +22,7 @@ public class GeneralisedLog {
 	public GSeverity severity;
 	public int accuracy;//{0-3}
 	public int speed;//{0-3}
+	public TypeAmount absoluteAmountDistractors;//{0-3}
 	//public int gamePreferredOrder; //how much student chooses this game on her own {0 to 9}
 		
 	
@@ -59,6 +58,7 @@ public class GeneralisedLog {
 			GSeverity severity,
 			int accuracy,//{0-3}
 			int speed,//{0-3}
+			TypeAmount absoluteAmountDistractors,//0-3
 			//int gamePreferredOrder, //how much student chooses this game on her own {0 to 9}
 			List<GDifficulty> difficulty,
 			List<GGame> gameType,
@@ -73,6 +73,7 @@ public class GeneralisedLog {
 		this.severity = severity;
 		this.accuracy = accuracy;
 		this.speed = speed;
+		this.absoluteAmountDistractors = absoluteAmountDistractors;
 		//this.gamePreferredOrder = gamePreferredOrder;
 		this.gameType = gameType;
 		this.difficulty = difficulty;
@@ -315,32 +316,22 @@ public class GeneralisedLog {
 			}
 		}
 		
+		
 		for(int i = 0; i < lastLogs.size(); i++){
 			
-			
 			GeneralisedLog newLog = new GeneralisedLog();
-			int languageArea = 0;
-			int difficulty = 0;
-			if(lastLogs.size()==0){//default
-				
-				newLog.severity = defaultSeverity;
-				
-				newLog.accuracy = 3-newLog.severity.ordinal();
-				newLog.speed = 3-newLog.severity.ordinal();				
-				
-				
-			}else{
-				languageArea = lastLogs.get(i).getProblemCategory();
-				difficulty = lastLogs.get(i).getProblemIndex();
-			
-				newLog.severity = GSeverity.values()[profile.getUserProblems().getUserSeverity(languageArea, difficulty)];
-				newLog.accuracy = processAccuracy(lastLogs.get(0).getValue());
-				newLog.speed = processSpeed(lastLogs.get(0).getValue());
-			}
-			
-			
-			LevelParameters level = new LevelParameters( lastLogs.get(i).getLevel());
 
+			int languageArea = lastLogs.get(i).getProblemCategory();
+			int difficulty = lastLogs.get(i).getProblemIndex();
+			
+			newLog.severity = GSeverity.values()[profile.getUserProblems().getUserSeverity(languageArea, difficulty)];
+			newLog.accuracy = processAccuracy(lastLogs.get(i).getValue());
+			newLog.speed = processSpeed(lastLogs.get(i).getValue());
+				
+			LevelParameters level = new LevelParameters( lastLogs.get(i).getLevel());
+			newLog.absoluteAmountDistractors = level.amountDistractors;
+			
+			
 			for(int j=i+1;j<lastLogs.size();j++){
 				
 				newLog.gameType.add(compareGame(lastLogs,i,j));
@@ -364,49 +355,40 @@ public class GeneralisedLog {
 			//Compare to default
 			
 			
-			if(lastLogs.size()==0){
-				
-				//TODO
-				
-			
-			}else{
-			
-				newLog.gameType.add(GGame.DIFFERENT);//TODO add comparison with preferred game for this difficulty
+			newLog.gameType.add(GGame.DIFFERENT);//TODO add comparison with preferred game for this difficulty
 //			newLog.gameType.add(compareGame(lastLogs,i,j));
 			
 
-				int cluster_i = profile.getUserProblems().getProblems().getProblemDescription(languageArea, languageArea).getCluster();
+			int cluster_i = profile.getUserProblems().getProblems().getProblemDescription(languageArea, languageArea).getCluster();
 
-				GDifficulty compared2default;
+			GDifficulty compared2default;
 				
-				if ((lA_default==languageArea)&&(dff_default==difficulty))
+			if ((lA_default==languageArea)&&(dff_default==difficulty))
 					compared2default = GDifficulty.SAME;
-				else if(cluster_i==cluster_default){
+			else if(cluster_i==cluster_default){
 					compared2default = GDifficulty.SAME_CLUSTER;
-				}else if(cluster_i<cluster_default){
+			}else if(cluster_i<cluster_default){
 					compared2default = GDifficulty.NEXT_CLUSTER;
-				}else{
+			}else{
 					compared2default = GDifficulty.PREV_CLUSTER;
-				}
-				
-				newLog.difficulty.add( compared2default  );
-			
-				newLog.accuracyRel.add( basicComparison( newLog.accuracy, 3-newLog.severity.ordinal() ) );//TODO accuracy as float?
-				newLog.speedRel.add( basicComparison( newLog.speed,3-newLog.severity.ordinal()  ) );//TODO speed as float 
-		
-				GameLevel game = LevelFactory.createLevel(profile.getLanguage(), languageArea, lastLogs.get(i).getApplicationId());
-			
-				newLog.challenge.add(basicComparison( (int)(game.challengeApproximation(languageArea, difficulty, level)*3) , 3-newLog.severity.ordinal()));
-			
-				newLog.amountDistractors.add(basicComparison(level.amountDistractors.ordinal(), 3-newLog.severity.ordinal()  ));//Default: More severity, more distractors
-				newLog.amountTrickyWords.add(basicComparison(level.amountTricky.ordinal(),3-newLog.severity.ordinal()));//Default: More severity, more tricky words
-				newLog.wordDifficulty.add(basicComparison(level.wordLevel,  (int)(((10.0*(3-newLog.severity.ordinal()))/GSeverity.values().length))));//Default: more severity, more word difficulty: normalised from 0 to 10
-			
-				newLog.numberWords.add(basicComparison(level.batchSize,3-newLog.severity.ordinal()));
-
 			}
-			constraints.add(newLog);
+				
+			newLog.difficulty.add( compared2default  );
 			
+			newLog.accuracyRel.add( basicComparison( newLog.accuracy, 3-newLog.severity.ordinal() ) );//TODO accuracy as float?
+			newLog.speedRel.add( basicComparison( newLog.speed,3-newLog.severity.ordinal()  ) );//TODO speed as float 
+		
+			GameLevel game = LevelFactory.createLevel(profile.getLanguage(), languageArea, lastLogs.get(i).getApplicationId());
+			
+			newLog.challenge.add(basicComparison( (int)(game.challengeApproximation(languageArea, difficulty, level)*3) , 3-newLog.severity.ordinal()));
+			
+			newLog.amountDistractors.add(basicComparison(level.amountDistractors.ordinal(), 3-newLog.severity.ordinal()  ));//Default: More severity, more distractors
+			newLog.amountTrickyWords.add(basicComparison(level.amountTricky.ordinal(),3-newLog.severity.ordinal()));//Default: More severity, more tricky words
+			newLog.wordDifficulty.add(basicComparison(level.wordLevel,  (int)(((10.0*(3-newLog.severity.ordinal()))/GSeverity.values().length))));//Default: more severity, more word difficulty: normalised from 0 to 10
+			
+			newLog.numberWords.add(basicComparison(level.batchSize,3-newLog.severity.ordinal()));
+
+			constraints.add(newLog);
 	
 		}
 		

@@ -133,16 +133,16 @@ public class BridgeGR extends GameLevel {
 	public String instructions(int languageArea, int difficulty,LevelParameters param){
 	
 		if(param.mode==0){
-			return "Υπογράμμισε τη συλλαβή";
+			return "Υπογράμμισε τη συλλαβή";//TODO update
 		}else if(param.mode==6){
 			if(languageArea==2)
-				return "Υπογράμμισε το γράμμα";
+				return "άγγιξε το σωστό γράμμα";
 			else if(languageArea==5)
-				return "Υπογράμμισε το πρόθεμα";
+				return "άγγιξε το πρώτο μέρος της λέξης, π.χ. αποβολή (άγγιξε το ‘από’)";
 			else if(languageArea==6)
-				return "Υπογράμμισε την κατάληξη";
+				return "άγγιξε την κατάληξη";
 			else if(languageArea==7)
-				return "Υπογράμμισε την κατάληξη";
+				return "άγγιξε την κατάληξη";
 			
 		}
 		

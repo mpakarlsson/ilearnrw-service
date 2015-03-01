@@ -90,14 +90,14 @@ public class TrainStationGR extends GameLevel {
 	public String instructions(int languageArea, int difficulty,LevelParameters param){
 	
 		if(param.mode==0)
-			return "Γράψε κάθε συλλαβή σε διαφορετική κάρτα";
+			return "Γράψε τις συλλαβές της λέξης σε ξεχωριστά βαγόνια";
 		else if(param.mode==1){
 			if(languageArea==6)
-				return "Γράψε την κατάληξη και το υπόλοιπο μέρος της λέξης σε διαφορετικές κάρτες";
+				return "Γράψε την κατάληξη της λέξης σε ξεχωριστό βαγόνι από την υπόλοιπη λέξη (π.χ. αγαπη-μένος)";
 			else if(languageArea==7)
-				return "Γράψε την κατάληξη και το υπόλοιπο μέρος της λέξης σε διαφορετικές κάρτες";
+				return "Γράψε την κατάληξη της λέξης σε ξεχωριστό βαγόνι από την υπόλοιπη λέξη (π.χ. αγαπη-μένος)";
 		}else if(param.mode==2)
-			return "Γράψε το πρόθεμα και το υπόλοιπο μέρος της λέξης σε διαφορετικές κάρτες";
+			return "Γράψε το πρώτο μέρος της λέξης (π.χ. υπο-τιμώ) σε ξεχωριστά βαγόνια από την υπόλοιπη λέξη";
 		
 
 		return "Not available";

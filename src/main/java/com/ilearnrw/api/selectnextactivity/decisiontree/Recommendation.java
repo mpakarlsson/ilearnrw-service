@@ -235,14 +235,16 @@ public class Recommendation {
 	
 	
 	
-	public static List<NextActivities> GeneralisedLogsToRecommendation(UserProfile profile,List<LogEntry> lastLogs,List<Recommendation> recommendations){
+	public static List<NextActivities> GeneralisedLogsToRecommendation(UserProfile profile,List<LogEntry> lastLogs,List<Recommendation> recommendations,int maxRecommendations){
 
 		
 		List<NextActivities> output = new ArrayList<NextActivities>();
 		List<NextActivities> outputBackup = new ArrayList<NextActivities>();
 		Random rand = new Random();
 		
-		for(Recommendation recommendation : recommendations){
+		for(int recommendation_i = 0; recommendation_i<recommendations.size();recommendation_i++){
+			Recommendation recommendation = recommendations.get(recommendation_i);
+//			for(Recommendation recommendation : recommendations){
 
 			HashMap<Integer,List<Integer>> constrainedCandidates = new HashMap<Integer,List<Integer>>();//Find all candidate difficulties 
 
@@ -277,23 +279,7 @@ public class Recommendation {
 								}								
 							}
 							
-							/*for(int lA=0;lA<profile.getUserProblems().getNumerOfRows();lA++){//default is the system index
-						
-								int dff = profile.getUserProblems().getSystemIndex(lA);
-							
-								if(dff>-1){
-									if(!candidates.containsKey(lA)){
-										List<Integer> aux = new ArrayList<Integer>();
-										aux.add(dff);
-										candidates.put(lA, aux);
-									}else{
-										if(!candidates.get(lA).contains(dff)){
-											candidates.get(lA).add(dff);
-										}
-									}
-								}
-						
-							}*/
+
 						}else{
 						
 							int lA = lastLogs.get(memory_i).getProblemCategory();
@@ -340,8 +326,11 @@ public class Recommendation {
 							
 							for(int i : cls.getClustersNumbers()){
 								
-								if(i>cluster)
-									targetCluster.add(i);			
+								if(i>cluster){
+									targetCluster.add(i);		
+									if (targetCluster.size()==3)
+										break;
+								}
 							}
 					
 						}
@@ -432,19 +421,22 @@ public class Recommendation {
 			
 			if(constrainedCandidates.size()==0){//No matches, check the next recommendation
 				//continue;
-				
+				if(recommendation_i<(recommendations.size()-1)){//if there are more recommendations, continue with the next
+					continue;
+				}else{//Otherwise get the first difficulty of the current cluster
 				//continue;
-				System.err.println("Ignore difficulty constraints");
+					System.err.println("Ignore difficulty constraints");
 				
-				ProfileClusters cls = new ProfileClusters(profile.getUserProblems().getProblems());
+					ProfileClusters cls = new ProfileClusters(profile.getUserProblems().getProblems());
 
-				int cluster = profile.getUserProblems().getUserSeverities().getSystemCluster();
+					int cluster = profile.getUserProblems().getUserSeverities().getSystemCluster();
 				
-				ProblemDescriptionCoordinates index = cls.getClusterProblems(cluster).get(0);
-				List<Integer> aux = new ArrayList<Integer>();
-				aux.add(index.getIndex());
-				constrainedCandidates.put(index.getCategory(),aux);
-				constraintIgnored = true;
+					ProblemDescriptionCoordinates index = cls.getClusterProblems(cluster).get(0);
+					List<Integer> aux = new ArrayList<Integer>();
+					aux.add(index.getIndex());
+					constrainedCandidates.put(index.getCategory(),aux);
+					constraintIgnored = true;
+				}
 			}
 				
 			
@@ -457,6 +449,16 @@ public class Recommendation {
 														
 
 					ArrayList<Integer> gameCandidates = GamesInformation.getProblemRelatedApps(lA,profile.getLanguage());
+					
+					for(int i = 0;i<gameCandidates.size();i++){//Randomise order of games
+						
+						int j = rand.nextInt(gameCandidates.size());
+						int aux = gameCandidates.get(i);
+						gameCandidates.set(i,gameCandidates.get(j));
+						gameCandidates.set(j,aux);						
+					}
+					
+					
 
 					HashMap<Integer,List<String>> gameLevelmappings = new HashMap<Integer,List<String>>();
 					
@@ -481,6 +483,11 @@ public class Recommendation {
 							
 							if(aux>-1)
 								gameCandidates.remove(aux);
+							
+							if(gameCandidates.size()==1){//if only one game, relax the constraint, and use the same game as the second option
+								gameCandidates.add(removeGame);
+							}
+
 						}else{
 							
 							int onlyGame = -1;
@@ -492,13 +499,22 @@ public class Recommendation {
 								onlyGame = GamesInformation.getAppIDfromStringID(lastLogs.get(memory_i).getApplicationId() );
 							}
 							
+							//onlyGame is the preferred (but not the only one)
 							
-							if(gameCandidates.contains(onlyGame)){
-								gameCandidates = new ArrayList<Integer>();
-								gameCandidates.add(onlyGame);
+							if(gameCandidates.contains(onlyGame)){//put onlyGame on first position
+								int idx = gameCandidates.indexOf(onlyGame);
+								gameCandidates.set(idx, gameCandidates.get(0));
+								gameCandidates.set(0,onlyGame);
+
+								
+								//gameCandidates = new ArrayList<Integer>();
+								//gameCandidates.add(onlyGame);
 							}else{
-								gameCandidates = new ArrayList<Integer>();//if the same is not contained, empty the list								
-								break;
+								System.err.println("Ignore a SAME GAME constraint");
+								constraintIgnored = true;
+
+								//gameCandidates = new ArrayList<Integer>();//if the same is not contained, empty the list								
+								//break;
 							}
 							
 						}
@@ -506,9 +522,14 @@ public class Recommendation {
 					
 					if(gameCandidates.size()==0){
 						//continue;
-						System.err.println("Ignore game constraint");
-						gameCandidates.add(GamesInformation.getProblemRelatedApps(lA, profile.getLanguage()).get(0));
-						constraintIgnored = true;
+						
+						if(recommendation_i<(recommendations.size()-1)){//if there are more recommendations, continue with the next
+							continue;
+						}else{
+							System.err.println("Ignore game constraint");
+							gameCandidates.add(GamesInformation.getProblemRelatedApps(lA, profile.getLanguage()).get(0));
+							constraintIgnored = true;
+						}
 					}
 					
 					for(int x = 0; x<gameCandidates.size();x++){//find levels for each game
@@ -557,25 +578,28 @@ public class Recommendation {
 							for(int i = candidateLevels.size()-1;i>=0;i--){
 								
 										
-	//TODO add support for games with dissimilar levels of accuracy, i.e recommendation says A3 but game has only A0
-	//Same applies to others
+
 								
 				//Accuracy
 								if(recommendation.accuracyRel.get(memory_i)==IgBasicComparison.HIGHER){
-									if(level_i.accuracy<=candidateLevels.get(i).accuracy){
-										removeIdx.add(i);
-										continue;
-									}
+									
+									if(candidateLevels.get(i).accuracy<gameLevel.accuracyLevels(lA, dff)[gameLevel.accuracyLevels(lA, dff).length-1])//Not max already
+										if(level_i.accuracy>=candidateLevels.get(i).accuracy){
+											removeIdx.add(i);
+											continue;
+										}
 									
 								}else if(recommendation.accuracyRel.get(memory_i)==IgBasicComparison.LOWER){
-									
-									if(level_i.accuracy>=candidateLevels.get(i).accuracy){
-										removeIdx.add(i);
-										continue;
-									}								
+									if(candidateLevels.get(i).accuracy>gameLevel.accuracyLevels(lA, dff)[0])//Not min already
+
+										if(level_i.accuracy<=candidateLevels.get(i).accuracy){
+											removeIdx.add(i);
+											continue;
+										}								
 									
 								}else if(recommendation.accuracyRel.get(memory_i)==IgBasicComparison.SAME){
-									
+									//TODO add support for games with dissimilar levels of accuracy, i.e recommendation says A3 but game has only A0
+									//Same applies to others
 									if(level_i.accuracy!=candidateLevels.get(i).accuracy){
 										removeIdx.add(i);
 										continue;
@@ -584,14 +608,19 @@ public class Recommendation {
 								
 				//Speed				
 								if(recommendation.speedRel.get(memory_i)==IgBasicComparison.HIGHER){
-									if(level_i.speed.ordinal()<=candidateLevels.get(i).speed.ordinal()){
+									
+									if(candidateLevels.get(i).speed.ordinal()<  gameLevel.speedLevels(lA, dff)[gameLevel.speedLevels(lA, dff).length-1].ordinal())//Not max already
+									
+									if(level_i.speed.ordinal()>=candidateLevels.get(i).speed.ordinal()){
 										removeIdx.add(i);
 										continue;
 									}
 									
 								}else if(recommendation.speedRel.get(memory_i)==IgBasicComparison.LOWER){
 									
-									if(level_i.speed.ordinal()>=candidateLevels.get(i).speed.ordinal()){
+									if(candidateLevels.get(i).speed.ordinal()>  gameLevel.speedLevels(lA, dff)[0].ordinal())//Not min already
+
+									if(level_i.speed.ordinal()<=candidateLevels.get(i).speed.ordinal()){
 										removeIdx.add(i);
 										continue;
 									}								
@@ -606,14 +635,18 @@ public class Recommendation {
 								
 			//Tricky words					
 								if(recommendation.amountTrickyWords.get(memory_i)==IgBasicComparison.HIGHER){
-									if(level_i.amountTricky.ordinal()<=candidateLevels.get(i).amountTricky.ordinal()){
+									
+									if(candidateLevels.get(i).amountTricky.ordinal()<  gameLevel.amountTricky(lA, dff)[gameLevel.amountTricky(lA, dff).length-1].ordinal())//Not max already
+
+									if(level_i.amountTricky.ordinal()>=candidateLevels.get(i).amountTricky.ordinal()){
 										removeIdx.add(i);
 										continue;
 									}
 									
 								}else if(recommendation.amountTrickyWords.get(memory_i)==IgBasicComparison.LOWER){
-									
-									if(level_i.amountTricky.ordinal()>=candidateLevels.get(i).amountTricky.ordinal()){
+									if(candidateLevels.get(i).amountTricky.ordinal()>  gameLevel.amountTricky(lA, dff)[0].ordinal())//Not min already
+
+									if(level_i.amountTricky.ordinal()<=candidateLevels.get(i).amountTricky.ordinal()){
 										removeIdx.add(i);
 										continue;
 									}								
@@ -629,14 +662,21 @@ public class Recommendation {
 								
 			//Amount distractors					
 								if(recommendation.amountDistractors.get(memory_i)==IgBasicComparison.HIGHER){
-									if(level_i.amountDistractors.ordinal()<=candidateLevels.get(i).amountDistractors.ordinal()){
+									
+									if(candidateLevels.get(i).amountDistractors.ordinal()<  gameLevel.amountDistractors(lA, dff)[gameLevel.amountDistractors(lA, dff).length-1].ordinal())//Not max already
+
+									
+									if(level_i.amountDistractors.ordinal()>=candidateLevels.get(i).amountDistractors.ordinal()){
 										removeIdx.add(i);
 										continue;
 									}
 									
 								}else if(recommendation.amountDistractors.get(memory_i)==IgBasicComparison.LOWER){
 									
-									if(level_i.amountDistractors.ordinal()>=candidateLevels.get(i).amountDistractors.ordinal()){
+									if(candidateLevels.get(i).amountDistractors.ordinal()>  gameLevel.amountDistractors(lA, dff)[0].ordinal())//Not min already
+
+									
+									if(level_i.amountDistractors.ordinal()<=candidateLevels.get(i).amountDistractors.ordinal()){
 										removeIdx.add(i);
 										continue;
 									}								
@@ -652,14 +692,21 @@ public class Recommendation {
 								
 		//Amount words			
 								if(recommendation.numberWords.get(memory_i)==IgBasicComparison.HIGHER){
-									if(level_i.batchSize<=candidateLevels.get(i).batchSize){
+									
+									if(candidateLevels.get(i).batchSize<  gameLevel.batchSizes(lA, dff)[gameLevel.batchSizes(lA, dff).length-1])//Not max already
+
+									
+									if(level_i.batchSize>=candidateLevels.get(i).batchSize){
 										removeIdx.add(i);
 										continue;
 									}
 									
 								}else if(recommendation.numberWords.get(memory_i)==IgBasicComparison.LOWER){
 									
-									if(level_i.batchSize>=candidateLevels.get(i).batchSize){
+									if(candidateLevels.get(i).batchSize>  gameLevel.batchSizes(lA, dff)[0])//Not min already
+
+									
+									if(level_i.batchSize<=candidateLevels.get(i).batchSize){
 										removeIdx.add(i);
 										continue;
 									}								
@@ -678,14 +725,16 @@ public class Recommendation {
 								float challenge_candidate_i = gameLevel.challengeApproximation(lA, dff,candidateLevels.get(i));
 								
 								if(recommendation.challenge.get(memory_i)==IgBasicComparison.HIGHER){
-									if(challenge_candidate_i<=challenge_i){
+
+									if(challenge_candidate_i<1.0)//not the max
+									if(challenge_i>=challenge_candidate_i){
 										removeIdx.add(i);
 										continue;
 									}
 									
 								}else if(recommendation.challenge.get(memory_i)==IgBasicComparison.LOWER){
-									
-									if(challenge_candidate_i>=challenge_i){
+									if(challenge_candidate_i>0.0)//not the min
+									if(challenge_i<=challenge_candidate_i){
 										removeIdx.add(i);
 										continue;
 									}								
@@ -709,20 +758,25 @@ public class Recommendation {
 						
 						
 						if(candidateLevels.size()==0){
-							//continue;
-							if(gameCandidates.size()==(x+1)){
-								System.err.println("Ignore level constraint for the last game candidate");
-								constraintIgnored = true;
-
-								int inverseSeverity = 3-profile.getUserProblems().getUserSeverity(lA, dff);
-
-								String defaultLevel = generateDefaultLevel(inverseSeverity,lA,dff,gameLevel);
-								
-								
-								candidateLevels.add(new LevelParameters(defaultLevel));
-						
-							}else{
+							
+							if(recommendation_i<(recommendations.size()-1)){//if there are more recommendations, continue with the next
 								continue;
+							}else{
+							
+								if(gameCandidates.size()==(x+1)){
+									System.err.println("Ignore level constraint for the last game candidate");
+									constraintIgnored = true;
+
+									int inverseSeverity = 3-profile.getUserProblems().getUserSeverity(lA, dff);
+
+									String defaultLevel = generateDefaultLevel(inverseSeverity,lA,dff,gameLevel);
+								
+								
+									candidateLevels.add(new LevelParameters(defaultLevel));
+						
+								}else{
+									continue;
+								}
 							}
 						}
 						
@@ -749,18 +803,7 @@ public class Recommendation {
 					
 					
 					Integer[] gameOrder = gameLevelmappings.keySet().toArray(new Integer[gameLevelmappings.keySet().size()]);
-					
-					
-					for(int i = 0;i<gameOrder.length;i++){
-						
-						int j = rand.nextInt(gameOrder.length);
-						int aux = gameOrder[i];
-						gameOrder[i] = gameOrder[j];
-						gameOrder[j] = aux;
-						
-					}
-					
-					
+
 					for(int game : gameOrder){
 
 						gameNames.add(GamesInformation.appIds[game]);
@@ -779,12 +822,49 @@ public class Recommendation {
 			
 		}
 		
-		if(output.size()>5){
-			return output.subList(0, 5);
-		}else if(output.size()==0){
-			return outputBackup;
+		if(maxRecommendations<0){
+			if (output.size()>0)
+				return output;
+			else
+				return outputBackup;
+			
 		}else{
+
+		if(output.size()>maxRecommendations){
+				List<NextActivities> randomSelection = new ArrayList<NextActivities>();
+				while(randomSelection.size()<maxRecommendations){
+					int j = rand.nextInt(output.size());
+					randomSelection.add(output.get(j));
+					output.remove(j);
+				}			
+			return randomSelection;
+		}else if(output.size()==0){
+			if(outputBackup.size()>maxRecommendations){
+				
+				List<NextActivities> randomSelection = new ArrayList<NextActivities>();
+				while(randomSelection.size()<maxRecommendations){
+					int j = rand.nextInt(outputBackup.size());
+					randomSelection.add(outputBackup.get(j));
+					outputBackup.remove(j);
+				}			
+				return randomSelection;			
+	
+			}else if(outputBackup.size()==1){//triplicate recommendation; game will create recommendations for the same difficulty with different games
+				outputBackup.add(outputBackup.get(0));
+				outputBackup.add(outputBackup.get(0));
+				return outputBackup;
+				
+			}else
+				return outputBackup;
+		}else if(output.size()==1){//triplicate recommendation; game will create recommendations for the same difficulty with different games
+			output.add(output.get(0));
+			output.add(output.get(0));
 			return output;
+		}else{
+			
+			
+			return output;
+		}
 		}
 	}
 

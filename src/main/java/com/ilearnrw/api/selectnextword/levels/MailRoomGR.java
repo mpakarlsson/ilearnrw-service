@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ilearnrw.api.selectnextword.TypeAmount;
-import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
@@ -96,11 +95,11 @@ public class MailRoomGR extends GameLevel {
 					results.add(targetWords.get((i*(parameters.amountDistractors.ordinal()+1))+j));
 				}
 				
-				System.err.println("GOOD BATCH");
+				//System.err.println("GOOD BATCH");
 
 			}else{
 				
-				System.err.println("INVALID BATCH");
+				//System.err.println("INVALID BATCH");
 			}
 			
 			
@@ -196,11 +195,11 @@ public class MailRoomGR extends GameLevel {
 	public String instructions(int languageArea, int difficulty,LevelParameters param){
 		
 		if(languageArea==3)
-			return "Send the words to the basket starting the letter cluster";
+			return "Βάλε στα κουτιά τις λέξεις ανάλογα με τον συνδυασμό αρχικών γραμμάτων";
 		else if(languageArea==6){
-			return "Send the words to the right suffix basket";
+			return "Βάλε τις λέξεις κουτιά ανάλογα με το επίθημά τους";
 		}else if(languageArea==7)
-			return "Send the words to the right suffix basket";
+			return "Βάλε τις λέξεις κουτιά ανάλογα με το επίθημά τους";
 
 		
 		return "Not available";

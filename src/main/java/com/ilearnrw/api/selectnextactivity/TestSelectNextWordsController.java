@@ -48,10 +48,10 @@ public class TestSelectNextWordsController {
 	//	TestSelectNextWordsController aux = new TestSelectNextWordsController();
 	   
 		
-		LanguageCode language = LanguageCode.GR;
 		
 		try {
 
+		  for(LanguageCode language:new LanguageCode[]{LanguageCode.GR,LanguageCode.EN})
 				
 			for(int game_i=0;game_i<9;game_i++){//game
 				Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Instructions_"+language.toString()+"_"+appIds.get(game_i)+".csv"), "UTF-8"));

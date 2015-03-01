@@ -1,14 +1,11 @@
 package com.ilearnrw.api.selectnextword.levels;
 import ilearnrw.utils.LanguageCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.ilearnrw.api.selectnextword.TypeFiller;
 import com.ilearnrw.api.selectnextword.GameElement;
 import com.ilearnrw.api.selectnextword.GameLevel;
 import com.ilearnrw.api.selectnextword.LevelParameters;
-import com.ilearnrw.api.selectnextword.TtsType;
 import com.ilearnrw.api.selectnextword.WordSelectionUtils;
 
 

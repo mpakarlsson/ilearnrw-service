@@ -108,34 +108,6 @@ public class MailRoomUK extends GameLevel {
 			
 			return result;
 			
-			//Find compatible phonetic difficulties
-			/*ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
-
-			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, languageArea, difficulty,parameters.accuracy);
-			
-			String[] phonemes = new String[selectedDifficulties.size()];
-			
-			for(int i =0;i< selectedDifficulties.size();i++){
-				System.err.println(selectedDifficulties.get(i));
-				phonemes[i] = (definitions.getProblemDescription(languageArea, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
-				
-			}
-			
-			
-			for(int i=0;i<phonemes.length;i++){
-				
-				List<String> copy = new ArrayList<String>();
-				
-				for(int j = 0;j< phonemes.length;j++){
-					
-					if (j!=i)
-						copy.add(phonemes[j]);
-				}
-				
-					
-				listsWords.add(WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.EN, languageArea, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy));
-
-			}*/
 			
 
 		}else{
@@ -174,7 +146,7 @@ public class MailRoomUK extends GameLevel {
 			
 			int numberAttempts = listsWords.get(0).size();
 			
-			while(result.size()<(parameters.batchSize*(parameters.amountDistractors.ordinal()/4.0))){//batch size is calculated for 4 distractors
+			while(result.size()<=(parameters.batchSize*(parameters.amountDistractors.ordinal()/4.0))){//batch size is calculated for 4 distractors
 				
 				List<int[]> batch = new ArrayList<int[]>();
 				List<String> bits = new ArrayList<String>();
@@ -200,7 +172,7 @@ public class MailRoomUK extends GameLevel {
 							}
 							
 							boolean validBatch = true;
-							for(int k=0;k<batch.size();k++){
+							for(int k=0;k<batch.size();k++){//Check whether interchanging the 'bits' create valid words
 								
 								for(int kk=0;kk<batch.size();kk++){
 									

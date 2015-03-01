@@ -156,7 +156,7 @@ public class CityHallUK extends GameLevel {
 		if(lA==LanguageAreasUK.CONFUSING)
 			return new int[]{1};
 		else{
-			return new int[]{4,8,12,20};
+			return new int[]{12,16,20,24};
 		}	
 	}
 	
@@ -206,6 +206,12 @@ public class CityHallUK extends GameLevel {
 		
 		}
 	}
+	
+	@Override
+	public int[] accuracyLevels(int languageArea, int difficulty) {
+		return new int[]{2,3,4};//Number of paths
+	}
+
 	
 	/* Instructions for the games */
 	@Override
