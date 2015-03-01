@@ -271,7 +271,7 @@ public  class WordSelectionUtils {
 		}
 		
 		int numberTargets = parameters.batchSize-result.size();//After selecting distractors, fill the list with the target words
-		
+		//wordsPerDistractor
 		List<GameElement> targetWords = WordSelectionUtils.getTargetWords(
 				language, 
 				languageArea, 
@@ -418,9 +418,108 @@ public  class WordSelectionUtils {
 
 		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
 		
+		List<List<GameElement>> distractors = new ArrayList<List<GameElement>>();
+		for(int i=0;i<numberDifficulties;i++)
+			distractors.add(new ArrayList<GameElement>());
+		
+		if(distractorType==TypeFiller.CHARACTER){
+
+			
+			HashMap<String,List<Integer>> characterSameCluster = new HashMap<String,List<Integer>>();
+			HashMap<String,List<Integer>> characterDifCluster = new HashMap<String,List<Integer>>();
+
+			String targetCharacter = definitions.getProblemDescription(languageArea, originalDifficulty).getCharacter();
+			int targetCluster = definitions.getProblemDescription(languageArea, originalDifficulty).getCluster();
+			
+			for(int i = 0; i< definitions.getRowLength(languageArea);i++){
+				String nextCharacter = definitions.getProblemDescription(languageArea, i).getCharacter();
+				if(!targetCharacter.equals(nextCharacter))//different character
+					
+					if(targetCluster==definitions.getProblemDescription(languageArea, i).getCluster()){
+						if(!characterSameCluster.containsKey(nextCharacter))
+							characterSameCluster.put(nextCharacter, new ArrayList<Integer>());
+						characterSameCluster.get(nextCharacter).add(i);
+					}else{
+						if(!characterDifCluster.containsKey(nextCharacter))
+							characterDifCluster.put(nextCharacter, new ArrayList<Integer>());
+						characterDifCluster.get(nextCharacter).add(i);					}
+			}
+			
+			
+			
+			int currentDifficulty = 0;
+			
+			for(String index  : characterSameCluster.keySet()){
+						List<Integer> newDifficulties = characterSameCluster.get(index);
+						for(int newDifficulty : newDifficulties){
+						
+							List<GameElement> aux =  getTargetWords( 
+								language,  
+								languageArea, 
+								newDifficulty,
+								wordsPerDifficulty-distractors.get(currentDifficulty).size(), 
+								wordLevel,
+								false,
+								distractorType,
+								true, 
+								numberSyllables, 
+								phoneme,
+								begins,
+								single,
+								trickyWords);
+						
+							for(GameElement ge : aux)
+								distractors.get(currentDifficulty).add(ge);
+						
+							if (distractors.get(currentDifficulty).size()==wordsPerDifficulty){//Move on to fill the next distractor only if we got all necessary words
+								currentDifficulty++;
+								break;
+							}
+						}
+						
+						if(currentDifficulty==numberDifficulties)
+							return distractors;
+			}
+
+			for(String index  : characterDifCluster.keySet()){
+				List<Integer> newDifficulties = characterDifCluster.get(index);
+				for(int newDifficulty : newDifficulties){
+				
+					List<GameElement> aux =  getTargetWords( 
+						language,  
+						languageArea, 
+						newDifficulty,
+						wordsPerDifficulty-distractors.get(currentDifficulty).size(), 
+						wordLevel,
+						false,
+						distractorType,
+						true, 
+						numberSyllables, 
+						phoneme,
+						begins,
+						single,
+						trickyWords);
+				
+					for(GameElement ge : aux)
+						distractors.get(currentDifficulty).add(ge);
+				
+					if (distractors.get(currentDifficulty).size()==wordsPerDifficulty){//Move on to fill the next distractor only if we got all necessary words
+						currentDifficulty++;
+						break;
+					}
+				}
+				
+				if(currentDifficulty==numberDifficulties)
+					return distractors;
+	}
+		
+			
+			
+		}else{
+		
+		
 		HashMap<Integer,ArrayList<Integer>> differentClusters = new HashMap<Integer,ArrayList<Integer>>();
 
-		HashMap<String,Integer> characterClusters = new HashMap<String,Integer>();
 
 		
 		int maxCluster = 0;
@@ -431,13 +530,13 @@ public  class WordSelectionUtils {
 		
 			int nextCluster = definitions.getProblemDescription(languageArea, i).getCluster();;
 			
-			if(distractorType==TypeFiller.CHARACTER){
+			/*if(distractorType==TypeFiller.CHARACTER){
 				String character = definitions.getProblemDescription(languageArea, i).getCharacter();
 				if(!characterClusters.containsKey(character))
 					characterClusters.put(character, characterClusters.size());
 				
 				nextCluster = characterClusters.get(character);
-			}
+			}*/
 				
 			if (nextCluster> maxCluster)
 				maxCluster = nextCluster;
@@ -454,14 +553,12 @@ public  class WordSelectionUtils {
 		
 		int originalCluster = definitions.getProblemDescription(languageArea, originalDifficulty).getCluster();
 		
-		if(distractorType==TypeFiller.CHARACTER){
+		/*if(distractorType==TypeFiller.CHARACTER){
 			String character = definitions.getProblemDescription(languageArea, originalDifficulty).getCharacter();
 			originalCluster = characterClusters.get(character);
-		}
+		}*/
 		
-		List<List<GameElement>> distractors = new ArrayList<List<GameElement>>();
-		for(int i=0;i<numberDifficulties;i++)
-			distractors.add(new ArrayList<GameElement>());
+
 		
 		int currentDifficulty = 0;
 		
@@ -530,7 +627,7 @@ public  class WordSelectionUtils {
 			}	
 			
 		}
-		
+		}
 		return distractors;
 		
 	}

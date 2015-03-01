@@ -210,6 +210,11 @@ public class CityHallGR extends GameLevel {
 		
 		
 	}
+	
+	@Override
+	public int[] accuracyLevels(int languageArea, int difficulty) {
+		return new int[]{2,3,4};//Number of paths
+	}
 
 	@Override
 	public boolean allowedDifficulty(int languageArea, int difficulty) {

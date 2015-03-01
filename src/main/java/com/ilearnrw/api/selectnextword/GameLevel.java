@@ -21,9 +21,9 @@ public abstract class GameLevel {
 	}
 
 	
-	/* How many target words (fillers not counted)*/
+	/* How many target words */
 	public int[] batchSizes(int languageArea, int difficulty){
-		return new int[]{4,8,12,20};
+		return new int[]{12,16,20,24};
 	}
 	
 	/* Speed levels */
@@ -33,8 +33,10 @@ public abstract class GameLevel {
 	
 	/* Other challenge levels, e.g. number of filler words per target word */
 	public int[] accuracyLevels(int languageArea, int difficulty){
-		//Bike shed: number of words per door
-		//Music hall: number of alternatives
+		//Bike shed: number of words per door (1, 3 or 5))
+		//Music hall: number of alternatives (1, 2 or 3)
+		//Mail room: number of alternatives (2 or 3)
+		//City hall: number of paths (2,3,4)
 		return new int[]{0};
 	}
 		
@@ -54,6 +56,7 @@ public abstract class GameLevel {
 	/* Amount of distractors */
 	public TypeAmount[] amountDistractors(int languageArea, int difficulty){
 		return TypeAmount.values();
+		//return new TypeAmount[]{TypeAmount.FEW,TypeAmount.HALF,TypeAmount.MANY};
 	}
 	
 	/* Amount of tricky words */

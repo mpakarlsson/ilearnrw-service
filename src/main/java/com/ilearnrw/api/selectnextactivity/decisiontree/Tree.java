@@ -6,7 +6,6 @@ import ilearnrw.user.profile.UserProfile;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +21,7 @@ import java.util.List;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.selectnextactivity.decisiontree.GeneralisedLog.GDifficulty;
 import com.ilearnrw.api.selectnextactivity.decisiontree.GeneralisedLog.GSeverity;
+import com.ilearnrw.api.selectnextword.TypeAmount;
 
 public class Tree {
     private Node root;
@@ -29,41 +29,20 @@ public class Tree {
     public static void main(String [ ] args)
     {
     	
-    	//rebootTree("trees/sample.tree");
+    	Tree tree = rebootTree("trees/sample.tree");
     	
 //    	Tree tree = new Tree("wrong/sample.tree");
-    	Tree tree = new Tree("trees/sample.tree");
+//    	Tree tree = new Tree("trees/sample.tree");
     	
     	
     	System.out.println(tree.toString());
 
     	
-    	
-    	/*
-
-    	
-    	List<GeneralisedLog> logs = new ArrayList<GeneralisedLog>();
-    	
-    	logs.add(new GeneralisedLog("difficulty:NEXT_CLUSTER;severity:MASTER"));
-    	logs.add(new GeneralisedLog("difficulty:SAME;severity:MASTER"));
-    	logs.add(new GeneralisedLog("difficulty:NEXT_CLUSTER;severity:MASTER"));
-    	logs.add(new GeneralisedLog("difficulty:NEXT_CLUSTER;severity:MASTER"));
-    	
-    	
-    	
-    	List<GeneralisedLog> recommendations = tree.getRecommendations(logs);
-    	
-    	
-    	
-    	System.out.println(recommendations.get(0).toString());
-    	
-    	*/
-    	
     }
     
     
     
-    public static void rebootTree(String filename){
+    public static Tree rebootTree(String filename){
     	Tree tree = rebootTree();
     	
      	Writer writer = null;
@@ -72,14 +51,15 @@ public class Tree {
        		
        		
        	    writer = new BufferedWriter(new OutputStreamWriter(
-       	    		ResourceLoader.getInstance().getOutputStream(Type.DATA,filename), "utf-8"));
+ //      	    		ResourceLoader.getInstance().getOutputStream(Type.LOCAL,filename), "utf-8"));
+	    		ResourceLoader.getInstance().getOutputStream(Type.DATA,filename), "utf-8"));
        	    writer.write(tree.toString());
        	} catch (IOException ex) {
        	  // report
        	} finally {
        	   try {writer.close();} catch (Exception ex) {}
        	}
-       	
+       	return tree;
     	
     	
     	
@@ -89,6 +69,10 @@ public class Tree {
 
     	
         int numberNodes = 0;
+        //First numeric parameter is which log we should look at: 0 is the previous, 1 is the one before previous, etc
+        //Second numeric parameter is how long to backtrack from the selected log to compare: -1 is for absolute attributes 
+        //(no comparison), 0 is compared to the log just before the log selected, 1 is compared to the log before that
+        //The third numeric parameter specifies the default child
    		NodeNoTerminal node = new NodeNoTerminal(numberNodes++,"severity",0,-1,0);//attributeMemory == 0 
 
        	Tree tree = new Tree(node);
@@ -100,29 +84,49 @@ public class Tree {
        			
    					case NEW: //Same difficulty as before, different game, more difficult
    						
-   						NodeNoTerminal next = new NodeNoTerminal(numberNodes++, "difficulty",0, 0,1);//difference between previous and previous difficulty
+   						NodeNoTerminal next = new NodeNoTerminal(numberNodes++, "difficulty",0, 0,0);//difference between previous and previous difficulty
    		    			node.addChild(next, valueTerminal);
 
-   		    			next.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE")); }}), GDifficulty.SAME);
-   		    			next.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE")); }}), GDifficulty.SAME_CLUSTER);
+   		    			next.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE;amountDistractors:LOWER:IGNORE")); }}), GDifficulty.SAME);
+   		    			next.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE;amountDistractors:LOWER:IGNORE")); }}), GDifficulty.SAME_CLUSTER);
    		    			
    						break;
    					
    					case NEED_WORK: 
    						
-   					
-   						node.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:SAME:IGNORE;challenge:HIGHER:IGNORE")); }}), valueTerminal);
+   				   		NodeNoTerminal nextWork = new NodeNoTerminal(numberNodes++,"absoluteAmountDistractors",0,-1,1);//attributeMemory == 0 
+   		    			node.addChild(nextWork, valueTerminal);
+
+   		    			nextWork.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:SAME:IGNORE;amountDistractors:HIGHER:IGNORE")); }}), TypeAmount.NONE);
+   		    			nextWork.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:SAME:IGNORE;challenge:HIGHER:IGNORE")); }}), TypeAmount.FEW);
+   		    			nextWork.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:SAME:IGNORE;amountDistractors:LOWER:IGNORE")); }}), TypeAmount.HALF);
+   		    			nextWork.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:SAME:IGNORE;amountDistractors:LOWER:IGNORE")); }}), TypeAmount.MANY);
+ 						
    						break;									
    					
    					case REINFORCE:
    						
-      					node.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE")); }}), valueTerminal);
+   				   		NodeNoTerminal nextReinforce = new NodeNoTerminal(numberNodes++,"absoluteAmountDistractors",0,-1,1);//attributeMemory == 0 
+   		    			node.addChild(nextReinforce, valueTerminal);
+
+   		    			nextReinforce.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;amountDistractors:HIGHER:IGNORE")); }}), TypeAmount.NONE);
+   		    			nextReinforce.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;amountDistractors:HIGHER:IGNORE")); }}), TypeAmount.FEW);
+   		    			nextReinforce.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE")); }}), TypeAmount.HALF);
+   		    			nextReinforce.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:SAME_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;amountDistractors:LOWER:IGNORE")); }}), TypeAmount.MANY);
+   						
    						break;	
    					
    					
    					case MASTER: 
    						
-      					node.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:NEXT_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE")); }}), valueTerminal);
+   						
+   				   		NodeNoTerminal nextMaster = new NodeNoTerminal(numberNodes++,"absoluteAmountDistractors",0,-1,1);//attributeMemory == 0 
+   		    			node.addChild(nextMaster, valueTerminal);
+
+   		    			nextMaster.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:NEXT_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;amountDistractors:HIGHER:IGNORE")); }}), TypeAmount.NONE);
+   		    			nextMaster.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:NEXT_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;amountDistractors:HIGHER:IGNORE")); }}), TypeAmount.FEW);
+   		    			nextMaster.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:NEXT_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;amountDistractors:HIGHER:IGNORE")); }}), TypeAmount.HALF);
+   		    			nextMaster.addChild(new NodeTerminal(numberNodes++,new ArrayList<Recommendation>(){{add(new Recommendation("difficulty:NEXT_CLUSTER:IGNORE;gameType:DIFFERENT:IGNORE;challenge:HIGHER:IGNORE")); }}), TypeAmount.MANY);
 
    						break;	
        			
@@ -159,6 +163,7 @@ public class Tree {
 		try {
 			
 			
+//			InputStream inS = ResourceLoader.getInstance().getInputStream(Type.LOCAL,filename);
 			InputStream inS = ResourceLoader.getInstance().getInputStream(Type.DATA,filename);
 			
 			if(inS==null){
@@ -201,7 +206,7 @@ public class Tree {
         	//	System.out.println(line);
     			Node next = Node.fromString(line);
     			nodes.put(next.ID, next);
-    			System.out.println(line+" "+next.ID+" "+next.attribute);
+    			//System.out.println(line+" "+next.ID+" "+next.attribute);
     		}
     	}
     		

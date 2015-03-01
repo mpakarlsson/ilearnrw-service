@@ -16,7 +16,6 @@ import ilearnrw.user.profile.UserProfile;
 
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.model.LogEntryFilter;
-import com.ilearnrw.api.datalogger.model.LogEntryResult;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.datalogger.services.LogEntryService;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
@@ -48,7 +47,8 @@ public class SelectNextActivityControllerUoM {
 			@RequestParam(value = "userId", required = true) int userId,
 			@RequestParam(value = "languageArea",required = false) Integer languageArea,
 			@RequestParam(value = "difficulty",required = false) Integer difficulty,
-			@RequestParam(value = "game",required = false) String game
+			@RequestParam(value = "game",required = false) String game,
+			@RequestParam(value = "character",required = false) String character
 			) {
 		
 		Authentication auth = SecurityContextHolder.getContext()
@@ -74,15 +74,13 @@ public class SelectNextActivityControllerUoM {
 			LogEntryFilter filter = new LogEntryFilter(username, null, null,null,"APP_ROUND_SESSION_END", null);
 			List<LogEntry> lastLogs = logEntryService.getLastLogs(filter).getResults();
 			
-			if((languageArea!=null)&&(difficulty!=null)&&(game!=null)){
-				return provider.getNextProblems(user,languageArea, difficulty,game);
-
-			}else if((languageArea!=null)&&(difficulty!=null)){
-				return provider.getNextProblems(user,languageArea, difficulty);
+			if((languageArea!=null)&&(difficulty!=null)){
+				return provider.getNextProblems(user,lastLogs,languageArea, difficulty,game);
+			}else if((character!=null)){
+				return provider.getNextProblems(user,lastLogs,character,game);
 			}else{
 				return provider.getNextProblems(user,lastLogs);
 			}
-
 
 		} catch (Exception e) {
 			e.printStackTrace();

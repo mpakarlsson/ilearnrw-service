@@ -40,71 +40,7 @@ public class GardenUK extends GameLevel {
 				false,//begins
 				false);
 		
-		
-		/*int numberTargets = (int)java.lang.Math.ceil(parameters.batchSize/2.0);
-		int numberDistractorsPerDifficulty = (int)java.lang.Math.floor(((double)(parameters.batchSize-numberTargets))/parameters.accuracy);
-		if (numberDistractorsPerDifficulty==0)
-			numberDistractorsPerDifficulty++;
-		
-		LanguageAreasUK lA = LanguageAreasUK.values()[languageArea];
-		List<GameElement> result = new ArrayList<GameElement>();
-
-		
-		if(lA==LanguageAreasUK.SYLLABLES){
-			
-			
-			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,numberTargets, parameters.wordLevel);	
-		
-			if (result.size()==0)
-				return result;
-		
-		
-			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,numberDistractorsPerDifficulty, parameters.wordLevel,parameters.accuracy,-1,new ArrayList<String>());	
-		
-			for(List<GameElement> lge : distractors)
-				for (GameElement f : lge)
-					result.add(f);	
-			
-		}else if(lA==LanguageAreasUK.CONFUSING){
-			
-			result = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulty,numberTargets, parameters.wordLevel);	
-			
-			if (result.size()==0)
-				return result;
-		
-		
-			List<List<GameElement>> distractors = WordSelectionUtils.getDistractors(LanguageCode.EN, languageArea, difficulty,numberDistractorsPerDifficulty, parameters.wordLevel,parameters.accuracy,-1,new ArrayList<String>());	
-		
-			for(List<GameElement> lge : distractors)
-				for (GameElement f : lge)
-					result.add(f);					
-			
-		}else{
-			//TODO routine to pull words from different characters
-			
-			List<Integer> difficulties = WordSelectionUtils.findDifferentCharacter(LanguageCode.EN,  languageArea, difficulty,3);
-			
-			for(int i = 0; i<difficulties.size();i++){
-				
-				List<GameElement> aux = WordSelectionUtils.getTargetWords(LanguageCode.EN, languageArea, difficulties.get(i),parameters.batchSize, parameters.wordLevel,i!=0);	
-				for(GameElement ge : aux)
-					result.add(ge);
-			}	
-			
-		}
-		
-		return result;
-		
-		*/
-		
-		
-		/*List<GameElement> resultComplete = new ArrayList<GameElement>();
-		
-		for(GameElement ge : result){
-			
-			resultComplete.add(new GameElement(ge.isFiller(),ge.getAnnotatedWord()));
-			
-		}*/
+	
 		
 
 	
