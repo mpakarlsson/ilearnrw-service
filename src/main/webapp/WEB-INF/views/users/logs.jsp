@@ -101,27 +101,27 @@ $(function() {
 							<table id="logstable" border="1" class="table table-striped table-bordered table-condensed table-hover">
 							<thead>
 								<tr>
+									<th>Time</th>
 									<th>Username</th>
 									<th>Application ID</th>
 									<th>Tag</th>
-									<th>Value</th>
 									<th>Word</th>
 									<th>Problem Category</th>
 									<th>Problem Index</th>
-									<th>Time</th>
+									<th>Value</th>
 								</tr>
 							</thead>
 							<tbody>
 								<c:forEach items="${logEntryResult.results}" var="log">
 									<tr>
+										<td>${log.timestamp}</td>
 										<td>${log.username}</td>
 										<td>${log.applicationId}</td>
 										<td>${log.tag}</td>
-										<td>${log.value}</td>
 										<td>${log.word}</td>
 										<td>${log.problemCategory}</td>
 										<td>${log.problemIndex}</td>
-										<td>${log.timestamp}</td>
+										<td>${log.value}</td>
 									</tr>
 								</c:forEach>
 								</tbody>
