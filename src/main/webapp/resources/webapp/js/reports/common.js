@@ -119,7 +119,7 @@ $(function() {
 				$.each(data.skillsWorkedOn, function(key, value) {
 						$("#overview-skills ul").append($('<li>').append(value));
 				});
-				$("#overview-time-spent").val(data.timeSpent + " sec.");
+				$("#overview-time-spent").val(data.timeSpent);
 				$("#overview-number-of-activities").val(data.numberOfActivities);
 				$("#overview-success-rate").val(data.successRate);
 			}
