@@ -739,7 +739,7 @@ public class UserManagerController {
 	@Transactional
 	public String reportsSkills(ModelMap model) {
 		model.put("title", "Skill breakdown");
-		model.put("count", "No. of activities");
+		model.put("count", "No. of activity rounds");
 		model.put("type", "skill");
 		model.put("js", "skill.js");
 		return "reports/reports";
@@ -749,7 +749,7 @@ public class UserManagerController {
 	@Transactional
 	public String reportsActivities(ModelMap model) {
 		model.put("title", "Activity breakdown");
-		model.put("count", "No. of rounds");
+		model.put("count", "No. of activity rounds");
 		model.put("type", "activity");
 		model.put("js", "activity.js");
 		return "reports/reports";

@@ -536,16 +536,25 @@ public class CubeDaoImpl implements CubeDao {
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
-					+ "sum(duration) as timeSpent, "
-					+ "sum(word_success) as correctAnswers, "
-					+ "sum(word_failed) as incorrectAnswers, "
-					+ "sum(word_success_or_failed) as totalAnswers, "
-					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate, "
-					+ "count(distinct app_ref) as nrOfApps "
+					+ "    time_format(sec_to_time(coalesce(sum(if(A.rds_duration > 0, A.rds_duration, 0)),0)),"
+					+ "          '%H hours %i minutes %s seconds') as timeSpent, "
+					+ "    coalesce(sum(A.word_success),0) as correctAnswers, "
+					+ "    coalesce(sum(A.word_failed),0) as incorrectAnswers, "
+					+ "    coalesce(sum(A.word_success_or_failed),0) as totalAnswers, "
+					+ "    format_success_rate(sum(word_success), "
+					+ "            sum(word_success_or_failed)) as successRate, "
+					+ "	   coalesce(sum(A.nrOfApps),0) as nrOfApps "
+					+ "from "
+					+ "(select "
+					+ "    sum(rds_duration) as rds_duration, "
+					+ "    sum(word_success) as word_success, "
+					+ "    sum(word_failed) as word_failed, "
+					+ "    sum(word_success_or_failed) as word_success_or_failed, "
+					+ "    count(distinct app_round_session_ref) as nrOfApps "
 					+ "from facts_expanded "
 					+ "where p_language = :language and "
 					+ "category = :category and " + studentFilterString
-					+ "and " + dateFilterString + "group by category;";
+					+ "and " + dateFilterString + " group by app_round_session_ref ) as A;";
 			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(sql, parameterMap,
 							new BeanPropertyRowMapper<BreakdownResult>(
