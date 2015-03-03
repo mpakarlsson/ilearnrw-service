@@ -53,10 +53,12 @@ public class CubeDaoImpl implements CubeDao {
 		LOG.debug("Hitting DB to get application " + applicationId);
 		try {
 
-			Application app = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
-					"select * from applications where app_id like ? limit 0,1",
-					new Object[] { applicationId },
-					new BeanPropertyRowMapper<Application>(Application.class));
+			Application app = new JdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(
+							"select * from applications where app_id like ? limit 0,1",
+							new Object[] { applicationId },
+							new BeanPropertyRowMapper<Application>(
+									Application.class));
 			return app.getId();
 		} catch (Exception ex) {
 			LOG.debug("Application not found: " + applicationId);
@@ -96,10 +98,11 @@ public class CubeDaoImpl implements CubeDao {
 	public int getUserIdByName(String username) {
 		LOG.debug("Hitting DB to get user " + username);
 		try {
-			User user = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
-					"select * from users where username like ? limit 0,1",
-					new Object[] { username }, new BeanPropertyRowMapper<User>(
-							User.class));
+			User user = new JdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(
+							"select * from users where username like ? limit 0,1",
+							new Object[] { username },
+							new BeanPropertyRowMapper<User>(User.class));
 			return user.getId();
 		} catch (Exception ex) {
 			LOG.debug("User not found: " + username);
@@ -107,15 +110,16 @@ public class CubeDaoImpl implements CubeDao {
 		}
 
 	}
-	
+
 	@Override
 	public String getUsername(int userId) {
 		LOG.debug("Hitting DB to get user with id " + userId);
 		try {
-			User user = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
-					"select * from users where id = ? limit 0,1",
-					new Object[] { userId }, new BeanPropertyRowMapper<User>(
-							User.class));
+			User user = new JdbcTemplate(dataLoggerCubeDataSource)
+					.queryForObject(
+							"select * from users where id = ? limit 0,1",
+							new Object[] { userId },
+							new BeanPropertyRowMapper<User>(User.class));
 			return user.getUsername();
 		} catch (Exception ex) {
 			LOG.debug("User not found: " + userId);
@@ -148,7 +152,8 @@ public class CubeDaoImpl implements CubeDao {
 			Problem problem = new JdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(
 							"select * from problems where `category`=? and `idx`=? and `language`=? limit 0,1",
-							new Object[] { problemCategory, problemIndex, languageCode.getCode() },
+							new Object[] { problemCategory, problemIndex,
+									languageCode.getCode() },
 							new BeanPropertyRowMapper<Problem>(Problem.class));
 			return problem.getId();
 		} catch (Exception ex) {
@@ -159,8 +164,8 @@ public class CubeDaoImpl implements CubeDao {
 	}
 
 	@Override
-	public int createProblem(int problemCategory, int problemIndex, int languageCode,
-			String description) {
+	public int createProblem(int problemCategory, int problemIndex,
+			int languageCode, String description) {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("category", problemCategory);
@@ -221,10 +226,12 @@ public class CubeDaoImpl implements CubeDao {
 
 		return insertAndReturnKey("sessions", parameters);
 	}
-	
+
 	@Override
 	public void endSession(int sessionId, Timestamp timestamp) {
-		new JdbcTemplate(dataLoggerCubeDataSource).update("update sessions set end = ? where id = ?", timestamp, sessionId);
+		new JdbcTemplate(dataLoggerCubeDataSource).update(
+				"update sessions set end = ? where id = ?", timestamp,
+				sessionId);
 	}
 
 	@Override
@@ -246,9 +253,10 @@ public class CubeDaoImpl implements CubeDao {
 
 	@Override
 	public Session getSessionById(int id) {
-		Session session = new JdbcTemplate(dataLoggerCubeDataSource).queryForObject(
-				"select * from sessions where id=?", new Object[] { id },
-				new BeanPropertyRowMapper<Session>(Session.class));
+		Session session = new JdbcTemplate(dataLoggerCubeDataSource)
+				.queryForObject("select * from sessions where id=?",
+						new Object[] { id },
+						new BeanPropertyRowMapper<Session>(Session.class));
 		return session;
 	}
 
@@ -352,8 +360,9 @@ public class CubeDaoImpl implements CubeDao {
 	}
 
 	@Override
-	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(int userId, int category,
-			int index, String timestart, String timeend, int numberOfSessions) {
+	public ListWithCount<WordSuccessCount> getWordsByProblemAndSessions(
+			int userId, int category, int index, String timestart,
+			String timeend, int numberOfSessions) {
 		String sql = "select  f.word, sum(f.word_status='WORD_DISPLAYED') as count, "
 				+ "sum(f.word_status='WORD_SUCCESS') as succeed, "
 				+ "sum(f.word_status='WORD_FAILED') as failed "
@@ -364,9 +373,10 @@ public class CubeDaoImpl implements CubeDao {
 				+ "where user_ref=:userid "
 				+ "group by app_session_ref order by app_session_ref desc limit :numberOfSessions ) "
 				+ "as s on f.app_session_ref=s.theid "
-				+ "where p.id is not null  and f.user_ref=:userid " 
+				+ "where p.id is not null  and f.user_ref=:userid "
 				+ "and f.timestamp>=:start and f.timestamp<=:end "
-				+ "and p.category=:category and p.idx=:index" + " group by f.word";
+				+ "and p.category=:category and p.idx=:index"
+				+ " group by f.word";
 
 		Map<String, Object> namedParameters = new HashMap<String, Object>();
 		namedParameters.put("userid", userId);
@@ -374,7 +384,8 @@ public class CubeDaoImpl implements CubeDao {
 		namedParameters.put("index", index);
 		namedParameters.put("start", TimeUtils.minIfNull(timestart));
 		namedParameters.put("end", TimeUtils.maxIfNull(timeend));
-		namedParameters.put("numberOfSessions", numberOfSessions>=0 ? numberOfSessions : Integer.MAX_VALUE);
+		namedParameters.put("numberOfSessions",
+				numberOfSessions >= 0 ? numberOfSessions : Integer.MAX_VALUE);
 
 		return execute(sql, false, namedParameters, WordSuccessCount.class);
 	}
@@ -384,13 +395,15 @@ public class CubeDaoImpl implements CubeDao {
 		ListWithCount<T> list = new ListWithCount<T>();
 		if (count) {
 			try {
-				list.setCount(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForObject(sql,
+				list.setCount(new NamedParameterJdbcTemplate(
+						dataLoggerCubeDataSource).queryForObject(sql,
 						namedParameters, Integer.class));
 			} catch (IncorrectResultSizeDataAccessException ex) {
 				list.setCount(ex.getActualSize());
 			}
 		} else {
-			list.setList(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).query(sql, namedParameters,
+			list.setList(new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).query(sql, namedParameters,
 					new BeanPropertyRowMapper<T>(classT)));
 		}
 		return list;
@@ -401,13 +414,16 @@ public class CubeDaoImpl implements CubeDao {
 		ListWithCount<Map<String, Object>> list = new ListWithCount<Map<String, Object>>();
 		if (count) {
 			try {
-				list.setCount(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForObject(sql,
+				list.setCount(new NamedParameterJdbcTemplate(
+						dataLoggerCubeDataSource).queryForObject(sql,
 						namedParameters, Integer.class));
 			} catch (IncorrectResultSizeDataAccessException ex) {
 				list.setCount(ex.getActualSize());
 			}
 		} else {
-			list.setList(new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForList(sql, namedParameters));
+			list.setList(new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource)
+					.queryForList(sql, namedParameters));
 		}
 		return list;
 	}
@@ -453,7 +469,8 @@ public class CubeDaoImpl implements CubeDao {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("id", id);
 
-		return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource).queryForList(sql, paramMap);
+		return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
+				.queryForList(sql, paramMap);
 	}
 
 	@Override
@@ -549,15 +566,24 @@ public class CubeDaoImpl implements CubeDao {
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
-					+ "sum(aps_duration) as timeSpent, "
-					+ "sum(word_success) as correctAnswers, "
-					+ "sum(word_failed) as incorrectAnswers, "
-					+ "sum(word_success_or_failed) as totalAnswers, "
-					+ "format_success_rate(sum(word_success), sum(word_success_or_failed)) as successRate, "
-					+ "count(distinct app_round_session_ref) as nrOfApps "
-					+ "from facts_expanded " + "where " + dateFilterString
-					+ "and " + studentFilterString
-					+ "and app_name = :app_name " + "group by app_name;";
+					+ "    time_format(sec_to_time(coalesce(sum(if(A.rds_duration > 0, A.rds_duration, 0)),0)),"
+					+ "          '%H hours %i minutes %s seconds') as timeSpent, "
+					+ "    coalesce(sum(A.word_success),0) as correctAnswers, "
+					+ "    coalesce(sum(A.word_failed),0) as incorrectAnswers, "
+					+ "    coalesce(sum(A.word_success_or_failed),0) as totalAnswers, "
+					+ "    format_success_rate(sum(word_success), "
+					+ "            sum(word_success_or_failed)) as successRate, "
+					+ "	   coalesce(sum(A.nrOfApps),0) as nrOfApps "
+					+ "from "
+					+ "(select "
+					+ "    sum(rds_duration) as rds_duration, "
+					+ "    sum(word_success) as word_success, "
+					+ "    sum(word_failed) as word_failed, "
+					+ "    sum(word_success_or_failed) as word_success_or_failed, "
+					+ "    count(distinct app_round_session_ref) as nrOfApps "
+					+ "from facts_expanded where "
+					+ dateFilterString + " and " + studentFilterString
+					+ "and app_name = :app_name group by app_round_session_ref ) as A;";
 			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(sql, parameterMap,
 							new BeanPropertyRowMapper<BreakdownResult>(
@@ -578,7 +604,7 @@ public class CubeDaoImpl implements CubeDao {
 					parameterMap, "rds_start");
 			String sql = "select "
 					+ "count(distinct P.app_name) as numberOfActivities, "
-					+ "time_format(sec_to_time(coalesce(sum(P.timeSpent),0)),'%T') as timeSpent, "
+					+ "time_format(sec_to_time(coalesce(sum(P.timeSpent),0)),'%H hours %i minutes %s seconds') as timeSpent, "
 					+ "coalesce(sum(P.word_success),0) as correctAnswers, "
 					+ "coalesce(sum(P.word_failed),0) as incorrectAnswers, "
 					+ "coalesce(sum(P.word_success_or_failed),0) as totalAnswers, "
@@ -596,16 +622,10 @@ public class CubeDaoImpl implements CubeDao {
 					+ "    sum(word_success) as word_success, "
 					+ "    sum(word_failed) as word_failed, "
 					+ "    sum(word_success_or_failed) as word_success_or_failed "
-					+ "    from "
-					+ "    facts_expanded "
-					+ "    where "
-					+ dateFilterString
-					+ "    and "
-					+ studentFilterString
+					+ "    from " + "    facts_expanded " + "    where "
+					+ dateFilterString + "    and " + studentFilterString
 					+ "    group by app_name, app_round_session_ref"
-					+ "  ) as T "
-					+ "  group by app_name "
-					+ ") as P;";
+					+ "  ) as T " + "  group by app_name " + ") as P;";
 
 			String sql_category = "select distinct category as categories "
 					+ "from facts_expanded "
@@ -647,7 +667,8 @@ public class CubeDaoImpl implements CubeDao {
 					+ ") between CURDATE() - INTERVAL 1 MONTH and CURDATE()) ";
 			break;
 		case CUSTOM:
-			dateFilterString = "( DATE(" + fieldName
+			dateFilterString = "( DATE("
+					+ fieldName
 					+ ") between STR_TO_DATE(:start, '%d.%m.%Y') and STR_TO_DATE(:end, '%d.%m.%Y')) ";
 			parameterMap.put("start", dateFilter.getStartDate());
 			parameterMap.put("end", dateFilter.getEndDate());
