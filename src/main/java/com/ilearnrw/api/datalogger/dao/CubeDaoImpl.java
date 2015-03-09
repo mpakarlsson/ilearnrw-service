@@ -5,6 +5,7 @@ import ilearnrw.utils.LanguageCode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 
 @Repository
@@ -532,7 +534,7 @@ public class CubeDaoImpl implements CubeDao {
 			parameterMap.put("language", language);
 			parameterMap.put("category", category);
 			String studentFilterString = getStudentFilterString(studentFilter,
-					parameterMap);
+					parameterMap, "");
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
@@ -554,7 +556,8 @@ public class CubeDaoImpl implements CubeDao {
 					+ "from facts_expanded "
 					+ "where p_language = :language and "
 					+ "category = :category and " + studentFilterString
-					+ "and " + dateFilterString + " group by app_round_session_ref ) as A;";
+					+ "and " + dateFilterString
+					+ " group by app_round_session_ref ) as A;";
 			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(sql, parameterMap,
 							new BeanPropertyRowMapper<BreakdownResult>(
@@ -571,7 +574,7 @@ public class CubeDaoImpl implements CubeDao {
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put("app_name", activityName);
 			String studentFilterString = getStudentFilterString(studentFilter,
-					parameterMap);
+					parameterMap, "");
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
@@ -591,7 +594,9 @@ public class CubeDaoImpl implements CubeDao {
 					+ "    sum(word_success_or_failed) as word_success_or_failed, "
 					+ "    count(distinct app_round_session_ref) as nrOfApps "
 					+ "from facts_expanded where "
-					+ dateFilterString + " and " + studentFilterString
+					+ dateFilterString
+					+ " and "
+					+ studentFilterString
 					+ "and app_name = :app_name group by app_round_session_ref ) as A;";
 			return new NamedParameterJdbcTemplate(dataLoggerCubeDataSource)
 					.queryForObject(sql, parameterMap,
@@ -608,7 +613,7 @@ public class CubeDaoImpl implements CubeDao {
 		try {
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			String studentFilterString = getStudentFilterString(studentFilter,
-					parameterMap);
+					parameterMap, "");
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
@@ -660,6 +665,45 @@ public class CubeDaoImpl implements CubeDao {
 		}
 	}
 
+	@Override
+	public List<GamesComparisonResult> getGamesComparisonResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap, "fe.");
+			String rdsFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String timestampFilterString = getDateFilterString(dateFilter,
+					parameterMap, "timestamp");
+			new JdbcTemplate(dataLoggerCubeDataSource).update("SET group_concat_max_len=32768;");
+			String sql = "select "
+					+ "	school, "
+					+ "	classroom, "
+					+ "	fe.username as username, "
+					+ "	time_format(sec_to_time(coalesce(sum(if(rds_duration > 0, rds_duration, 0)),0)),'%H hours %i minutes %s seconds') as timeSpentPlaying, "
+					+ "	coalesce(group_concat(distinct date(rds_start) separator ', '), '') as daysPlayed, "
+					+ "	coalesce(group_concat(distinct app_name separator ', '), '') as activitiesPlayed, "
+					+ "	coalesce(group_concat(distinct concat(category, ' ', language) separator ', '), '') as skillsPracticed, "
+					+ "	coalesce(group_concat(distinct word separator ', '), '') as wordsSeen,  "
+					+ "	coalesce(lg.changesToProfile,'') as changesToProfile, "
+					+ "	concat(format_success_rate(coalesce(sum(word_success),0), coalesce(sum(word_success_or_failed),0)), ' (', coalesce(sum(word_success),0), ' out of ', coalesce(sum(word_success_or_failed),0), ')') as successRate "
+					+ "from facts_expanded as fe "
+					+ "left join (select username, group_concat(value separator '; ') as changesToProfile from logs lg where tag = 'PROFILE_UPDATE' and value like 'severity:%' and "
+					+ timestampFilterString
+					+ " group by username) as lg on fe.username = lg.username "
+					+ "where " + rdsFilterString + " and "
+					+ studentFilterString + " " + "group by fe.username ";
+			List<GamesComparisonResult> result = new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).query(sql, parameterMap,
+					new BeanPropertyRowMapper<GamesComparisonResult>(
+							GamesComparisonResult.class));
+			return result;
+		} catch (EmptyResultDataAccessException e) {
+			return new ArrayList<GamesComparisonResult>();
+		}
+	}
+
 	private String getDateFilterString(DateFilter dateFilter,
 			Map<String, Object> parameterMap, String fieldName) {
 		String dateFilterString;
@@ -691,19 +735,19 @@ public class CubeDaoImpl implements CubeDao {
 	}
 
 	private String getStudentFilterString(StudentFilter studentFilter,
-			Map<String, Object> parameterMap) {
+			Map<String, Object> parameterMap, String prefix) {
 		String studentFilterString;
 		switch (studentFilter.getType()) {
 		case CLASSROOM:
-			studentFilterString = "classroom = :name ";
+			studentFilterString = prefix + "classroom = :name ";
 			parameterMap.put("name", studentFilter.getName());
 			break;
 		case SCHOOL:
-			studentFilterString = "school = :name ";
+			studentFilterString = prefix + "school = :name ";
 			parameterMap.put("name", studentFilter.getName());
 			break;
 		case STUDENT:
-			studentFilterString = "username = :name ";
+			studentFilterString = prefix + "username = :name ";
 			parameterMap.put("name", studentFilter.getName());
 			break;
 		case ALL:

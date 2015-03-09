@@ -15,6 +15,7 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 
 public interface CubeDao {
@@ -82,5 +83,8 @@ public interface CubeDao {
 			StudentFilter studentFilter, String activityName);
 
 	OverviewBreakdownResult getOverviewBreakdownResult(DateFilter dateFilter,
+			StudentFilter studentFilter);
+
+	List<GamesComparisonResult> getGamesComparisonResult(DateFilter dateFilter,
 			StudentFilter studentFilter);
 }

@@ -28,6 +28,7 @@ import com.ilearnrw.api.datalogger.model.WordSuccessCount;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
@@ -290,6 +291,12 @@ public class CubeServiceImpl implements CubeService {
 	public OverviewBreakdownResult getOverviewBreakdownResult(
 			DateFilter dateFilter, StudentFilter studentFilter) {
 		return cubeDao.getOverviewBreakdownResult(dateFilter, studentFilter);
+	}
+
+	@Override
+	public List<GamesComparisonResult> getGamesComparisonResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		return cubeDao.getGamesComparisonResult(dateFilter, studentFilter);
 	}
 
 }

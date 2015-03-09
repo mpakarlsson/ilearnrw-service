@@ -51,6 +51,12 @@
                                 <li>
                                     <a href="${pageContext.request.contextPath}/apps/reports/activity">Activity breakdown</a>
                                 </li>
+                                <li>
+                                    <a href="${pageContext.request.contextPath}/apps/reports/games-comparison">Student game comparison</a>
+                                </li>
+                                <li>
+                                    <a href="${pageContext.request.contextPath}/apps/reports/reader-comparison">Student reader comparison</a>
+                                </li>
                             </ul>
                         </li>
                         </sec:authorize>

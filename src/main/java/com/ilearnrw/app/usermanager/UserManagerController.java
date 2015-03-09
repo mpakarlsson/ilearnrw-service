@@ -41,6 +41,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.filters.DateFilter.DateFilterType;
 import com.ilearnrw.api.datalogger.model.filters.StudentFilter.StudentFilterType;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.info.model.Application;
@@ -754,6 +755,22 @@ public class UserManagerController {
 		model.put("js", "activity.js");
 		return "reports/reports";
 	}
+	
+	@RequestMapping(value = "reports/games-comparison", method = RequestMethod.GET)
+	@Transactional
+	public String reportsGamesComparison(ModelMap model) {
+		model.put("title", "Student games comparison");
+		model.put("js", "games-comparison.js");
+		return "reports/tables";
+	}
+	
+	@RequestMapping(value = "reports/reader-comparison", method = RequestMethod.GET)
+	@Transactional
+	public String reportsReaderComparison(ModelMap model) {
+		model.put("title", "Student reader comparison");
+		model.put("js", "reader-comparison.js");
+		return "reports/tables";
+	}
 
 	@RequestMapping(value = "jquery/admin/schools", method = RequestMethod.GET)
 	@Transactional
@@ -951,5 +968,17 @@ public class UserManagerController {
 		}
 		overviewBreakdownResult.setSkillsWorkedOn(skills);
 		return overviewBreakdownResult;
+	}
+	
+	@RequestMapping(value = "jquery/admin/tables/games-comparison", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	List<GamesComparisonResult> getGamesComparison(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<GamesComparisonResult> gamesComparisonResult = cubeService
+				.getGamesComparisonResult(dateFilter, studentFilter);
+		return gamesComparisonResult;
 	}
 }

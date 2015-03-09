@@ -1,0 +1,1 @@
+var jqueryUrl = url("/apps/jquery/admin/tables/reader-comparison");
