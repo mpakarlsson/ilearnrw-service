@@ -30,6 +30,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.ReaderComparisonResult;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
 import com.ilearnrw.common.AuthenticatedRestClient;
@@ -297,6 +298,12 @@ public class CubeServiceImpl implements CubeService {
 	public List<GamesComparisonResult> getGamesComparisonResult(
 			DateFilter dateFilter, StudentFilter studentFilter) {
 		return cubeDao.getGamesComparisonResult(dateFilter, studentFilter);
+	}
+
+	@Override
+	public List<ReaderComparisonResult> getReaderComparisonResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		return cubeDao.getReaderComparisonResult(dateFilter, studentFilter);
 	}
 
 }

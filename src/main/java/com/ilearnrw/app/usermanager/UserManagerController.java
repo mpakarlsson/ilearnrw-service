@@ -43,6 +43,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter.StudentFilterType
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.ReaderComparisonResult;
 import com.ilearnrw.api.datalogger.services.CubeService;
 import com.ilearnrw.api.info.model.Application;
 import com.ilearnrw.api.info.services.InfoService;
@@ -980,5 +981,17 @@ public class UserManagerController {
 		List<GamesComparisonResult> gamesComparisonResult = cubeService
 				.getGamesComparisonResult(dateFilter, studentFilter);
 		return gamesComparisonResult;
+	}
+	
+	@RequestMapping(value = "jquery/admin/tables/reader-comparison", method = RequestMethod.POST)
+	@Transactional
+	public @ResponseBody
+	List<ReaderComparisonResult> getReaderComparison(
+			@RequestBody BreakdownFilter breakdownFilter) {
+		DateFilter dateFilter = getDateFilterFromBreakdownFilter(breakdownFilter);
+		StudentFilter studentFilter = getStudentFilterFromBreakdownFilter(breakdownFilter);
+		List<ReaderComparisonResult> readerComparisonResult = cubeService
+				.getReaderComparisonResult(dateFilter, studentFilter);
+		return readerComparisonResult;
 	}
 }

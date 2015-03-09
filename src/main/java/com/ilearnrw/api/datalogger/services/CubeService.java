@@ -3,9 +3,6 @@ package com.ilearnrw.api.datalogger.services;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import com.ilearnrw.api.datalogger.model.ListWithCount;
 import com.ilearnrw.api.datalogger.model.LogEntry;
 import com.ilearnrw.api.datalogger.model.Problem;
@@ -17,6 +14,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.ReaderComparisonResult;
 
 public interface CubeService {
 
@@ -67,5 +65,8 @@ public interface CubeService {
 
 	List<GamesComparisonResult> getGamesComparisonResult(DateFilter dateFilter,
 			StudentFilter studentFilter);
+
+	List<ReaderComparisonResult> getReaderComparisonResult(
+			DateFilter dateFilter, StudentFilter studentFilter);
 
 }

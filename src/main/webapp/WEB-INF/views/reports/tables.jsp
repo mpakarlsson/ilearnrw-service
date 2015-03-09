@@ -70,7 +70,7 @@
 										<select class="col-sm-10 form-control" id="date">
 											<option value="0">Total</option>
 											<option value="1">Today</option>
-											<option value="2" selected="selected">This week</option>
+											<option value="2">This week</option>
 											<option value="3">This month</option>
 											<option value="4">Custom range</option>
 										</select>
@@ -101,18 +101,6 @@
 							<table id="usertable"
 								class="table table-striped table-bordered table-condensed table-hover">
 								<thead>
-									<tr>
-										<th>School</th>
-										<th>Class</th>
-										<th>Student name</th>
-										<th>Time spent playing</th>
-										<th>Days played</th>
-										<th>Activities played</th>
-										<th>Skills practiced</th>
-										<th>Words seen</th>
-										<th>Changes to profile</th>
-										<th>Success rate</th>
-									</tr>
 								</thead>
 								<tbody>
 								</tbody>

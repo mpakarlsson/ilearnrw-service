@@ -17,6 +17,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.ReaderComparisonResult;
 
 public interface CubeDao {
 
@@ -87,4 +88,7 @@ public interface CubeDao {
 
 	List<GamesComparisonResult> getGamesComparisonResult(DateFilter dateFilter,
 			StudentFilter studentFilter);
+
+	List<ReaderComparisonResult> getReaderComparisonResult(
+			DateFilter dateFilter, StudentFilter studentFilter);
 }

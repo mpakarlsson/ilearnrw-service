@@ -115,31 +115,15 @@ $(function() {
 	});
 	});
 	*/
+	fillHeader();
 	$("#students,#date,#startDate,#endDate").change(function()
 	{
 		var filter = getBreakdownFilter();
-		var table2 = $("#usertable tbody");
-		table2.empty();
-		table2.html("Loading...");
-		$.postJSON(jqueryUrl, JSON.stringify(filter), function(data) {
-			table2.empty();
-			$.each(data, function(index, value) {
-				table2.append($('<tr>')
-						.append($('<td>').append(value.school))
-						.append($('<td>').append(value.classroom))
-						.append($('<td>').append(value.username))
-						.append($('<td>').append(value.timeSpentPlaying))
-						.append($('<td>').append(value.daysPlayed))
-						.append($('<td>').append(value.activitiesPlayed))
-						.append($('<td>').append(value.skillsPracticed))
-						.append($('<td>').append(value.wordsSeen))
-						.append($('<td>').append(value.changesToProfile))
-						.append($('<td>').append(value.successRate))
-				);
-			});
-	    },
+		$("#usertable tbody").empty();
+		$("#usertable tbody").html("Loading...");
+		$.postJSON(jqueryUrl, JSON.stringify(filter), successFillTable,
 	    function(jqXHR, textStatus, errorThrown) {
-			table2.html('Error: ' + jqXHR.status + ' ' + textStatus + ' ' + errorThrown);
+			$("#usertable tbody").html('Error: ' + jqXHR.status + ' ' + textStatus + ' ' + errorThrown);
 		});
 	});
 	$("#date").change(function()

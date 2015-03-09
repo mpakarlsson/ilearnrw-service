@@ -40,6 +40,7 @@ import com.ilearnrw.api.datalogger.model.filters.StudentFilter;
 import com.ilearnrw.api.datalogger.model.result.BreakdownResult;
 import com.ilearnrw.api.datalogger.model.result.GamesComparisonResult;
 import com.ilearnrw.api.datalogger.model.result.OverviewBreakdownResult;
+import com.ilearnrw.api.datalogger.model.result.ReaderComparisonResult;
 
 @Repository
 public class CubeDaoImpl implements CubeDao {
@@ -676,7 +677,6 @@ public class CubeDaoImpl implements CubeDao {
 					parameterMap, "rds_start");
 			String timestampFilterString = getDateFilterString(dateFilter,
 					parameterMap, "timestamp");
-			new JdbcTemplate(dataLoggerCubeDataSource).update("SET group_concat_max_len=32768;");
 			String sql = "select "
 					+ "	school, "
 					+ "	classroom, "
@@ -689,11 +689,11 @@ public class CubeDaoImpl implements CubeDao {
 					+ "	coalesce(lg.changesToProfile,'') as changesToProfile, "
 					+ "	concat(format_success_rate(coalesce(sum(word_success),0), coalesce(sum(word_success_or_failed),0)), ' (', coalesce(sum(word_success),0), ' out of ', coalesce(sum(word_success_or_failed),0), ')') as successRate "
 					+ "from facts_expanded as fe "
-					+ "left join (select username, group_concat(value separator '; ') as changesToProfile from logs lg where tag = 'PROFILE_UPDATE' and value like 'severity:%' and "
+					+ "left join (select username, group_concat(concat('category ', problem_category, ', index ', problem_index, ' - ', value) separator '; ') as changesToProfile from logs lg where tag = 'PROFILE_UPDATE' and value like 'severity:%' and "
 					+ timestampFilterString
 					+ " group by username) as lg on fe.username = lg.username "
 					+ "where " + rdsFilterString + " and "
-					+ studentFilterString + " " + "group by fe.username ";
+					+ studentFilterString + " " + "group by fe.user_ref ";
 			List<GamesComparisonResult> result = new NamedParameterJdbcTemplate(
 					dataLoggerCubeDataSource).query(sql, parameterMap,
 					new BeanPropertyRowMapper<GamesComparisonResult>(
@@ -701,6 +701,59 @@ public class CubeDaoImpl implements CubeDao {
 			return result;
 		} catch (EmptyResultDataAccessException e) {
 			return new ArrayList<GamesComparisonResult>();
+		}
+	}
+
+	@Override
+	public List<ReaderComparisonResult> getReaderComparisonResult(
+			DateFilter dateFilter, StudentFilter studentFilter) {
+		try {
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			String studentFilterString = getStudentFilterString(studentFilter,
+					parameterMap, "fe.");
+			String rdsFilterString = getDateFilterString(dateFilter,
+					parameterMap, "rds_start");
+			String timestampFilterString = getDateFilterString(dateFilter,
+					parameterMap, "timestamp");
+			String sql = "select "
+					+ "school, "
+					+ "classroom, "
+					+ "fe.username as username, "
+					+ "time_format(sec_to_time(coalesce(sum(if(rds_duration > 0, rds_duration, 0)),0)),'%H hours %i minutes %s seconds') as timeSpentReading, "
+					+ "coalesce(group_concat(distinct date(rds_start) separator ', '), '') as daysRead, "
+					+ "coalesce(textsRead,'') as textsRead, "
+					+ "coalesce(settingsUsed,'') as settingsUsed, "
+					+ "coalesce(textToSpeechUsed,'') as textToSpeechUsed "
+					+ "from facts_expanded as fe "
+					+ "left join (select username, group_concat(value separator '; ') as settingsUsed from logs lg where tag = 'PROFILE_UPDATE' and "
+					+ studentFilterString
+					+ " and "
+					+ timestampFilterString
+					+ " and value not like 's%' group by username) as sett on fe.username = sett.username "
+					+ "left join (select username, group_concat(value separator '; ') as textToSpeechUsed from logs lg where value like 'TTS%' and "
+					+ studentFilterString
+					+ " and "
+					+ timestampFilterString
+					+ " group by username) as tts on fe.username = tts.username "
+					+ "left join (select username, group_concat(distinct substring(value, 17) separator '; ') as textsRead from logs lg where value like 'Started %' and "
+					+ studentFilterString
+					+ " and "
+					+ timestampFilterString
+					+ " group by username) as rdng on fe.username = rdng.username "
+					+ "where app_name = 'READER' and "
+					+ rdsFilterString
+					+ " and "
+					+ studentFilterString
+					+ " and "
+					+ rdsFilterString
+					+ " " + "group by fe.user_ref;";
+			List<ReaderComparisonResult> result = new NamedParameterJdbcTemplate(
+					dataLoggerCubeDataSource).query(sql, parameterMap,
+					new BeanPropertyRowMapper<ReaderComparisonResult>(
+							ReaderComparisonResult.class));
+			return result;
+		} catch (EmptyResultDataAccessException e) {
+			return new ArrayList<ReaderComparisonResult>();
 		}
 	}
 
