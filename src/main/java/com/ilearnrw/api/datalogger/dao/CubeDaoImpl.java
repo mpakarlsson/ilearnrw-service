@@ -710,7 +710,7 @@ public class CubeDaoImpl implements CubeDao {
 		try {
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			String studentFilterString = getStudentFilterString(studentFilter,
-					parameterMap, "fe.");
+					parameterMap, "");
 			String rdsFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String timestampFilterString = getDateFilterString(dateFilter,
@@ -726,18 +726,12 @@ public class CubeDaoImpl implements CubeDao {
 					+ "coalesce(textToSpeechUsed,'') as textToSpeechUsed "
 					+ "from facts_expanded as fe "
 					+ "left join (select username, group_concat(value separator '; ') as settingsUsed from logs lg where tag = 'PROFILE_UPDATE' and "
-					+ studentFilterString
-					+ " and "
 					+ timestampFilterString
 					+ " and value not like 's%' group by username) as sett on fe.username = sett.username "
 					+ "left join (select username, group_concat(value separator '; ') as textToSpeechUsed from logs lg where value like 'TTS%' and "
-					+ studentFilterString
-					+ " and "
 					+ timestampFilterString
 					+ " group by username) as tts on fe.username = tts.username "
 					+ "left join (select username, group_concat(distinct substring(value, 17) separator '; ') as textsRead from logs lg where value like 'Started %' and "
-					+ studentFilterString
-					+ " and "
 					+ timestampFilterString
 					+ " group by username) as rdng on fe.username = rdng.username "
 					+ "where app_name = 'READER' and "
