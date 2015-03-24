@@ -539,7 +539,7 @@ public class CubeDaoImpl implements CubeDao {
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
-					+ "    time_format(sec_to_time(coalesce(sum(if(A.rds_duration > 0, A.rds_duration, 0)),0)),"
+					+ "    time_format(sec_to_time(coalesce(sum(if(A.rds_duration > 0 and A.rds_duration < 172800, A.rds_duration, 0)),0)),"
 					+ "          '%H hours %i minutes %s seconds') as timeSpent, "
 					+ "    coalesce(sum(A.word_success),0) as correctAnswers, "
 					+ "    coalesce(sum(A.word_failed),0) as incorrectAnswers, "
@@ -579,7 +579,7 @@ public class CubeDaoImpl implements CubeDao {
 			String dateFilterString = getDateFilterString(dateFilter,
 					parameterMap, "rds_start");
 			String sql = "select "
-					+ "    time_format(sec_to_time(coalesce(sum(if(A.rds_duration > 0, A.rds_duration, 0)),0)),"
+					+ "    time_format(sec_to_time(coalesce(sum(if(A.rds_duration > 0 and A.rds_duration < 172800, A.rds_duration, 0)),0)),"
 					+ "          '%H hours %i minutes %s seconds') as timeSpent, "
 					+ "    coalesce(sum(A.word_success),0) as correctAnswers, "
 					+ "    coalesce(sum(A.word_failed),0) as incorrectAnswers, "
@@ -633,7 +633,7 @@ public class CubeDaoImpl implements CubeDao {
 					+ "  from "
 					+ "  (select "
 					+ "    app_name, "
-					+ "    if(rds_duration > 0, rds_duration, 0) as rds_duration, "
+					+ "    if(rds_duration > 0 and rds_duration < 172800, rds_duration, 0) as rds_duration, "
 					+ "    sum(word_success) as word_success, "
 					+ "    sum(word_failed) as word_failed, "
 					+ "    sum(word_success_or_failed) as word_success_or_failed "
@@ -681,7 +681,7 @@ public class CubeDaoImpl implements CubeDao {
 					+ "	school, "
 					+ "	classroom, "
 					+ "	fe.username as username, "
-					+ "	time_format(sec_to_time(coalesce(sum(if(rds_duration > 0, rds_duration, 0)),0)),'%H hours %i minutes %s seconds') as timeSpentPlaying, "
+					+ "	time_format(sec_to_time(coalesce(sum(if(rds_duration > 0 and rds_duration < 172800, rds_duration, 0)),0)),'%H hours %i minutes %s seconds') as timeSpentPlaying, "
 					+ "	coalesce(group_concat(distinct date(rds_start) separator ', '), '') as daysPlayed, "
 					+ "	coalesce(group_concat(distinct app_name separator ', '), '') as activitiesPlayed, "
 					+ "	coalesce(group_concat(distinct concat(category, ' ', language) separator ', '), '') as skillsPracticed, "
@@ -719,7 +719,7 @@ public class CubeDaoImpl implements CubeDao {
 					+ "school, "
 					+ "classroom, "
 					+ "fe.username as username, "
-					+ "time_format(sec_to_time(coalesce(sum(if(rds_duration > 0, rds_duration, 0)),0)),'%H hours %i minutes %s seconds') as timeSpentReading, "
+					+ "time_format(sec_to_time(coalesce(sum(if(rds_duration > 0 and rds_duration < 172800, rds_duration, 0)),0)),'%H hours %i minutes %s seconds') as timeSpentReading, "
 					+ "coalesce(group_concat(distinct date(rds_start) separator ', '), '') as daysRead, "
 					+ "coalesce(textsRead,'') as textsRead, "
 					+ "coalesce(settingsUsed,'') as settingsUsed, "
