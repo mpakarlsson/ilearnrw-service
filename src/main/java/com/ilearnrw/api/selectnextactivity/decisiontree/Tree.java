@@ -158,44 +158,18 @@ public class Tree {
     
     public Tree(String filename){
     	
-    	List<String> lines = new ArrayList<String>();
+    	List<String> lines = null;
 		
 		try {
-			
-			
-//			InputStream inS = ResourceLoader.getInstance().getInputStream(Type.LOCAL,filename);
-			InputStream inS = ResourceLoader.getInstance().getInputStream(Type.DATA,filename);
-			
-			if(inS==null){
-				for(String aux :  rebootTree().toString().split("\n"))
-					lines.add(aux);
-				
-			}else{
-				InputStreamReader in = new InputStreamReader(inS, "UTF-8");
-
-				BufferedReader buf = new BufferedReader(in);
-				String line = null;
-				while((line=buf.readLine())!=null) {
-					lines.add(line);
-				}
-				buf.close();
-			}
-						
-		} catch (java.io.FileNotFoundException e) {
+			lines = ResourceLoader.getInstance().readAllLinesAsListUTF8(ResourceLoader.Type.DATA, filename);
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
+			lines = new ArrayList<String>();
 			for(String aux :  rebootTree().toString().split("\n"))
 				lines.add(aux);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-
-			for(String aux :  rebootTree().toString().split("\n"))
-				lines.add(aux);
-		} catch (IOException e) {
-			e.printStackTrace();
-			for(String aux :  rebootTree().toString().split("\n"))
-				lines.add(aux);
-		} 
-		
+		}
 
     	HashMap<Integer,Node> nodes = new HashMap<Integer,Node>();
     	
