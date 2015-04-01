@@ -34,6 +34,7 @@
 		injected. -->
 	<http create-session="stateless" use-expressions="true"
 		entry-point-ref="authenticationEntryPoint">
+		<intercept-url pattern="/public/**" access="permitAll" />
 		<intercept-url pattern="/user/auth" access="permitAll"/>
 		<intercept-url pattern="/user/newtokens" access="permitAll"/>
 		<intercept-url pattern="/user/details/**" access="permitAll"/>

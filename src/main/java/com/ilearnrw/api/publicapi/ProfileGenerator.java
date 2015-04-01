@@ -1,4 +1,4 @@
-package com.ilearnrw.apipublic;
+package com.ilearnrw.api.publicapi;
 
 import java.io.IOException;
 import java.util.ArrayList;
