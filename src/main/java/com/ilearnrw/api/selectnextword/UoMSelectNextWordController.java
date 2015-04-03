@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider;
 import com.ilearnrw.api.profileAccessUpdater.IProfileProvider.ProfileProviderException;
-import com.ilearnrw.api.selectnextactivity.SelectNextActivityController;
-import com.ilearnrw.api.selectnextactivity.TestSelectNextWordsController;
+
 
 
 @Controller

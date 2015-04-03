@@ -29,7 +29,7 @@ import com.ilearnrw.api.selectnextword.LevelFactory;
 import com.ilearnrw.common.security.users.services.UserService;
 
 @Controller
-public class TestSelectNextWordsController {
+public class GameInstructionFilesCreator {
 
 	public static void main(String [ ] args)
 	{

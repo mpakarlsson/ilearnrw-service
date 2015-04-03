@@ -110,7 +110,7 @@ public class MailRoomUK extends GameLevel {
 			
 			
 
-		}else{
+		}else{//Blends
 			
 			candidates = WordSelectionUtils.getTargetWordsWithDistractors(
 					LanguageCode.EN, 
@@ -146,27 +146,88 @@ public class MailRoomUK extends GameLevel {
 			
 			int numberAttempts = listsWords.get(0).size();
 			
-			while(result.size()<=(parameters.batchSize*(parameters.amountDistractors.ordinal()/4.0))){//batch size is calculated for 4 distractors
+			
+			List<List<String>> differentBits = new ArrayList<List<String>>();
+			for(int j = 0; j<listsWords.size(); j++){
+				List<String> bits = new ArrayList<String>();
 				
-				List<int[]> batch = new ArrayList<int[]>();
+				for(int i = 0;i<listsWords.get(j).size();i++){
+					
+					GameElement candidate = listsWords.get(j).get(i);
+					StringMatchesInfo match = ( (AnnotatedWord) candidate.getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+					String newBit = candidate.getAnnotatedWord().getWord().substring(match.getStart(),match.getEnd());
+					
+					if(!bits.contains(newBit)){
+						bits.add(newBit);
+					}
+				}
+				differentBits.add(bits);
+			}
+			
+
+			//Select those words that won't create valid words when adding the difficulies of the others
+			List<List<GameElement>> usableListWords = new ArrayList<List<GameElement>>();
+
+			for(int j = 0; j<listsWords.size(); j++){			
+				List<GameElement> usableWords = new ArrayList<GameElement>();
+				
+				for(int i = 0;i<listsWords.get(j).size();i++){
+					GameElement candidate = listsWords.get(j).get(i);
+					StringMatchesInfo match = ( (AnnotatedWord) candidate.getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
+					String newBit = candidate.getAnnotatedWord().getWord().substring(match.getStart(),match.getEnd());
+					int validReplacements = 0;
+					for(int k =0;k<differentBits.size();k++){
+						if(k!=j){
+							for(String bit : differentBits.get(k)){
+								String newWord = listsWords.get(j).get(i).getAnnotatedWord().getWord().replace( newBit ,  bit);
+								if(!EnglishLanguageAnalyzer.getInstance().getDictionary().getDictionary().containsKey(newWord)){//at least a valid replacement
+									validReplacements++;
+									break;//Jump to next difficulty (k+1)
+								}								
+							}
+						}
+					}
+					if(validReplacements>=parameters.amountDistractors.ordinal()){
+						usableWords.add(candidate );
+					}
+				}
+				usableListWords.add(usableWords);
+			}
+			
+			
+			
+			//System.err.println("LOOKING FOR "+(parameters.batchSize*((1+parameters.amountDistractors.ordinal())/4.0))+" BATCHES");
+			while(result.size()<=(parameters.batchSize*((1+parameters.amountDistractors.ordinal())/4.0))){//batch size is calculated for 4 distractors
+				
+				List<int[]> batch = new ArrayList<int[]>();//not related to batch size
 				List<String> bits = new ArrayList<String>();
 				
 					
-				for(int j = 0; j<listsWords.size(); j++){//for each different difficulty (a list of words per difficulty)
+				for(int j = 0; j<usableListWords.size(); j++){//for each different difficulty (a list of words per difficulty)
 						
-						if(listsWords.get(j).size()==0)
+						if(usableListWords.get(j).size()==0)
 							continue;
 						
-						for(int i = 0;i<listsWords.get(j).size();i++){
+						for(int i = 0;i<usableListWords.get(j).size();i++){
 							
 							
-							GameElement candidate = listsWords.get(j).get(i);
+							GameElement candidate = usableListWords.get(j).get(i);
 							StringMatchesInfo match = ( (AnnotatedWord) candidate.getAnnotatedWord()).getWordProblems().get(0).getMatched().get(0);
 							String newBit = candidate.getAnnotatedWord().getWord().substring(match.getStart(),match.getEnd());
 							
 							if(bits.contains(newBit)){//move on to next difficulty without word added
 								break;
 							}else{//Add provisionally
+								boolean looksGood = true;
+								for(String bit : bits){
+									if(bit.contains(newBit)||(newBit.contains(bit))){
+										looksGood = false;
+										break;
+									}
+								}
+								if(!looksGood)
+									break;
+								
 								batch.add(new int[]{j,i});
 								bits.add(newBit);
 							}
@@ -201,7 +262,6 @@ public class MailRoomUK extends GameLevel {
 						}
 						
 						if(batch.size()==parameters.amountDistractors.ordinal()+1){
-							
 							break;//No more words need to be added							
 						}
 						
@@ -219,12 +279,13 @@ public class MailRoomUK extends GameLevel {
 				}else{
 					
 					if(batch.size()==0){//Not a single word added, lets go
-						break;
+						break;//Overall while
 					}
 					
-					if(numberAttempts==0)
+					if(numberAttempts==0){
+						System.err.println("NO MORE ATTEMPTS");
 						break;
-					else
+					}else
 						numberAttempts--;
 					//Move first word last and try again
 					
