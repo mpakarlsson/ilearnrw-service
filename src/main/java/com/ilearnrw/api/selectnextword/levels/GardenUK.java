@@ -128,7 +128,7 @@ public class GardenUK extends GameLevel {
 			return "Select the machines with letters contained in each word";
 			
 		}else if(param.mode==6){
-			return "Select the machine with the right number of syllables";
+			return "Select the machines with a word with the same number of syllables";
 		}
 		
 		return "Instructions not available";

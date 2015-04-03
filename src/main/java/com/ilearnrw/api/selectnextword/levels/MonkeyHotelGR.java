@@ -63,7 +63,7 @@ public class MonkeyHotelGR extends GameLevel {
 			
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getWord().contains(grapheme)){
-					if(filler<=(originalSize*parameters.amountDistractors.ordinal()*0.25)){
+					if(filler<=(originalSize*(1+parameters.amountDistractors.ordinal())*0.25)){
 						ge.setFiller(true);
 						filler++;
 						result.add(ge);
@@ -124,7 +124,7 @@ public class MonkeyHotelGR extends GameLevel {
 					if(!ge.getAnnotatedWord().getWord().substring(0, 1).equals(correctLetter)){
 						
 						
-						if(filler<=(originalSize*parameters.amountDistractors.ordinal()*0.25)){
+						if(filler<=(originalSize*(1+parameters.amountDistractors.ordinal())*0.25)){
 							ge.setFiller(true);
 							filler++;
 							result.add(ge);
@@ -171,7 +171,7 @@ public class MonkeyHotelGR extends GameLevel {
 			
 			for(GameElement ge : targetWords)
 				if(!ge.getAnnotatedWord().getPhonetics().contains(phoneme)){
-					if(filler<=(originalSize*parameters.amountDistractors.ordinal()*0.25)){
+					if(filler<=(originalSize*(1+parameters.amountDistractors.ordinal())*0.25)){
 						ge.setFiller(true);
 						filler++;
 						result.add(ge);

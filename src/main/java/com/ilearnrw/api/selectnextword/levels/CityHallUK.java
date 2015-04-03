@@ -61,48 +61,6 @@ public class CityHallUK extends GameLevel {
 					false,
 					false);			
 			
-			//Find compatible phonetic difficulties
-			/*ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(LanguageCode.EN);
-
-			List<Integer> selectedDifficulties = WordSelectionUtils.findCompatiblePhoneticDifficulties(LanguageCode.EN, languageArea, difficulty,parameters.amountDistractors.ordinal());
-			
-			String[] phonemes = new String[selectedDifficulties.size()];
-			
-			for(int i =0;i< selectedDifficulties.size();i++){
-				
-				phonemes[i] = (definitions.getProblemDescription(languageArea, selectedDifficulties.get(i)).getDescriptions()[0].split("-")[1]);
-				
-			}
-			List<GameElement> result = new ArrayList<GameElement>();
-			
-			for(int i=0;i<phonemes.length;i++){
-				
-				List<String> copy = new ArrayList<String>();
-				
-				for(int j = 0;j< phonemes.length;j++){
-					
-					if (j!=i)
-						copy.add(phonemes[j]);
-				}
-				
-					
-				
-				List<GameElement> aux =	WordSelectionUtils.getTargetWordsWithoutPhonemes(LanguageCode.EN, lA, selectedDifficulties.get(i), parameters.batchSize, parameters.wordLevel,i!=0, copy);
-				
-				for(GameElement ge : aux)
-					result.add(ge);
-				
-			}
-			
-						return result;
-
-			*/
-			
-
-			//Word pattern= new Word(phoneme);//Phoneme
-			//result.add(new GameElement(false, pattern, languageArea, difficulty));
-			//pattern= new Word(definitions.getProblemDescription(languageArea, difficulty).getDescriptions()[0].split("-")[0]);//Grapheme
-			//result.add(new GameElement(false, pattern, languageArea, difficulty));
 
 		}
 		
