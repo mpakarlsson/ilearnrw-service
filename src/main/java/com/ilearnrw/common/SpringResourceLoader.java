@@ -10,7 +10,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 
 import ilearnrw.resource.ResourceLoader;
-import ilearnrw.resource.ResourceLoader.Type;
 
 public class SpringResourceLoader extends ResourceLoader implements
 		ResourceLoaderAware {
@@ -26,11 +25,12 @@ public class SpringResourceLoader extends ResourceLoader implements
 
 	@Override
 	public InputStream getInputStream(Type type, String resource) {
-
 		switch (type) {
 		case DATA:
 			resource = dataFolder + resource;
 			break;
+		case LOCAL:
+			throw new UnsupportedOperationException();
 		}
 
 		Resource r = loader.getResource(resource);
@@ -49,16 +49,14 @@ public class SpringResourceLoader extends ResourceLoader implements
 		return null;
 	}
 	
-	
-	
 	@Override
-	public FileOutputStream  getOutputStream(Type type, String resource){
-		
+	public FileOutputStream  getOutputStream(Type type, String resource) {
 		switch (type) {
 		case DATA:
 			resource = dataFolder + resource;
 			break;
-		
+		default:
+			throw new UnsupportedOperationException();
 		}
 
 		try {
@@ -67,14 +65,8 @@ public class SpringResourceLoader extends ResourceLoader implements
 			e.printStackTrace();
 		}
 		return null;
-		
 	}
 	
-	
-	
-	
-	
-
 	@Override
 	public void setResourceLoader(
 			org.springframework.core.io.ResourceLoader resourceLoader) {

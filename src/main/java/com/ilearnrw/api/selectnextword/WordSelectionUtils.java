@@ -634,7 +634,7 @@ public  class WordSelectionUtils {
 
 
 	static public List<Integer> findDifferentCharacter(LanguageCode language, int languageArea, int originalDifficulty,int numberDifficulties){
-
+		
 		List<Integer> compatibleDifficulties = new ArrayList<Integer>();
 		ProblemDefinitionIndex definitions = new ProblemDefinitionIndex(language);
 
@@ -644,9 +644,7 @@ public  class WordSelectionUtils {
 
 		characters.add(definitions.getProblemDescription(languageArea, originalDifficulty).getCharacter());
 
-
 		for(int i = 0; i< definitions.getRowLength(languageArea);i++){
-
 			if (!characters.contains(definitions.getProblemDescription(languageArea, i).getCharacter())){
 				characters.add(definitions.getProblemDescription(languageArea, i).getCharacter());
 				compatibleDifficulties.add(i);
@@ -666,19 +664,10 @@ public  class WordSelectionUtils {
 
 		try {
 
-			String jsonFile = "";
-
-			InputStreamReader in = new InputStreamReader(ResourceLoader.getInstance().getInputStream(Type.DATA,"game_words_GR/cat"+languageArea+"/words_"+languageArea+"_"+difficulty+"_GR.json"), "UTF-8");
-			BufferedReader buf = new BufferedReader(in);
-			String line = null;
-			while((line=buf.readLine())!=null) {
-				jsonFile += line;
-			}
-			buf.close();
-
-			HashMap<String, ArrayList<String>> hm = new Gson().fromJson(jsonFile, new TypeToken<HashMap<String, ArrayList<String>>>() {}.getType());
-
-			HashMap<String, ArrayList<String>> validWords = new HashMap<String, ArrayList<String>>();
+		String filename = "game_words_GR/cat"+languageArea+"/words_"+languageArea+"_"+difficulty+"_GR.json";
+		String jsonFile = ResourceLoader.getInstance().readAllLinesAsStringUTF8(Type.DATA, filename);
+		HashMap<String, ArrayList<String>> hm = new Gson().fromJson(jsonFile, new TypeToken<HashMap<String, ArrayList<String>>>() {}.getType());
+		HashMap<String, ArrayList<String>> validWords = new HashMap<String, ArrayList<String>>();
 
 			//List<String> validKeys = new ArrayList<String>();
 
