@@ -14,15 +14,15 @@ var fillHeader = function() {
 var successFillTable = function(data) {
 	$("#usertable tbody").empty();
 	$.each(data, function(index, value) {
-		$("#usertable tbody").append($('<tr>')
-				.append($('<td>').append(value.school))
-				.append($('<td>').append(value.classroom))
-				.append($('<td>').append(value.username))
-				.append($('<td>').append(value.timeSpentReading))
-				.append($('<td>').append(value.daysRead))
-				.append($('<td>').append(value.textsRead))
-				.append($('<td>').append(value.settingsUsed))
-				.append($('<td>').append(value.textToSpeechUsed))
-		);
+		table.row.add([
+				value.school,
+				value.classroom,
+				value.username,
+				value.timeSpentReading,
+				value.daysRead,
+				value.textsRead,
+				value.settingsUsed,
+				value.textToSpeechUsed
+				]).draw();
 	});
 };

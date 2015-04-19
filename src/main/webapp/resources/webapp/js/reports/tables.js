@@ -1,4 +1,5 @@
 var plotData;
+var table;
 $.postJSON = function(url, data, callback, errorf) {
     return jQuery.ajax({
     headers: { 
@@ -88,7 +89,7 @@ $(function() {
 		changeYear : true,
 		dateFormat : "dd.mm.yy"
 	});
-	/*
+	fillHeader();
 	$('#usertable thead th')
 	.each(
 			function() {
@@ -101,25 +102,20 @@ $(function() {
 										+ '" /></div>'
 										+ title + '');
 			});
-
-	var table = $("#usertable").DataTable({
+	table = $("#usertable").DataTable({
 	'paging' : false,
+	'ordering':true,
 	'searching' : true
 	});
-	
-	// Apply the search
-	
 	$('#usertable thead th input').each(function(idx) {
-	$(this).on('keyup change', function() {
-		table.column(idx).search(this.value).draw();
+		$(this).on('keyup change', function() {
+			table.column(idx).search(this.value).draw();
+		});
 	});
-	});
-	*/
-	fillHeader();
 	$("#students,#date,#startDate,#endDate").change(function()
 	{
 		var filter = getBreakdownFilter();
-		$("#usertable tbody").empty();
+		table.clear().draw();
 		$("#usertable tbody").html("Loading...");
 		$.postJSON(jqueryUrl, JSON.stringify(filter), successFillTable,
 	    function(jqXHR, textStatus, errorThrown) {

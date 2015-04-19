@@ -16,17 +16,17 @@ var fillHeader = function() {
 var successFillTable = function(data) {
 	$("#usertable tbody").empty();
 	$.each(data, function(index, value) {
-		$("#usertable tbody").append($('<tr>')
-				.append($('<td>').append(value.school))
-				.append($('<td>').append(value.classroom))
-				.append($('<td>').append(value.username))
-				.append($('<td>').append(value.timeSpentPlaying))
-				.append($('<td>').append(value.daysPlayed))
-				.append($('<td>').append(value.activitiesPlayed))
-				.append($('<td>').append(value.skillsPracticed))
-				.append($('<td>').append(value.wordsSeen))
-				.append($('<td>').append(value.changesToProfile))
-				.append($('<td>').append(value.successRate))
-		);
+		table.row.add([
+				value.school,
+				value.classroom,
+				value.username,
+				value.timeSpentPlaying,
+				value.daysPlayed,
+				value.activitiesPlayed,
+				value.skillsPracticed,
+				value.wordsSeen,
+				value.changesToProfile,
+				value.successRate
+		]).draw();
 	});
 };
