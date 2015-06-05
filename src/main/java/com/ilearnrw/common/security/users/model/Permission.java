@@ -1,5 +1,7 @@
 package com.ilearnrw.common.security.users.model;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import javax.validation.constraints.Size;
 
 public class Permission {

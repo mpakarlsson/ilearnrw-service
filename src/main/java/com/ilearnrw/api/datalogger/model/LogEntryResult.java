@@ -1,5 +1,7 @@
 package com.ilearnrw.api.datalogger.model;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

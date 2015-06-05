@@ -1,5 +1,7 @@
 package com.ilearnrw.app.screening;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;

@@ -1,5 +1,7 @@
 package com.ilearnrw.app.usermanager.form;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import javax.validation.Valid;
 import org.hibernate.validator.constraints.NotEmpty;
 import com.ilearnrw.common.security.users.model.StudentDetails;

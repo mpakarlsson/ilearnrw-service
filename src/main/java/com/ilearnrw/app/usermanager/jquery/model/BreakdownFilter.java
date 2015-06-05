@@ -1,5 +1,7 @@
 package com.ilearnrw.app.usermanager.jquery.model;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import com.ilearnrw.common.security.users.model.Classroom;
 import com.ilearnrw.common.security.users.model.School;
 import com.ilearnrw.common.security.users.model.User;

@@ -1,5 +1,7 @@
 package com.ilearnrw.api.datalogger.model;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;

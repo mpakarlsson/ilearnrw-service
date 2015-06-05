@@ -1,5 +1,7 @@
 package com.ilearnrw.api.datalogger.model.result;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 public class GamesComparisonResult {
 	String school;
 	String classroom;

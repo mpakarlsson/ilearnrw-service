@@ -1,5 +1,7 @@
 package com.ilearnrw.common.security;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Map;

@@ -1,5 +1,7 @@
 package com.ilearnrw.api.profileAccessUpdater;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 public class UpdatedProfileEntry {
 	private int category, index, previousSeverity, newSeverity, previousWorkingIndex, newWorkingIndex;
 

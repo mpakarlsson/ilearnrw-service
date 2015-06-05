@@ -1,5 +1,7 @@
 package com.ilearnrw.common.security.users.services;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.util.List;
 
 import com.ilearnrw.common.security.users.model.Classroom;

@@ -1,5 +1,7 @@
 package com.ilearnrw.api.auth;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

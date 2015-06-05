@@ -1,5 +1,7 @@
 package com.ilearnrw.api.selectnextword;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import ilearnrw.languagetools.extras.EasyHardList;
 import ilearnrw.textclassification.english.EnglishWord;
 import ilearnrw.textclassification.greek.GreekWord;

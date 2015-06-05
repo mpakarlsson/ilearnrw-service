@@ -1,5 +1,7 @@
 package com.ilearnrw.api.textannotation;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import ilearnrw.annotation.AnnotatedPack;
 import ilearnrw.annotation.HtmlGenerator;
 import ilearnrw.user.profile.UserProfile;

@@ -1,5 +1,7 @@
 package com.ilearnrw.api.selectnextword.levels;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 
 import ilearnrw.annotation.AnnotatedWord;
 import ilearnrw.utils.LanguageCode;

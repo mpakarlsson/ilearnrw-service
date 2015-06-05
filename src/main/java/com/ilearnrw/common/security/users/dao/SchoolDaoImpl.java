@@ -1,5 +1,7 @@
 package com.ilearnrw.common.security.users.dao;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

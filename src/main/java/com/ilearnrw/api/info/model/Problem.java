@@ -1,5 +1,7 @@
 package com.ilearnrw.api.info.model;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 public class Problem {
 	private int id;
 	private String title;

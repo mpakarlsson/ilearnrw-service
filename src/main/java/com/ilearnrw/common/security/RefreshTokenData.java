@@ -1,5 +1,7 @@
 package com.ilearnrw.common.security;
-
+/*
+ * Copyright (c) 2015, iLearnRW. Licensed under Modified BSD Licence. See licence.txt for details.
+ */
 public class RefreshTokenData {
 	private String userName;
 	private String password;
