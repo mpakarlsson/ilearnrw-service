@@ -485,6 +485,7 @@ public class Recommendation {
 								gameCandidates.remove(aux);
 
 							if(gameCandidates.size()==1){//if only one game, relax the constraint, and use the same game as the second option
+								if(removeGame>0)
 								gameCandidates.add(removeGame);
 							}
 
