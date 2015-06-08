@@ -207,7 +207,7 @@ public class GamesInformation {
 		
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		
-		for(int i=0;i<appIds.length;i++){
+		for(int i=0;i<9;i++){
 
 			
 			GameLevel gl = LevelFactory.createLevel(lan, languageArea, appIds[i]);
