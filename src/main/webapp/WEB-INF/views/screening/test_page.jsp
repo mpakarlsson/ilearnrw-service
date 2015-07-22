@@ -76,7 +76,7 @@
 								<c:forEach items="${questions.getRelatedWords()}" var="relatedWords" varStatus="inner">
 									<div class="word" data-word="${relatedWords}"
 										data-cluster="${questions.getParentCluster()}" style="padding: 3px;background-color:${inner.index % 2 == 0 ? '#F8F8F8' : '#ebebeb '};">
-										<strong style="text-decoration: underline;">${relatedWords} </strong><hr style="margin: 5px 0 5px 0;"> 
+										<strong style="text-decoration: underline;">${relatedWords} </strong> ~>  
 										<select>
 										<option value="WORD_SUCCESS" selected>Correct</option>
 										<option value="WORD_FAILED" >Incorrect</option>
